@@ -1,7 +1,7 @@
 import React from 'react';
-import { X, Shirt } from 'lucide-react';
+import { X } from 'lucide-react';
 import { GeneratedOutfit } from '../types';
-import { ScoreCircle } from './ScoreCircle';
+import { OutfitCard } from './OutfitCard';
 
 interface ResultsPanelProps {
   isOpen: boolean;
@@ -46,75 +46,13 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {outfits.map(outfit => (
-              <div
+              <OutfitCard
                 key={outfit.id}
-                className="bg-stone-50 rounded-xl p-5 border border-stone-200 hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Shirt size={16} className="text-slate-600" />
-                    <span className="text-sm font-medium text-slate-800">
-                      {outfit.source === 'curated' ? 'Curated' : 'Generated'}
-                    </span>
-                  </div>
-                  <ScoreCircle score={outfit.score} size="sm" showLabel={false} />
-                </div>
-
-                <div className="space-y-3">
-                  {outfit.jacket && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-slate-500 uppercase tracking-wide">Jacket</span>
-                      <span className="text-sm text-slate-800 font-medium">{outfit.jacket.name}</span>
-                    </div>
-                  )}
-
-                  {outfit.shirt && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-slate-500 uppercase tracking-wide">Shirt</span>
-                      <span className="text-sm text-slate-800 font-medium">{outfit.shirt.name}</span>
-                    </div>
-                  )}
-
-                  {outfit.pants && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-slate-500 uppercase tracking-wide">Pants</span>
-                      <span className="text-sm text-slate-800 font-medium">{outfit.pants.name}</span>
-                    </div>
-                  )}
-
-                  {outfit.shoes && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-slate-500 uppercase tracking-wide">Shoes</span>
-                      <span className="text-sm text-slate-800 font-medium">{outfit.shoes.name}</span>
-                    </div>
-                  )}
-
-                  {(outfit.belt || outfit.watch) && (
-                    <div className="border-t border-stone-300 pt-3 mt-3">
-                      {outfit.belt && (
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-xs text-slate-500 uppercase tracking-wide">Belt</span>
-                          <span className="text-sm text-slate-800">{outfit.belt.name}</span>
-                        </div>
-                      )}
-
-                      {outfit.watch && (
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-slate-500 uppercase tracking-wide">Watch</span>
-                          <span className="text-sm text-slate-800">{outfit.watch.name}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {outfit.tuck && (
-                    <div className="flex justify-between items-center pt-2 border-t border-stone-300">
-                      <span className="text-xs text-slate-500 uppercase tracking-wide">Style</span>
-                      <span className="text-sm text-slate-800">{outfit.tuck}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
+                outfit={outfit}
+                variant="compact"
+                showScore={true}
+                showSource={true}
+              />
             ))}
           </div>
 
