@@ -80,31 +80,40 @@ export const useOutfitEngine = () => {
     return suggestions;
   };
 
-  const generateRandomOutfit = (locked: OutfitSelection): GeneratedOutfit | null => {
+  const generateRandomOutfit = (currentSelection: OutfitSelection): GeneratedOutfit | null => {
     const categories: Category[] = ['Jacket/Overshirt', 'Shirt', 'Pants', 'Shoes'];
-    const selection: OutfitSelection = { ...locked };
+    const selection: OutfitSelection = { ...currentSelection };
+    const lockedCategories = currentSelection.locked || new Set();
 
-    // Fill missing categories
+    // Fill or replace categories (respecting locked items)
     for (const category of categories) {
       const key = category.toLowerCase().replace('/', '') as keyof OutfitSelection;
-      if (!selection[key] && items.filter(item => item.category === category).length > 0) {
-        const availableItems = items.filter(item => item.category === category);
-        const randomItem = availableItems[Math.floor(Math.random() * availableItems.length)];
-        (selection as any)[key] = randomItem;
+      const availableItems = items.filter(item => item.category === category);
+
+      if (availableItems.length > 0) {
+        // Only replace if not locked, or if there's no current item
+        if (!lockedCategories.has(category) || !selection[key]) {
+          const randomItem = availableItems[Math.floor(Math.random() * availableItems.length)];
+          (selection as any)[key] = randomItem;
+        }
       }
     }
 
-    // Add suggested accessories
+    // Add suggested accessories (respecting locked items)
     const accessories = suggestAccessories(selection);
-    if (!selection.belt && accessories.belt) selection.belt = accessories.belt;
-    if (!selection.watch && accessories.watch) selection.watch = accessories.watch;
+    if (!lockedCategories.has('Belt') && (!selection.belt || !lockedCategories.has('Belt')) && accessories.belt) {
+      selection.belt = accessories.belt;
+    }
+    if (!lockedCategories.has('Watch') && (!selection.watch || !lockedCategories.has('Watch')) && accessories.watch) {
+      selection.watch = accessories.watch;
+    }
 
-    // Determine tuck style
+    // Determine tuck style (only if not already set)
     if (!selection.tuck) {
       const isRefined = selection.shirt?.capsuleTags?.includes('Refined');
       const isLinen = selection.shirt?.name.toLowerCase().includes('linen');
       const hasTrousers = selection.pants?.name.toLowerCase().includes('trousers');
-      
+
       selection.tuck = (isRefined && !isLinen) || hasTrousers ? 'Tucked' : 'Untucked';
     }
 
