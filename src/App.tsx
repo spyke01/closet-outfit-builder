@@ -63,18 +63,6 @@ function App() {
     setShowResults(true);
   };
 
-  const handleSave = () => {
-    const favorites = JSON.parse(localStorage.getItem('outfit-favorites') || '[]');
-    const newFavorite = {
-      id: `fav-${Date.now()}`,
-      ...selection,
-      savedAt: new Date().toISOString()
-    };
-    favorites.push(newFavorite);
-    localStorage.setItem('outfit-favorites', JSON.stringify(favorites));
-    alert('Outfit saved to favorites!');
-  };
-
   const handleToggleLock = (category: Category) => {
     setSelection(prev => {
       const newLocked = new Set(prev.locked);
@@ -123,7 +111,6 @@ function App() {
       <TopBar 
         onRandomize={handleRandomize}
         onShowAll={handleShowAll}
-        onSave={handleSave}
         onTitleClick={handleTitleClick}
       />
       

@@ -8,7 +8,6 @@ A React-based wardrobe management and outfit generation application that helps u
 - **Smart Outfit Generation**: AI-powered outfit recommendations based on style compatibility
 - **Anchor-Based Discovery**: Find outfits that work well with a specific item as the foundation
 - **Outfit Locking**: Lock specific items while randomizing others
-- **Favorites System**: Save and manage favorite outfit combinations
 - **PWA Support**: Progressive Web App with offline capabilities
 - **Responsive Design**: Works seamlessly across desktop and mobile devices
 
@@ -136,4 +135,4 @@ The application includes:
 
 ## License
 
-This project is private and proprietary.
+This project is private and proprietary
