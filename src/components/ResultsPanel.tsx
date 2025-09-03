@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Shirt } from 'lucide-react';
 import { GeneratedOutfit } from '../types';
+import { ScoreCircle } from './ScoreCircle';
 
 interface ResultsPanelProps {
   isOpen: boolean;
@@ -50,9 +51,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                       {outfit.source === 'curated' ? 'Curated' : 'Generated'}
                     </span>
                   </div>
-                  <div className="text-xs text-slate-500 bg-white px-2 py-1 rounded">
-                    Score: {outfit.score}
-                  </div>
+                  <ScoreCircle score={outfit.score} size="sm" showLabel={false} />
                 </div>
 
                 <div className="space-y-3">

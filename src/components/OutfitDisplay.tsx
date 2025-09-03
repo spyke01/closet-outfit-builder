@@ -1,6 +1,8 @@
 import React from 'react';
 import { Shirt, RefreshCw } from 'lucide-react';
 import { OutfitSelection } from '../types';
+import { ScoreCircle } from './ScoreCircle';
+import { useOutfitEngine } from '../hooks/useOutfitEngine';
 
 interface OutfitDisplayProps {
   selection: OutfitSelection;
@@ -8,7 +10,9 @@ interface OutfitDisplayProps {
 }
 
 export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({ selection, onRandomize }) => {
+  const { scoreOutfit } = useOutfitEngine();
   const hasCompleteOutfit = selection.shirt && selection.pants && selection.shoes;
+  const outfitScore = hasCompleteOutfit ? scoreOutfit(selection) : 0;
 
   if (!hasCompleteOutfit) {
     return (
@@ -38,12 +42,17 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({ selection, onRando
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-8">
           <div className="text-center mb-8">
-            <h3 className="text-2xl font-light text-slate-800 mb-2">
-              Your Current Look
-            </h3>
-            <p className="text-slate-600">
-              A carefully composed outfit ready to wear
-            </p>
+            <div className="flex items-center justify-center gap-6 mb-4">
+              <div>
+                <h3 className="text-2xl font-light text-slate-800 mb-2">
+                  Your Current Look
+                </h3>
+                <p className="text-slate-600">
+                  A carefully composed outfit ready to wear
+                </p>
+              </div>
+              <ScoreCircle score={outfitScore} size="lg" />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
