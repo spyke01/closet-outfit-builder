@@ -17,6 +17,7 @@ export interface WardrobeItem {
   capsuleTags?: CapsuleTag[];
   season?: Season[];
   formality?: Formality;
+  formalityScore?: number; // 1-10 scale: 1=very casual, 10=very formal
   image?: string;
   active?: boolean;
 }

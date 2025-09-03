@@ -19,31 +19,37 @@ export const useOutfitEngine = () => {
   const scoreOutfit = (selection: OutfitSelection): number => {
     let score = 0;
 
-    // Soft rules for scoring
-    if (selection.shoes?.name.toLowerCase().includes('suede loafers') && 
-        selection.belt?.id === 'belt-braided') {
-      score += 10;
-    }
+    // Add formality scores for each item
+    const items = [
+      selection.jacket,
+      selection.shirt,
+      selection.pants,
+      selection.shoes,
+      selection.belt,
+      selection.watch
+    ];
 
-    if (selection.pants?.id === 'trousers-charcoal' && 
-        selection.belt?.id === 'belt-reversible') {
-      score += 8;
-    }
-
-    if (selection.jacket?.id === 'moto-jacket' && 
-        selection.shoes?.id === 'apache-boots' && 
-        selection.belt?.id === 'belt-rugged') {
-      score += 12;
-    }
-
-    // Linen preferences
-    if (selection.shirt?.name.toLowerCase().includes('linen')) {
-      if (selection.watch?.id === 'rolex-panda' || selection.watch?.id === 'omega-300m') {
-        score += 6;
+    items.forEach(item => {
+      if (item?.formalityScore) {
+        score += item.formalityScore;
       }
+    });
+
+    // Bonus for style consistency (items with similar formality levels)
+    const formalityScores = items
+      .filter(item => item?.formalityScore)
+      .map(item => item!.formalityScore!);
+
+    if (formalityScores.length >= 3) {
+      const avgFormality = formalityScores.reduce((a, b) => a + b, 0) / formalityScores.length;
+      const variance = formalityScores.reduce((acc, score) => acc + Math.pow(score - avgFormality, 2), 0) / formalityScores.length;
+
+      // Lower variance = more consistent style = bonus points
+      const consistencyBonus = Math.max(0, 10 - variance);
+      score += consistencyBonus;
     }
 
-    return score;
+    return Math.round(score);
   };
 
   const suggestAccessories = (selection: OutfitSelection): { belt?: WardrobeItem; watch?: WardrobeItem } => {
