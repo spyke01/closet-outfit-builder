@@ -38,7 +38,6 @@ function App() {
   const handleShowOutfitsForItem = (item: WardrobeItem) => {
     setAnchorItem(item);
     setShowResults(true);
-    setSelectedCategory(null);
   };
 
   const handleRandomize = () => {
