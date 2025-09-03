@@ -1,0 +1,22 @@
+{
+  "name": "Outfit Composer",
+  "short_name": "Outfits",
+  "description": "Intelligent outfit composition for the modern wardrobe",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fefefe",
+  "theme_color": "#1e293b",
+  "orientation": "landscape-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

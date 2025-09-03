@@ -1,0 +1,63 @@
+{
+  "items": [
+    { "id":"mac-coat-navy","name":"Mac Coat (Navy)","category":"Jacket/Overshirt","capsuleTags":["Refined","Crossover"] },
+    { "id":"moto-jacket","name":"Moto Jacket","category":"Jacket/Overshirt","capsuleTags":["Adventurer","Crossover"] },
+    { "id":"shacket-olive","name":"Shacket (Olive)","category":"Jacket/Overshirt","capsuleTags":["Crossover"] },
+    { "id":"shacket-beige","name":"Shacket (Beige)","category":"Jacket/Overshirt","capsuleTags":["Crossover"] },
+    { "id":"camel-crewneck","name":"Camel Crewneck","category":"Jacket/Overshirt","capsuleTags":["Refined"] },
+    { "id":"grey-shawl-cardigan","name":"Grey Shawl Cardigan","category":"Jacket/Overshirt","capsuleTags":["Refined","Crossover"] },
+
+    { "id":"blue-ocbd","name":"Blue OCBD","category":"Shirt","capsuleTags":["Refined"] },
+    { "id":"rl-featherweight-blue","name":"Ralph Lauren Featherweight Blue","category":"Shirt","capsuleTags":["Refined","Crossover"] },
+    { "id":"linen-striped-white-navy","name":"Striped Linen (White/Navy)","category":"Shirt","capsuleTags":["Refined","Crossover","Shorts"] },
+    { "id":"linen-white","name":"White Linen Shirt","category":"Shirt","capsuleTags":["Refined","Shorts"] },
+    { "id":"linen-deep-navy","name":"Deep Navy Linen Shirt","category":"Shirt","capsuleTags":["Refined","Crossover"] },
+    { "id":"linen-black","name":"Black Linen Shirt","category":"Shirt","capsuleTags":["Adventurer","Crossover"] },
+    { "id":"grey-knit-polo","name":"Grey Knit Polo","category":"Shirt","capsuleTags":["Refined"] },
+    { "id":"navy-ribbed-polo","name":"Navy Ribbed Polo","category":"Shirt","capsuleTags":["Refined"] },
+    { "id":"grey-henley-knit","name":"Grey Henley Knit","category":"Shirt","capsuleTags":["Adventurer"] },
+    { "id":"tee-white","name":"White Tee","category":"Shirt","capsuleTags":["Crossover","Adventurer","Refined"] },
+    { "id":"tee-cream","name":"Cream Tee","category":"Shirt","capsuleTags":["Crossover","Adventurer","Refined"] },
+    { "id":"tee-black","name":"Black Tee","category":"Shirt","capsuleTags":["Crossover","Adventurer"] },
+    { "id":"tee-navy","name":"Navy Tee","category":"Shirt","capsuleTags":["Crossover","Refined"] },
+    { "id":"tee-grey","name":"Grey Tee","category":"Shirt","capsuleTags":["Crossover"] },
+
+    { "id":"chinos-white","name":"White Chinos","category":"Pants","capsuleTags":["Refined","Crossover"] },
+    { "id":"chinos-light-grey","name":"Light Grey Chinos","category":"Pants","capsuleTags":["Refined"] },
+    { "id":"chinos-khaki","name":"Khaki Chinos","category":"Pants","capsuleTags":["Refined"] },
+    { "id":"chinos-black","name":"Black Chinos","category":"Pants","capsuleTags":["Adventurer","Crossover"] },
+    { "id":"chinos-navy","name":"Navy Chinos","category":"Pants","capsuleTags":["Refined","Crossover"] },
+    { "id":"chinos-olive","name":"Olive Chinos","category":"Pants","capsuleTags":["Adventurer","Crossover"] },
+    { "id":"trousers-charcoal","name":"Charcoal Wool Trousers","category":"Pants","capsuleTags":["Refined"] },
+    { "id":"jeans-medium","name":"Medium Jeans","category":"Pants","capsuleTags":["Crossover","Adventurer"] },
+    { "id":"denim-dark","name":"Dark Denim","category":"Pants","capsuleTags":["Crossover","Adventurer"] },
+
+    { "id":"shorts-white","name":"White Shorts","category":"Pants","capsuleTags":["Shorts"] },
+    { "id":"shorts-khaki","name":"Khaki Shorts","category":"Pants","capsuleTags":["Shorts"] },
+    { "id":"shorts-olive","name":"Olive Shorts","category":"Pants","capsuleTags":["Shorts"] },
+    { "id":"shorts-navy","name":"Navy Shorts","category":"Pants","capsuleTags":["Shorts"] },
+    { "id":"shorts-dark-brown","name":"Dark Brown Shorts","category":"Pants","capsuleTags":["Shorts"] },
+
+    { "id":"loafers-dark-brown","name":"Dark Brown Loafers","category":"Shoes","capsuleTags":["Refined"] },
+    { "id":"loafers-dark-brown-suede","name":"Dark Brown Suede Loafers","category":"Shoes","capsuleTags":["Refined","Shorts"] },
+    { "id":"loafers-light-tan","name":"Light Tan Suede Loafers","category":"Shoes","capsuleTags":["Refined","Shorts"] },
+    { "id":"loafers-black-horsebit","name":"Black Horsebit Loafers","category":"Shoes","capsuleTags":["Refined"] },
+    { "id":"double-monk-black","name":"Black Double Monks","category":"Shoes","capsuleTags":["Refined"] },
+    { "id":"sneakers-killshots","name":"White Killshots","category":"Shoes","capsuleTags":["Crossover","Shorts"] },
+    { "id":"sneakers-white-leather","name":"White Leather Sneakers","category":"Shoes","capsuleTags":["Refined","Crossover","Shorts"] },
+    { "id":"apache-boots","name":"Apache Boots","category":"Shoes","capsuleTags":["Adventurer"] },
+    { "id":"loafers-dark-dress","name":"Dark Loafers (Dress)","category":"Shoes","capsuleTags":["Refined"] },
+
+    { "id":"belt-braided","name":"Braided Belt","category":"Belt","capsuleTags":["Crossover","Refined"] },
+    { "id":"belt-clean-brown","name":"Clean Brown Belt","category":"Belt","capsuleTags":["Refined"] },
+    { "id":"belt-rugged","name":"Rugged Belt","category":"Belt","capsuleTags":["Adventurer"] },
+    { "id":"belt-reversible","name":"Reversible Brown/Black Belt","category":"Belt","capsuleTags":["Refined"] },
+
+    { "id":"rolex-panda","name":"Rolex Panda","category":"Watch","capsuleTags":["Refined","Shorts"] },
+    { "id":"rolex-black","name":"Black Rolex","category":"Watch","capsuleTags":["Refined"] },
+    { "id":"omega-nttd","name":"Omega No Time To Die","category":"Watch","capsuleTags":["Crossover"] },
+    { "id":"omega-300m","name":"Omega 300M","category":"Watch","capsuleTags":["Refined","Sport"] },
+    { "id":"panerai-luminor","name":"Panerai Luminor (Brown Strap)","category":"Watch","capsuleTags":["Adventurer"] },
+    { "id":"omega-speedmaster","name":"Omega Speedmaster","category":"Watch","capsuleTags":["Adventurer","Tool"] }
+  ]
+}
