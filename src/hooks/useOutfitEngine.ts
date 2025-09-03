@@ -151,11 +151,40 @@ export const useOutfitEngine = () => {
     return results.sort((a, b) => b.score - a.score);
   };
 
+  const getAllOutfits = (): GeneratedOutfit[] => {
+    const results: GeneratedOutfit[] = [];
+
+    // Convert all curated outfits to GeneratedOutfit format
+    outfits.forEach(outfit => {
+      const selection: OutfitSelection = {};
+      outfit.items.forEach(itemId => {
+        const item = getItemById(itemId);
+        if (item) {
+          const key = item.category.toLowerCase().replace('/', '') as keyof OutfitSelection;
+          (selection as any)[key] = item;
+        }
+      });
+      selection.tuck = outfit.tuck;
+
+      if (validateOutfit(selection)) {
+        results.push({
+          ...selection,
+          id: outfit.id,
+          score: scoreOutfit(selection) + (outfit.weight || 1) * 5,
+          source: 'curated'
+        });
+      }
+    });
+
+    return results.sort((a, b) => b.score - a.score);
+  };
+
   return {
     validateOutfit,
     scoreOutfit,
     suggestAccessories,
     generateRandomOutfit,
-    getOutfitsForAnchor
+    getOutfitsForAnchor,
+    getAllOutfits
   };
 };

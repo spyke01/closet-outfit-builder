@@ -23,10 +23,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
         <div className="flex items-center justify-between p-6 border-b border-stone-200">
           <div>
             <h2 className="text-2xl font-light text-slate-800">
-              All Outfits
-              {anchorItemName && (
-                <span className="text-slate-500"> featuring {anchorItemName}</span>
-              )}
+              {anchorItemName ? `Outfits featuring ${anchorItemName}` : 'All Outfits'}
             </h2>
             <p className="text-slate-600 mt-1">{outfits.length} combinations found</p>
           </div>

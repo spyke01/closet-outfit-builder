@@ -11,7 +11,7 @@ import { Category, OutfitSelection, WardrobeItem } from './types';
 
 function App() {
   const { itemsByCategory, loading } = useWardrobe();
-  const { generateRandomOutfit, getOutfitsForAnchor } = useOutfitEngine();
+  const { generateRandomOutfit, getOutfitsForAnchor, getAllOutfits } = useOutfitEngine();
   
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [selection, setSelection] = useState<OutfitSelection>({ locked: new Set() });
@@ -154,7 +154,7 @@ function App() {
       <ResultsPanel
         isOpen={showResults}
         onClose={() => setShowResults(false)}
-        outfits={anchorItem ? getOutfitsForAnchor(anchorItem) : []}
+        outfits={anchorItem ? getOutfitsForAnchor(anchorItem) : getAllOutfits()}
         anchorItemName={anchorItem?.name}
       />
     </div>
