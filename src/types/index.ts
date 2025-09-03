@@ -1,3 +1,7 @@
+// Internal category keys (used in code)
+export type CategoryKey = "jacket" | "shirt" | "pants" | "shoes" | "belt" | "watch";
+
+// Display category names (shown to users)
 export type Category = "Jacket/Overshirt" | "Shirt" | "Pants" | "Shoes" | "Belt" | "Watch";
 
 export type CapsuleTag = "Refined" | "Adventurer" | "Crossover" | "Shorts";
@@ -37,7 +41,6 @@ export interface OutfitSelection {
   belt?: WardrobeItem;
   watch?: WardrobeItem;
   tuck?: TuckStyle;
-  locked?: Set<Category>;
 }
 
 export interface GeneratedOutfit extends OutfitSelection {
@@ -45,3 +48,26 @@ export interface GeneratedOutfit extends OutfitSelection {
   score: number;
   source: 'curated' | 'generated';
 }
+
+// Utility functions for category mapping
+export const categoryToKey = (category: Category): CategoryKey => {
+  switch (category) {
+    case "Jacket/Overshirt": return "jacket";
+    case "Shirt": return "shirt";
+    case "Pants": return "pants";
+    case "Shoes": return "shoes";
+    case "Belt": return "belt";
+    case "Watch": return "watch";
+  }
+};
+
+export const keyToCategory = (key: CategoryKey): Category => {
+  switch (key) {
+    case "jacket": return "Jacket/Overshirt";
+    case "shirt": return "Shirt";
+    case "pants": return "Pants";
+    case "shoes": return "Shoes";
+    case "belt": return "Belt";
+    case "watch": return "Watch";
+  }
+};

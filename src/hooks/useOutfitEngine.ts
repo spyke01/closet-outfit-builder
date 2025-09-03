@@ -1,5 +1,6 @@
-import { WardrobeItem, OutfitSelection, GeneratedOutfit, Category } from '../types';
+import { WardrobeItem, OutfitSelection, GeneratedOutfit, Category, CategoryKey, categoryToKey, keyToCategory } from '../types';
 import { useWardrobe } from './useWardrobe';
+import { useMemo, useCallback } from 'react';
 
 export const useOutfitEngine = () => {
   const { items, outfits, getItemById } = useWardrobe();
@@ -8,11 +9,20 @@ export const useOutfitEngine = () => {
     // Hard rule: no shorts + boots
     if (selection.pants?.name.toLowerCase().includes('shorts') &&
       selection.shoes?.name.toLowerCase().includes('boots')) {
+      console.log('validateOutfit - Failed: shorts + boots rule');
       return false;
     }
 
     // Must have shirt, pants, shoes
-    return !!(selection.shirt && selection.pants && selection.shoes);
+    const hasRequired = !!(selection.shirt && selection.pants && selection.shoes);
+    if (!hasRequired) {
+      console.log('validateOutfit - Failed: missing required items', {
+        shirt: !!selection.shirt,
+        pants: !!selection.pants,
+        shoes: !!selection.shoes
+      });
+    }
+    return hasRequired;
   };
 
   const scoreOutfit = (selection: OutfitSelection): number => {
@@ -51,6 +61,64 @@ export const useOutfitEngine = () => {
     return Math.round(score);
   };
 
+  // Memoize all outfits to avoid recalculating on every render
+  const allOutfits = useMemo(() => {
+    const results: GeneratedOutfit[] = [];
+
+    // Use the new category mapping utility
+
+    console.log('useOutfitEngine - Processing outfits:', outfits.length);
+
+    // Convert all curated outfits to GeneratedOutfit format
+    outfits.forEach(outfit => {
+      const selection: OutfitSelection = {};
+      // Only log for mac-coat outfits to reduce noise
+      const isDebugOutfit = outfit.items.includes('mac-coat-navy');
+
+      if (isDebugOutfit) {
+        console.log(`Processing outfit ${outfit.id} with items:`, outfit.items);
+      }
+
+      outfit.items.forEach(itemId => {
+        const item = getItemById(itemId);
+        if (item) {
+          const key = categoryToKey(item.category);
+          (selection as any)[key] = item;
+          if (isDebugOutfit) {
+            console.log(`Mapped ${item.category} -> ${key}: ${item.name} (${item.id})`);
+          }
+        } else {
+          console.warn(`Item not found: ${itemId}`);
+        }
+      });
+      selection.tuck = outfit.tuck;
+
+      if (isDebugOutfit) {
+        console.log(`Final selection for outfit ${outfit.id}:`, selection);
+      }
+
+      if (validateOutfit(selection)) {
+        const generatedOutfit = {
+          ...selection,
+          id: outfit.id,
+          score: scoreOutfit(selection) + (outfit.weight || 1) * 5,
+          source: 'curated' as const
+        };
+        if (isDebugOutfit) {
+          console.log(`Added outfit ${outfit.id} to results:`, generatedOutfit);
+        }
+        results.push(generatedOutfit);
+      } else {
+        if (isDebugOutfit) {
+          console.log(`Outfit ${outfit.id} failed validation`);
+        }
+      }
+    });
+
+    console.log('useOutfitEngine - Generated outfits:', results.length);
+    return results.sort((a, b) => b.score - a.score);
+  }, [outfits, getItemById, validateOutfit, scoreOutfit]);
+
   const suggestAccessories = (selection: OutfitSelection): { belt?: WardrobeItem; watch?: WardrobeItem } => {
     const suggestions: { belt?: WardrobeItem; watch?: WardrobeItem } = {};
 
@@ -83,28 +151,24 @@ export const useOutfitEngine = () => {
   const generateRandomOutfit = (currentSelection: OutfitSelection): GeneratedOutfit | null => {
     const categories: Category[] = ['Jacket/Overshirt', 'Shirt', 'Pants', 'Shoes'];
     const selection: OutfitSelection = { ...currentSelection };
-    const lockedCategories = currentSelection.locked || new Set();
 
-    // Fill or replace categories (respecting locked items)
+    // Fill or replace categories
     for (const category of categories) {
-      const key = category.toLowerCase().replace('/', '') as keyof OutfitSelection;
+      const key = categoryToKey(category);
       const availableItems = items.filter(item => item.category === category);
 
       if (availableItems.length > 0) {
-        // Only replace if not locked, or if there's no current item
-        if (!lockedCategories.has(category) || !selection[key]) {
-          const randomItem = availableItems[Math.floor(Math.random() * availableItems.length)];
-          (selection as any)[key] = randomItem;
-        }
+        const randomItem = availableItems[Math.floor(Math.random() * availableItems.length)];
+        (selection as any)[key] = randomItem;
       }
     }
 
-    // Add suggested accessories (respecting locked items)
+    // Add suggested accessories
     const accessories = suggestAccessories(selection);
-    if (!lockedCategories.has('Belt') && (!selection.belt || !lockedCategories.has('Belt')) && accessories.belt) {
+    if (accessories.belt) {
       selection.belt = accessories.belt;
     }
-    if (!lockedCategories.has('Watch') && (!selection.watch || !lockedCategories.has('Watch')) && accessories.watch) {
+    if (accessories.watch) {
       selection.watch = accessories.watch;
     }
 
@@ -139,7 +203,7 @@ export const useOutfitEngine = () => {
         outfit.items.forEach(itemId => {
           const item = getItemById(itemId);
           if (item) {
-            const key = item.category.toLowerCase().replace('/', '') as keyof OutfitSelection;
+            const key = categoryToKey(item.category);
             (selection as any)[key] = item;
           }
         });
@@ -159,32 +223,198 @@ export const useOutfitEngine = () => {
     return results.sort((a, b) => b.score - a.score);
   };
 
-  const getAllOutfits = (): GeneratedOutfit[] => {
-    const results: GeneratedOutfit[] = [];
+  const getAllOutfits = useCallback((): GeneratedOutfit[] => {
+    return allOutfits;
+  }, [allOutfits]);
 
-    // Convert all curated outfits to GeneratedOutfit format
-    outfits.forEach(outfit => {
-      const selection: OutfitSelection = {};
-      outfit.items.forEach(itemId => {
-        const item = getItemById(itemId);
-        if (item) {
-          const key = item.category.toLowerCase().replace('/', '') as keyof OutfitSelection;
-          (selection as any)[key] = item;
+  // Memoized compatibility calculation with cache
+  const compatibilityCache = useMemo(() => new Map<string, WardrobeItem[]>(), []);
+
+  const getCompatibleItems = useCallback((
+    category: Category,
+    currentSelection: OutfitSelection
+  ): WardrobeItem[] => {
+    console.log(`getCompatibleItems - Looking for ${category} with selection:`, currentSelection);
+    try {
+      // Validate inputs
+      if (!category) {
+        console.warn('getCompatibleItems: category is required');
+        return [];
+      }
+
+      if (!currentSelection) {
+        console.warn('getCompatibleItems: currentSelection is required');
+        return [];
+      }
+
+      // Create cache key based on category and current selection
+      const selectionKey = Object.entries(currentSelection)
+        .filter(([key, item]) => item && key !== 'tuck' && key !== 'locked')
+        .map(([key, item]) => `${key}:${(item as WardrobeItem).id}`)
+        .sort()
+        .join('|');
+      const cacheKey = `${category}|${selectionKey}`;
+
+      // Check cache first
+      if (compatibilityCache.has(cacheKey)) {
+        return compatibilityCache.get(cacheKey)!;
+      }
+
+      if (allOutfits.length === 0) {
+        console.warn('getCompatibleItems: no outfits available');
+        return [];
+      }
+
+      // Only log when looking for jacket compatibility to reduce noise
+      const isJacketSearch = category === 'Jacket/Overshirt';
+
+      if (isJacketSearch) {
+        console.log(`getCompatibleItems - Looking for ${category} with selection:`, currentSelection);
+        console.log(`getCompatibleItems - Total outfits available:`, allOutfits.length);
+      }
+
+      const matchingOutfits = allOutfits.filter(outfit => {
+        const matches = Object.entries(currentSelection).every(([key, item]) => {
+          if (!item || key === 'tuck' || key === 'locked') return true;
+          const outfitKey = key as keyof OutfitSelection;
+          const outfitItem = outfit[outfitKey] as WardrobeItem;
+
+          const isMatch = outfitItem?.id === item.id;
+
+          if (isJacketSearch && key === 'jacket') {
+            console.log(`getCompatibleItems - Checking ${key}: selection=${item.id}, outfit=${outfitItem?.id || 'none'}, match=${isMatch}`);
+            console.log(`getCompatibleItems - Outfit ${outfit.id} jacket:`, outfitItem);
+          }
+
+          return isMatch;
+        });
+        return matches;
+      });
+
+      if (isJacketSearch) {
+        console.log(`getCompatibleItems - Found ${matchingOutfits.length} matching outfits for ${category}`);
+        console.log(`getCompatibleItems - Matching outfit IDs:`, matchingOutfits.map(o => o.id));
+      }
+
+      // Extract unique items for target category from matching outfits
+      const compatibleItems = new Set<WardrobeItem>();
+
+      // Use the new category mapping utility
+      const categoryKey = categoryToKey(category);
+
+      matchingOutfits.forEach(outfit => {
+        const item = outfit[categoryKey] as WardrobeItem;
+        if (item && item.id && item.name) {
+          compatibleItems.add(item);
         }
       });
-      selection.tuck = outfit.tuck;
 
-      if (validateOutfit(selection)) {
-        results.push({
-          ...selection,
-          id: outfit.id,
-          score: scoreOutfit(selection) + (outfit.weight || 1) * 5,
-          source: 'curated'
-        });
+      const result = Array.from(compatibleItems);
+
+      // Cache the result
+      compatibilityCache.set(cacheKey, result);
+
+      return result;
+    } catch (error) {
+      console.error('Error in getCompatibleItems:', error);
+      return [];
+    }
+  }, [allOutfits, compatibilityCache]);
+
+  // Memoized outfit filtering
+  const outfitFilterCache = useMemo(() => new Map<string, GeneratedOutfit[]>(), []);
+
+  const getFilteredOutfits = useCallback((selection: OutfitSelection): GeneratedOutfit[] => {
+    try {
+      // Validate input
+      if (!selection) {
+        console.warn('getFilteredOutfits: selection is required');
+        return [];
       }
-    });
 
-    return results.sort((a, b) => b.score - a.score);
+      // Create cache key based on selection
+      const selectionKey = Object.entries(selection)
+        .filter(([key, item]) => item && key !== 'tuck' && key !== 'locked')
+        .map(([key, item]) => `${key}:${(item as WardrobeItem).id}`)
+        .sort()
+        .join('|');
+
+      // Check cache first
+      if (outfitFilterCache.has(selectionKey)) {
+        return outfitFilterCache.get(selectionKey)!;
+      }
+
+      if (allOutfits.length === 0) {
+        console.warn('getFilteredOutfits: no outfits available');
+        return [];
+      }
+
+      const result = allOutfits.filter(outfit => {
+        try {
+          return Object.entries(selection).every(([key, item]) => {
+            if (!item || key === 'tuck' || key === 'locked') return true;
+            const outfitKey = key as keyof OutfitSelection;
+            const outfitItem = outfit[outfitKey] as WardrobeItem;
+            return outfitItem?.id === item.id;
+          });
+        } catch (error) {
+          console.error('Error filtering individual outfit:', error);
+          return false;
+        }
+      });
+
+      // Cache the result
+      outfitFilterCache.set(selectionKey, result);
+
+      return result;
+    } catch (error) {
+      console.error('Error in getFilteredOutfits:', error);
+      return [];
+    }
+  }, [allOutfits, outfitFilterCache]);
+
+  const validatePartialSelection = (selection: OutfitSelection): boolean => {
+    try {
+      // Validate input
+      if (!selection) {
+        console.warn('validatePartialSelection: selection is required');
+        return false;
+      }
+
+      // Check hard rules that apply to partial selections
+
+      // Hard rule: no shorts + boots (if both are selected)
+      if (selection.pants?.name?.toLowerCase().includes('shorts') &&
+        selection.shoes?.name?.toLowerCase().includes('boots')) {
+        return false;
+      }
+
+      // Additional validation rules can be added here
+
+      // Validate that selected items have required properties
+      const itemsToValidate = [
+        selection.jacket,
+        selection.shirt,
+        selection.pants,
+        selection.shoes,
+        selection.belt,
+        selection.watch
+      ].filter(Boolean);
+
+      for (const item of itemsToValidate) {
+        if (!item?.id || !item?.name || !item?.category) {
+          console.warn('validatePartialSelection: invalid item found', item);
+          return false;
+        }
+      }
+
+      // For partial selections, we don't require all items to be present
+      // Just validate that the selected items don't violate any rules
+      return true;
+    } catch (error) {
+      console.error('Error in validatePartialSelection:', error);
+      return false;
+    }
   };
 
   return {
@@ -193,6 +423,9 @@ export const useOutfitEngine = () => {
     suggestAccessories,
     generateRandomOutfit,
     getOutfitsForAnchor,
-    getAllOutfits
+    getAllOutfits,
+    getCompatibleItems,
+    getFilteredOutfits,
+    validatePartialSelection
   };
 };

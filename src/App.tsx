@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { TopBar } from './components/TopBar';
 import { AnchorRow } from './components/AnchorRow';
 import { SelectionStrip } from './components/SelectionStrip';
@@ -7,16 +7,17 @@ import { OutfitDisplay } from './components/OutfitDisplay';
 import { ResultsPanel } from './components/ResultsPanel';
 import { useWardrobe } from './hooks/useWardrobe';
 import { useOutfitEngine } from './hooks/useOutfitEngine';
-import { Category, OutfitSelection, WardrobeItem } from './types';
+import { Category, OutfitSelection, WardrobeItem, GeneratedOutfit, categoryToKey } from './types';
 
 function App() {
   const { itemsByCategory, loading } = useWardrobe();
   const { generateRandomOutfit, getOutfitsForAnchor, getAllOutfits } = useOutfitEngine();
   
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-  const [selection, setSelection] = useState<OutfitSelection>({ locked: new Set() });
+  const [selection, setSelection] = useState<OutfitSelection>({});
   const [showResults, setShowResults] = useState(false);
   const [anchorItem, setAnchorItem] = useState<WardrobeItem | null>(null);
+  const [viewedItem, setViewedItem] = useState<WardrobeItem | null>(null);
 
   // Register service worker for PWA
   useEffect(() => {
@@ -26,17 +27,20 @@ function App() {
   }, []);
 
   const handleItemSelect = (item: WardrobeItem) => {
-    const key = item.category.toLowerCase().replace('/', '') as keyof OutfitSelection;
-    setSelection(prev => ({
-      ...prev,
+    // Reset all selections when starting with a new anchor item
+    const key = categoryToKey(item.category);
+    setSelection({
       [key]: item
-    }));
+    });
+    // Set the selected item as anchor to show SelectionStrip and outfits
+    setAnchorItem(item);
     // After selecting an item, go back to outfit display
     setSelectedCategory(null);
   };
 
   const handleShowOutfitsForItem = (item: WardrobeItem) => {
-    setAnchorItem(item);
+    // Set the viewed item for the modal, but don't set as anchor
+    setViewedItem(item);
     setShowResults(true);
   };
 
@@ -50,49 +54,43 @@ function App() {
         shoes: randomOutfit.shoes,
         belt: randomOutfit.belt,
         watch: randomOutfit.watch,
-        tuck: randomOutfit.tuck,
-        locked: selection.locked || new Set()
+        tuck: randomOutfit.tuck
       });
     }
   };
 
   const handleShowAll = () => {
-    // Use the first selected item as anchor, or show all outfits if none selected
-    const anchor = selection.jacket || selection.shirt || selection.pants || selection.shoes;
-    setAnchorItem(anchor || null);
+    // Show all outfits without setting a specific viewed item
+    setViewedItem(null);
     setShowResults(true);
   };
 
-  const handleToggleLock = (category: Category) => {
-    setSelection(prev => {
-      const newLocked = new Set(prev.locked);
-      if (newLocked.has(category)) {
-        newLocked.delete(category);
-      } else {
-        newLocked.add(category);
-      }
-      return { ...prev, locked: newLocked };
-    });
+  const handleSelectionChange = (category: Category, item: WardrobeItem | null) => {
+    const key = categoryToKey(category);
+    setSelection(prev => ({
+      ...prev,
+      [key]: item || undefined
+    }));
   };
 
-  const handleClearSelection = (category: Category) => {
-    const key = category.toLowerCase().replace('/', '') as keyof OutfitSelection;
-    setSelection(prev => {
-      const newLocked = new Set(prev.locked);
-      newLocked.delete(category);
-      return { 
-        ...prev, 
-        [key]: undefined,
-        locked: newLocked
-      };
+  const handleOutfitSelect = (outfit: GeneratedOutfit) => {
+    setSelection({
+      jacket: outfit.jacket,
+      shirt: outfit.shirt,
+      pants: outfit.pants,
+      shoes: outfit.shoes,
+      belt: outfit.belt,
+      watch: outfit.watch,
+      tuck: outfit.tuck
     });
   };
 
   const handleTitleClick = () => {
     setSelectedCategory(null);
-    setSelection({ locked: new Set() });
+    setSelection({});
     setShowResults(false);
     setAnchorItem(null);
+    setViewedItem(null);
   };
 
   if (loading) {
@@ -116,13 +114,19 @@ function App() {
       
       <AnchorRow 
         selectedCategory={selectedCategory}
-        onCategorySelect={setSelectedCategory}
+        onCategorySelect={(category) => {
+          // Reset selections when starting with a new category
+          setSelection({});
+          setAnchorItem(null);
+          setSelectedCategory(category);
+        }}
       />
       
       <SelectionStrip 
         selection={selection}
-        onToggleLock={handleToggleLock}
-        onClearSelection={handleClearSelection}
+        anchorItem={anchorItem}
+        onSelectionChange={handleSelectionChange}
+        onOutfitSelect={handleOutfitSelect}
       />
 
       <div className="flex-1 flex">
@@ -144,9 +148,12 @@ function App() {
 
       <ResultsPanel
         isOpen={showResults}
-        onClose={() => setShowResults(false)}
-        outfits={anchorItem ? getOutfitsForAnchor(anchorItem) : getAllOutfits()}
-        anchorItemName={anchorItem?.name}
+        onClose={() => {
+          setShowResults(false);
+          setViewedItem(null);
+        }}
+        outfits={viewedItem ? getOutfitsForAnchor(viewedItem) : getAllOutfits()}
+        anchorItemName={viewedItem?.name}
       />
     </div>
   );
