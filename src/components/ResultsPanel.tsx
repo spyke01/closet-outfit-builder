@@ -10,17 +10,23 @@ interface ResultsPanelProps {
   anchorItemName?: string;
 }
 
-export const ResultsPanel: React.FC<ResultsPanelProps> = ({ 
-  isOpen, 
-  onClose, 
-  outfits, 
-  anchorItemName 
+export const ResultsPanel: React.FC<ResultsPanelProps> = ({
+  isOpen,
+  onClose,
+  outfits,
+  anchorItemName
 }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between p-6 border-b border-stone-200">
           <div>
             <h2 className="text-2xl font-light text-slate-800">
@@ -28,7 +34,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
             </h2>
             <p className="text-slate-600 mt-1">{outfits.length} combinations found</p>
           </div>
-          
+
           <button
             onClick={onClose}
             className="p-2 hover:bg-stone-100 rounded-lg transition-colors"
@@ -61,21 +67,21 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                       <span className="text-sm text-slate-800 font-medium">{outfit.jacket.name}</span>
                     </div>
                   )}
-                  
+
                   {outfit.shirt && (
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-slate-500 uppercase tracking-wide">Shirt</span>
                       <span className="text-sm text-slate-800 font-medium">{outfit.shirt.name}</span>
                     </div>
                   )}
-                  
+
                   {outfit.pants && (
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-slate-500 uppercase tracking-wide">Pants</span>
                       <span className="text-sm text-slate-800 font-medium">{outfit.pants.name}</span>
                     </div>
                   )}
-                  
+
                   {outfit.shoes && (
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-slate-500 uppercase tracking-wide">Shoes</span>
@@ -91,7 +97,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                           <span className="text-sm text-slate-800">{outfit.belt.name}</span>
                         </div>
                       )}
-                      
+
                       {outfit.watch && (
                         <div className="flex justify-between items-center">
                           <span className="text-xs text-slate-500 uppercase tracking-wide">Watch</span>
