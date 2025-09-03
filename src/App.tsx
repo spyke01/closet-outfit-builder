@@ -35,6 +35,12 @@ function App() {
     setSelectedCategory(null);
   };
 
+  const handleShowOutfitsForItem = (item: WardrobeItem) => {
+    setAnchorItem(item);
+    setShowResults(true);
+    setSelectedCategory(null);
+  };
+
   const handleRandomize = () => {
     const randomOutfit = generateRandomOutfit(selection);
     if (randomOutfit) {
@@ -52,12 +58,10 @@ function App() {
   };
 
   const handleShowAll = () => {
-    // Use the first selected item as anchor
+    // Use the first selected item as anchor, or show all outfits if none selected
     const anchor = selection.jacket || selection.shirt || selection.pants || selection.shoes;
-    if (anchor) {
-      setAnchorItem(anchor);
-      setShowResults(true);
-    }
+    setAnchorItem(anchor || null);
+    setShowResults(true);
   };
 
   const handleSave = () => {
@@ -142,6 +146,7 @@ function App() {
             items={itemsByCategory[selectedCategory]}
             selectedItem={selection[selectedCategory.toLowerCase().replace('/', '') as keyof OutfitSelection] as WardrobeItem}
             onItemSelect={handleItemSelect}
+            onShowOutfits={handleShowOutfitsForItem}
           />
         ) : (
           <OutfitDisplay 

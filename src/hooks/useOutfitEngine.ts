@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { WardrobeItem, OutfitSelection, GeneratedOutfit, Category } from '../types';
 import { useWardrobe } from './useWardrobe';
 
@@ -7,8 +6,8 @@ export const useOutfitEngine = () => {
 
   const validateOutfit = (selection: OutfitSelection): boolean => {
     // Hard rule: no shorts + boots
-    if (selection.pants?.name.toLowerCase().includes('shorts') && 
-        selection.shoes?.name.toLowerCase().includes('boots')) {
+    if (selection.pants?.name.toLowerCase().includes('shorts') &&
+      selection.shoes?.name.toLowerCase().includes('boots')) {
       return false;
     }
 
@@ -67,8 +66,8 @@ export const useOutfitEngine = () => {
     }
 
     // Watch suggestions
-    if (selection.shirt?.name.toLowerCase().includes('linen') || 
-        selection.pants?.name.toLowerCase().includes('shorts')) {
+    if (selection.shirt?.name.toLowerCase().includes('linen') ||
+      selection.pants?.name.toLowerCase().includes('shorts')) {
       suggestions.watch = getItemById('rolex-panda');
     } else if (selection.pants?.id === 'trousers-charcoal') {
       suggestions.watch = getItemById('omega-300m');
