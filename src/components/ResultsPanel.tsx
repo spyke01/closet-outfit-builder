@@ -87,15 +87,15 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
                     <div className="border-t border-stone-300 pt-3 mt-3">
                       {outfit.belt && (
                         <div className="flex justify-between items-center mb-2">
-                          <span className="text-xs text-blue-600 uppercase tracking-wide">Belt</span>
-                          <span className="text-sm text-slate-700">{outfit.belt.name}</span>
+                          <span className="text-xs text-slate-500 uppercase tracking-wide">Belt</span>
+                          <span className="text-sm text-slate-800">{outfit.belt.name}</span>
                         </div>
                       )}
                       
                       {outfit.watch && (
                         <div className="flex justify-between items-center">
-                          <span className="text-xs text-blue-600 uppercase tracking-wide">Watch</span>
-                          <span className="text-sm text-slate-700">{outfit.watch.name}</span>
+                          <span className="text-xs text-slate-500 uppercase tracking-wide">Watch</span>
+                          <span className="text-sm text-slate-800">{outfit.watch.name}</span>
                         </div>
                       )}
                     </div>
@@ -103,8 +103,8 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
 
                   {outfit.tuck && (
                     <div className="flex justify-between items-center pt-2 border-t border-stone-300">
-                      <span className="text-xs text-green-600 uppercase tracking-wide">Style</span>
-                      <span className="text-sm text-slate-700">{outfit.tuck}</span>
+                      <span className="text-xs text-slate-500 uppercase tracking-wide">Style</span>
+                      <span className="text-sm text-slate-800">{outfit.tuck}</span>
                     </div>
                   )}
                 </div>
