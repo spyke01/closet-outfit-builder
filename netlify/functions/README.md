@@ -100,11 +100,11 @@ GET /api/geocoding?latlng=40.7128,-74.0060
 
 ### Required for Production (Netlify Dashboard)
 - `GOOGLE_MAPS_API_KEY`: Google Maps Geocoding API key
-- `GOOGLE_WEATHER_API_KEY`: OpenWeatherMap API key
+- `OPENWEATHER_API_KEY`: OpenWeatherMap API key
 
 ### Required for Local Development (.env.local)
 - `GOOGLE_MAPS_API_KEY`: Google Maps Geocoding API key
-- `GOOGLE_WEATHER_API_KEY`: OpenWeatherMap API key
+- `OPENWEATHER_API_KEY`: OpenWeatherMap API key
 
 ## Local Development
 
@@ -116,7 +116,7 @@ npm install
 2. Set up environment variables in `.env.local`:
 ```bash
 GOOGLE_MAPS_API_KEY=your_google_maps_api_key
-GOOGLE_WEATHER_API_KEY=your_openweathermap_api_key
+OPENWEATHER_API_KEY=your_openweathermap_api_key
 ```
 
 3. Run Netlify Dev to test functions locally:

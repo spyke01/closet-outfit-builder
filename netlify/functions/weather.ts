@@ -1,11 +1,30 @@
 import { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
 
-interface WeatherRequest {
-  lat: number;
-  lon: number;
+interface OpenWeatherOneCallResponse {
+  current: {
+    temp: number;
+    weather: Array<{
+      main: string;
+      description: string;
+      icon: string;
+    }>;
+  };
+  daily: Array<{
+    dt: number;
+    temp: {
+      max: number;
+      min: number;
+    };
+    weather: Array<{
+      main: string;
+      description: string;
+      icon: string;
+    }>;
+    pop: number; // Probability of precipitation
+  }>;
 }
 
-interface GoogleWeatherResponse {
+interface WeatherResponse {
   current: {
     temperature: number;
     condition: string;
@@ -45,7 +64,7 @@ function checkRateLimit(clientIP: string): boolean {
   return true;
 }
 
-export const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
+export const handler: Handler = async (event: HandlerEvent, _context: HandlerContext) => {
   // CORS headers
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -115,33 +134,105 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
     }
 
     // Get API key from environment
-    const apiKey = process.env.GOOGLE_WEATHER_API_KEY;
+    const apiKey = process.env.OPENWEATHER_API_KEY;
+    console.log('Environment check - OPENWEATHER_API_KEY exists:', !!process.env.OPENWEATHER_API_KEY);
+    console.log('Using API key:', apiKey ? `${apiKey.substring(0, 8)}...` : 'undefined');
+    
     if (!apiKey) {
-      console.error('GOOGLE_WEATHER_API_KEY not configured');
+      console.error('No API key found in environment variables');
       return {
         statusCode: 500,
         headers,
-        body: JSON.stringify({ error: 'Weather service temporarily unavailable' }),
+        body: JSON.stringify({ 
+          error: 'Weather service configuration error - API key not found',
+          details: 'Please set OPENWEATHER_API_KEY in Netlify environment variables'
+        }),
       };
     }
 
-    // Make request to Google Weather API
-    // Note: Google doesn't have a direct Weather API, so we'll use OpenWeatherMap as a proxy
-    // In a real implementation, you'd use Google's actual weather service or another provider
-    const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial&cnt=24`;
+    // Try One Call API 3.0 first, fall back to free tier if needed
+    let weatherUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial&exclude=minutely,hourly,alerts`;
+    let useOneCallAPI = true;
     
-    const response = await fetch(weatherUrl);
+    let response = await fetch(weatherUrl);
     
-    if (!response.ok) {
-      if (response.status === 401) {
-        console.error('Invalid API key');
-        return {
-          statusCode: 500,
-          headers,
-          body: JSON.stringify({ error: 'Weather service authentication failed' }),
-        };
+    // If One Call API fails with 401/403, try the free tier APIs
+    if (!response.ok && (response.status === 401 || response.status === 403)) {
+      console.log('One Call API failed, trying free tier APIs...');
+      useOneCallAPI = false;
+      
+      // Use current weather + 5-day forecast (free tier)
+      const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial`;
+      const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial&cnt=24`;
+      
+      const [currentResponse, forecastResponse] = await Promise.all([
+        fetch(currentWeatherUrl),
+        fetch(forecastUrl)
+      ]);
+      
+      if (!currentResponse.ok || !forecastResponse.ok) {
+        if (currentResponse.status === 401 || forecastResponse.status === 401) {
+          console.error('Invalid API key for OpenWeather API. Key:', apiKey ? `${apiKey.substring(0, 8)}...` : 'undefined');
+          return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ 
+              error: 'Weather service authentication failed - API key is invalid or not activated. Please check your OpenWeather API key.',
+              details: 'Visit https://home.openweathermap.org/api_keys to verify your API key'
+            }),
+          };
+        }
+        
+        if (currentResponse.status === 429 || forecastResponse.status === 429) {
+          return {
+            statusCode: 429,
+            headers,
+            body: JSON.stringify({ error: 'Weather service rate limit exceeded' }),
+          };
+        }
+        
+        throw new Error(`Weather API responded with status: ${currentResponse.status}/${forecastResponse.status}`);
       }
       
+      const [currentData, forecastData] = await Promise.all([
+        currentResponse.json(),
+        forecastResponse.json()
+      ]);
+      
+      // Transform free tier response to our format
+      const transformedData: WeatherResponse = {
+        current: {
+          temperature: Math.round(currentData.main.temp),
+          condition: currentData.weather[0].description,
+          icon: currentData.weather[0].icon,
+        },
+        forecast: forecastData.list.slice(0, 24).reduce((acc: any[], item: any, index: number) => {
+          // Group by day (every 8 items = 1 day with 3-hour intervals)
+          if (index % 8 === 0) {
+            const date = new Date(item.dt * 1000);
+            acc.push({
+              date: date.toISOString().split('T')[0],
+              temperature: {
+                high: Math.round(item.main.temp_max),
+                low: Math.round(item.main.temp_min),
+              },
+              condition: item.weather[0].description,
+              icon: item.weather[0].icon,
+              precipitationProbability: item.pop ? Math.round(item.pop * 100) : undefined,
+            });
+          }
+          return acc;
+        }, []).slice(0, 3),
+      };
+      
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify(transformedData),
+      };
+    }
+    
+    if (!response.ok) {
       if (response.status === 429) {
         return {
           statusCode: 429,
@@ -153,32 +244,28 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
       throw new Error(`Weather API responded with status: ${response.status}`);
     }
 
-    const weatherData = await response.json() as any;
+    const weatherData = await response.json() as OpenWeatherOneCallResponse;
     
     // Transform the response to match our expected format
-    const transformedData = {
+    const transformedData: WeatherResponse = {
       current: {
-        temperature: Math.round(weatherData.list[0].main.temp),
-        condition: weatherData.list[0].weather[0].description,
-        icon: weatherData.list[0].weather[0].icon,
+        temperature: Math.round(weatherData.current.temp),
+        condition: weatherData.current.weather[0].description,
+        icon: weatherData.current.weather[0].icon,
       },
-      forecast: weatherData.list.slice(0, 24).reduce((acc: any[], item: any, index: number) => {
-        // Group by day (every 8 items = 1 day with 3-hour intervals)
-        if (index % 8 === 0) {
-          const date = new Date(item.dt * 1000);
-          acc.push({
-            date: date.toISOString().split('T')[0],
-            temperature: {
-              high: Math.round(item.main.temp_max),
-              low: Math.round(item.main.temp_min),
-            },
-            condition: item.weather[0].description,
-            icon: item.weather[0].icon,
-            precipitationProbability: item.pop ? Math.round(item.pop * 100) : undefined,
-          });
-        }
-        return acc;
-      }, []).slice(0, 3), // Only return 3 days
+      forecast: weatherData.daily.slice(0, 3).map(day => {
+        const date = new Date(day.dt * 1000);
+        return {
+          date: date.toISOString().split('T')[0],
+          temperature: {
+            high: Math.round(day.temp.max),
+            low: Math.round(day.temp.min),
+          },
+          condition: day.weather[0].description,
+          icon: day.weather[0].icon,
+          precipitationProbability: day.pop ? Math.round(day.pop * 100) : undefined,
+        };
+      }),
     };
 
     return {
