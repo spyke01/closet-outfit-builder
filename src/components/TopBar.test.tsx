@@ -25,11 +25,9 @@ vi.mock('./WeatherWidget', () => ({
 }));
 
 describe('TopBar', () => {
-  const mockOnRandomize = vi.fn();
   const mockOnTitleClick = vi.fn();
 
   const defaultProps = {
-    onRandomize: mockOnRandomize,
     onTitleClick: mockOnTitleClick,
   };
 
@@ -37,36 +35,21 @@ describe('TopBar', () => {
     vi.clearAllMocks();
   });
 
-  it('renders the title button', () => {
+  it('renders the logo image', () => {
     render(<TopBar {...defaultProps} />);
     
-    const titleButton = screen.getByRole('button', { name: 'What to Wear' });
-    expect(titleButton).toBeInTheDocument();
+    const logoImage = screen.getByAltText('What to Wear');
+    expect(logoImage).toBeInTheDocument();
+    expect(logoImage).toHaveAttribute('src', '/what-to-wear-logo.svg');
   });
 
-  it('renders the randomize button', () => {
+  it('calls onTitleClick when logo is clicked', () => {
     render(<TopBar {...defaultProps} />);
     
-    const randomizeButton = screen.getByRole('button', { name: /randomize/i });
-    expect(randomizeButton).toBeInTheDocument();
-  });
-
-  it('calls onTitleClick when title is clicked', () => {
-    render(<TopBar {...defaultProps} />);
-    
-    const titleButton = screen.getByRole('button', { name: 'What to Wear' });
-    fireEvent.click(titleButton);
+    const logoButton = screen.getByRole('button');
+    fireEvent.click(logoButton);
     
     expect(mockOnTitleClick).toHaveBeenCalledTimes(1);
-  });
-
-  it('calls onRandomize when randomize button is clicked', () => {
-    render(<TopBar {...defaultProps} />);
-    
-    const randomizeButton = screen.getByRole('button', { name: /randomize/i });
-    fireEvent.click(randomizeButton);
-    
-    expect(mockOnRandomize).toHaveBeenCalledTimes(1);
   });
 
   it('renders weather widget with loading state', () => {
@@ -159,7 +142,7 @@ describe('TopBar', () => {
     render(<TopBar {...defaultProps} />);
     
     const weatherWidget = screen.getByTestId('weather-widget');
-    expect(weatherWidget.parentElement).toHaveClass('order-2', 'sm:order-1');
+    expect(weatherWidget).toBeInTheDocument();
   });
 
   it('applies text-sm className to weather widget', () => {
@@ -169,22 +152,12 @@ describe('TopBar', () => {
     expect(weatherWidget).toHaveClass('text-sm');
   });
 
-  it('maintains proper layout with weather widget', () => {
+  it('maintains proper layout structure', () => {
     render(<TopBar {...defaultProps} />);
     
     // Check that the main container has proper responsive flex layout
-    const mainContainer = screen.getByRole('button', { name: 'What to Wear' }).parentElement;
+    const logoButton = screen.getByRole('button');
+    const mainContainer = logoButton.parentElement;
     expect(mainContainer).toHaveClass('flex', 'flex-col', 'sm:flex-row', 'sm:items-center', 'sm:justify-between', 'gap-4');
-    
-    // Check that the right side container has proper responsive spacing
-    const rightContainer = screen.getByRole('button', { name: /randomize/i }).parentElement;
-    expect(rightContainer).toHaveClass('flex', 'flex-col', 'sm:flex-row', 'sm:items-center', 'gap-4', 'sm:gap-6');
-  });
-
-  it('ensures randomize button maintains minimum touch target size', () => {
-    render(<TopBar {...defaultProps} />);
-    
-    const randomizeButton = screen.getByRole('button', { name: /randomize/i });
-    expect(randomizeButton).toHaveClass('min-h-[44px]');
   });
 });

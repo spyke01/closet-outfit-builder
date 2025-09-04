@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Shuffle } from 'lucide-react';
 import { TopBar } from './components/TopBar';
 import { AnchorRow } from './components/AnchorRow';
 import { SelectionStrip } from './components/SelectionStrip';
@@ -208,7 +209,6 @@ function App() {
   return (
     <div className="min-h-screen bg-stone-50 flex flex-col overflow-x-hidden">
       <TopBar 
-        onRandomize={handleRandomize}
         onTitleClick={handleTitleClick}
         weatherForecast={weatherForecast}
         weatherLoading={weatherLoading}
@@ -253,7 +253,18 @@ function App() {
           <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
             <div className="max-w-7xl mx-auto">
               <div className="mb-4 sm:mb-6">
-                <h2 className="text-xl sm:text-2xl font-light text-slate-800 mb-2">All Outfits</h2>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-light text-slate-800">All Outfits</h2>
+                  </div>
+                  <button
+                    onClick={handleRandomize}
+                    className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors min-h-[44px] font-medium w-full sm:w-auto"
+                  >
+                    <Shuffle size={18} />
+                    <span>Choose a Random Outfit</span>
+                  </button>
+                </div>
                 <p className="text-slate-600 text-sm sm:text-base">{getAllOutfits().length} combinations available</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">

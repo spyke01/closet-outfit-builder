@@ -163,6 +163,17 @@ describe('App', () => {
     });
   });
 
+  describe('Randomize Button', () => {
+    it('displays randomize button in All Outfits section', async () => {
+      render(<App />);
+      
+      await waitFor(() => {
+        expect(screen.getByText('All Outfits')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /choose a random outfit/i })).toBeInTheDocument();
+      });
+    });
+  });
+
   describe('Empty State', () => {
     it('shows empty message when no outfits are available', async () => {
       // Mock empty outfits
