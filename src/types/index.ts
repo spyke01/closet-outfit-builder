@@ -71,3 +71,17 @@ export const keyToCategory = (key: CategoryKey): Category => {
     case "watch": return "Watch";
   }
 };
+
+// Location and Weather related types
+export interface LocationData {
+  latitude: number;
+  longitude: number;
+  granted: boolean;
+  error?: string;
+}
+
+export interface LocationError {
+  code: number;
+  message: string;
+  type: 'permission_denied' | 'position_unavailable' | 'timeout' | 'not_supported';
+}
