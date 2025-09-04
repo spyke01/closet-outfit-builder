@@ -67,6 +67,15 @@
       "formalityScore": 7
     },
     {
+      "id": "white-ocbd",
+      "name": "White OCBD",
+      "category": "Shirt",
+      "capsuleTags": [
+        "Refined"
+      ],
+      "formalityScore": 7
+    },
+    {
       "id": "rl-featherweight-blue",
       "name": "Ralph Lauren Featherweight Blue",
       "category": "Shirt",
@@ -444,6 +453,15 @@
     {
       "id": "belt-reversible",
       "name": "Reversible Brown/Black Belt",
+      "category": "Belt",
+      "capsuleTags": [
+        "Refined"
+      ],
+      "formalityScore": 7
+    },
+    {
+      "id": "belt-black-pebbled",
+      "name": "Pebbled Black Belt",
       "category": "Belt",
       "capsuleTags": [
         "Refined"

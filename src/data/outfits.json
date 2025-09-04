@@ -66,6 +66,9 @@
 
     { "id":"o-051","items":["linen-deep-navy","chinos-white","loafers-dark-brown-suede","belt-braided","rolex-panda"],"tuck":"Tucked" },
     { "id":"o-052","items":["linen-deep-navy","chinos-olive","sneakers-white-leather","belt-braided","omega-300m"],"tuck":"Untucked" },
-    { "id":"o-053","items":["linen-white","chinos-khaki","loafers-light-tan","belt-braided","rolex-panda"],"tuck":"Untucked" }
+    { "id":"o-053","items":["linen-white","chinos-khaki","loafers-light-tan","belt-braided","rolex-panda"],"tuck":"Untucked" },
+
+    { "id":"o-054","items":["white-ocbd","chinos-black","sneakers-killshots","belt-black-pebbled","rolex-black"],"tuck":"Untucked" },
+    { "id":"o-054","items":["white-ocbd","chinos-navy","sneakers-killshots","belt-clean-brown","omega-300m"],"tuck":"Untucked" }
   ]
 }
