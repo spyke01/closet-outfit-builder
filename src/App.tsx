@@ -7,7 +7,9 @@ import { OutfitDisplay } from './components/OutfitDisplay';
 import { OutfitCard } from './components/OutfitCard';
 import { useWardrobe } from './hooks/useWardrobe';
 import { useOutfitEngine } from './hooks/useOutfitEngine';
-import { Category, OutfitSelection, WardrobeItem, GeneratedOutfit, categoryToKey } from './types';
+import { Category, OutfitSelection, WardrobeItem, GeneratedOutfit, categoryToKey, WeatherData, WeatherError } from './types';
+import { getCurrentLocation } from './services/locationService';
+import { getWeatherData } from './services/weatherService';
 
 function App() {
   const { itemsByCategory, loading } = useWardrobe();
@@ -17,12 +19,47 @@ function App() {
   const [selection, setSelection] = useState<OutfitSelection>({});
   const [anchorItem, setAnchorItem] = useState<WardrobeItem | null>(null);
   const [showRandomOutfit, setShowRandomOutfit] = useState(false);
+  
+  // Weather state
+  const [weatherForecast, setWeatherForecast] = useState<WeatherData[]>([]);
+  const [weatherLoading, setWeatherLoading] = useState(false);
+  const [weatherError, setWeatherError] = useState<WeatherError | null>(null);
 
-  // Register service worker for PWA
+  // Register service worker for PWA and load weather data
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js');
     }
+    
+    // Load weather data
+    const loadWeatherData = async () => {
+      setWeatherLoading(true);
+      setWeatherError(null);
+      
+      try {
+        const location = await getCurrentLocation();
+        if (location.granted) {
+          const forecast = await getWeatherData(location.latitude, location.longitude);
+          setWeatherForecast(forecast);
+        } else {
+          setWeatherError({
+            code: 'LOCATION_ERROR',
+            message: 'Location access denied',
+            details: location.error
+          });
+        }
+      } catch (error) {
+        setWeatherError({
+          code: 'API_ERROR',
+          message: 'Failed to load weather data',
+          details: error instanceof Error ? error.message : 'Unknown error'
+        });
+      } finally {
+        setWeatherLoading(false);
+      }
+    };
+    
+    loadWeatherData();
   }, []);
 
   const handleItemSelect = (item: WardrobeItem) => {
@@ -108,6 +145,9 @@ function App() {
       <TopBar 
         onRandomize={handleRandomize}
         onTitleClick={handleTitleClick}
+        weatherForecast={weatherForecast}
+        weatherLoading={weatherLoading}
+        weatherError={weatherError}
       />
       
       <AnchorRow 
