@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Tag, Eye, Plus } from 'lucide-react';
+import { Search, Tag } from 'lucide-react';
 import { WardrobeItem, Category, CapsuleTag } from '../types';
 
 interface ItemsGridProps {
@@ -7,7 +7,6 @@ interface ItemsGridProps {
   items: WardrobeItem[];
   selectedItem?: WardrobeItem;
   onItemSelect: (item: WardrobeItem) => void;
-  onShowOutfits?: (item: WardrobeItem) => void;
 }
 
 const capsuleTags: CapsuleTag[] = ['Refined', 'Adventurer', 'Crossover', 'Shorts'];
@@ -16,8 +15,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
   category, 
   items, 
   selectedItem, 
-  onItemSelect,
-  onShowOutfits
+  onItemSelect
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<Set<CapsuleTag>>(new Set());
@@ -81,13 +79,23 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
         {filteredItems.map(item => (
           <div
             key={item.id}
-            className={`p-4 rounded-xl border-2 transition-all min-h-[140px] ${
+            onClick={() => onItemSelect(item)}
+            className={`p-4 rounded-xl border-2 transition-all min-h-[80px] cursor-pointer ${
               selectedItem?.id === item.id
                 ? 'border-slate-800 bg-slate-50 shadow-sm'
                 : 'border-stone-200 bg-white hover:border-slate-300 hover:shadow-md'
             }`}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onItemSelect(item);
+              }
+            }}
+            aria-label={`Select ${item.name} for outfit building`}
           >
-            <div className="text-left mb-3">
+            <div className="text-left">
               <h3 className="font-medium text-slate-800 mb-2 leading-tight">
                 {item.name}
               </h3>
@@ -103,26 +111,6 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
                     </span>
                   ))}
                 </div>
-              )}
-            </div>
-            
-            <div className="flex gap-2">
-              <button
-                onClick={() => onItemSelect(item)}
-                className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-slate-800 text-white text-sm rounded-lg hover:bg-slate-700 transition-colors"
-              >
-                <Plus size={14} />
-                Build From
-              </button>
-              
-              {onShowOutfits && (
-                <button
-                  onClick={() => onShowOutfits(item)}
-                  className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-white text-slate-600 text-sm border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
-                >
-                  <Eye size={14} />
-                  View
-                </button>
               )}
             </div>
           </div>

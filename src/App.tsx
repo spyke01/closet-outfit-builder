@@ -38,9 +38,7 @@ function App() {
     setShowRandomOutfit(false);
   };
 
-  const handleShowOutfitsForItem = (item: WardrobeItem) => {
-    // This function can be removed or simplified since we're not using modals
-  };
+
 
   const handleRandomize = () => {
     const randomOutfit = generateRandomOutfit(selection);
@@ -136,7 +134,6 @@ function App() {
             items={itemsByCategory[selectedCategory]}
             selectedItem={selection[selectedCategory.toLowerCase().replace('/', '') as keyof OutfitSelection] as WardrobeItem}
             onItemSelect={handleItemSelect}
-            onShowOutfits={handleShowOutfitsForItem}
           />
         ) : showRandomOutfit ? (
           <OutfitDisplay 
