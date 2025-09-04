@@ -19,18 +19,18 @@ export const TopBar: React.FC<TopBarProps> = ({
   weatherError = null 
 }) => {
   return (
-    <div className="bg-white border-b border-stone-200 px-6 py-4">
-      <div className="flex items-center justify-between">
+    <div className="bg-white border-b border-stone-200 px-4 sm:px-6 py-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <button 
           onClick={onTitleClick}
-          className="text-2xl font-light text-slate-800 tracking-wide hover:text-slate-600 transition-colors"
+          className="text-xl sm:text-2xl font-light text-slate-800 tracking-wide hover:text-slate-600 transition-colors text-left"
         >
           What to Wear
         </button>
         
-        <div className="flex items-center gap-6">
-          {/* Weather Widget - hidden on small screens, visible on md and up */}
-          <div className="hidden md:block">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+          {/* Weather Widget - show on mobile in stacked layout, inline on larger screens */}
+          <div className="order-2 sm:order-1">
             <WeatherWidget
               forecast={weatherForecast}
               loading={weatherLoading}
@@ -41,10 +41,10 @@ export const TopBar: React.FC<TopBarProps> = ({
           
           <button
             onClick={onRandomize}
-            className="flex items-center gap-2 px-6 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors min-h-[44px] font-medium"
+            className="order-1 sm:order-2 flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors min-h-[44px] font-medium w-full sm:w-auto"
           >
             <Shuffle size={18} />
-            Randomize
+            <span className="sm:inline">Randomize</span>
           </button>
         </div>
       </div>

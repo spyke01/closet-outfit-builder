@@ -22,9 +22,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
   isLocked = false
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -72,14 +70,6 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
 
   const handleToggleOpen = () => {
     if (!disabled && !isLoading) {
-      if (!isOpen && buttonRef.current) {
-        const rect = buttonRef.current.getBoundingClientRect();
-        setDropdownPosition({
-          top: rect.bottom + window.scrollY,
-          left: rect.left + window.scrollX,
-          width: rect.width
-        });
-      }
       setIsOpen(!isOpen);
     }
   };
@@ -89,7 +79,6 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
   return (
     <div className="relative w-full md:flex-shrink-0" ref={dropdownRef}>
       <button
-        ref={buttonRef}
         onClick={handleToggleOpen}
         disabled={disabled || isLoading}
         className={`
@@ -145,15 +134,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
       </button>
 
       {isOpen && !isLoading && (
-        <div 
-          className="fixed bg-white border border-stone-300 rounded-lg shadow-lg z-[9999] max-h-60 overflow-y-auto animate-in fade-in-0 zoom-in-95 duration-200"
-          style={{
-            top: `${dropdownPosition.top + 4}px`,
-            left: `${dropdownPosition.left}px`,
-            width: `${dropdownPosition.width}px`,
-            minWidth: '140px'
-          }}
-        >
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-stone-300 rounded-lg shadow-lg z-[60] max-h-60 overflow-y-auto animate-in fade-in-0 zoom-in-95 duration-200 min-w-[140px]">
           {/* Clear selection option - only show if there's a selected item AND available items */}
           {selectedItem && availableItems.length > 0 && (
             <button

@@ -120,7 +120,7 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
   const displayForecast = forecast.slice(0, 3);
 
   return (
-    <div className={`flex space-x-4 ${className}`}>
+    <div className={`flex space-x-2 sm:space-x-4 ${className}`}>
       {displayForecast.map((day, index) => {
         const IconComponent = getWeatherIcon(day.condition, day.precipitationChance);
         const displayDate = formatDisplayDate(day.date, day.dayOfWeek);
@@ -128,7 +128,7 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
         return (
           <div 
             key={day.date} 
-            className="flex flex-col items-center space-y-1 min-w-0"
+            className="flex flex-col items-center space-y-1 min-w-0 flex-shrink-0"
             role="group"
             aria-label={`Weather for ${day.dayOfWeek}`}
           >
@@ -140,14 +140,14 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
             {/* Weather Icon */}
             <div className="flex items-center justify-center">
               <IconComponent 
-                className="w-5 h-5 text-gray-700" 
+                className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" 
                 aria-label={day.condition}
               />
             </div>
             
             {/* Temperature Range */}
             <div className="flex flex-col items-center space-y-0">
-              <span className="text-sm font-semibold text-gray-900">
+              <span className="text-xs sm:text-sm font-semibold text-gray-900">
                 {Math.round(day.high)}°
               </span>
               <span className="text-xs text-gray-500">

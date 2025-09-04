@@ -141,7 +141,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col">
+    <div className="min-h-screen bg-stone-50 flex flex-col overflow-x-hidden">
       <TopBar 
         onRandomize={handleRandomize}
         onTitleClick={handleTitleClick}
@@ -167,7 +167,7 @@ function App() {
         onOutfitSelect={handleOutfitSelect}
       />
 
-      <div className="flex-1 flex">
+      <div className="flex-1 flex min-h-0">
         {selectedCategory && itemsByCategory[selectedCategory] ? (
           <ItemsGrid
             category={selectedCategory}
@@ -184,13 +184,13 @@ function App() {
           // When an anchor item is selected, don't show "All Outfits" - let SelectionStrip handle it
           <div className="flex-1"></div>
         ) : (
-          <div className="flex-1 p-6">
+          <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
             <div className="max-w-7xl mx-auto">
-              <div className="mb-6">
-                <h2 className="text-2xl font-light text-slate-800 mb-2">All Outfits</h2>
-                <p className="text-slate-600">{getAllOutfits().length} combinations available</p>
+              <div className="mb-4 sm:mb-6">
+                <h2 className="text-xl sm:text-2xl font-light text-slate-800 mb-2">All Outfits</h2>
+                <p className="text-slate-600 text-sm sm:text-base">{getAllOutfits().length} combinations available</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {getAllOutfits().map(outfit => (
                   <OutfitCard
                     key={outfit.id}
@@ -211,8 +211,6 @@ function App() {
           </div>
         )}
       </div>
-
-
     </div>
   );
 }

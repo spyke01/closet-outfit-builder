@@ -177,7 +177,7 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
           </span>
           
           {/* Dropdowns Container - Stacked on mobile, horizontal on tablet+ */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:items-center gap-2 md:gap-3 relative z-50">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:items-center gap-2 md:gap-3">
             {categories.map(({ category, key }) => {
               const selectedItem = selection[key] as WardrobeItem | undefined;
               const availableItems = compatibleItemsCache[category] || [];

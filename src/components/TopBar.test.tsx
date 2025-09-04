@@ -159,7 +159,7 @@ describe('TopBar', () => {
     render(<TopBar {...defaultProps} />);
     
     const weatherWidget = screen.getByTestId('weather-widget');
-    expect(weatherWidget.parentElement).toHaveClass('hidden', 'md:block');
+    expect(weatherWidget.parentElement).toHaveClass('order-2', 'sm:order-1');
   });
 
   it('applies text-sm className to weather widget', () => {
@@ -172,13 +172,13 @@ describe('TopBar', () => {
   it('maintains proper layout with weather widget', () => {
     render(<TopBar {...defaultProps} />);
     
-    // Check that the main container has proper flex layout
+    // Check that the main container has proper responsive flex layout
     const mainContainer = screen.getByRole('button', { name: 'What to Wear' }).parentElement;
-    expect(mainContainer).toHaveClass('flex', 'items-center', 'justify-between');
+    expect(mainContainer).toHaveClass('flex', 'flex-col', 'sm:flex-row', 'sm:items-center', 'sm:justify-between', 'gap-4');
     
-    // Check that the right side container has proper spacing
+    // Check that the right side container has proper responsive spacing
     const rightContainer = screen.getByRole('button', { name: /randomize/i }).parentElement;
-    expect(rightContainer).toHaveClass('flex', 'items-center', 'gap-6');
+    expect(rightContainer).toHaveClass('flex', 'flex-col', 'sm:flex-row', 'sm:items-center', 'gap-4', 'sm:gap-6');
   });
 
   it('ensures randomize button maintains minimum touch target size', () => {

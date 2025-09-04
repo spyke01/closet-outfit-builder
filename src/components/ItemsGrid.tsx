@@ -38,31 +38,34 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
   };
 
   return (
-    <div className="flex-1 p-6">
-      <div className="mb-6">
-        <h2 className="text-xl font-light text-slate-800 mb-4">
+    <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
+      <div className="mb-4 sm:mb-6">
+        <h2 className="text-lg sm:text-xl font-light text-slate-800 mb-4">
           Choose {category}
         </h2>
         
-        <div className="flex items-center gap-4 mb-4">
-          <div className="relative flex-1 max-w-md">
+        {/* Mobile-first responsive controls */}
+        <div className="space-y-3 sm:space-y-4">
+          {/* Search bar - full width on mobile */}
+          <div className="relative w-full">
             <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               placeholder="Search items..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent min-h-[44px]"
             />
           </div>
           
-          <div className="flex items-center gap-2">
-            <Tag size={16} className="text-slate-500" />
+          {/* Filter tags - wrap on mobile */}
+          <div className="flex flex-wrap items-center gap-2">
+            <Tag size={16} className="text-slate-500 flex-shrink-0" />
             {capsuleTags.map(tag => (
               <button
                 key={tag}
                 onClick={() => toggleTag(tag)}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] flex-shrink-0 ${
                   selectedTags.has(tag)
                     ? 'bg-slate-800 text-white'
                     : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
@@ -75,15 +78,16 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {/* Responsive grid - 2 cols on mobile, more on larger screens */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
         {filteredItems.map(item => (
           <div
             key={item.id}
             onClick={() => onItemSelect(item)}
-            className={`p-4 rounded-xl border-2 transition-all min-h-[80px] cursor-pointer ${
+            className={`p-3 sm:p-4 rounded-xl border-2 transition-all min-h-[80px] cursor-pointer touch-manipulation ${
               selectedItem?.id === item.id
                 ? 'border-slate-800 bg-slate-50 shadow-sm'
-                : 'border-stone-200 bg-white hover:border-slate-300 hover:shadow-md'
+                : 'border-stone-200 bg-white hover:border-slate-300 hover:shadow-md active:scale-95'
             }`}
             role="button"
             tabIndex={0}
@@ -96,7 +100,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
             aria-label={`Select ${item.name} for outfit building`}
           >
             <div className="text-left">
-              <h3 className="font-medium text-slate-800 mb-2 leading-tight">
+              <h3 className="font-medium text-slate-800 mb-2 leading-tight text-sm sm:text-base">
                 {item.name}
               </h3>
               
@@ -118,8 +122,8 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
       </div>
 
       {filteredItems.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-slate-500">No items found matching your criteria.</p>
+        <div className="text-center py-8 sm:py-12">
+          <p className="text-slate-500 text-sm sm:text-base">No items found matching your criteria.</p>
         </div>
       )}
     </div>
