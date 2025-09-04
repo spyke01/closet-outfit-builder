@@ -16,12 +16,12 @@ import { getWeatherData } from './services/weatherService';
 function App() {
   const { itemsByCategory, loading } = useWardrobe();
   const { generateRandomOutfit, getAllOutfits } = useOutfitEngine();
-  
+
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [selection, setSelection] = useState<OutfitSelection>({});
   const [anchorItem, setAnchorItem] = useState<WardrobeItem | null>(null);
   const [showRandomOutfit, setShowRandomOutfit] = useState(false);
-  
+
   // Weather state
   const [weatherForecast, setWeatherForecast] = useState<WeatherData[]>([]);
   const [weatherLoading, setWeatherLoading] = useState(false);
@@ -38,10 +38,10 @@ function App() {
 
     setWeatherLoading(true);
     setWeatherError(null);
-    
+
     try {
       const location = await getCurrentLocation();
-      
+
       if (location.granted) {
         setLocationPermissionDenied(false);
         const forecast = await getWeatherData(location.latitude, location.longitude);
@@ -59,10 +59,10 @@ function App() {
       }
     } catch (error) {
       console.error('Weather loading error:', error);
-      
+
       // Handle different types of errors with appropriate user messaging
       let weatherError: WeatherError;
-      
+
       if (error && typeof error === 'object' && 'code' in error) {
         // This is already a WeatherError from our services
         weatherError = error as WeatherError;
@@ -88,9 +88,9 @@ function App() {
           details: 'Unknown error'
         };
       }
-      
+
       setWeatherError(weatherError);
-      
+
       // Increment retry count for rate limiting
       if (isRetry) {
         setWeatherRetryCount(prev => prev + 1);
@@ -114,7 +114,7 @@ function App() {
 
     // Exponential backoff delay
     const delay = Math.pow(2, weatherRetryCount) * 1000; // 1s, 2s, 4s
-    
+
     setTimeout(() => {
       loadWeatherData(true);
     }, delay);
@@ -125,7 +125,7 @@ function App() {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js');
     }
-    
+
     loadWeatherData();
   }, []);
 
@@ -208,86 +208,92 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col overflow-x-hidden">
-      <TopBar 
-        onTitleClick={handleTitleClick}
-        weatherForecast={weatherForecast}
-        weatherLoading={weatherLoading}
-        weatherError={weatherError}
-        onWeatherRetry={retryWeatherData}
-      />
-      
-      <AnchorRow 
-        selectedCategory={selectedCategory}
-        onCategorySelect={(category) => {
-          // Reset selections when starting with a new category
-          setSelection({});
-          setAnchorItem(null);
-          setSelectedCategory(category);
-        }}
-      />
-      
-      <SelectionStrip 
-        selection={selection}
-        anchorItem={anchorItem}
-        onSelectionChange={handleSelectionChange}
-        onOutfitSelect={handleOutfitSelect}
-      />
+    <div className="min-h-screen bg-stone-50 overflow-x-hidden">
+      {/* Fixed Header Container */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-stone-50">
+        <TopBar
+          onTitleClick={handleTitleClick}
+          weatherForecast={weatherForecast}
+          weatherLoading={weatherLoading}
+          weatherError={weatherError}
+          onWeatherRetry={retryWeatherData}
+        />
 
-      <div className="flex-1 flex min-h-0">
-        {selectedCategory && itemsByCategory[selectedCategory] ? (
-          <ItemsGrid
-            category={selectedCategory}
-            items={itemsByCategory[selectedCategory]}
-            selectedItem={selection[selectedCategory.toLowerCase().replace('/', '') as keyof OutfitSelection] as WardrobeItem}
-            onItemSelect={handleItemSelect}
-          />
-        ) : showRandomOutfit ? (
-          <OutfitDisplay 
-            selection={selection}
-            onRandomize={handleRandomize}
-          />
-        ) : anchorItem ? (
-          // When an anchor item is selected, don't show "All Outfits" - let SelectionStrip handle it
-          <div className="flex-1"></div>
-        ) : (
-          <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
-            <div className="max-w-7xl mx-auto">
-              <div className="mb-4 sm:mb-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
-                  <div>
-                    <h2 className="text-xl sm:text-2xl font-light text-slate-800">All Outfits</h2>
+        <AnchorRow
+          selectedCategory={selectedCategory}
+          onCategorySelect={(category) => {
+            // Reset selections when starting with a new category
+            setSelection({});
+            setAnchorItem(null);
+            setSelectedCategory(category);
+          }}
+        />
+      </div>
+
+      {/* Content container with top padding to account for fixed header */}
+      <div className="pt-[234px] md:pt-[210px] flex flex-col min-h-screen">
+        <SelectionStrip
+          selection={selection}
+          anchorItem={anchorItem}
+          onSelectionChange={handleSelectionChange}
+          onOutfitSelect={handleOutfitSelect}
+        />
+
+        <div className="flex-1 flex min-h-0">
+          {selectedCategory && itemsByCategory[selectedCategory] ? (
+            <ItemsGrid
+              category={selectedCategory}
+              items={itemsByCategory[selectedCategory]}
+              selectedItem={selection[selectedCategory.toLowerCase().replace('/', '') as keyof OutfitSelection] as WardrobeItem}
+              onItemSelect={handleItemSelect}
+            />
+          ) : showRandomOutfit ? (
+            <OutfitDisplay
+              selection={selection}
+              onRandomize={handleRandomize}
+            />
+          ) : anchorItem ? (
+            // When an anchor item is selected, don't show "All Outfits" - let SelectionStrip handle it
+            <div className="flex-1"></div>
+          ) : (
+            <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
+              <div className="max-w-7xl mx-auto">
+                <div className="mb-4 sm:mb-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-light text-slate-800">All Outfits</h2>
+                    </div>
+                    <button
+                      onClick={handleRandomize}
+                      className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors min-h-[44px] font-medium w-full sm:w-auto"
+                    >
+                      <Shuffle size={18} />
+                      <span>Choose a Random Outfit</span>
+                    </button>
                   </div>
-                  <button
-                    onClick={handleRandomize}
-                    className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors min-h-[44px] font-medium w-full sm:w-auto"
-                  >
-                    <Shuffle size={18} />
-                    <span>Choose a Random Outfit</span>
-                  </button>
+                  <p className="text-slate-600 text-sm sm:text-base">{getAllOutfits().length} combinations available</p>
                 </div>
-                <p className="text-slate-600 text-sm sm:text-base">{getAllOutfits().length} combinations available</p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                {getAllOutfits().map(outfit => (
-                  <OutfitCard
-                    key={outfit.id}
-                    outfit={outfit}
-                    variant="compact"
-                    showScore={true}
-                    showSource={true}
-                    onClick={() => handleOutfitSelect(outfit)}
-                  />
-                ))}
-              </div>
-              {getAllOutfits().length === 0 && (
-                <div className="text-center py-12">
-                  <p className="text-slate-500">No outfits available.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                  {getAllOutfits().map(outfit => (
+                    <OutfitCard
+                      key={outfit.id}
+                      outfit={outfit}
+                      variant="compact"
+                      showScore={true}
+                      showSource={true}
+                      onClick={() => handleOutfitSelect(outfit)}
+                    />
+                  ))}
                 </div>
-              )}
+                {getAllOutfits().length === 0 && (
+                  <div className="text-center py-12">
+                    <p className="text-slate-500">No outfits available.</p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <ScrollToTop />
