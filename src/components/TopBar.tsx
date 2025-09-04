@@ -19,7 +19,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 }) => {
   return (
     <div className="bg-white border-b border-stone-200 px-4 sm:px-6 py-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-row items-center justify-between gap-4">
         <button 
           onClick={onTitleClick}
           className="hover:opacity-80 transition-opacity"
