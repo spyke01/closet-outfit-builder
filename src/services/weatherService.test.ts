@@ -8,13 +8,16 @@ import {
   getWeatherDataWithFallback, 
   getFallbackWeatherData,
   checkWeatherServiceStatus,
-  clearWeatherCache 
+  clearWeatherCache,
+  getCachedWeatherData,
+  prefetchWeatherData,
+  getWeatherCacheStats
 } from './weatherService';
 import { WeatherError } from '../types';
 
 // Mock fetch globally
 const mockFetch = vi.fn();
-global.fetch = mockFetch;
+(global as any).fetch = mockFetch;
 
 describe('Weather Service Error Handling', () => {
   beforeEach(() => {
@@ -205,6 +208,198 @@ describe('Weather Service Error Handling', () => {
       // Should return cached data despite API failure
       const secondResult = await getWeatherData(40.7128, -74.0060);
       expect(secondResult).toEqual(firstResult);
+    });
+  });
+
+  describe('Cache Management Functions', () => {
+    it('should return cached data when available and valid', async () => {
+      // First, populate cache
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          current: { temperature: 70, condition: 'Clear', icon: '01d' },
+          forecast: [
+            {
+              date: '2024-01-01',
+              temperature: { high: 75, low: 60 },
+              condition: 'Sunny',
+              icon: '01d',
+              precipitationProbability: 0
+            }
+          ]
+        })
+      });
+
+      await getWeatherData(40.7128, -74.0060);
+
+      // Should return cached data
+      const cachedData = getCachedWeatherData(40.7128, -74.0060);
+      expect(cachedData).not.toBeNull();
+      expect(cachedData).toHaveLength(1);
+      expect(cachedData![0].condition).toBe('Sunny');
+    });
+
+    it('should return null for non-existent cache data', () => {
+      const cachedData = getCachedWeatherData(0, 0);
+      expect(cachedData).toBeNull();
+    });
+
+    it('should provide cache statistics', async () => {
+      // Populate cache with data
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          current: { temperature: 70, condition: 'Clear', icon: '01d' },
+          forecast: [
+            {
+              date: '2024-01-01',
+              temperature: { high: 75, low: 60 },
+              condition: 'Sunny',
+              icon: '01d'
+            }
+          ]
+        })
+      });
+
+      await getWeatherData(40.7128, -74.0060);
+
+      const stats = getWeatherCacheStats();
+      expect(stats.totalEntries).toBe(1);
+      expect(stats.validEntries).toBe(1);
+      expect(stats.cacheSize).toBe(1);
+      expect(stats.cacheDurationMs).toBe(30 * 60 * 1000); // 30 minutes
+      expect(stats.oldestEntry).toBeTypeOf('number');
+      expect(stats.newestEntry).toBeTypeOf('number');
+    });
+
+    it('should clear cache completely', async () => {
+      // Populate cache
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          current: { temperature: 70, condition: 'Clear', icon: '01d' },
+          forecast: [{ date: '2024-01-01', temperature: { high: 75, low: 60 }, condition: 'Sunny', icon: '01d' }]
+        })
+      });
+
+      await getWeatherData(40.7128, -74.0060);
+      expect(getWeatherCacheStats().totalEntries).toBe(1);
+
+      clearWeatherCache();
+      expect(getWeatherCacheStats().totalEntries).toBe(0);
+    });
+  });
+
+  describe('Prefetch Functionality', () => {
+    it('should prefetch weather data successfully', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          current: { temperature: 70, condition: 'Clear', icon: '01d' },
+          forecast: [
+            {
+              date: '2024-01-01',
+              temperature: { high: 75, low: 60 },
+              condition: 'Sunny',
+              icon: '01d'
+            }
+          ]
+        })
+      });
+
+      // Should not throw
+      await expect(prefetchWeatherData(40.7128, -74.0060)).resolves.toBeUndefined();
+
+      // Data should be cached
+      const cachedData = getCachedWeatherData(40.7128, -74.0060);
+      expect(cachedData).not.toBeNull();
+    });
+
+    it('should handle prefetch failures silently', async () => {
+      mockFetch.mockRejectedValueOnce(new Error('Network error'));
+
+      // Should not throw even when API fails
+      await expect(prefetchWeatherData(40.7128, -74.0060)).resolves.toBeUndefined();
+
+      // No data should be cached
+      const cachedData = getCachedWeatherData(40.7128, -74.0060);
+      expect(cachedData).toBeNull();
+    });
+  });
+
+  describe('Successful API Response Handling', () => {
+    it('should successfully fetch and transform weather data', async () => {
+      const mockResponse = {
+        current: { temperature: 70, condition: 'Clear', icon: '01d' },
+        forecast: [
+          {
+            date: '2024-01-01',
+            temperature: { high: 75, low: 60 },
+            condition: 'Sunny',
+            icon: '01d',
+            precipitationProbability: 10
+          },
+          {
+            date: '2024-01-02',
+            temperature: { high: 72, low: 58 },
+            condition: 'Partly cloudy',
+            icon: '02d',
+            precipitationProbability: 30
+          }
+        ]
+      };
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse
+      });
+
+      const result = await getWeatherData(40.7128, -74.0060);
+      
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject({
+        date: '2024-01-01',
+        dayOfWeek: 'Sunday', // JavaScript Date parsing returns Sunday for 2024-01-01 in local timezone
+        high: 75,
+        low: 60,
+        condition: 'Sunny',
+        icon: '01d',
+        precipitationChance: 10
+      });
+      expect(result[1]).toMatchObject({
+        date: '2024-01-02',
+        dayOfWeek: 'Monday', // JavaScript Date parsing returns Monday for 2024-01-02 in local timezone
+        high: 72,
+        low: 58,
+        condition: 'Partly cloudy',
+        icon: '02d',
+        precipitationChance: 30
+      });
+    });
+
+    it('should handle forecast data without precipitation probability', async () => {
+      const mockResponse = {
+        current: { temperature: 70, condition: 'Clear', icon: '01d' },
+        forecast: [
+          {
+            date: '2024-01-01',
+            temperature: { high: 75, low: 60 },
+            condition: 'Sunny',
+            icon: '01d'
+            // No precipitationProbability
+          }
+        ]
+      };
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse
+      });
+
+      const result = await getWeatherData(40.7128, -74.0060);
+      
+      expect(result).toHaveLength(1);
+      expect(result[0].precipitationChance).toBeUndefined();
     });
   });
 });

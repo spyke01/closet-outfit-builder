@@ -200,7 +200,7 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
 
   return (
     <div className={`flex space-x-2 sm:space-x-4 ${className}`}>
-      {displayForecast.map((day, index) => {
+      {displayForecast.map((day) => {
         const IconComponent = getWeatherIcon(day.condition, day.precipitationChance);
         const displayDate = formatDisplayDate(day.date, day.dayOfWeek);
         

@@ -44,12 +44,12 @@ describe('Location Service Error Handling', () => {
     vi.clearAllMocks();
     
     // Setup navigator mocks
-    Object.defineProperty(global.navigator, 'geolocation', {
+    Object.defineProperty((global as any).navigator, 'geolocation', {
       value: mockGeolocation,
       writable: true
     });
     
-    Object.defineProperty(global.navigator, 'permissions', {
+    Object.defineProperty((global as any).navigator, 'permissions', {
       value: mockPermissions,
       writable: true
     });
@@ -167,7 +167,7 @@ describe('Location Service Error Handling', () => {
 
     it('should handle missing geolocation support', async () => {
       // Remove geolocation support
-      Object.defineProperty(global.navigator, 'geolocation', {
+      Object.defineProperty((global as any).navigator, 'geolocation', {
         value: undefined,
         writable: true
       });
@@ -198,7 +198,7 @@ describe('Location Service Error Handling', () => {
     });
 
     it('should fallback when permissions API is not available', async () => {
-      Object.defineProperty(global.navigator, 'permissions', {
+      Object.defineProperty((global as any).navigator, 'permissions', {
         value: undefined,
         writable: true
       });
@@ -227,7 +227,7 @@ describe('Location Service Error Handling', () => {
 
   describe('Location Availability Check', () => {
     it('should return false when geolocation is not supported', async () => {
-      Object.defineProperty(global.navigator, 'geolocation', {
+      Object.defineProperty((global as any).navigator, 'geolocation', {
         value: undefined,
         writable: true
       });
@@ -322,6 +322,16 @@ describe('Location Service Error Handling', () => {
       expect(guidance.actions).toContain('Check your internet connection');
     });
 
+    it('should provide guidance for unknown GeolocationPositionError', () => {
+      const unknownError = new MockGeolocationPositionError(999, 'Unknown error');
+
+      const guidance = getLocationErrorGuidance(unknownError);
+      
+      expect(guidance.title).toBe('Location Error');
+      expect(guidance.message).toContain('An unexpected error occurred while getting your location');
+      expect(guidance.actions).toContain('Check that location services are enabled');
+    });
+
     it('should provide guidance for generic errors', () => {
       const genericError = new Error('Generic error');
 
@@ -330,6 +340,87 @@ describe('Location Service Error Handling', () => {
       expect(guidance.title).toBe('Location Service Error');
       expect(guidance.message).toContain('Unable to access location services');
       expect(guidance.actions).toContain('Check that your browser supports location services');
+    });
+  });
+
+  describe('Custom Options Handling', () => {
+    it('should use custom options for getCurrentLocation', async () => {
+      const mockPosition = {
+        coords: { latitude: 40.7128, longitude: -74.0060 }
+      } as GeolocationPosition;
+
+      mockGeolocation.getCurrentPosition.mockImplementation((success) => {
+        success(mockPosition);
+      });
+
+      const customOptions = {
+        enableHighAccuracy: false,
+        timeout: 5000,
+        maximumAge: 600000
+      };
+
+      const result = await getCurrentLocation(customOptions);
+      
+      expect(result.granted).toBe(true);
+      expect(mockGeolocation.getCurrentPosition).toHaveBeenCalledWith(
+        expect.any(Function),
+        expect.any(Function),
+        customOptions
+      );
+    });
+
+    it('should use default options when none provided', async () => {
+      const mockPosition = {
+        coords: { latitude: 40.7128, longitude: -74.0060 }
+      } as GeolocationPosition;
+
+      mockGeolocation.getCurrentPosition.mockImplementation((success) => {
+        success(mockPosition);
+      });
+
+      await getCurrentLocation();
+      
+      expect(mockGeolocation.getCurrentPosition).toHaveBeenCalledWith(
+        expect.any(Function),
+        expect.any(Function),
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000
+        }
+      );
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('should handle permission check failure gracefully', async () => {
+      mockPermissions.query.mockRejectedValueOnce(new Error('Permission API error'));
+
+      const isDenied = await isLocationPermissionDenied();
+      
+      expect(isDenied).toBe(false); // Should default to false on error
+    });
+
+    it('should handle missing permissions API in isLocationPermissionDenied', async () => {
+      Object.defineProperty((global as any).navigator, 'permissions', {
+        value: undefined,
+        writable: true
+      });
+
+      const isDenied = await isLocationPermissionDenied();
+      
+      expect(isDenied).toBe(false);
+    });
+
+    it('should handle permission denied in fallback scenario', async () => {
+      mockPermissions.query.mockResolvedValueOnce({ state: 'denied' });
+
+      const result = await getLocationWithFallback();
+      
+      expect(result.granted).toBe(false);
+      expect(result.error).toContain('Location permission denied');
+      expect(result.latitude).toBe(0);
+      expect(result.longitude).toBe(0);
     });
   });
 });

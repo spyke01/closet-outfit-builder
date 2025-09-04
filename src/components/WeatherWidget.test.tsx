@@ -2,7 +2,6 @@
  * Comprehensive tests for WeatherWidget error handling and fallback UI
  */
 
-import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { WeatherWidget } from './WeatherWidget';
@@ -275,6 +274,221 @@ describe('WeatherWidget Error Handling', () => {
       );
       
       expect(container.firstChild).toHaveClass('custom-loading-class');
+    });
+  });
+
+  describe('Weather Icon Mapping', () => {
+    it('should display correct icons for different weather conditions', () => {
+      const weatherConditions: WeatherData[] = [
+        {
+          date: '2024-01-01',
+          dayOfWeek: 'Monday',
+          high: 75,
+          low: 60,
+          condition: 'Sunny',
+          icon: '01d'
+        },
+        {
+          date: '2024-01-02',
+          dayOfWeek: 'Tuesday',
+          high: 70,
+          low: 55,
+          condition: 'Rainy',
+          icon: '10d',
+          precipitationChance: 90
+        },
+        {
+          date: '2024-01-03',
+          dayOfWeek: 'Wednesday',
+          high: 65,
+          low: 50,
+          condition: 'Snow',
+          icon: '13d',
+          precipitationChance: 80
+        }
+      ];
+
+      render(<WeatherWidget forecast={weatherConditions} />);
+      
+      // Check that weather conditions are displayed
+      expect(screen.getByLabelText('Sunny')).toBeInTheDocument();
+      expect(screen.getByLabelText('Rainy')).toBeInTheDocument();
+      expect(screen.getByLabelText('Snow')).toBeInTheDocument();
+    });
+
+    it('should handle thunderstorm conditions', () => {
+      const thunderstormForecast: WeatherData[] = [
+        {
+          date: '2024-01-01',
+          dayOfWeek: 'Monday',
+          high: 75,
+          low: 60,
+          condition: 'Thunderstorm',
+          icon: '11d',
+          precipitationChance: 95
+        }
+      ];
+
+      render(<WeatherWidget forecast={thunderstormForecast} />);
+      
+      expect(screen.getByLabelText('Thunderstorm')).toBeInTheDocument();
+      expect(screen.getByText('95%')).toBeInTheDocument();
+    });
+
+    it('should handle cloudy conditions', () => {
+      const cloudyForecast: WeatherData[] = [
+        {
+          date: '2024-01-01',
+          dayOfWeek: 'Monday',
+          high: 70,
+          low: 55,
+          condition: 'Overcast',
+          icon: '04d'
+        }
+      ];
+
+      render(<WeatherWidget forecast={cloudyForecast} />);
+      
+      expect(screen.getByLabelText('Overcast')).toBeInTheDocument();
+    });
+  });
+
+  describe('Temperature Display', () => {
+    it('should round temperatures to nearest integer', () => {
+      const forecastWithDecimals: WeatherData[] = [
+        {
+          date: '2024-01-01',
+          dayOfWeek: 'Monday',
+          high: 75.7,
+          low: 59.3,
+          condition: 'Sunny',
+          icon: '01d'
+        }
+      ];
+
+      render(<WeatherWidget forecast={forecastWithDecimals} />);
+      
+      expect(screen.getByText('76°')).toBeInTheDocument(); // 75.7 rounded up
+      expect(screen.getByText('59°')).toBeInTheDocument(); // 59.3 rounded down
+    });
+
+    it('should handle negative temperatures', () => {
+      const coldForecast: WeatherData[] = [
+        {
+          date: '2024-01-01',
+          dayOfWeek: 'Monday',
+          high: 10,
+          low: -5,
+          condition: 'Snow',
+          icon: '13d'
+        }
+      ];
+
+      render(<WeatherWidget forecast={coldForecast} />);
+      
+      expect(screen.getByText('10°')).toBeInTheDocument();
+      expect(screen.getByText('-5°')).toBeInTheDocument();
+    });
+  });
+
+  describe('Date Formatting', () => {
+    it('should format dates correctly across month boundaries', () => {
+      const crossMonthForecast: WeatherData[] = [
+        {
+          date: '2024-01-31',
+          dayOfWeek: 'Wednesday',
+          high: 70,
+          low: 55,
+          condition: 'Sunny',
+          icon: '01d'
+        },
+        {
+          date: '2024-02-01',
+          dayOfWeek: 'Thursday',
+          high: 68,
+          low: 52,
+          condition: 'Cloudy',
+          icon: '03d'
+        }
+      ];
+
+      render(<WeatherWidget forecast={crossMonthForecast} />);
+      
+      expect(screen.getByText('Wed 1/31')).toBeInTheDocument();
+      expect(screen.getByText('Thu 2/1')).toBeInTheDocument();
+    });
+
+    it('should handle year boundaries correctly', () => {
+      const newYearForecast: WeatherData[] = [
+        {
+          date: '2024-12-31',
+          dayOfWeek: 'Tuesday',
+          high: 45,
+          low: 30,
+          condition: 'Clear',
+          icon: '01d'
+        }
+      ];
+
+      render(<WeatherWidget forecast={newYearForecast} />);
+      
+      expect(screen.getByText('Tue 12/31')).toBeInTheDocument();
+    });
+  });
+
+  describe('Precipitation Display Logic', () => {
+    it('should not display 0% precipitation', () => {
+      const noPrecipForecast: WeatherData[] = [
+        {
+          date: '2024-01-01',
+          dayOfWeek: 'Monday',
+          high: 75,
+          low: 60,
+          condition: 'Sunny',
+          icon: '01d',
+          precipitationChance: 0
+        }
+      ];
+
+      render(<WeatherWidget forecast={noPrecipForecast} />);
+      
+      expect(screen.queryByText('0%')).not.toBeInTheDocument();
+    });
+
+    it('should display low precipitation chances', () => {
+      const lowPrecipForecast: WeatherData[] = [
+        {
+          date: '2024-01-01',
+          dayOfWeek: 'Monday',
+          high: 75,
+          low: 60,
+          condition: 'Partly cloudy',
+          icon: '02d',
+          precipitationChance: 5
+        }
+      ];
+
+      render(<WeatherWidget forecast={lowPrecipForecast} />);
+      
+      expect(screen.getByText('5%')).toBeInTheDocument();
+    });
+
+    it('should display high precipitation chances', () => {
+      const highPrecipForecast: WeatherData[] = [
+        {
+          date: '2024-01-01',
+          dayOfWeek: 'Monday',
+          high: 65,
+          low: 50,
+          condition: 'Heavy rain',
+          icon: '10d',
+          precipitationChance: 100
+        }
+      ];
+
+      render(<WeatherWidget forecast={highPrecipForecast} />);
+      
+      expect(screen.getByText('100%')).toBeInTheDocument();
     });
   });
 });
