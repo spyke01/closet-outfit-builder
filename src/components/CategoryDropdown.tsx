@@ -113,7 +113,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
             <span className="text-xs sm:text-sm text-slate-500">
               {availableItems.length === 0 
                 ? 'No items' 
-                : 'Select'
+                : `Select ${category}`
               }
             </span>
           )}
