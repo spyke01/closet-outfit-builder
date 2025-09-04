@@ -108,7 +108,6 @@ function App() {
     <div className="min-h-screen bg-stone-50 flex flex-col">
       <TopBar 
         onRandomize={handleRandomize}
-        onShowAll={handleShowAll}
         onTitleClick={handleTitleClick}
       />
       
