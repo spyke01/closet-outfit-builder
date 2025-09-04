@@ -6,6 +6,7 @@ import { SelectionStrip } from './components/SelectionStrip';
 import { ItemsGrid } from './components/ItemsGrid';
 import { OutfitDisplay } from './components/OutfitDisplay';
 import { OutfitCard } from './components/OutfitCard';
+import { ScrollToTop } from './components/ScrollToTop';
 import { useWardrobe } from './hooks/useWardrobe';
 import { useOutfitEngine } from './hooks/useOutfitEngine';
 import { Category, OutfitSelection, WardrobeItem, GeneratedOutfit, categoryToKey, WeatherData, WeatherError } from './types';
@@ -288,6 +289,8 @@ function App() {
           </div>
         )}
       </div>
+
+      <ScrollToTop />
     </div>
   );
 }
