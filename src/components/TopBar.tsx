@@ -25,9 +25,13 @@ export const TopBar: React.FC<TopBarProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <button 
           onClick={onTitleClick}
-          className="text-xl sm:text-2xl font-light text-slate-800 tracking-wide hover:text-slate-600 transition-colors text-left"
+          className="hover:opacity-80 transition-opacity"
         >
-          What to Wear
+          <img 
+            src="/what-to-wear-logo.svg" 
+            alt="What to Wear" 
+            className="h-8 sm:h-10 w-auto"
+          />
         </button>
         
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
