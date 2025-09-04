@@ -10,7 +10,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "verify:local": "node scripts/verify-deployment.js",
+    "verify:production": "SITE_URL=https://your-app.netlify.app node scripts/verify-deployment.js"
   },
   "dependencies": {
     "lucide-react": "^0.344.0",

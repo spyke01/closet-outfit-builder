@@ -75,8 +75,7 @@ netlify/
 
 - Node.js (version 18 or higher)
 - npm or yarn package manager
-- Google Cloud Platform account (for weather integration)
-- OpenWeatherMap API account (for weather data)
+- API keys for weather integration (see [NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md) for setup)
 
 ### Local Development Setup
 
@@ -124,125 +123,21 @@ The application will be available at:
 - `npm test` - Run tests in watch mode
 - `npm run test:run` - Run tests once
 
-## Weather Integration Setup
+## Weather Integration
 
-### Google Cloud Platform Configuration
+The app provides location-based weather forecasts using Google Maps Geocoding API and OpenWeatherMap API. Weather data is securely accessed through Netlify Functions.
 
-1. **Create a Google Cloud Project:**
-   - Go to [Google Cloud Console](https://console.cloud.google.com/)
-   - Create a new project or select an existing one
-   - Enable billing for the project
-
-2. **Enable Required APIs:**
-   ```bash
-   # Enable Google Maps Geocoding API
-   gcloud services enable geocoding-backend.googleapis.com
-   
-   # Or enable via the console:
-   # - Go to APIs & Services > Library
-   # - Search for "Geocoding API" and enable it
-   ```
-
-3. **Create API Credentials:**
-   - Go to APIs & Services > Credentials
-   - Click "Create Credentials" > "API Key"
-   - Copy the generated API key
-
-4. **Configure Domain Restrictions (Security):**
-   - Click on your API key to edit it
-   - Under "Application restrictions", select "HTTP referrers"
-   - Add your domains:
-     ```
-     http://localhost:8888/*
-     https://your-netlify-site.netlify.app/*
-     https://your-custom-domain.com/*
-     ```
-
-### OpenWeatherMap API Setup
-
-1. **Create Account:**
-   - Go to [OpenWeatherMap](https://openweathermap.org/api)
-   - Sign up for a free account
-
-2. **Get API Key:**
-   - Go to your account dashboard
-   - Copy your API key from the "API keys" tab
-   - Note: Free tier includes 1,000 calls/day
-
-3. **API Endpoints Used:**
-   - Current Weather API (free tier)
-   - 5-day Weather Forecast (free tier)
-   - One Call API 3.0 (paid tier, optional)
-
-4. **API Fallback Strategy:**
-   The weather service automatically tries these APIs in order:
-   - **One Call API 3.0** (if you have a subscription): Provides current weather + 8-day daily forecast
-   - **Free Tier APIs** (fallback): Uses Current Weather + 5-Day Forecast APIs when One Call API is unavailable
-
-### Environment Variables
-
-Create a `.env.local` file in your project root:
+### Quick Setup
 
 ```bash
-# Google Maps API Key (for geocoding location data)
-GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
+# Copy environment template and add your API keys
+cp .env.example .env.local
 
-# OpenWeatherMap API Key (for weather data)
-OPENWEATHER_API_KEY=your_openweathermap_api_key_here
+# Start development with weather functions
+npm run dev:netlify
 ```
 
-**Important Security Notes:**
-- Never commit `.env.local` to version control (already in `.gitignore`)
-- Use different API keys for development vs production
-- Configure domain restrictions in Google Cloud Console
-- API keys are accessed server-side via Netlify Functions to keep them secure
-
-## Netlify Functions Deployment
-
-### Local Development
-
-The Netlify Functions are automatically available when using `npm run dev:netlify`:
-
-- Weather API: `http://localhost:8888/api/weather?lat=40.7128&lon=-74.0060`
-- Geocoding API: `http://localhost:8888/api/geocoding?address=New York, NY`
-
-### Production Deployment
-
-1. **Set Environment Variables in Netlify:**
-   - Go to your Netlify site dashboard
-   - Navigate to Site Settings > Environment Variables
-   - Add the following variables:
-     ```
-     GOOGLE_MAPS_API_KEY=your_production_google_maps_api_key
-     OPENWEATHER_API_KEY=your_production_openweathermap_api_key
-     ```
-
-2. **Deploy Configuration:**
-   The `netlify.toml` file is already configured with:
-   - Build settings for the React app
-   - Function directory configuration
-   - API endpoint redirects
-   - Node.js version specification
-
-3. **Function Endpoints:**
-   - Weather: `https://your-site.netlify.app/api/weather`
-   - Geocoding: `https://your-site.netlify.app/api/geocoding`
-
-### Function Features
-
-**Weather Function (`/api/weather`):**
-- Rate limiting (10 requests/minute per IP)
-- Coordinate validation
-- Fallback from One Call API to free tier APIs
-- Comprehensive error handling
-- CORS support
-
-**Geocoding Function (`/api/geocoding`):**
-- Rate limiting (20 requests/minute per IP)
-- Input sanitization
-- Forward and reverse geocoding support
-- Google API error handling
-- CORS support
+For complete API setup and production deployment, see [NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md).
 
 ## Data Structure
 
@@ -330,21 +225,18 @@ The weather service (`src/services/weatherService.ts`) provides:
 - Caching and retry logic for improved reliability
 - Error handling for various failure scenarios
 
-### Testing Weather Features
+### Testing
 
 ```bash
-# Run all tests including weather integration
+# Run all tests
 npm test
 
-# Run specific weather-related tests
+# Run tests once
+npm run test:run
+
+# Test specific features
 npm test -- --grep "weather"
 npm test -- --grep "WeatherWidget"
-
-# Test Netlify Functions locally
-npm run dev:netlify
-# Then test endpoints:
-# http://localhost:8888/api/weather?lat=40.7128&lon=-74.0060
-# http://localhost:8888/api/geocoding?address=New York, NY
 ```
 
 ### Customizing Styles
@@ -373,78 +265,37 @@ This creates an optimized build in the `dist/` directory with:
 
 ## Deployment
 
-### Netlify Deployment
+For complete deployment instructions and production setup:
 
-1. **Connect Repository:**
-   - Link your Git repository to Netlify
-   - Set build command: `npm run build`
-   - Set publish directory: `dist`
+- **[NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md)** - Comprehensive deployment guide with API setup, security configuration, and testing
+- **[PRODUCTION_CHECKLIST.md](./PRODUCTION_CHECKLIST.md)** - Step-by-step checklist to ensure proper deployment
 
-2. **Configure Environment Variables:**
-   ```
-   GOOGLE_MAPS_API_KEY=your_production_api_key
-   OPENWEATHER_API_KEY=your_production_api_key
-   ```
-
-3. **Domain Configuration:**
-   - Update Google Cloud Console API restrictions with your production domain
-   - Test weather functionality after deployment
-
-### Manual Deployment
+### Quick Deploy
 
 ```bash
 # Build for production
 npm run build
 
-# Deploy dist/ directory to your hosting service
-# Ensure Netlify Functions are supported or use alternative backend
+# Test deployment locally
+npm run verify:local
 ```
 
 ## Troubleshooting
 
-### Weather Integration Issues
+For detailed troubleshooting guides, see:
+- **[NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md)** - Deployment and API configuration issues
+- **[PRODUCTION_CHECKLIST.md](./PRODUCTION_CHECKLIST.md)** - Production environment troubleshooting
 
-**Location Permission Denied:**
-- The app gracefully degrades to show outfits without weather context
-- Users can manually refresh to retry location access
+### Common Development Issues
 
-**API Key Errors:**
-- Verify API keys are correctly set in environment variables
-- Check Google Cloud Console for API quotas and billing
-- Ensure domain restrictions match your deployment URL
-
-**Weather Data Not Loading:**
-- Check browser console for network errors
-- Verify Netlify Functions are deployed and accessible
-- Test API endpoints directly: `/api/weather?lat=40.7128&lon=-74.0060`
-
-### Mobile Responsiveness Issues
-
-**Horizontal Scrolling:**
-- Ensure viewport meta tag is present in `index.html`
-- Check SelectionStrip component for overflow issues
-- Verify touch target sizes meet 44px minimum
-
-**Layout Problems:**
-- Test on actual devices, not just browser dev tools
-- Check Tailwind responsive classes are applied correctly
-- Verify CSS Grid and Flexbox implementations
-
-### Development Issues
-
-**Netlify Functions Not Working Locally:**
+**Functions Not Working Locally:**
 ```bash
-# Install Netlify CLI globally
-npm install -g netlify-cli
-
-# Start development with functions
-npm run dev:netlify
+npm run dev:netlify  # Use this instead of npm run dev
 ```
 
-**Environment Variables Not Loading:**
-- Ensure `.env.local` exists and has correct format
-- Restart development server after changing environment variables
-- Check that variables are prefixed correctly for client/server usage
+**Environment Variables:**
+- Copy `.env.example` to `.env.local` and add your API keys
+- Restart dev server after changing environment variables
 
 ## PWA Features
 
@@ -454,19 +305,7 @@ The application includes:
 - Responsive design optimized for mobile devices
 - Caching strategies for improved performance
 
-## API Rate Limits
 
-**OpenWeatherMap (Free Tier):**
-- 1,000 calls/day
-- 60 calls/minute
-
-**Google Maps Geocoding:**
-- $5.00 per 1,000 requests (after free tier)
-- Rate limiting implemented in functions
-
-**Function-Level Rate Limiting:**
-- Weather API: 10 requests/minute per IP
-- Geocoding API: 20 requests/minute per IP
 
 ## Contributing
 
@@ -474,8 +313,9 @@ The application includes:
 2. Create a feature branch
 3. Make your changes following the mobile-first approach
 4. Run linting and ensure all tests pass
-5. Test weather integration with actual API keys
-6. Submit a pull request with detailed description
+5. Submit a pull request with detailed description
+
+For development setup including weather integration, see [NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md).
 
 ## License
 

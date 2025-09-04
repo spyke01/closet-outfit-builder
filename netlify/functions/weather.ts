@@ -24,6 +24,36 @@ interface OpenWeatherOneCallResponse {
   }>;
 }
 
+interface OpenWeatherCurrentResponse {
+  main: {
+    temp: number;
+    temp_max: number;
+    temp_min: number;
+  };
+  weather: Array<{
+    main: string;
+    description: string;
+    icon: string;
+  }>;
+}
+
+interface OpenWeatherForecastResponse {
+  list: Array<{
+    dt: number;
+    main: {
+      temp: number;
+      temp_max: number;
+      temp_min: number;
+    };
+    weather: Array<{
+      main: string;
+      description: string;
+      icon: string;
+    }>;
+    pop: number;
+  }>;
+}
+
 interface WeatherResponse {
   current: {
     temperature: number;
@@ -195,8 +225,8 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
       }
       
       const [currentData, forecastData] = await Promise.all([
-        currentResponse.json(),
-        forecastResponse.json()
+        currentResponse.json() as Promise<OpenWeatherCurrentResponse>,
+        forecastResponse.json() as Promise<OpenWeatherForecastResponse>
       ]);
       
       // Transform free tier response to our format
