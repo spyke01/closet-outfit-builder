@@ -4,20 +4,19 @@ import { AnchorRow } from './components/AnchorRow';
 import { SelectionStrip } from './components/SelectionStrip';
 import { ItemsGrid } from './components/ItemsGrid';
 import { OutfitDisplay } from './components/OutfitDisplay';
-import { ResultsPanel } from './components/ResultsPanel';
+import { OutfitCard } from './components/OutfitCard';
 import { useWardrobe } from './hooks/useWardrobe';
 import { useOutfitEngine } from './hooks/useOutfitEngine';
 import { Category, OutfitSelection, WardrobeItem, GeneratedOutfit, categoryToKey } from './types';
 
 function App() {
   const { itemsByCategory, loading } = useWardrobe();
-  const { generateRandomOutfit, getOutfitsForAnchor, getAllOutfits } = useOutfitEngine();
+  const { generateRandomOutfit, getAllOutfits } = useOutfitEngine();
   
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [selection, setSelection] = useState<OutfitSelection>({});
-  const [showResults, setShowResults] = useState(false);
   const [anchorItem, setAnchorItem] = useState<WardrobeItem | null>(null);
-  const [viewedItem, setViewedItem] = useState<WardrobeItem | null>(null);
+  const [showRandomOutfit, setShowRandomOutfit] = useState(false);
 
   // Register service worker for PWA
   useEffect(() => {
@@ -36,12 +35,11 @@ function App() {
     setAnchorItem(item);
     // After selecting an item, go back to outfit display
     setSelectedCategory(null);
+    setShowRandomOutfit(false);
   };
 
   const handleShowOutfitsForItem = (item: WardrobeItem) => {
-    // Set the viewed item for the modal, but don't set as anchor
-    setViewedItem(item);
-    setShowResults(true);
+    // This function can be removed or simplified since we're not using modals
   };
 
   const handleRandomize = () => {
@@ -56,14 +54,14 @@ function App() {
         watch: randomOutfit.watch,
         tuck: randomOutfit.tuck
       });
+      // Show the random outfit in a separate view
+      setShowRandomOutfit(true);
+      setSelectedCategory(null);
+      setAnchorItem(null);
     }
   };
 
-  const handleShowAll = () => {
-    // Show all outfits without setting a specific viewed item
-    setViewedItem(null);
-    setShowResults(true);
-  };
+
 
   const handleSelectionChange = (category: Category, item: WardrobeItem | null) => {
     const key = categoryToKey(category);
@@ -83,14 +81,17 @@ function App() {
       watch: outfit.watch,
       tuck: outfit.tuck
     });
+    // Show the selected outfit in detail view
+    setShowRandomOutfit(true);
+    setAnchorItem(null);
+    setSelectedCategory(null);
   };
 
   const handleTitleClick = () => {
     setSelectedCategory(null);
     setSelection({});
-    setShowResults(false);
     setAnchorItem(null);
-    setViewedItem(null);
+    setShowRandomOutfit(false);
   };
 
   if (loading) {
@@ -137,23 +138,44 @@ function App() {
             onItemSelect={handleItemSelect}
             onShowOutfits={handleShowOutfitsForItem}
           />
-        ) : (
+        ) : showRandomOutfit ? (
           <OutfitDisplay 
             selection={selection}
             onRandomize={handleRandomize}
           />
+        ) : anchorItem ? (
+          // When an anchor item is selected, don't show "All Outfits" - let SelectionStrip handle it
+          <div className="flex-1"></div>
+        ) : (
+          <div className="flex-1 p-6">
+            <div className="max-w-7xl mx-auto">
+              <div className="mb-6">
+                <h2 className="text-2xl font-light text-slate-800 mb-2">All Outfits</h2>
+                <p className="text-slate-600">{getAllOutfits().length} combinations available</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {getAllOutfits().map(outfit => (
+                  <OutfitCard
+                    key={outfit.id}
+                    outfit={outfit}
+                    variant="compact"
+                    showScore={true}
+                    showSource={true}
+                    onClick={() => handleOutfitSelect(outfit)}
+                  />
+                ))}
+              </div>
+              {getAllOutfits().length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-slate-500">No outfits available.</p>
+                </div>
+              )}
+            </div>
+          </div>
         )}
       </div>
 
-      <ResultsPanel
-        isOpen={showResults}
-        onClose={() => {
-          setShowResults(false);
-          setViewedItem(null);
-        }}
-        outfits={viewedItem ? getOutfitsForAnchor(viewedItem) : getAllOutfits()}
-        anchorItemName={viewedItem?.name}
-      />
+
     </div>
   );
 }

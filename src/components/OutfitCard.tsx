@@ -78,7 +78,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                     <div className="flex items-center justify-center gap-6 mb-4">
                         <div>
                             <h3 className="text-2xl font-light text-slate-800 mb-2">
-                                Your Random Outfit
+                                Your Curated Outfit
                             </h3>
                             <p className="text-slate-600">
                                 A carefully composed outfit ready to wear
