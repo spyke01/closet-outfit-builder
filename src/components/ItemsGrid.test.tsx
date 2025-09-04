@@ -158,6 +158,30 @@ describe('ItemsGrid', () => {
     });
   });
 
+  describe('Direct Click Interaction Verification', () => {
+    it('should only have direct click interaction on item containers', () => {
+      render(<ItemsGrid {...defaultProps} />);
+      
+      // Get all buttons in the component
+      const allButtons = screen.getAllByRole('button');
+      
+      // Filter out the tag filter buttons and search-related buttons
+      const itemButtons = allButtons.filter(button => {
+        const buttonText = button.textContent?.toLowerCase() || '';
+        return !['refined', 'adventurer', 'crossover', 'shorts'].includes(buttonText) &&
+               !buttonText.includes('search');
+      });
+      
+      // Each item should be a single clickable button (the container itself)
+      expect(itemButtons).toHaveLength(mockItems.length);
+      
+      // Verify each button has the correct aria-label for item selection
+      itemButtons.forEach((button, index) => {
+        expect(button).toHaveAttribute('aria-label', `Select ${mockItems[index].name} for outfit building`);
+      });
+    });
+  });
+
   describe('Filtered Items Interaction', () => {
     it('should maintain click functionality on filtered items', () => {
       render(<ItemsGrid {...defaultProps} />);
