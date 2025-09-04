@@ -139,28 +139,28 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
   }, [debouncedSelection, anchorItem, getCompatibleItems]);
 
   return (
-    <div className="bg-white border-b border-stone-200 px-6 py-4 sticky top-0 z-10">
-      <div className="space-y-4 relative">
+    <div className="bg-white border-b border-stone-200 px-3 sm:px-6 py-3 sm:py-4 sticky top-0 z-10">
+      <div className="space-y-3 sm:space-y-4 relative">
         {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3" role="alert">
+          <div className="bg-red-50 border border-red-200 rounded-lg px-3 sm:px-4 py-2 sm:py-3" role="alert">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="h-4 w-4 sm:h-5 sm:w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
               </div>
-              <div className="ml-3">
-                <p className="text-sm text-red-800">{error}</p>
+              <div className="ml-2 sm:ml-3">
+                <p className="text-xs sm:text-sm text-red-800">{error}</p>
               </div>
-              <div className="ml-auto pl-3">
+              <div className="ml-auto pl-2 sm:pl-3">
                 <button
                   onClick={() => setError(null)}
-                  className="inline-flex text-red-400 hover:text-red-600"
+                  className="inline-flex text-red-400 hover:text-red-600 min-h-[44px] min-w-[44px] items-center justify-center sm:min-h-0 sm:min-w-0"
                   aria-label="Dismiss error message"
                 >
                   <span className="sr-only">Dismiss</span>
-                  <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                   </svg>
                 </button>
@@ -169,13 +169,15 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
           </div>
         )}
 
-        {/* Category Dropdowns */}
-        <div className="flex items-center gap-4 overflow-x-auto" style={{ overflowY: 'visible' }}>
-          <span className="text-sm font-medium text-slate-600 whitespace-nowrap">
+        {/* Category Dropdowns - Mobile-First Responsive */}
+        <div className="space-y-3 md:space-y-0">
+          {/* Label */}
+          <span className="block text-xs sm:text-sm font-medium text-slate-600">
             {anchorItem ? `Building from ${anchorItem.name}:` : 'Build Outfit:'}
           </span>
           
-          <div className="flex items-center gap-3 relative z-50">
+          {/* Dropdowns Container - Stacked on mobile, horizontal on tablet+ */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:items-center gap-2 md:gap-3 relative z-50">
             {categories.map(({ category, key }) => {
               const selectedItem = selection[key] as WardrobeItem | undefined;
               const availableItems = compatibleItemsCache[category] || [];

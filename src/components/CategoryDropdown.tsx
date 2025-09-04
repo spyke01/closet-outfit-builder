@@ -87,56 +87,57 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
 
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative w-full md:flex-shrink-0" ref={dropdownRef}>
       <button
         ref={buttonRef}
         onClick={handleToggleOpen}
         disabled={disabled || isLoading}
         className={`
-          flex items-center justify-between min-w-[140px] px-3 py-2 
+          flex items-center justify-between w-full md:min-w-[140px] 
+          min-h-[44px] px-3 py-2 
           bg-white border border-stone-300 rounded-lg text-left
-          transition-colors duration-200
+          transition-colors duration-200 touch-manipulation
           ${disabled || isLoading
             ? 'opacity-50 cursor-not-allowed bg-stone-50' 
-            : 'hover:border-stone-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+            : 'hover:border-stone-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 active:bg-stone-50'
           }
         `}
       >
-        <div className="flex items-center gap-2 flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
           {isLoading ? (
             <>
-              <div className="w-3 h-3 rounded-full bg-stone-200 animate-pulse flex-shrink-0" />
-              <span className="text-sm text-slate-500">Loading...</span>
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-stone-200 animate-pulse flex-shrink-0" />
+              <span className="text-xs sm:text-sm text-slate-500">Loading...</span>
             </>
           ) : selectedItem ? (
             <>
               <div 
-                className="w-3 h-3 rounded-full border border-stone-300 flex-shrink-0 transition-all duration-200 hover:scale-110"
+                className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border border-stone-300 flex-shrink-0 transition-all duration-200 hover:scale-110"
                 style={{ backgroundColor: getColorIndicator(selectedItem) }}
               />
-              <span className={`text-sm font-medium truncate ${isLocked ? 'text-slate-600' : 'text-slate-800'}`}>
+              <span className={`text-xs sm:text-sm font-medium truncate ${isLocked ? 'text-slate-600' : 'text-slate-800'}`}>
                 {selectedItem.name}
-                {isLocked && <span className="ml-1 text-xs text-slate-500">(Anchor)</span>}
+                {isLocked && <span className="ml-1 text-xs text-slate-500 hidden sm:inline">(Anchor)</span>}
               </span>
             </>
           ) : (
-            <span className="text-sm text-slate-500">
+            <span className="text-xs sm:text-sm text-slate-500">
               {availableItems.length === 0 
-                ? 'No compatible items' 
-                : 'Select One'
+                ? 'No items' 
+                : 'Select'
               }
             </span>
           )}
         </div>
         {isLocked ? (
           <Lock 
-            size={14} 
-            className="text-slate-400 flex-shrink-0 ml-1" 
+            size={12} 
+            className="text-slate-400 flex-shrink-0 ml-1 sm:size-[14px]" 
           />
         ) : (
           <ChevronDown 
-            size={16} 
-            className={`text-slate-400 transition-transform duration-200 flex-shrink-0 ml-1 ${
+            size={14} 
+            className={`text-slate-400 transition-transform duration-200 flex-shrink-0 ml-1 sm:size-4 ${
               isOpen ? 'rotate-180' : ''
             }`} 
           />
@@ -157,7 +158,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
           {selectedItem && availableItems.length > 0 && (
             <button
               onClick={() => handleItemSelect(null)}
-              className="w-full px-3 py-2 text-left text-sm text-slate-500 hover:bg-stone-50 border-b border-stone-100 transition-colors duration-150"
+              className="w-full px-2 sm:px-3 py-3 sm:py-2 text-left text-xs sm:text-sm text-slate-500 hover:bg-stone-50 border-b border-stone-100 transition-colors duration-150 min-h-[44px] sm:min-h-0 flex items-center touch-manipulation"
             >
               Select One
             </button>
@@ -165,7 +166,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
           
           {/* Available items */}
           {availableItems.length === 0 ? (
-            <div className="px-3 py-2 text-sm text-slate-500 italic">
+            <div className="px-2 sm:px-3 py-3 sm:py-2 text-xs sm:text-sm text-slate-500 italic min-h-[44px] sm:min-h-0 flex items-center">
               No compatible items
             </div>
           ) : (
@@ -174,9 +175,9 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
                 key={item.id}
                 onClick={() => handleItemSelect(item)}
                 className={`
-                  w-full px-3 py-2 text-left text-sm hover:bg-stone-50 
-                  flex items-center gap-2 transition-all duration-150
-                  hover:translate-x-1 hover:shadow-sm
+                  w-full px-2 sm:px-3 py-3 sm:py-2 text-left text-xs sm:text-sm hover:bg-stone-50 
+                  flex items-center gap-1.5 sm:gap-2 transition-all duration-150
+                  hover:translate-x-1 hover:shadow-sm min-h-[44px] sm:min-h-0 touch-manipulation
                   ${selectedItem?.id === item.id ? 'bg-blue-50 text-blue-800 border-l-2 border-blue-400' : 'text-slate-800'}
                 `}
                 style={{
@@ -185,7 +186,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
                 }}
               >
                 <div 
-                  className="w-3 h-3 rounded-full border border-stone-300 flex-shrink-0 transition-transform duration-150 hover:scale-110"
+                  className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border border-stone-300 flex-shrink-0 transition-transform duration-150 hover:scale-110"
                   style={{ backgroundColor: getColorIndicator(item) }}
                 />
                 <span className="truncate">{item.name}</span>
