@@ -1,17 +1,20 @@
 /**
  * WeatherWidget component for displaying 3-day weather forecast
  * Shows high/low temperatures, dates, weather icons, and precipitation chances
+ * Includes comprehensive error handling and graceful degradation
  */
 
 import React from 'react';
 import { WeatherData, WeatherError } from '../types';
-import { Cloud, CloudRain, Sun, CloudSnow, Zap, CloudDrizzle, Loader2, AlertCircle } from 'lucide-react';
+import { Cloud, CloudRain, Sun, CloudSnow, Zap, CloudDrizzle, Loader2, AlertCircle, MapPin, RefreshCw } from 'lucide-react';
 
 interface WeatherWidgetProps {
   forecast: WeatherData[];
   loading?: boolean;
   error?: WeatherError | null;
   className?: string;
+  onRetry?: () => void;
+  showFallback?: boolean;
 }
 
 /**
@@ -78,13 +81,55 @@ const formatDisplayDate = (dateString: string, dayOfWeek: string): string => {
 };
 
 /**
- * WeatherWidget component displaying 3-day forecast
+ * Gets user-friendly error message based on error type
+ * @param error - WeatherError object
+ * @returns User-friendly error message
+ */
+const getErrorMessage = (error: WeatherError): string => {
+  switch (error.code) {
+    case 'LOCATION_ERROR':
+      return 'Location needed for weather';
+    case 'RATE_LIMIT':
+      return 'Weather service busy';
+    case 'UNAUTHORIZED':
+      return 'Weather service unavailable';
+    case 'NETWORK_ERROR':
+      return 'Connection issue';
+    case 'API_ERROR':
+    default:
+      return 'Weather unavailable';
+  }
+};
+
+/**
+ * Gets appropriate icon for error type
+ * @param error - WeatherError object
+ * @returns Lucide icon component
+ */
+const getErrorIcon = (error: WeatherError) => {
+  switch (error.code) {
+    case 'LOCATION_ERROR':
+      return MapPin;
+    case 'RATE_LIMIT':
+    case 'NETWORK_ERROR':
+      return RefreshCw;
+    case 'UNAUTHORIZED':
+    case 'API_ERROR':
+    default:
+      return AlertCircle;
+  }
+};
+
+/**
+ * WeatherWidget component displaying 3-day forecast with comprehensive error handling
  */
 export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
   forecast,
   loading = false,
   error = null,
-  className = ''
+  className = '',
+  onRetry,
+  showFallback = true
 }) => {
   // Loading state
   if (loading) {
@@ -96,22 +141,56 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
     );
   }
 
-  // Error state
+  // Error state with enhanced messaging and retry option
   if (error) {
+    const ErrorIcon = getErrorIcon(error);
+    const errorMessage = getErrorMessage(error);
+    const canRetry = error.code === 'NETWORK_ERROR' || error.code === 'RATE_LIMIT';
+    
     return (
-      <div className={`flex items-center space-x-2 text-red-600 ${className}`}>
-        <AlertCircle className="w-4 h-4" />
-        <span className="text-sm">Weather unavailable</span>
+      <div className={`flex items-center space-x-2 ${className}`}>
+        <ErrorIcon className={`w-4 h-4 ${
+          error.code === 'LOCATION_ERROR' ? 'text-blue-500' : 
+          canRetry ? 'text-orange-500' : 'text-red-500'
+        }`} />
+        <span className={`text-sm ${
+          error.code === 'LOCATION_ERROR' ? 'text-blue-600' : 
+          canRetry ? 'text-orange-600' : 'text-red-600'
+        }`}>
+          {errorMessage}
+        </span>
+        {canRetry && onRetry && (
+          <button
+            onClick={onRetry}
+            className="text-xs text-blue-600 hover:text-blue-800 underline ml-1"
+            aria-label="Retry loading weather"
+          >
+            Retry
+          </button>
+        )}
       </div>
     );
   }
 
-  // No forecast data
+  // No forecast data - show fallback if enabled
   if (!forecast || forecast.length === 0) {
+    if (!showFallback) {
+      return null;
+    }
+    
     return (
       <div className={`flex items-center space-x-2 text-gray-500 ${className}`}>
         <Cloud className="w-4 h-4" />
-        <span className="text-sm">No weather data</span>
+        <span className="text-sm">Weather data unavailable</span>
+        {onRetry && (
+          <button
+            onClick={onRetry}
+            className="text-xs text-blue-600 hover:text-blue-800 underline ml-1"
+            aria-label="Retry loading weather"
+          >
+            Retry
+          </button>
+        )}
       </div>
     );
   }

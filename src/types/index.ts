@@ -152,9 +152,11 @@ export interface WeatherWidgetProps {
 
 // Weather service error types
 export interface WeatherError {
-  code: 'API_ERROR' | 'NETWORK_ERROR' | 'LOCATION_ERROR' | 'RATE_LIMIT' | 'UNAUTHORIZED';
+  code: 'API_ERROR' | 'NETWORK_ERROR' | 'LOCATION_ERROR' | 'RATE_LIMIT' | 'UNAUTHORIZED' | 'TIMEOUT' | 'SERVICE_UNAVAILABLE';
   message: string;
   details?: string;
+  retryAfter?: number; // Seconds to wait before retrying
+  canRetry?: boolean; // Whether this error type supports retry
 }
 
 // Combined weather and location state
@@ -163,4 +165,14 @@ export interface WeatherState {
   loading: boolean;
   error: WeatherError | null;
   lastUpdated?: Date;
+  retryCount?: number;
+  isFallback?: boolean; // Whether data is fallback/generic data
+}
+
+// Weather service status
+export interface WeatherServiceStatus {
+  available: boolean;
+  error?: WeatherError;
+  lastChecked: Date;
+  nextRetryAt?: Date;
 }

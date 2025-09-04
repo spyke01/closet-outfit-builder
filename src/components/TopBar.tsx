@@ -9,6 +9,7 @@ interface TopBarProps {
   weatherForecast?: WeatherData[];
   weatherLoading?: boolean;
   weatherError?: WeatherError | null;
+  onWeatherRetry?: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({ 
@@ -16,7 +17,8 @@ export const TopBar: React.FC<TopBarProps> = ({
   onTitleClick, 
   weatherForecast = [], 
   weatherLoading = false, 
-  weatherError = null 
+  weatherError = null,
+  onWeatherRetry
 }) => {
   return (
     <div className="bg-white border-b border-stone-200 px-4 sm:px-6 py-4">
@@ -35,6 +37,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               forecast={weatherForecast}
               loading={weatherLoading}
               error={weatherError}
+              onRetry={onWeatherRetry}
               className="text-sm"
             />
           </div>

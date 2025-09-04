@@ -84,7 +84,7 @@ export const requestLocationPermission = async (): Promise<PermissionState> => {
 };
 
 /**
- * Maps GeolocationPositionError to our custom LocationError format
+ * Maps GeolocationPositionError to our custom LocationError format with enhanced messaging
  * @param error - The GeolocationPositionError from the browser
  * @returns LocationError with user-friendly message and type
  */
@@ -93,25 +93,25 @@ const mapGeolocationError = (error: GeolocationPositionError): LocationError => 
     case error.PERMISSION_DENIED:
       return {
         code: error.code,
-        message: 'Location access denied. Please enable location permissions to see weather information.',
+        message: 'Location access denied. To see weather information, please:\n1. Click the location icon in your browser\'s address bar\n2. Select "Allow" for location access\n3. Refresh the page',
         type: 'permission_denied'
       };
     case error.POSITION_UNAVAILABLE:
       return {
         code: error.code,
-        message: 'Location information is unavailable. Please check your device settings.',
+        message: 'Your location could not be determined. Please check that:\n• Location services are enabled on your device\n• You have a stable internet connection\n• GPS or Wi-Fi positioning is available',
         type: 'position_unavailable'
       };
     case error.TIMEOUT:
       return {
         code: error.code,
-        message: 'Location request timed out. Please try again.',
+        message: 'Location request timed out. This may be due to:\n• Weak GPS signal\n• Slow internet connection\n• Device location services being slow to respond',
         type: 'timeout'
       };
     default:
       return {
         code: error.code,
-        message: 'An unknown error occurred while getting your location.',
+        message: 'Unable to access your location. Please ensure location services are enabled and try again.',
         type: 'not_supported'
       };
   }
@@ -147,4 +147,89 @@ export const getLocationWithFallback = async (): Promise<LocationData> => {
   }
 
   return getCurrentLocation();
+};
+
+/**
+ * Checks if location permission has been explicitly denied by the user
+ * @returns Promise resolving to boolean indicating if permission is denied
+ */
+export const isLocationPermissionDenied = async (): Promise<boolean> => {
+  if (!navigator.permissions) {
+    // Fallback: assume not denied if we can't check
+    return false;
+  }
+
+  try {
+    const permission = await navigator.permissions.query({ name: 'geolocation' });
+    return permission.state === 'denied';
+  } catch (error) {
+    console.warn('Could not check geolocation permission status:', error);
+    return false;
+  }
+};
+
+/**
+ * Gets detailed location error information for user guidance
+ * @param error - GeolocationPositionError or generic error
+ * @returns Detailed error information with user guidance
+ */
+export const getLocationErrorGuidance = (error: GeolocationPositionError | Error): {
+  title: string;
+  message: string;
+  actions: string[];
+} => {
+  if (error instanceof GeolocationPositionError) {
+    switch (error.code) {
+      case error.PERMISSION_DENIED:
+        return {
+          title: 'Location Access Denied',
+          message: 'Weather information requires location access to show relevant forecasts.',
+          actions: [
+            'Click the location icon in your browser\'s address bar',
+            'Select "Allow" for location access',
+            'Refresh the page to load weather data'
+          ]
+        };
+      case error.POSITION_UNAVAILABLE:
+        return {
+          title: 'Location Unavailable',
+          message: 'Your device location could not be determined.',
+          actions: [
+            'Check that location services are enabled on your device',
+            'Ensure you have a stable internet connection',
+            'Try moving to an area with better GPS or Wi-Fi signal'
+          ]
+        };
+      case error.TIMEOUT:
+        return {
+          title: 'Location Request Timed Out',
+          message: 'It took too long to get your location.',
+          actions: [
+            'Check your internet connection',
+            'Move to an area with better GPS signal',
+            'Try again in a few moments'
+          ]
+        };
+      default:
+        return {
+          title: 'Location Error',
+          message: 'An unexpected error occurred while getting your location.',
+          actions: [
+            'Check that location services are enabled',
+            'Refresh the page and try again',
+            'Contact support if the problem persists'
+          ]
+        };
+    }
+  }
+
+  return {
+    title: 'Location Service Error',
+    message: 'Unable to access location services.',
+    actions: [
+      'Check that your browser supports location services',
+      'Ensure location services are enabled',
+      'Try refreshing the page'
+    ]
+  };
 };

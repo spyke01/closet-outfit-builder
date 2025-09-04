@@ -1,255 +1,335 @@
+/**
+ * Comprehensive tests for location service error handling
+ */
+
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-  getCurrentLocation,
-  requestLocationPermission,
+import { 
+  getCurrentLocation, 
+  requestLocationPermission, 
   isLocationAvailable,
   getLocationWithFallback,
-  type LocationData
+  isLocationPermissionDenied,
+  getLocationErrorGuidance
 } from './locationService';
 
-// Mock the navigator.geolocation API
+// Mock navigator.geolocation
 const mockGeolocation = {
   getCurrentPosition: vi.fn(),
   watchPosition: vi.fn(),
   clearWatch: vi.fn()
 };
 
+// Mock navigator.permissions
 const mockPermissions = {
   query: vi.fn()
 };
 
-// Mock navigator
-Object.defineProperty(global, 'navigator', {
-  value: {
-    geolocation: mockGeolocation,
-    permissions: mockPermissions
-  },
-  writable: true
-});
+// Mock GeolocationPositionError class for testing
+class MockGeolocationPositionError extends Error implements GeolocationPositionError {
+  readonly PERMISSION_DENIED = 1;
+  readonly POSITION_UNAVAILABLE = 2;
+  readonly TIMEOUT = 3;
+  
+  constructor(public code: number, message: string) {
+    super(message);
+    this.name = 'GeolocationPositionError';
+  }
+}
 
-describe('locationService', () => {
+// Make it available globally for the tests
+(global as any).GeolocationPositionError = MockGeolocationPositionError;
+
+describe('Location Service Error Handling', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    
+    // Setup navigator mocks
+    Object.defineProperty(global.navigator, 'geolocation', {
+      value: mockGeolocation,
+      writable: true
+    });
+    
+    Object.defineProperty(global.navigator, 'permissions', {
+      value: mockPermissions,
+      writable: true
+    });
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  describe('getCurrentLocation', () => {
-    it('should return location data when geolocation succeeds', async () => {
-      const mockPosition = {
-        coords: {
-          latitude: 37.7749,
-          longitude: -122.4194
-        }
-      };
-
-      mockGeolocation.getCurrentPosition.mockImplementation((success) => {
-        success(mockPosition);
-      });
-
-      const result = await getCurrentLocation();
-
-      expect(result).toEqual({
-        latitude: 37.7749,
-        longitude: -122.4194,
-        granted: true
-      });
-    });
-
+  describe('getCurrentLocation Error Handling', () => {
     it('should handle permission denied error', async () => {
       const mockError = {
         code: 1, // PERMISSION_DENIED
-        message: 'User denied the request for Geolocation.',
+        message: 'User denied geolocation',
         PERMISSION_DENIED: 1,
         POSITION_UNAVAILABLE: 2,
         TIMEOUT: 3
-      };
+      } as GeolocationPositionError;
 
       mockGeolocation.getCurrentPosition.mockImplementation((success, error) => {
         error(mockError);
       });
 
       const result = await getCurrentLocation();
-
-      expect(result).toEqual({
-        latitude: 0,
-        longitude: 0,
-        granted: false,
-        error: 'Location access denied. Please enable location permissions to see weather information.'
-      });
+      
+      expect(result.granted).toBe(false);
+      expect(result.error).toContain('Location access denied');
+      expect(result.error).toContain('Click the location icon');
     });
 
     it('should handle position unavailable error', async () => {
       const mockError = {
         code: 2, // POSITION_UNAVAILABLE
-        message: 'Position unavailable.',
+        message: 'Position unavailable',
         PERMISSION_DENIED: 1,
         POSITION_UNAVAILABLE: 2,
         TIMEOUT: 3
-      };
+      } as GeolocationPositionError;
 
       mockGeolocation.getCurrentPosition.mockImplementation((success, error) => {
         error(mockError);
       });
 
       const result = await getCurrentLocation();
-
-      expect(result).toEqual({
-        latitude: 0,
-        longitude: 0,
-        granted: false,
-        error: 'Location information is unavailable. Please check your device settings.'
-      });
+      
+      expect(result.granted).toBe(false);
+      expect(result.error).toContain('Your location could not be determined');
+      expect(result.error).toContain('Location services are enabled on your device');
     });
 
     it('should handle timeout error', async () => {
       const mockError = {
         code: 3, // TIMEOUT
-        message: 'Timeout.',
+        message: 'Timeout',
         PERMISSION_DENIED: 1,
         POSITION_UNAVAILABLE: 2,
         TIMEOUT: 3
-      };
+      } as GeolocationPositionError;
 
       mockGeolocation.getCurrentPosition.mockImplementation((success, error) => {
         error(mockError);
       });
 
       const result = await getCurrentLocation();
-
-      expect(result).toEqual({
-        latitude: 0,
-        longitude: 0,
-        granted: false,
-        error: 'Location request timed out. Please try again.'
-      });
+      
+      expect(result.granted).toBe(false);
+      expect(result.error).toContain('Location request timed out');
+      expect(result.error).toContain('Weak GPS signal');
     });
 
-    it('should handle unsupported geolocation', async () => {
-      // Temporarily remove geolocation support
-      const originalGeolocation = global.navigator.geolocation;
-      // @ts-ignore
-      global.navigator.geolocation = undefined;
+    it('should handle unknown error', async () => {
+      const mockError = {
+        code: 999, // Unknown error code
+        message: 'Unknown error',
+        PERMISSION_DENIED: 1,
+        POSITION_UNAVAILABLE: 2,
+        TIMEOUT: 3
+      } as GeolocationPositionError;
 
-      const result = await getCurrentLocation();
-
-      expect(result).toEqual({
-        latitude: 0,
-        longitude: 0,
-        granted: false,
-        error: 'Geolocation is not supported by this browser'
+      mockGeolocation.getCurrentPosition.mockImplementation((success, error) => {
+        error(mockError);
       });
 
-      // Restore geolocation
-      global.navigator.geolocation = originalGeolocation;
+      const result = await getCurrentLocation();
+      
+      expect(result.granted).toBe(false);
+      expect(result.error).toContain('Unable to access your location');
+    });
+
+    it('should handle successful location retrieval', async () => {
+      const mockPosition = {
+        coords: {
+          latitude: 40.7128,
+          longitude: -74.0060,
+          accuracy: 100,
+          altitude: null,
+          altitudeAccuracy: null,
+          heading: null,
+          speed: null
+        },
+        timestamp: Date.now()
+      } as GeolocationPosition;
+
+      mockGeolocation.getCurrentPosition.mockImplementation((success) => {
+        success(mockPosition);
+      });
+
+      const result = await getCurrentLocation();
+      
+      expect(result.granted).toBe(true);
+      expect(result.latitude).toBe(40.7128);
+      expect(result.longitude).toBe(-74.0060);
+      expect(result.error).toBeUndefined();
+    });
+
+    it('should handle missing geolocation support', async () => {
+      // Remove geolocation support
+      Object.defineProperty(global.navigator, 'geolocation', {
+        value: undefined,
+        writable: true
+      });
+
+      const result = await getCurrentLocation();
+      
+      expect(result.granted).toBe(false);
+      expect(result.error).toBe('Geolocation is not supported by this browser');
     });
   });
 
-  describe('requestLocationPermission', () => {
-    it('should return permission state when permissions API is available', async () => {
-      mockPermissions.query.mockResolvedValue({ state: 'granted' });
+  describe('Permission Handling', () => {
+    it('should check permission status when permissions API is available', async () => {
+      mockPermissions.query.mockResolvedValueOnce({ state: 'granted' });
 
-      const result = await requestLocationPermission();
-
-      expect(result).toBe('granted');
+      const permission = await requestLocationPermission();
+      
+      expect(permission).toBe('granted');
       expect(mockPermissions.query).toHaveBeenCalledWith({ name: 'geolocation' });
     });
 
-    it('should fallback to location test when permissions API is not available', async () => {
-      // Temporarily remove permissions API
-      const originalPermissions = global.navigator.permissions;
-      // @ts-ignore
-      global.navigator.permissions = undefined;
+    it('should handle permission denied status', async () => {
+      mockPermissions.query.mockResolvedValueOnce({ state: 'denied' });
+
+      const isDenied = await isLocationPermissionDenied();
+      
+      expect(isDenied).toBe(true);
+    });
+
+    it('should fallback when permissions API is not available', async () => {
+      Object.defineProperty(global.navigator, 'permissions', {
+        value: undefined,
+        writable: true
+      });
 
       const mockPosition = {
-        coords: {
-          latitude: 37.7749,
-          longitude: -122.4194
-        }
-      };
+        coords: { latitude: 40.7128, longitude: -74.0060 }
+      } as GeolocationPosition;
 
       mockGeolocation.getCurrentPosition.mockImplementation((success) => {
         success(mockPosition);
       });
 
-      const result = await requestLocationPermission();
+      const permission = await requestLocationPermission();
+      
+      expect(permission).toBe('granted');
+    });
 
-      expect(result).toBe('granted');
+    it('should handle permissions API query failure', async () => {
+      mockPermissions.query.mockRejectedValueOnce(new Error('Permission query failed'));
 
-      // Restore permissions API
-      global.navigator.permissions = originalPermissions;
+      const permission = await requestLocationPermission();
+      
+      expect(permission).toBe('prompt');
     });
   });
 
-  describe('isLocationAvailable', () => {
-    it('should return true when geolocation is supported and permission is granted', async () => {
-      mockPermissions.query.mockResolvedValue({ state: 'granted' });
-
-      const result = await isLocationAvailable();
-
-      expect(result).toBe(true);
-    });
-
-    it('should return true when geolocation is supported and permission is prompt', async () => {
-      mockPermissions.query.mockResolvedValue({ state: 'prompt' });
-
-      const result = await isLocationAvailable();
-
-      expect(result).toBe(true);
-    });
-
+  describe('Location Availability Check', () => {
     it('should return false when geolocation is not supported', async () => {
-      // Temporarily remove geolocation support
-      const originalGeolocation = global.navigator.geolocation;
-      // @ts-ignore
-      global.navigator.geolocation = undefined;
+      Object.defineProperty(global.navigator, 'geolocation', {
+        value: undefined,
+        writable: true
+      });
 
-      const result = await isLocationAvailable();
+      const available = await isLocationAvailable();
+      
+      expect(available).toBe(false);
+    });
 
-      expect(result).toBe(false);
+    it('should return true when permission is granted', async () => {
+      mockPermissions.query.mockResolvedValueOnce({ state: 'granted' });
 
-      // Restore geolocation
-      global.navigator.geolocation = originalGeolocation;
+      const available = await isLocationAvailable();
+      
+      expect(available).toBe(true);
+    });
+
+    it('should return true when permission is prompt', async () => {
+      mockPermissions.query.mockResolvedValueOnce({ state: 'prompt' });
+
+      const available = await isLocationAvailable();
+      
+      expect(available).toBe(true);
+    });
+
+    it('should return false when permission is denied', async () => {
+      mockPermissions.query.mockResolvedValueOnce({ state: 'denied' });
+
+      const available = await isLocationAvailable();
+      
+      expect(available).toBe(false);
     });
   });
 
-  describe('getLocationWithFallback', () => {
-    it('should return location when permission is granted', async () => {
-      mockPermissions.query.mockResolvedValue({ state: 'granted' });
+  describe('Fallback Handling', () => {
+    it('should return error when permission is denied', async () => {
+      mockPermissions.query.mockResolvedValueOnce({ state: 'denied' });
+
+      const result = await getLocationWithFallback();
+      
+      expect(result.granted).toBe(false);
+      expect(result.error).toContain('Location permission denied');
+    });
+
+    it('should attempt to get location when permission is not denied', async () => {
+      mockPermissions.query.mockResolvedValueOnce({ state: 'granted' });
       
       const mockPosition = {
-        coords: {
-          latitude: 37.7749,
-          longitude: -122.4194
-        }
-      };
+        coords: { latitude: 40.7128, longitude: -74.0060 }
+      } as GeolocationPosition;
 
       mockGeolocation.getCurrentPosition.mockImplementation((success) => {
         success(mockPosition);
       });
 
       const result = await getLocationWithFallback();
+      
+      expect(result.granted).toBe(true);
+      expect(result.latitude).toBe(40.7128);
+      expect(result.longitude).toBe(-74.0060);
+    });
+  });
 
-      expect(result).toEqual({
-        latitude: 37.7749,
-        longitude: -122.4194,
-        granted: true
-      });
+  describe('Error Guidance', () => {
+    it('should provide guidance for permission denied error', () => {
+      const mockError = new MockGeolocationPositionError(1, 'Permission denied');
+
+      const guidance = getLocationErrorGuidance(mockError);
+      
+      expect(guidance.title).toBe('Location Access Denied');
+      expect(guidance.message).toContain('Weather information requires location access');
+      expect(guidance.actions).toContain('Click the location icon in your browser\'s address bar');
     });
 
-    it('should return fallback error when permission is denied', async () => {
-      mockPermissions.query.mockResolvedValue({ state: 'denied' });
+    it('should provide guidance for position unavailable error', () => {
+      const mockError = new MockGeolocationPositionError(2, 'Position unavailable');
 
-      const result = await getLocationWithFallback();
+      const guidance = getLocationErrorGuidance(mockError);
+      
+      expect(guidance.title).toBe('Location Unavailable');
+      expect(guidance.message).toContain('Your device location could not be determined');
+      expect(guidance.actions).toContain('Check that location services are enabled on your device');
+    });
 
-      expect(result).toEqual({
-        latitude: 0,
-        longitude: 0,
-        granted: false,
-        error: 'Location permission denied. Weather information will not be available.'
-      });
+    it('should provide guidance for timeout error', () => {
+      const mockError = new MockGeolocationPositionError(3, 'Timeout');
+
+      const guidance = getLocationErrorGuidance(mockError);
+      
+      expect(guidance.title).toBe('Location Request Timed Out');
+      expect(guidance.message).toContain('It took too long to get your location');
+      expect(guidance.actions).toContain('Check your internet connection');
+    });
+
+    it('should provide guidance for generic errors', () => {
+      const genericError = new Error('Generic error');
+
+      const guidance = getLocationErrorGuidance(genericError);
+      
+      expect(guidance.title).toBe('Location Service Error');
+      expect(guidance.message).toContain('Unable to access location services');
+      expect(guidance.actions).toContain('Check that your browser supports location services');
     });
   });
 });

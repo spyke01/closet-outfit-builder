@@ -24,40 +24,105 @@ function App() {
   const [weatherForecast, setWeatherForecast] = useState<WeatherData[]>([]);
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [weatherError, setWeatherError] = useState<WeatherError | null>(null);
+  const [weatherRetryCount, setWeatherRetryCount] = useState(0);
+  const [locationPermissionDenied, setLocationPermissionDenied] = useState(false);
+
+  // Load weather data with comprehensive error handling
+  const loadWeatherData = async (isRetry = false) => {
+    // Don't retry if location permission was explicitly denied
+    if (locationPermissionDenied && !isRetry) {
+      return;
+    }
+
+    setWeatherLoading(true);
+    setWeatherError(null);
+    
+    try {
+      const location = await getCurrentLocation();
+      
+      if (location.granted) {
+        setLocationPermissionDenied(false);
+        const forecast = await getWeatherData(location.latitude, location.longitude);
+        setWeatherForecast(forecast);
+        setWeatherRetryCount(0); // Reset retry count on success
+      } else {
+        // Handle location permission denied
+        setLocationPermissionDenied(true);
+        const locationError: WeatherError = {
+          code: 'LOCATION_ERROR',
+          message: 'Location access is required to show weather information. Please enable location permissions in your browser settings.',
+          details: location.error
+        };
+        setWeatherError(locationError);
+      }
+    } catch (error) {
+      console.error('Weather loading error:', error);
+      
+      // Handle different types of errors with appropriate user messaging
+      let weatherError: WeatherError;
+      
+      if (error && typeof error === 'object' && 'code' in error) {
+        // This is already a WeatherError from our services
+        weatherError = error as WeatherError;
+      } else if (error instanceof Error) {
+        // Network or other generic errors
+        if (error.message.includes('fetch')) {
+          weatherError = {
+            code: 'NETWORK_ERROR',
+            message: 'Unable to connect to weather service. Please check your internet connection.',
+            details: error.message
+          };
+        } else {
+          weatherError = {
+            code: 'API_ERROR',
+            message: 'Weather service is temporarily unavailable. Please try again later.',
+            details: error.message
+          };
+        }
+      } else {
+        weatherError = {
+          code: 'API_ERROR',
+          message: 'An unexpected error occurred while loading weather data.',
+          details: 'Unknown error'
+        };
+      }
+      
+      setWeatherError(weatherError);
+      
+      // Increment retry count for rate limiting
+      if (isRetry) {
+        setWeatherRetryCount(prev => prev + 1);
+      }
+    } finally {
+      setWeatherLoading(false);
+    }
+  };
+
+  // Retry weather data loading with exponential backoff
+  const retryWeatherData = () => {
+    // Limit retry attempts to prevent spam
+    if (weatherRetryCount >= 3) {
+      setWeatherError({
+        code: 'API_ERROR',
+        message: 'Weather service is currently unavailable. Please try again later.',
+        details: 'Maximum retry attempts exceeded'
+      });
+      return;
+    }
+
+    // Exponential backoff delay
+    const delay = Math.pow(2, weatherRetryCount) * 1000; // 1s, 2s, 4s
+    
+    setTimeout(() => {
+      loadWeatherData(true);
+    }, delay);
+  };
 
   // Register service worker for PWA and load weather data
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js');
     }
-    
-    // Load weather data
-    const loadWeatherData = async () => {
-      setWeatherLoading(true);
-      setWeatherError(null);
-      
-      try {
-        const location = await getCurrentLocation();
-        if (location.granted) {
-          const forecast = await getWeatherData(location.latitude, location.longitude);
-          setWeatherForecast(forecast);
-        } else {
-          setWeatherError({
-            code: 'LOCATION_ERROR',
-            message: 'Location access denied',
-            details: location.error
-          });
-        }
-      } catch (error) {
-        setWeatherError({
-          code: 'API_ERROR',
-          message: 'Failed to load weather data',
-          details: error instanceof Error ? error.message : 'Unknown error'
-        });
-      } finally {
-        setWeatherLoading(false);
-      }
-    };
     
     loadWeatherData();
   }, []);
@@ -148,6 +213,7 @@ function App() {
         weatherForecast={weatherForecast}
         weatherLoading={weatherLoading}
         weatherError={weatherError}
+        onWeatherRetry={retryWeatherData}
       />
       
       <AnchorRow 

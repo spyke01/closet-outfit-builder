@@ -73,7 +73,7 @@ const delay = (attempt: number): Promise<void> => {
 };
 
 /**
- * Makes a request to the weather Netlify function with retry logic
+ * Makes a request to the weather Netlify function with enhanced retry logic and error handling
  * @param lat - Latitude
  * @param lon - Longitude
  * @param attempt - Current attempt number
@@ -85,20 +85,30 @@ const fetchWeatherWithRetry = async (
   attempt: number = 0
 ): Promise<GoogleWeatherResponse> => {
   try {
+    // Create abort controller for timeout handling
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
     const response = await fetch(`/.netlify/functions/weather?lat=${lat}&lon=${lon}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
+      signal: controller.signal
     });
 
+    clearTimeout(timeoutId);
+
     if (!response.ok) {
-      // Handle specific HTTP status codes
+      // Handle specific HTTP status codes with enhanced error messages
       if (response.status === 429) {
+        const retryAfter = response.headers.get('Retry-After');
+        const waitTime = retryAfter ? `Please wait ${retryAfter} seconds before trying again.` : 'Please try again in a few minutes.';
+        
         const error: WeatherError = {
           code: 'RATE_LIMIT',
-          message: 'Weather service rate limit exceeded. Please try again later.',
-          details: `HTTP ${response.status}`
+          message: `Weather service is temporarily busy. ${waitTime}`,
+          details: `HTTP ${response.status}${retryAfter ? `, Retry-After: ${retryAfter}` : ''}`
         };
         throw error;
       }
@@ -106,7 +116,16 @@ const fetchWeatherWithRetry = async (
       if (response.status === 401 || response.status === 403) {
         const error: WeatherError = {
           code: 'UNAUTHORIZED',
-          message: 'Weather service access denied.',
+          message: 'Weather service is temporarily unavailable due to configuration issues.',
+          details: `HTTP ${response.status}`
+        };
+        throw error;
+      }
+
+      if (response.status === 503) {
+        const error: WeatherError = {
+          code: 'API_ERROR',
+          message: 'Weather service is temporarily down for maintenance. Please try again later.',
           details: `HTTP ${response.status}`
         };
         throw error;
@@ -118,10 +137,16 @@ const fetchWeatherWithRetry = async (
       }
 
       // Client errors (4xx) are not retryable
-      const errorData = await response.json().catch(() => ({}));
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = {};
+      }
+      
       const error: WeatherError = {
         code: 'API_ERROR',
-        message: errorData.error || 'Failed to fetch weather data',
+        message: errorData.error || 'Weather service returned an error. Please try again later.',
         details: `HTTP ${response.status}`
       };
       throw error;
@@ -131,6 +156,16 @@ const fetchWeatherWithRetry = async (
     return data as GoogleWeatherResponse;
 
   } catch (error) {
+    // Handle AbortError from timeout
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      const timeoutError: WeatherError = {
+        code: 'NETWORK_ERROR',
+        message: 'Weather request timed out. Please check your internet connection and try again.',
+        details: 'Request timeout after 15 seconds'
+      };
+      throw timeoutError;
+    }
+
     // If this is our custom WeatherError, don't retry
     if (error && typeof error === 'object' && 'code' in error) {
       throw error;
@@ -146,7 +181,7 @@ const fetchWeatherWithRetry = async (
     // All retry attempts exhausted
     const weatherError: WeatherError = {
       code: 'NETWORK_ERROR',
-      message: 'Failed to connect to weather service. Please check your internet connection.',
+      message: 'Unable to connect to weather service after multiple attempts. Please check your internet connection.',
       details: error instanceof Error ? error.message : 'Unknown network error'
     };
     throw weatherError;
@@ -272,4 +307,81 @@ export const getWeatherCacheStats = () => {
     cacheSize: entries.length,
     cacheDurationMs: CACHE_DURATION
   };
+};
+
+/**
+ * Generates fallback weather data when API is unavailable
+ * @returns Array of generic WeatherData for graceful degradation
+ */
+export const getFallbackWeatherData = (): WeatherData[] => {
+  const today = new Date();
+  const fallbackData: WeatherData[] = [];
+  
+  for (let i = 0; i < 3; i++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() + i);
+    
+    fallbackData.push({
+      date: date.toISOString().split('T')[0],
+      dayOfWeek: date.toLocaleDateString('en-US', { weekday: 'long' }),
+      high: 75, // Generic comfortable temperature
+      low: 60,
+      condition: 'Partly cloudy',
+      icon: '02d', // Partly cloudy icon
+      precipitationChance: undefined
+    });
+  }
+  
+  return fallbackData;
+};
+
+/**
+ * Attempts to get weather data with comprehensive fallback handling
+ * @param lat - Latitude
+ * @param lon - Longitude
+ * @param useFallback - Whether to return fallback data on failure
+ * @returns Promise resolving to WeatherData array or fallback data
+ */
+export const getWeatherDataWithFallback = async (
+  lat: number, 
+  lon: number, 
+  useFallback: boolean = true
+): Promise<{ data: WeatherData[]; isFallback: boolean }> => {
+  try {
+    const data = await getWeatherData(lat, lon);
+    return { data, isFallback: false };
+  } catch (error) {
+    console.warn('Weather API failed, using fallback data:', error);
+    
+    if (useFallback) {
+      return { data: getFallbackWeatherData(), isFallback: true };
+    }
+    
+    throw error;
+  }
+};
+
+/**
+ * Checks if weather service is currently experiencing issues
+ * @returns Promise resolving to service status information
+ */
+export const checkWeatherServiceStatus = async (): Promise<{
+  available: boolean;
+  error?: WeatherError;
+  lastChecked: Date;
+}> => {
+  try {
+    // Use a known good location (New York City) for health check
+    await fetchWeatherWithRetry(40.7128, -74.0060, 0);
+    return {
+      available: true,
+      lastChecked: new Date()
+    };
+  } catch (error) {
+    return {
+      available: false,
+      error: error as WeatherError,
+      lastChecked: new Date()
+    };
+  }
 };
