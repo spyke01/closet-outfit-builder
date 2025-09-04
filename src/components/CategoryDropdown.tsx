@@ -84,33 +84,33 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
         className={`
           flex items-center justify-between w-full md:min-w-[140px] 
           min-h-[44px] px-3 py-2 
-          bg-white border border-stone-300 rounded-lg text-left
+          bg-white dark:bg-slate-700 border border-stone-300 dark:border-slate-600 rounded-lg text-left
           transition-colors duration-200 touch-manipulation
           ${disabled || isLoading
-            ? 'opacity-50 cursor-not-allowed bg-stone-50' 
-            : 'hover:border-stone-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 active:bg-stone-50'
+            ? 'opacity-50 cursor-not-allowed bg-stone-50 dark:bg-slate-800' 
+            : 'hover:border-stone-400 dark:hover:border-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 active:bg-stone-50 dark:active:bg-slate-600'
           }
         `}
       >
         <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
           {isLoading ? (
             <>
-              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-stone-200 animate-pulse flex-shrink-0" />
-              <span className="text-xs sm:text-sm text-slate-500">Loading...</span>
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-stone-200 dark:bg-slate-600 animate-pulse flex-shrink-0" />
+              <span className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Loading...</span>
             </>
           ) : selectedItem ? (
             <>
               <div 
-                className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border border-stone-300 flex-shrink-0 transition-all duration-200 hover:scale-110"
+                className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border border-stone-300 dark:border-slate-500 flex-shrink-0 transition-all duration-200 hover:scale-110"
                 style={{ backgroundColor: getColorIndicator(selectedItem) }}
               />
-              <span className={`text-xs sm:text-sm font-medium truncate ${isLocked ? 'text-slate-600' : 'text-slate-800'}`}>
+              <span className={`text-xs sm:text-sm font-medium truncate ${isLocked ? 'text-slate-600 dark:text-slate-400' : 'text-slate-800 dark:text-slate-200'}`}>
                 {selectedItem.name}
-                {isLocked && <span className="ml-1 text-xs text-slate-500 hidden sm:inline">(Anchor)</span>}
+                {isLocked && <span className="ml-1 text-xs text-slate-500 dark:text-slate-400 hidden sm:inline">(Anchor)</span>}
               </span>
             </>
           ) : (
-            <span className="text-xs sm:text-sm text-slate-500">
+            <span className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
               {availableItems.length === 0 
                 ? 'No items' 
                 : `Select ${category}`
@@ -121,12 +121,12 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
         {isLocked ? (
           <Lock 
             size={12} 
-            className="text-slate-400 flex-shrink-0 ml-1 sm:size-[14px]" 
+            className="text-slate-400 dark:text-slate-500 flex-shrink-0 ml-1 sm:size-[14px]" 
           />
         ) : (
           <ChevronDown 
             size={14} 
-            className={`text-slate-400 transition-transform duration-200 flex-shrink-0 ml-1 sm:size-4 ${
+            className={`text-slate-400 dark:text-slate-500 transition-transform duration-200 flex-shrink-0 ml-1 sm:size-4 ${
               isOpen ? 'rotate-180' : ''
             }`} 
           />
@@ -134,12 +134,12 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
       </button>
 
       {isOpen && !isLoading && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-stone-300 rounded-lg shadow-lg z-[60] max-h-60 overflow-y-auto animate-in fade-in-0 zoom-in-95 duration-200 min-w-[140px]">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-slate-700 border border-stone-300 dark:border-slate-600 rounded-lg shadow-lg z-[60] max-h-60 overflow-y-auto animate-in fade-in-0 zoom-in-95 duration-200 min-w-[140px]">
           {/* Clear selection option - only show if there's a selected item AND available items */}
           {selectedItem && availableItems.length > 0 && (
             <button
               onClick={() => handleItemSelect(null)}
-              className="w-full px-2 sm:px-3 py-3 sm:py-2 text-left text-xs sm:text-sm text-slate-500 hover:bg-stone-50 border-b border-stone-100 transition-colors duration-150 min-h-[44px] sm:min-h-0 flex items-center touch-manipulation"
+              className="w-full px-2 sm:px-3 py-3 sm:py-2 text-left text-xs sm:text-sm text-slate-500 dark:text-slate-400 hover:bg-stone-50 dark:hover:bg-slate-600 border-b border-stone-100 dark:border-slate-600 transition-colors duration-150 min-h-[44px] sm:min-h-0 flex items-center touch-manipulation"
             >
               Select One
             </button>
@@ -147,7 +147,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
           
           {/* Available items */}
           {availableItems.length === 0 ? (
-            <div className="px-2 sm:px-3 py-3 sm:py-2 text-xs sm:text-sm text-slate-500 italic min-h-[44px] sm:min-h-0 flex items-center">
+            <div className="px-2 sm:px-3 py-3 sm:py-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 italic min-h-[44px] sm:min-h-0 flex items-center">
               No compatible items
             </div>
           ) : (
@@ -156,10 +156,13 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
                 key={item.id}
                 onClick={() => handleItemSelect(item)}
                 className={`
-                  w-full px-2 sm:px-3 py-3 sm:py-2 text-left text-xs sm:text-sm hover:bg-stone-50 
+                  w-full px-2 sm:px-3 py-3 sm:py-2 text-left text-xs sm:text-sm hover:bg-stone-50 dark:hover:bg-slate-600
                   flex items-center gap-1.5 sm:gap-2 transition-all duration-150
                   hover:translate-x-1 hover:shadow-sm min-h-[44px] sm:min-h-0 touch-manipulation
-                  ${selectedItem?.id === item.id ? 'bg-blue-50 text-blue-800 border-l-2 border-blue-400' : 'text-slate-800'}
+                  ${selectedItem?.id === item.id 
+                    ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 border-l-2 border-blue-400 dark:border-blue-500' 
+                    : 'text-slate-800 dark:text-slate-200'
+                  }
                 `}
                 style={{
                   animationDelay: `${index * 20}ms`,
@@ -167,7 +170,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
                 }}
               >
                 <div 
-                  className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border border-stone-300 flex-shrink-0 transition-transform duration-150 hover:scale-110"
+                  className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border border-stone-300 dark:border-slate-500 flex-shrink-0 transition-transform duration-150 hover:scale-110"
                   style={{ backgroundColor: getColorIndicator(item) }}
                 />
                 <span className="truncate">{item.name}</span>

@@ -7,6 +7,7 @@ import { ItemsGrid } from './components/ItemsGrid';
 import { OutfitDisplay } from './components/OutfitDisplay';
 import { OutfitCard } from './components/OutfitCard';
 import { ScrollToTop } from './components/ScrollToTop';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { useWardrobe } from './hooks/useWardrobe';
 import { useOutfitEngine } from './hooks/useOutfitEngine';
 import { Category, OutfitSelection, WardrobeItem, GeneratedOutfit, categoryToKey, WeatherData, WeatherError } from './types';
@@ -198,19 +199,22 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800 mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading your wardrobe...</p>
+      <ThemeProvider>
+        <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800 dark:border-slate-200 mx-auto mb-4"></div>
+            <p className="text-slate-600 dark:text-slate-300">Loading your wardrobe...</p>
+          </div>
         </div>
-      </div>
+      </ThemeProvider>
     );
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 overflow-x-hidden">
+    <ThemeProvider>
+      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 overflow-x-hidden">
       {/* Fixed Header Container */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-stone-50">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-stone-50 dark:bg-slate-900">
         <TopBar
           onTitleClick={handleTitleClick}
           weatherForecast={weatherForecast}
@@ -261,17 +265,17 @@ function App() {
                 <div className="mb-4 sm:mb-6">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
                     <div>
-                      <h2 className="text-xl sm:text-2xl font-light text-slate-800">All Outfits</h2>
+                      <h2 className="text-xl sm:text-2xl font-light text-slate-800 dark:text-slate-200">All Outfits</h2>
                     </div>
                     <button
                       onClick={handleRandomize}
-                      className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors min-h-[44px] font-medium w-full sm:w-auto"
+                      className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-slate-800 dark:bg-slate-700 text-white rounded-lg hover:bg-slate-700 dark:hover:bg-slate-600 transition-colors min-h-[44px] font-medium w-full sm:w-auto"
                     >
                       <Shuffle size={18} />
                       <span>Choose a Random Outfit</span>
                     </button>
                   </div>
-                  <p className="text-slate-600 text-sm sm:text-base">{getAllOutfits().length} combinations available</p>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base">{getAllOutfits().length} combinations available</p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                   {getAllOutfits().map(outfit => (
@@ -287,7 +291,7 @@ function App() {
                 </div>
                 {getAllOutfits().length === 0 && (
                   <div className="text-center py-12">
-                    <p className="text-slate-500">No outfits available.</p>
+                    <p className="text-slate-500 dark:text-slate-400">No outfits available.</p>
                   </div>
                 )}
               </div>
@@ -297,7 +301,8 @@ function App() {
       </div>
 
       <ScrollToTop />
-    </div>
+      </div>
+    </ThemeProvider>
   );
 }
 

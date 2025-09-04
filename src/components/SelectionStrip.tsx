@@ -139,24 +139,24 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
   }, [debouncedSelection, anchorItem, getCompatibleItems]);
 
   return (
-    <div className="bg-white border-b border-stone-200 px-3 sm:px-6 py-3 sm:py-4">
+    <div className="bg-white dark:bg-slate-800 border-b border-stone-200 dark:border-slate-700 px-3 sm:px-6 py-3 sm:py-4">
       <div className="space-y-3 sm:space-y-4 relative">
         {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg px-3 sm:px-4 py-2 sm:py-3" role="alert">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg px-3 sm:px-4 py-2 sm:py-3" role="alert">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <svg className="h-4 w-4 sm:h-5 sm:w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="h-4 w-4 sm:h-5 sm:w-5 text-red-400 dark:text-red-300" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
               </div>
               <div className="ml-2 sm:ml-3">
-                <p className="text-xs sm:text-sm text-red-800">{error}</p>
+                <p className="text-xs sm:text-sm text-red-800 dark:text-red-200">{error}</p>
               </div>
               <div className="ml-auto pl-2 sm:pl-3">
                 <button
                   onClick={() => setError(null)}
-                  className="inline-flex text-red-400 hover:text-red-600 min-h-[44px] min-w-[44px] items-center justify-center sm:min-h-0 sm:min-w-0"
+                  className="inline-flex text-red-400 dark:text-red-300 hover:text-red-600 dark:hover:text-red-200 min-h-[44px] min-w-[44px] items-center justify-center sm:min-h-0 sm:min-w-0"
                   aria-label="Dismiss error message"
                 >
                   <span className="sr-only">Dismiss</span>
@@ -172,7 +172,7 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
         {/* Category Dropdowns - Mobile-First Responsive */}
         <div className="space-y-3 md:space-y-0">
           {/* Label */}
-          <span className="block text-xs sm:text-sm font-medium text-slate-600">
+          <span className="block text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400">
             {anchorItem ? `Building from ${anchorItem.name}:` : 'Build Outfit:'}
           </span>
           

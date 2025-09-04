@@ -1,5 +1,7 @@
 import React from 'react';
 import { WeatherWidget } from './WeatherWidget';
+import { ThemeToggle } from './ThemeToggle';
+import { Logo } from './Logo';
 import { WeatherData, WeatherError } from '../types';
 
 interface TopBarProps {
@@ -18,26 +20,25 @@ export const TopBar: React.FC<TopBarProps> = ({
   onWeatherRetry
 }) => {
   return (
-    <div className="bg-white border-b border-stone-200 px-4 sm:px-6 py-4">
+    <div className="bg-white dark:bg-slate-800 border-b border-stone-200 dark:border-slate-700 px-4 sm:px-6 py-4">
       <div className="flex flex-row items-center justify-between gap-4">
         <button 
           onClick={onTitleClick}
           className="hover:opacity-80 transition-opacity"
         >
-          <img 
-            src="/what-to-wear-logo.svg" 
-            alt="What to Wear" 
-            className="h-8 sm:h-10 w-auto"
-          />
+          <Logo className="h-8 sm:h-10 w-auto" />
         </button>
         
-        <WeatherWidget
-          forecast={weatherForecast}
-          loading={weatherLoading}
-          error={weatherError}
-          onRetry={onWeatherRetry}
-          className="text-sm"
-        />
+        <div className="flex items-center gap-3">
+          <WeatherWidget
+            forecast={weatherForecast}
+            loading={weatherLoading}
+            error={weatherError}
+            onRetry={onWeatherRetry}
+            className="text-sm"
+          />
+          <ThemeToggle />
+        </div>
       </div>
     </div>
   );

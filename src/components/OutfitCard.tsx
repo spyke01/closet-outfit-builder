@@ -44,7 +44,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                     {label}
                 </span>
                 <div className="flex items-center gap-2">
-                    <span className={`${valueSize} text-slate-800`}>
+                    <span className={`${valueSize} text-slate-800 dark:text-slate-200`}>
                         {value}
                     </span>
                     {showColor && <ColorCircle itemName={value} size={variant === 'detailed' ? 'md' : 'sm'} />}
@@ -71,16 +71,16 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
     if (variant === 'detailed') {
         return (
             <div
-                className={`bg-white rounded-2xl shadow-sm border border-stone-200 p-8 ${className}`}
+                className={`bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-stone-200 dark:border-slate-700 p-8 ${className}`}
                 onClick={onClick}
             >
                 <div className="text-center mb-8">
                     <div className="flex items-center justify-center gap-6 mb-4">
                         <div>
-                            <h3 className="text-2xl font-light text-slate-800 mb-2">
+                            <h3 className="text-2xl font-light text-slate-800 dark:text-slate-200 mb-2">
                                 Your Curated Outfit
                             </h3>
-                            <p className="text-slate-600">
+                            <p className="text-slate-600 dark:text-slate-400">
                                 A carefully composed outfit ready to wear
                             </p>
                         </div>
@@ -90,7 +90,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-4">
-                        <h4 className="text-sm font-semibold text-slate-700 uppercase tracking-wide border-b border-stone-200 pb-2">
+                        <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide border-b border-stone-200 dark:border-slate-600 pb-2">
                             Core Pieces
                         </h4>
                         {coreItems.map(item => (
@@ -105,7 +105,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                     </div>
 
                     <div className="space-y-4">
-                        <h4 className="text-sm font-semibold text-slate-700 uppercase tracking-wide border-b border-stone-200 pb-2">
+                        <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide border-b border-stone-200 dark:border-slate-600 pb-2">
                             Finishing Touches
                         </h4>
                         <ItemRow label="Belt" value={outfit.belt?.name} labelColor="text-slate-600" showColor={true} />
@@ -120,14 +120,14 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
     // Compact variant
     return (
         <div
-            className={`bg-stone-50 rounded-xl p-5 border border-stone-200 hover:shadow-md transition-shadow ${onClick ? 'cursor-pointer' : ''} ${className}`}
+            className={`bg-stone-50 dark:bg-slate-800 rounded-xl p-5 border border-stone-200 dark:border-slate-700 hover:shadow-md transition-shadow ${onClick ? 'cursor-pointer' : ''} ${className}`}
             onClick={onClick}
         >
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                    <Shirt size={16} className="text-slate-600" />
+                    <Shirt size={16} className="text-slate-600 dark:text-slate-400" />
                     {showSource && isGenerated && (
-                        <span className="text-sm font-medium text-slate-800">
+                        <span className="text-sm font-medium text-slate-800 dark:text-slate-200">
                             {outfit.source === 'curated' ? 'Curated' : 'Generated'}
                         </span>
                     )}
@@ -146,7 +146,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                 ))}
 
                 {hasAccessories && (
-                    <div className="border-t border-stone-300 pt-3 mt-3">
+                    <div className="border-t border-stone-300 dark:border-slate-600 pt-3 mt-3">
                         {accessories.map(item => (
                             <ItemRow
                                 key={item.label}
