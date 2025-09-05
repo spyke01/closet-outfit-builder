@@ -134,7 +134,7 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
   // Loading state
   if (loading) {
     return (
-      <div className={`flex items-center space-x-2 text-gray-600 ${className}`}>
+      <div className={`flex items-center space-x-2 text-gray-600 dark:text-gray-400 ${className}`}>
         <Loader2 className="w-4 h-4 animate-spin" />
         <span className="text-sm">Loading weather...</span>
       </div>
@@ -150,19 +150,19 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
     return (
       <div className={`flex items-center space-x-2 ${className}`}>
         <ErrorIcon className={`w-4 h-4 ${
-          error.code === 'LOCATION_ERROR' ? 'text-blue-500' : 
-          canRetry ? 'text-orange-500' : 'text-red-500'
+          error.code === 'LOCATION_ERROR' ? 'text-blue-500 dark:text-blue-400' : 
+          canRetry ? 'text-orange-500 dark:text-orange-400' : 'text-red-500 dark:text-red-400'
         }`} />
         <span className={`text-sm ${
-          error.code === 'LOCATION_ERROR' ? 'text-blue-600' : 
-          canRetry ? 'text-orange-600' : 'text-red-600'
+          error.code === 'LOCATION_ERROR' ? 'text-blue-600 dark:text-blue-400' : 
+          canRetry ? 'text-orange-600 dark:text-orange-400' : 'text-red-600 dark:text-red-400'
         }`}>
           {errorMessage}
         </span>
         {canRetry && onRetry && (
           <button
             onClick={onRetry}
-            className="text-xs text-blue-600 hover:text-blue-800 underline ml-1"
+            className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline ml-1"
             aria-label="Retry loading weather"
           >
             Retry
@@ -179,13 +179,13 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
     }
     
     return (
-      <div className={`flex items-center space-x-2 text-gray-500 ${className}`}>
+      <div className={`flex items-center space-x-2 text-gray-500 dark:text-gray-400 ${className}`}>
         <Cloud className="w-4 h-4" />
         <span className="text-sm">Weather data unavailable</span>
         {onRetry && (
           <button
             onClick={onRetry}
-            className="text-xs text-blue-600 hover:text-blue-800 underline ml-1"
+            className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline ml-1"
             aria-label="Retry loading weather"
           >
             Retry
@@ -212,31 +212,31 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
             aria-label={`Weather for ${day.dayOfWeek}`}
           >
             {/* Date */}
-            <div className="text-xs text-gray-600 font-medium whitespace-nowrap">
+            <div className="text-xs text-gray-600 dark:text-gray-400 font-medium whitespace-nowrap">
               {displayDate}
             </div>
             
             {/* Weather Icon */}
             <div className="flex items-center justify-center">
               <IconComponent 
-                className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" 
+                className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300" 
                 aria-label={day.condition}
               />
             </div>
             
             {/* Temperature Range */}
             <div className="flex flex-col items-center space-y-0">
-              <span className="text-xs sm:text-sm font-semibold text-gray-900">
+              <span className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-100">
                 {Math.round(day.high)}°
               </span>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
                 {Math.round(day.low)}°
               </span>
             </div>
             
             {/* Precipitation Chance */}
             {day.precipitationChance !== undefined && day.precipitationChance > 0 && (
-              <div className="text-xs text-blue-600">
+              <div className="text-xs text-blue-600 dark:text-blue-400">
                 {day.precipitationChance}%
               </div>
             )}
