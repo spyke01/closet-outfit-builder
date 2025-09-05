@@ -170,7 +170,7 @@ describe('OutfitList', () => {
         />
       );
 
-      // Should show score as percentage (85 becomes 100% in ScoreCircle due to maxScore of 60)
+      // Should show score as percentage (85 becomes 100% in ScoreCircle due to maxScore of 85)
       expect(screen.getByText('100%')).toBeInTheDocument();
     });
 

@@ -1,6 +1,7 @@
-import { WardrobeItem, OutfitSelection, GeneratedOutfit, Category, CategoryKey, categoryToKey, keyToCategory } from '../types';
+import { WardrobeItem, OutfitSelection, GeneratedOutfit, Category, categoryToKey } from '../types';
 import { useWardrobe } from './useWardrobe';
 import { useMemo, useCallback } from 'react';
+import { calculateOutfitScore } from '../utils/scoring';
 
 export const useOutfitEngine = () => {
   const { items, outfits, getItemById } = useWardrobe();
@@ -18,39 +19,7 @@ export const useOutfitEngine = () => {
   };
 
   const scoreOutfit = (selection: OutfitSelection): number => {
-    let score = 0;
-
-    // Add formality scores for each item
-    const items = [
-      selection.jacket,
-      selection.shirt,
-      selection.pants,
-      selection.shoes,
-      selection.belt,
-      selection.watch
-    ];
-
-    items.forEach(item => {
-      if (item?.formalityScore) {
-        score += item.formalityScore;
-      }
-    });
-
-    // Bonus for style consistency (items with similar formality levels)
-    const formalityScores = items
-      .filter(item => item?.formalityScore)
-      .map(item => item!.formalityScore!);
-
-    if (formalityScores.length >= 3) {
-      const avgFormality = formalityScores.reduce((a, b) => a + b, 0) / formalityScores.length;
-      const variance = formalityScores.reduce((acc, score) => acc + Math.pow(score - avgFormality, 2), 0) / formalityScores.length;
-
-      // Lower variance = more consistent style = bonus points
-      const consistencyBonus = Math.max(0, 10 - variance);
-      score += consistencyBonus;
-    }
-
-    return Math.round(score);
+    return calculateOutfitScore(selection).percentage;
   };
 
   // Memoize all outfits to avoid recalculating on every render
@@ -78,7 +47,7 @@ export const useOutfitEngine = () => {
         const generatedOutfit = {
           ...selection,
           id: outfit.id,
-          score: scoreOutfit(selection) + (outfit.weight || 1) * 5,
+          score: scoreOutfit(selection),
           source: 'curated' as const
         };
         results.push(generatedOutfit);
@@ -181,7 +150,7 @@ export const useOutfitEngine = () => {
           results.push({
             ...selection,
             id: outfit.id,
-            score: scoreOutfit(selection) + (outfit.weight || 1) * 5,
+            score: scoreOutfit(selection),
             source: 'curated'
           });
         }

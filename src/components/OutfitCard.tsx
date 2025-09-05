@@ -84,7 +84,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                                 A carefully composed outfit ready to wear
                             </p>
                         </div>
-                        {showScore && <ScoreCircle score={score} size="lg" />}
+                        {showScore && <ScoreCircle score={score} size="lg" outfit={outfit} />}
                     </div>
                 </div>
 
@@ -132,7 +132,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                         </span>
                     )}
                 </div>
-                {showScore && <ScoreCircle score={score} size="sm" showLabel={false} />}
+                {showScore && <ScoreCircle score={score} size="sm" showLabel={false} outfit={outfit} />}
             </div>
 
             <div className="space-y-3">

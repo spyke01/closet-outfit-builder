@@ -60,9 +60,9 @@ describe('useOutfitEngine filtering methods', () => {
     vi.mocked(useWardrobe).mockReturnValue({
       items: mockItems,
       outfits: mockOutfits,
+      itemsByCategory: {},
       getItemById: mockGetItemById,
-      categories: ['Jacket/Overshirt', 'Shirt', 'Pants', 'Shoes'],
-      getItemsByCategory: vi.fn()
+      loading: false
     })
   })
 

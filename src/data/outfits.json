@@ -1,74 +1,620 @@
 {
   "outfits": [
-    { "id":"o-001","items":["mac-coat-navy","navy-ribbed-polo","chinos-white","loafers-dark-brown-suede","belt-braided","rolex-panda"],"tuck":"Tucked","weight":2 },
-    { "id":"o-002","items":["mac-coat-navy","blue-ocbd","chinos-light-grey","loafers-dark-brown","belt-clean-brown","omega-300m"],"tuck":"Tucked","weight":2 },
-    { "id":"o-003","items":["shacket-beige","grey-knit-polo","chinos-khaki","loafers-light-tan","belt-braided","panerai-luminor"],"tuck":"Tucked" },
-    { "id":"o-004","items":["camel-crewneck","blue-ocbd","trousers-charcoal","loafers-dark-brown","belt-reversible","rolex-panda"],"tuck":"Tucked" },
-    { "id":"o-005","items":["linen-white","chinos-white","loafers-light-tan","rolex-panda"],"tuck":"Untucked" },
-
-    { "id":"o-006","items":["moto-jacket","tee-cream","denim-dark","apache-boots","belt-rugged","omega-speedmaster"],"tuck":"Tucked" },
-    { "id":"o-007","items":["linen-striped-white-navy","jeans-medium","sneakers-killshots","belt-braided","omega-300m"],"tuck":"Tucked" },
-    { "id":"o-008","items":["moto-jacket","tee-white","chinos-olive","apache-boots","belt-rugged","panerai-luminor"],"tuck":"Tucked" },
-    { "id":"o-009","items":["moto-jacket","grey-henley-knit","chinos-black","apache-boots","belt-rugged","omega-speedmaster"],"tuck":"Untucked" },
-    { "id":"o-010","items":["shacket-olive","tee-white","chinos-navy","sneakers-killshots","belt-braided","rolex-panda"],"tuck":"Tucked" },
-
-    { "id":"o-011","items":["mac-coat-navy","tee-cream","denim-dark","loafers-dark-dress","belt-braided","omega-nttd"],"tuck":"Tucked" },
-    { "id":"o-012","items":["blue-ocbd","chinos-white","apache-boots","belt-rugged","panerai-luminor"],"tuck":"Tucked" },
-
-    { "id":"o-013","items":["rl-featherweight-blue","shorts-navy","sneakers-white-leather","belt-clean-brown","rolex-panda"],"tuck":"Tucked" },
-    { "id":"o-014","items":["shacket-beige","tee-white","shorts-olive","sneakers-killshots","belt-braided","rolex-panda"],"tuck":"Tucked" },
-    { "id":"o-015","items":["linen-striped-white-navy","shorts-white","loafers-light-tan","belt-braided","omega-300m"],"tuck":"Tucked" },
-
-    { "id":"o-016","items":["blue-ocbd","chinos-khaki","loafers-light-tan","belt-braided","omega-300m"],"tuck":"Tucked" },
-    { "id":"o-017","items":["blue-ocbd","denim-dark","loafers-dark-dress","belt-braided","omega-nttd"],"tuck":"Tucked" },
-
-    { "id":"o-018","items":["rl-featherweight-blue","chinos-white","loafers-dark-brown","belt-reversible","rolex-panda"],"tuck":"Tucked" },
-    { "id":"o-019","items":["rl-featherweight-blue","denim-dark","sneakers-killshots","belt-braided","omega-300m"],"tuck":"Tucked" },
-
-    { "id":"o-020","items":["linen-striped-white-navy","chinos-navy","loafers-dark-brown-suede","belt-clean-brown","rolex-panda"],"tuck":"Tucked" },
-    { "id":"o-021","items":["linen-striped-white-navy","chinos-olive","sneakers-white-leather","belt-braided","omega-300m"],"tuck":"Tucked" },
-
-    { "id":"o-022","items":["grey-knit-polo","chinos-white","loafers-dark-brown","belt-clean-brown","rolex-panda"],"tuck":"Tucked" },
-    { "id":"o-023","items":["grey-knit-polo","denim-dark","loafers-dark-dress","belt-braided","omega-nttd"],"tuck":"Tucked" },
-    { "id":"o-024","items":["grey-knit-polo","chinos-khaki","loafers-light-tan","belt-braided","panerai-luminor"],"tuck":"Tucked" },
-    { "id":"o-025","items":["grey-knit-polo","chinos-navy","sneakers-white-leather","belt-braided","omega-300m"],"tuck":"Tucked" },
-
-    { "id":"o-026","items":["moto-jacket","tee-black","chinos-black","apache-boots","belt-rugged","rolex-black"],"tuck":"Tucked" },
-    { "id":"o-027","items":["shacket-olive","tee-cream","chinos-olive","sneakers-killshots","belt-braided","omega-300m"],"tuck":"Tucked" },
-    { "id":"o-028","items":["shacket-beige","tee-navy","denim-dark","loafers-dark-dress","belt-braided","omega-nttd"],"tuck":"Tucked" },
-    { "id":"o-029","items":["tee-grey","chinos-light-grey","loafers-dark-brown","belt-clean-brown","rolex-panda"],"tuck":"Tucked" },
-    { "id":"o-030","items":["tee-white","chinos-khaki","sneakers-white-leather","belt-braided","omega-300m"],"tuck":"Tucked" },
-
-    { "id":"o-031","items":["mac-coat-navy","blue-ocbd","chinos-white","loafers-dark-brown-suede","belt-braided","rolex-panda"],"tuck":"Tucked" },
-    { "id":"o-032","items":["grey-shawl-cardigan","blue-ocbd","trousers-charcoal","loafers-dark-dress","belt-reversible","omega-300m"],"tuck":"Tucked" },
-    { "id":"o-033","items":["shacket-olive","linen-deep-navy","chinos-khaki","loafers-light-tan","belt-braided","panerai-luminor"],"tuck":"Tucked" },
-    { "id":"o-034","items":["shacket-beige","linen-black","jeans-medium","loafers-dark-dress","belt-braided","rolex-black"],"tuck":"Untucked" },
-
-    { "id":"o-035","items":["rl-featherweight-blue","shorts-khaki","sneakers-killshots","belt-braided","omega-300m"],"tuck":"Tucked" },
-    { "id":"o-036","items":["tee-navy","shorts-olive","sneakers-killshots","belt-braided","rolex-panda"],"tuck":"Tucked" },
-    { "id":"o-037","items":["grey-knit-polo","shorts-navy","loafers-light-tan","belt-braided","rolex-panda"],"tuck":"Tucked" },
-    { "id":"o-038","items":["tee-cream","shorts-khaki","sneakers-white-leather","belt-braided","omega-300m"],"tuck":"Tucked" },
-
-    { "id":"o-039","items":["camel-crewneck","navy-ribbed-polo","trousers-charcoal","loafers-dark-dress","belt-reversible","rolex-black"],"tuck":"Tucked" },
-    { "id":"o-040","items":["mac-coat-navy","linen-white","chinos-white","loafers-light-tan","belt-clean-brown","rolex-panda"],"tuck":"Untucked" },
-    { "id":"o-041","items":["moto-jacket","linen-black","denim-dark","apache-boots","belt-rugged","panerai-luminor"],"tuck":"Untucked" },
-    { "id":"o-042","items":["shacket-olive","tee-white","jeans-medium","sneakers-killshots","belt-braided","omega-300m"],"tuck":"Tucked" },
-    { "id":"o-043","items":["shacket-beige","tee-grey","chinos-light-grey","loafers-dark-brown","belt-clean-brown","rolex-panda"],"tuck":"Tucked" },
-
-    { "id":"o-044","items":["navy-ribbed-polo","chinos-white","loafers-dark-brown-suede","belt-braided","rolex-panda"],"tuck":"Tucked" },
-    { "id":"o-045","items":["navy-ribbed-polo","chinos-navy","sneakers-white-leather","belt-braided","omega-300m"],"tuck":"Tucked" },
-    { "id":"o-046","items":["navy-ribbed-polo","denim-dark","loafers-dark-dress","belt-braided","omega-nttd"],"tuck":"Tucked" },
-
-    { "id":"o-047","items":["tee-black","denim-dark","loafers-dark-dress","belt-braided","rolex-black"],"tuck":"Tucked" },
-    { "id":"o-048","items":["tee-navy","chinos-navy","sneakers-white-leather","belt-braided","omega-300m"],"tuck":"Tucked" },
-    { "id":"o-049","items":["tee-grey","chinos-olive","sneakers-killshots","belt-braided","omega-300m"],"tuck":"Tucked" },
-    { "id":"o-050","items":["tee-white","trousers-charcoal","loafers-dark-dress","belt-reversible","rolex-black"],"tuck":"Tucked" },
-
-    { "id":"o-051","items":["linen-deep-navy","chinos-white","loafers-dark-brown-suede","belt-braided","rolex-panda"],"tuck":"Tucked" },
-    { "id":"o-052","items":["linen-deep-navy","chinos-olive","sneakers-white-leather","belt-braided","omega-300m"],"tuck":"Untucked" },
-    { "id":"o-053","items":["linen-white","chinos-khaki","loafers-light-tan","belt-braided","rolex-panda"],"tuck":"Untucked" },
-
-    { "id":"o-054","items":["white-ocbd","chinos-black","sneakers-killshots","belt-black-pebbled","rolex-black"],"tuck":"Untucked" },
-    { "id":"o-055","items":["white-ocbd","chinos-navy","sneakers-killshots","belt-clean-brown","omega-300m"],"tuck":"Untucked" }
+    {
+      "id": "o-001",
+      "items": [
+        "mac-coat-navy",
+        "navy-ribbed-polo",
+        "chinos-white",
+        "loafers-dark-brown-suede",
+        "belt-braided",
+        "rolex-panda"
+      ],
+      "tuck": "Tucked",
+      "weight": 2
+    },
+    {
+      "id": "o-002",
+      "items": [
+        "mac-coat-navy",
+        "blue-ocbd",
+        "chinos-light-grey",
+        "loafers-dark-brown",
+        "belt-clean-brown",
+        "omega-300m"
+      ],
+      "tuck": "Tucked",
+      "weight": 2
+    },
+    {
+      "id": "o-003",
+      "items": [
+        "shacket-beige",
+        "grey-knit-polo",
+        "chinos-khaki",
+        "loafers-light-tan",
+        "belt-braided",
+        "panerai-luminor"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-004",
+      "items": [
+        "camel-crewneck",
+        "blue-ocbd",
+        "trousers-charcoal",
+        "loafers-dark-brown",
+        "belt-reversible",
+        "rolex-panda"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-005",
+      "items": [
+        "linen-white",
+        "chinos-white",
+        "loafers-light-tan",
+        "rolex-panda"
+      ],
+      "tuck": "Untucked"
+    },
+    {
+      "id": "o-006",
+      "items": [
+        "moto-jacket",
+        "tee-cream",
+        "denim-dark",
+        "apache-boots",
+        "belt-rugged",
+        "omega-speedmaster"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-007",
+      "items": [
+        "linen-striped-white-navy",
+        "jeans-medium",
+        "sneakers-killshots",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-008",
+      "items": [
+        "moto-jacket",
+        "tee-white",
+        "chinos-olive",
+        "apache-boots",
+        "belt-rugged",
+        "panerai-luminor"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-009",
+      "items": [
+        "moto-jacket",
+        "grey-henley-knit",
+        "chinos-black",
+        "apache-boots",
+        "belt-rugged",
+        "omega-speedmaster"
+      ],
+      "tuck": "Untucked"
+    },
+    {
+      "id": "o-010",
+      "items": [
+        "shacket-olive",
+        "tee-white",
+        "chinos-navy",
+        "sneakers-killshots",
+        "belt-braided",
+        "rolex-panda"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-011",
+      "items": [
+        "mac-coat-navy",
+        "tee-cream",
+        "denim-dark",
+        "loafers-dark-dress",
+        "belt-braided",
+        "omega-nttd"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-012",
+      "items": [
+        "blue-ocbd",
+        "chinos-white",
+        "apache-boots",
+        "belt-rugged",
+        "panerai-luminor"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-013",
+      "items": [
+        "rl-featherweight-blue",
+        "shorts-navy",
+        "sneakers-white-leather",
+        "belt-clean-brown",
+        "rolex-panda"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-015",
+      "items": [
+        "linen-striped-white-navy",
+        "shorts-white",
+        "loafers-light-tan",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-016",
+      "items": [
+        "blue-ocbd",
+        "chinos-khaki",
+        "loafers-light-tan",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-017",
+      "items": [
+        "blue-ocbd",
+        "denim-dark",
+        "loafers-dark-dress",
+        "belt-braided",
+        "omega-nttd"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-018",
+      "items": [
+        "rl-featherweight-blue",
+        "chinos-white",
+        "loafers-dark-brown",
+        "belt-reversible",
+        "rolex-panda"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-019",
+      "items": [
+        "rl-featherweight-blue",
+        "denim-dark",
+        "sneakers-killshots",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-020",
+      "items": [
+        "linen-striped-white-navy",
+        "chinos-navy",
+        "loafers-dark-brown-suede",
+        "belt-clean-brown",
+        "rolex-panda"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-021",
+      "items": [
+        "linen-striped-white-navy",
+        "chinos-olive",
+        "sneakers-white-leather",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-022",
+      "items": [
+        "grey-knit-polo",
+        "chinos-white",
+        "loafers-dark-brown",
+        "belt-clean-brown",
+        "rolex-panda"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-023",
+      "items": [
+        "grey-knit-polo",
+        "denim-dark",
+        "loafers-dark-dress",
+        "belt-braided",
+        "omega-nttd"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-024",
+      "items": [
+        "grey-knit-polo",
+        "chinos-khaki",
+        "loafers-light-tan",
+        "belt-braided",
+        "panerai-luminor"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-025",
+      "items": [
+        "grey-knit-polo",
+        "chinos-navy",
+        "sneakers-white-leather",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-026",
+      "items": [
+        "moto-jacket",
+        "tee-black",
+        "chinos-black",
+        "apache-boots",
+        "belt-rugged",
+        "rolex-black"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-027",
+      "items": [
+        "shacket-olive",
+        "tee-cream",
+        "chinos-olive",
+        "sneakers-killshots",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-028",
+      "items": [
+        "shacket-beige",
+        "tee-navy",
+        "denim-dark",
+        "loafers-dark-dress",
+        "belt-braided",
+        "omega-nttd"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-029",
+      "items": [
+        "tee-grey",
+        "chinos-light-grey",
+        "loafers-dark-brown",
+        "belt-clean-brown",
+        "rolex-panda"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-030",
+      "items": [
+        "tee-white",
+        "chinos-khaki",
+        "sneakers-white-leather",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-031",
+      "items": [
+        "mac-coat-navy",
+        "blue-ocbd",
+        "chinos-white",
+        "loafers-dark-brown-suede",
+        "belt-braided",
+        "rolex-panda"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-032",
+      "items": [
+        "grey-shawl-cardigan",
+        "blue-ocbd",
+        "trousers-charcoal",
+        "loafers-dark-dress",
+        "belt-reversible",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-033",
+      "items": [
+        "shacket-olive",
+        "linen-deep-navy",
+        "chinos-khaki",
+        "loafers-light-tan",
+        "belt-braided",
+        "panerai-luminor"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-034",
+      "items": [
+        "shacket-beige",
+        "linen-black",
+        "jeans-medium",
+        "loafers-dark-dress",
+        "belt-braided",
+        "rolex-black"
+      ],
+      "tuck": "Untucked"
+    },
+    {
+      "id": "o-035",
+      "items": [
+        "rl-featherweight-blue",
+        "shorts-khaki",
+        "sneakers-killshots",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-036",
+      "items": [
+        "tee-navy",
+        "shorts-olive",
+        "sneakers-killshots",
+        "belt-braided",
+        "rolex-panda"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-037",
+      "items": [
+        "grey-knit-polo",
+        "shorts-navy",
+        "loafers-light-tan",
+        "belt-braided",
+        "rolex-panda"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-038",
+      "items": [
+        "tee-cream",
+        "shorts-khaki",
+        "sneakers-white-leather",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-039",
+      "items": [
+        "camel-crewneck",
+        "navy-ribbed-polo",
+        "trousers-charcoal",
+        "loafers-dark-dress",
+        "belt-reversible",
+        "rolex-black"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-040",
+      "items": [
+        "mac-coat-navy",
+        "linen-white",
+        "chinos-white",
+        "loafers-light-tan",
+        "belt-clean-brown",
+        "rolex-panda"
+      ],
+      "tuck": "Untucked"
+    },
+    {
+      "id": "o-041",
+      "items": [
+        "moto-jacket",
+        "linen-black",
+        "denim-dark",
+        "apache-boots",
+        "belt-rugged",
+        "panerai-luminor"
+      ],
+      "tuck": "Untucked"
+    },
+    {
+      "id": "o-042",
+      "items": [
+        "shacket-olive",
+        "tee-white",
+        "jeans-medium",
+        "sneakers-killshots",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-043",
+      "items": [
+        "shacket-beige",
+        "tee-grey",
+        "chinos-light-grey",
+        "loafers-dark-brown",
+        "belt-clean-brown",
+        "rolex-panda"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-044",
+      "items": [
+        "navy-ribbed-polo",
+        "chinos-white",
+        "loafers-dark-brown-suede",
+        "belt-braided",
+        "rolex-panda"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-045",
+      "items": [
+        "navy-ribbed-polo",
+        "chinos-navy",
+        "sneakers-white-leather",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-046",
+      "items": [
+        "navy-ribbed-polo",
+        "denim-dark",
+        "loafers-dark-dress",
+        "belt-braided",
+        "omega-nttd"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-047",
+      "items": [
+        "tee-black",
+        "denim-dark",
+        "loafers-dark-dress",
+        "belt-braided",
+        "rolex-black"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-048",
+      "items": [
+        "tee-navy",
+        "chinos-navy",
+        "sneakers-white-leather",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-049",
+      "items": [
+        "tee-grey",
+        "chinos-olive",
+        "sneakers-killshots",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-050",
+      "items": [
+        "tee-white",
+        "trousers-charcoal",
+        "loafers-dark-dress",
+        "belt-reversible",
+        "rolex-black"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-051",
+      "items": [
+        "linen-deep-navy",
+        "chinos-white",
+        "loafers-dark-brown-suede",
+        "belt-braided",
+        "rolex-panda"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-052",
+      "items": [
+        "linen-deep-navy",
+        "chinos-olive",
+        "sneakers-white-leather",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Untucked"
+    },
+    {
+      "id": "o-053",
+      "items": [
+        "linen-white",
+        "chinos-khaki",
+        "loafers-light-tan",
+        "belt-braided",
+        "rolex-panda"
+      ],
+      "tuck": "Untucked"
+    },
+    {
+      "id": "o-054",
+      "items": [
+        "white-ocbd",
+        "chinos-black",
+        "sneakers-killshots",
+        "belt-black-pebbled",
+        "rolex-black"
+      ],
+      "tuck": "Untucked"
+    },
+    {
+      "id": "o-055",
+      "items": [
+        "white-ocbd",
+        "chinos-navy",
+        "sneakers-killshots",
+        "belt-clean-brown",
+        "omega-300m"
+      ],
+      "tuck": "Untucked"
+    }
   ]
 }
