@@ -24,7 +24,8 @@ export const TopBar: React.FC<TopBarProps> = ({
       <div className="flex flex-row items-center justify-between gap-4">
         <button 
           onClick={onTitleClick}
-          className="hover:opacity-80 transition-opacity"
+          className="hover:opacity-80 transition-opacity focus:outline-none focus:ring-0 focus:border-transparent active:outline-none"
+          style={{ outline: 'none', border: 'none' }}
         >
           <Logo className="h-8 sm:h-10 w-auto" />
         </button>
