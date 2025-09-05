@@ -129,7 +129,7 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
   }
 
   return (
-    <div className="bg-white dark:bg-slate-800 border-b border-stone-200 dark:border-slate-700 px-3 sm:px-6 py-3 sm:py-4">
+    <div className="border-b border-stone-200 dark:border-slate-700 px-3 sm:px-6 py-3 sm:py-4">
       <div className="space-y-3 sm:space-y-4 relative">
         {/* Error Message */}
         {error && (
