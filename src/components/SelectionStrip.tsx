@@ -17,11 +17,6 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
   onSelectionChange,
   onOutfitSelect
 }) => {
-  // Only show SelectionStrip when anchor item is present - move this check before any hooks
-  if (!anchorItem) {
-    return null;
-  }
-
   const { getCompatibleItems, getFilteredOutfits, validatePartialSelection } = useOutfitEngine();
   const [loadingCategories, setLoadingCategories] = useState<Set<Category>>(new Set());
   const [error, setError] = useState<string | null>(null);
@@ -116,19 +111,9 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
       (selectionWithAnchor as any)[anchorKey] = anchorItem;
     }
     
-    // Only log when anchor item changes to reduce noise
-    if (anchorItem?.id === 'mac-coat-navy') {
-      console.log('SelectionStrip - selectionWithAnchor:', selectionWithAnchor);
-      console.log('SelectionStrip - anchorItem:', anchorItem);
-    }
-    
     categories.forEach(({ category }) => {
       try {
         const compatibleItems = getCompatibleItems(category, selectionWithAnchor);
-        // Only log for jacket category to reduce noise
-        if (category === 'Jacket/Overshirt') {
-          console.log(`SelectionStrip - Compatible items for ${category}:`, compatibleItems.length, compatibleItems.map(i => i.name));
-        }
         cache[category] = compatibleItems;
       } catch (err) {
         console.error(`Error getting compatible items for ${category}:`, err);
@@ -137,6 +122,11 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
     });
     return cache;
   }, [debouncedSelection, anchorItem, getCompatibleItems]);
+
+  // Only show SelectionStrip when anchor item is present
+  if (!anchorItem) {
+    return null;
+  }
 
   return (
     <div className="bg-white dark:bg-slate-800 border-b border-stone-200 dark:border-slate-700 px-3 sm:px-6 py-3 sm:py-4">

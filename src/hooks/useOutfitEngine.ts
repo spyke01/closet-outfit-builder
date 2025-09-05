@@ -9,19 +9,11 @@ export const useOutfitEngine = () => {
     // Hard rule: no shorts + boots
     if (selection.pants?.name.toLowerCase().includes('shorts') &&
       selection.shoes?.name.toLowerCase().includes('boots')) {
-      console.log('validateOutfit - Failed: shorts + boots rule');
       return false;
     }
 
     // Must have shirt, pants, shoes
     const hasRequired = !!(selection.shirt && selection.pants && selection.shoes);
-    if (!hasRequired) {
-      console.log('validateOutfit - Failed: missing required items', {
-        shirt: !!selection.shirt,
-        pants: !!selection.pants,
-        shoes: !!selection.shoes
-      });
-    }
     return hasRequired;
   };
 
@@ -67,35 +59,20 @@ export const useOutfitEngine = () => {
 
     // Use the new category mapping utility
 
-    console.log('useOutfitEngine - Processing outfits:', outfits.length);
-
     // Convert all curated outfits to GeneratedOutfit format
     outfits.forEach(outfit => {
       const selection: OutfitSelection = {};
-      // Only log for mac-coat outfits to reduce noise
-      const isDebugOutfit = outfit.items.includes('mac-coat-navy');
-
-      if (isDebugOutfit) {
-        console.log(`Processing outfit ${outfit.id} with items:`, outfit.items);
-      }
 
       outfit.items.forEach(itemId => {
         const item = getItemById(itemId);
         if (item) {
           const key = categoryToKey(item.category);
           (selection as any)[key] = item;
-          if (isDebugOutfit) {
-            console.log(`Mapped ${item.category} -> ${key}: ${item.name} (${item.id})`);
-          }
         } else {
           console.warn(`Item not found: ${itemId}`);
         }
       });
       selection.tuck = outfit.tuck;
-
-      if (isDebugOutfit) {
-        console.log(`Final selection for outfit ${outfit.id}:`, selection);
-      }
 
       if (validateOutfit(selection)) {
         const generatedOutfit = {
@@ -104,18 +81,9 @@ export const useOutfitEngine = () => {
           score: scoreOutfit(selection) + (outfit.weight || 1) * 5,
           source: 'curated' as const
         };
-        if (isDebugOutfit) {
-          console.log(`Added outfit ${outfit.id} to results:`, generatedOutfit);
-        }
         results.push(generatedOutfit);
-      } else {
-        if (isDebugOutfit) {
-          console.log(`Outfit ${outfit.id} failed validation`);
-        }
       }
     });
-
-    console.log('useOutfitEngine - Generated outfits:', results.length);
     return results.sort((a, b) => b.score - a.score);
   }, [outfits, getItemById, validateOutfit, scoreOutfit]);
 
@@ -234,16 +202,13 @@ export const useOutfitEngine = () => {
     category: Category,
     currentSelection: OutfitSelection
   ): WardrobeItem[] => {
-    console.log(`getCompatibleItems - Looking for ${category} with selection:`, currentSelection);
     try {
       // Validate inputs
       if (!category) {
-        console.warn('getCompatibleItems: category is required');
         return [];
       }
 
       if (!currentSelection) {
-        console.warn('getCompatibleItems: currentSelection is required');
         return [];
       }
 
@@ -261,16 +226,7 @@ export const useOutfitEngine = () => {
       }
 
       if (allOutfits.length === 0) {
-        console.warn('getCompatibleItems: no outfits available');
         return [];
-      }
-
-      // Only log when looking for jacket compatibility to reduce noise
-      const isJacketSearch = category === 'Jacket/Overshirt';
-
-      if (isJacketSearch) {
-        console.log(`getCompatibleItems - Looking for ${category} with selection:`, currentSelection);
-        console.log(`getCompatibleItems - Total outfits available:`, allOutfits.length);
       }
 
       const matchingOutfits = allOutfits.filter(outfit => {
@@ -278,23 +234,10 @@ export const useOutfitEngine = () => {
           if (!item || key === 'tuck' || key === 'locked') return true;
           const outfitKey = key as keyof OutfitSelection;
           const outfitItem = outfit[outfitKey] as WardrobeItem;
-
-          const isMatch = outfitItem?.id === item.id;
-
-          if (isJacketSearch && key === 'jacket') {
-            console.log(`getCompatibleItems - Checking ${key}: selection=${item.id}, outfit=${outfitItem?.id || 'none'}, match=${isMatch}`);
-            console.log(`getCompatibleItems - Outfit ${outfit.id} jacket:`, outfitItem);
-          }
-
-          return isMatch;
+          return outfitItem?.id === item.id;
         });
         return matches;
       });
-
-      if (isJacketSearch) {
-        console.log(`getCompatibleItems - Found ${matchingOutfits.length} matching outfits for ${category}`);
-        console.log(`getCompatibleItems - Matching outfit IDs:`, matchingOutfits.map(o => o.id));
-      }
 
       // Extract unique items for target category from matching outfits
       const compatibleItems = new Set<WardrobeItem>();
@@ -328,7 +271,6 @@ export const useOutfitEngine = () => {
     try {
       // Validate input
       if (!selection) {
-        console.warn('getFilteredOutfits: selection is required');
         return [];
       }
 
@@ -345,7 +287,6 @@ export const useOutfitEngine = () => {
       }
 
       if (allOutfits.length === 0) {
-        console.warn('getFilteredOutfits: no outfits available');
         return [];
       }
 
@@ -377,7 +318,6 @@ export const useOutfitEngine = () => {
     try {
       // Validate input
       if (!selection) {
-        console.warn('validatePartialSelection: selection is required');
         return false;
       }
 
@@ -403,7 +343,6 @@ export const useOutfitEngine = () => {
 
       for (const item of itemsToValidate) {
         if (!item?.id || !item?.name || !item?.category) {
-          console.warn('validatePartialSelection: invalid item found', item);
           return false;
         }
       }
