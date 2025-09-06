@@ -32,6 +32,7 @@ export interface CuratedOutfit {
   items: string[];
   tuck?: TuckStyle;
   weight?: number;
+  loved?: boolean;
 }
 
 export interface OutfitSelection {
@@ -43,12 +44,14 @@ export interface OutfitSelection {
   belt?: WardrobeItem;
   watch?: WardrobeItem;
   tuck?: TuckStyle;
+  loved?: boolean;
 }
 
 export interface GeneratedOutfit extends OutfitSelection {
   id: string;
   score: number;
   source: 'curated' | 'generated';
+  loved?: boolean;
 }
 
 // Layer adjustment tracking for scoring transparency

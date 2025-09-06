@@ -45,6 +45,7 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({ selection, onRando
           variant="detailed"
           showScore={true}
           score={outfitScore}
+          enableFlip={true}
         />
 
         <div className="mt-6 sm:mt-8 text-center">

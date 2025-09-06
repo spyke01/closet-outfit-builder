@@ -48,7 +48,8 @@ export const useOutfitEngine = () => {
           ...selection,
           id: outfit.id,
           score: scoreOutfit(selection),
-          source: 'curated' as const
+          source: 'curated' as const,
+          loved: outfit.loved
         };
         results.push(generatedOutfit);
       }
@@ -151,7 +152,8 @@ export const useOutfitEngine = () => {
             ...selection,
             id: outfit.id,
             score: scoreOutfit(selection),
-            source: 'curated'
+            source: 'curated',
+            loved: outfit.loved
           });
         }
       }

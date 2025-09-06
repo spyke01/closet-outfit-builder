@@ -7,13 +7,15 @@ interface OutfitListProps {
   onOutfitSelect: (outfit: GeneratedOutfit) => void;
   className?: string;
   isLoading?: boolean;
+  enableFlip?: boolean; // New prop to enable flip functionality
 }
 
 export const OutfitList: React.FC<OutfitListProps> = ({
   outfits,
   onOutfitSelect,
   className = '',
-  isLoading = false
+  isLoading = false,
+  enableFlip = false
 }) => {
   const outfitCount = outfits.length;
 
@@ -57,6 +59,7 @@ export const OutfitList: React.FC<OutfitListProps> = ({
               showSource={false}
               onClick={() => onOutfitSelect(outfit)}
               className="transition-shadow duration-200 hover:shadow-lg"
+              enableFlip={enableFlip}
             />
           ))}
         </div>

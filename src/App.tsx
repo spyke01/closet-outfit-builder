@@ -155,7 +155,8 @@ function App() {
         shoes: randomOutfit.shoes,
         belt: randomOutfit.belt,
         watch: randomOutfit.watch,
-        tuck: randomOutfit.tuck
+        tuck: randomOutfit.tuck,
+        loved: randomOutfit?.loved
       });
       // Show the random outfit in a separate view
       setShowRandomOutfit(true);
@@ -182,7 +183,8 @@ function App() {
       shoes: outfit.shoes,
       belt: outfit.belt,
       watch: outfit.watch,
-      tuck: outfit.tuck
+      tuck: outfit.tuck,
+      loved: outfit.loved
     });
     // Show the selected outfit in detail view
     setShowRandomOutfit(true);
