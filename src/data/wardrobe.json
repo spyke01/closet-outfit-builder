@@ -40,7 +40,7 @@
     },
     {
       "id": "camel-crewneck",
-      "name": "Camel Crewneck",
+      "name": "Crewneck (Camel)",
       "category": "Jacket/Overshirt",
       "capsuleTags": [
         "Refined"
@@ -49,7 +49,7 @@
     },
     {
       "id": "grey-shawl-cardigan",
-      "name": "Grey Shawl Cardigan",
+      "name": "Shawl Cardigan (Grey)",
       "category": "Jacket/Overshirt",
       "capsuleTags": [
         "Refined",
@@ -59,7 +59,7 @@
     },
     {
       "id": "blue-ocbd",
-      "name": "Blue OCBD",
+      "name": "OCBD (Blue)",
       "category": "Shirt",
       "capsuleTags": [
         "Refined"
@@ -68,7 +68,7 @@
     },
     {
       "id": "white-ocbd",
-      "name": "White OCBD",
+      "name": "OCBD (White)",
       "category": "Shirt",
       "capsuleTags": [
         "Refined"
@@ -77,8 +77,9 @@
     },
     {
       "id": "rl-featherweight-blue",
-      "name": "Ralph Lauren Featherweight Blue",
+      "name": "Featherweight Shirt (Blue)",
       "category": "Shirt",
+      "brand": "Ralph Lauren",
       "capsuleTags": [
         "Refined",
         "Crossover"
@@ -87,7 +88,7 @@
     },
     {
       "id": "linen-striped-white-navy",
-      "name": "Striped Linen (White/Navy)",
+      "name": "Striped Linen Shirt (White/Navy)",
       "category": "Shirt",
       "capsuleTags": [
         "Refined",
@@ -98,7 +99,7 @@
     },
     {
       "id": "linen-white",
-      "name": "White Linen Shirt",
+      "name": "Linen Shirt (White)",
       "category": "Shirt",
       "capsuleTags": [
         "Refined",
@@ -108,7 +109,7 @@
     },
     {
       "id": "linen-deep-navy",
-      "name": "Deep Navy Linen Shirt",
+      "name": "Linen Shirt (Deep Navy)",
       "category": "Shirt",
       "capsuleTags": [
         "Refined",
@@ -118,7 +119,7 @@
     },
     {
       "id": "linen-black",
-      "name": "Black Linen Shirt",
+      "name": "Linen Shirt (Black)",
       "category": "Shirt",
       "capsuleTags": [
         "Adventurer",
@@ -128,7 +129,7 @@
     },
     {
       "id": "grey-knit-polo",
-      "name": "Grey Knit Polo",
+      "name": "Knit Polo (Grey)",
       "category": "Shirt",
       "capsuleTags": [
         "Refined"
@@ -137,7 +138,7 @@
     },
     {
       "id": "navy-ribbed-polo",
-      "name": "Navy Ribbed Polo",
+      "name": "Ribbed Polo (Navy)",
       "category": "Shirt",
       "capsuleTags": [
         "Refined"
@@ -146,7 +147,7 @@
     },
     {
       "id": "grey-henley-knit",
-      "name": "Grey Henley Knit",
+      "name": "Henley Knit (Grey)",
       "category": "Shirt",
       "capsuleTags": [
         "Adventurer"
@@ -155,8 +156,8 @@
     },
     {
       "id": "tee-white",
-      "name": "White Tee",
-      "category": "Shirt",
+      "name": "Tee (White)",
+      "category": "Undershirt",
       "capsuleTags": [
         "Crossover",
         "Adventurer",
@@ -166,8 +167,8 @@
     },
     {
       "id": "tee-cream",
-      "name": "Cream Tee",
-      "category": "Shirt",
+      "name": "Tee (Cream)",
+      "category": "Undershirt",
       "capsuleTags": [
         "Crossover",
         "Adventurer",
@@ -177,8 +178,8 @@
     },
     {
       "id": "tee-black",
-      "name": "Black Tee",
-      "category": "Shirt",
+      "name": "Tee (Black)",
+      "category": "Undershirt",
       "capsuleTags": [
         "Crossover",
         "Adventurer"
@@ -187,8 +188,8 @@
     },
     {
       "id": "tee-navy",
-      "name": "Navy Tee",
-      "category": "Shirt",
+      "name": "Tee (Navy)",
+      "category": "Undershirt",
       "capsuleTags": [
         "Crossover",
         "Refined"
@@ -197,8 +198,8 @@
     },
     {
       "id": "tee-grey",
-      "name": "Grey Tee",
-      "category": "Shirt",
+      "name": "Tee (Grey)",
+      "category": "Undershirt",
       "capsuleTags": [
         "Crossover"
       ],
@@ -206,7 +207,7 @@
     },
     {
       "id": "chinos-white",
-      "name": "White Chinos",
+      "name": "Chinos (White)",
       "category": "Pants",
       "capsuleTags": [
         "Refined",
@@ -216,7 +217,7 @@
     },
     {
       "id": "chinos-light-grey",
-      "name": "Light Grey Chinos",
+      "name": "Chinos (Light Grey)",
       "category": "Pants",
       "capsuleTags": [
         "Refined"
@@ -225,7 +226,7 @@
     },
     {
       "id": "chinos-khaki",
-      "name": "Khaki Chinos",
+      "name": "Chinos (Khaki)",
       "category": "Pants",
       "capsuleTags": [
         "Refined"
@@ -234,7 +235,7 @@
     },
     {
       "id": "chinos-black",
-      "name": "Black Chinos",
+      "name": "Chinos (Black)",
       "category": "Pants",
       "capsuleTags": [
         "Adventurer",
@@ -244,7 +245,7 @@
     },
     {
       "id": "chinos-navy",
-      "name": "Navy Chinos",
+      "name": "Chinos (Navy)",
       "category": "Pants",
       "capsuleTags": [
         "Refined",
@@ -254,7 +255,7 @@
     },
     {
       "id": "chinos-olive",
-      "name": "Olive Chinos",
+      "name": "Chinos (Olive)",
       "category": "Pants",
       "capsuleTags": [
         "Adventurer",
@@ -264,7 +265,7 @@
     },
     {
       "id": "trousers-charcoal",
-      "name": "Charcoal Wool Trousers",
+      "name": "Wool Trousers (Charcoal)",
       "category": "Pants",
       "capsuleTags": [
         "Refined"
@@ -273,7 +274,7 @@
     },
     {
       "id": "jeans-medium",
-      "name": "Medium Jeans",
+      "name": "Jeans (Medium)",
       "category": "Pants",
       "capsuleTags": [
         "Crossover",
@@ -283,7 +284,7 @@
     },
     {
       "id": "denim-dark",
-      "name": "Dark Denim",
+      "name": "Denim (Dark)",
       "category": "Pants",
       "capsuleTags": [
         "Crossover",
@@ -293,7 +294,7 @@
     },
     {
       "id": "shorts-white",
-      "name": "White Shorts",
+      "name": "Shorts (White)",
       "category": "Pants",
       "capsuleTags": [
         "Shorts"
@@ -302,7 +303,7 @@
     },
     {
       "id": "shorts-khaki",
-      "name": "Khaki Shorts",
+      "name": "Shorts (Khaki)",
       "category": "Pants",
       "capsuleTags": [
         "Shorts"
@@ -311,7 +312,7 @@
     },
     {
       "id": "shorts-olive",
-      "name": "Olive Shorts",
+      "name": "Shorts (Olive)",
       "category": "Pants",
       "capsuleTags": [
         "Shorts"
@@ -320,7 +321,7 @@
     },
     {
       "id": "shorts-navy",
-      "name": "Navy Shorts",
+      "name": "Shorts (Navy)",
       "category": "Pants",
       "capsuleTags": [
         "Shorts"
@@ -329,7 +330,7 @@
     },
     {
       "id": "shorts-dark-brown",
-      "name": "Dark Brown Shorts",
+      "name": "Shorts (Dark Brown)",
       "category": "Pants",
       "capsuleTags": [
         "Shorts"
@@ -338,7 +339,7 @@
     },
     {
       "id": "loafers-dark-brown",
-      "name": "Dark Brown Loafers",
+      "name": "Loafers (Dark Brown)",
       "category": "Shoes",
       "capsuleTags": [
         "Refined"
@@ -347,7 +348,7 @@
     },
     {
       "id": "loafers-dark-brown-suede",
-      "name": "Dark Brown Suede Loafers",
+      "name": "Suede Loafers (Dark Brown)",
       "category": "Shoes",
       "capsuleTags": [
         "Refined",
@@ -357,7 +358,7 @@
     },
     {
       "id": "loafers-light-tan",
-      "name": "Light Tan Suede Loafers",
+      "name": "Suede Loafers (Light Tan)",
       "category": "Shoes",
       "capsuleTags": [
         "Refined",
@@ -367,7 +368,7 @@
     },
     {
       "id": "loafers-black-horsebit",
-      "name": "Black Horsebit Loafers",
+      "name": "Horsebit Loafers (Black)",
       "category": "Shoes",
       "capsuleTags": [
         "Refined"
@@ -376,7 +377,7 @@
     },
     {
       "id": "double-monk-black",
-      "name": "Black Double Monks",
+      "name": "Double Monks (Black)",
       "category": "Shoes",
       "capsuleTags": [
         "Refined"
@@ -385,7 +386,7 @@
     },
     {
       "id": "sneakers-killshots",
-      "name": "White Killshots",
+      "name": "Killshots (White)",
       "category": "Shoes",
       "capsuleTags": [
         "Crossover",
@@ -395,7 +396,7 @@
     },
     {
       "id": "sneakers-white-leather",
-      "name": "White Leather Sneakers",
+      "name": "Leather Sneakers (White)",
       "category": "Shoes",
       "capsuleTags": [
         "Refined",
@@ -415,7 +416,7 @@
     },
     {
       "id": "loafers-dark-dress",
-      "name": "Dark Loafers (Dress)",
+      "name": "Dress Loafers (Dark)",
       "category": "Shoes",
       "capsuleTags": [
         "Refined"
@@ -434,7 +435,7 @@
     },
     {
       "id": "belt-clean-brown",
-      "name": "Clean Brown Belt",
+      "name": "Belt (Clean Brown)",
       "category": "Belt",
       "capsuleTags": [
         "Refined"
@@ -452,7 +453,7 @@
     },
     {
       "id": "belt-reversible",
-      "name": "Reversible Brown/Black Belt",
+      "name": "Reversible Belt (Brown/Black)",
       "category": "Belt",
       "capsuleTags": [
         "Refined"
@@ -461,7 +462,7 @@
     },
     {
       "id": "belt-black-pebbled",
-      "name": "Pebbled Black Belt",
+      "name": "Pebbled Belt (Black)",
       "category": "Belt",
       "capsuleTags": [
         "Refined"
@@ -470,8 +471,9 @@
     },
     {
       "id": "rolex-panda",
-      "name": "Rolex Panda",
+      "name": "Daytona (Panda)",
       "category": "Watch",
+      "brand": "Rolex",
       "capsuleTags": [
         "Refined",
         "Shorts"
@@ -480,8 +482,9 @@
     },
     {
       "id": "rolex-black",
-      "name": "Black Rolex",
+      "name": "Submariner (Black)",
       "category": "Watch",
+      "brand": "Rolex",
       "capsuleTags": [
         "Refined"
       ],
@@ -489,8 +492,9 @@
     },
     {
       "id": "omega-nttd",
-      "name": "Omega No Time To Die",
+      "name": "Seamaster No Time To Die",
       "category": "Watch",
+      "brand": "Omega",
       "capsuleTags": [
         "Crossover"
       ],
@@ -498,8 +502,9 @@
     },
     {
       "id": "omega-300m",
-      "name": "Omega 300M",
+      "name": "Seamaster 300M",
       "category": "Watch",
+      "brand": "Omega",
       "capsuleTags": [
         "Refined",
         "Sport"
@@ -508,8 +513,9 @@
     },
     {
       "id": "panerai-luminor",
-      "name": "Panerai Luminor (Brown Strap)",
+      "name": "Luminor (Brown Strap)",
       "category": "Watch",
+      "brand": "Panerai",
       "capsuleTags": [
         "Adventurer"
       ],
@@ -517,8 +523,9 @@
     },
     {
       "id": "omega-speedmaster",
-      "name": "Omega Speedmaster",
+      "name": "Speedmaster",
       "category": "Watch",
+      "brand": "Omega",
       "capsuleTags": [
         "Adventurer",
         "Tool"

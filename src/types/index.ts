@@ -1,8 +1,8 @@
 // Internal category keys (used in code)
-export type CategoryKey = "jacket" | "shirt" | "pants" | "shoes" | "belt" | "watch";
+export type CategoryKey = "jacket" | "shirt" | "undershirt" | "pants" | "shoes" | "belt" | "watch";
 
 // Display category names (shown to users)
-export type Category = "Jacket/Overshirt" | "Shirt" | "Pants" | "Shoes" | "Belt" | "Watch";
+export type Category = "Jacket/Overshirt" | "Shirt" | "Undershirt" | "Pants" | "Shoes" | "Belt" | "Watch";
 
 export type CapsuleTag = "Refined" | "Adventurer" | "Crossover" | "Shorts";
 
@@ -16,6 +16,7 @@ export interface WardrobeItem {
   id: string;
   name: string;
   category: Category;
+  brand?: string; // Optional brand field for item identification
   color?: string;
   material?: string;
   capsuleTags?: CapsuleTag[];
@@ -36,6 +37,7 @@ export interface CuratedOutfit {
 export interface OutfitSelection {
   jacket?: WardrobeItem;
   shirt?: WardrobeItem;
+  undershirt?: WardrobeItem; // New undershirt category for layering
   pants?: WardrobeItem;
   shoes?: WardrobeItem;
   belt?: WardrobeItem;
@@ -49,11 +51,40 @@ export interface GeneratedOutfit extends OutfitSelection {
   source: 'curated' | 'generated';
 }
 
+// Layer adjustment tracking for scoring transparency
+export interface LayerAdjustment {
+  itemId: string;
+  itemName: string;
+  category: Category;
+  originalScore: number;
+  adjustedScore: number;
+  weight: number;
+  reason: 'covered' | 'visible' | 'accessory';
+}
+
+// Enhanced score breakdown with weight tracking
+export interface ScoreBreakdown {
+  formalityScore: number;
+  formalityWeight: number; // Weight applied to formality component
+  consistencyBonus: number;
+  consistencyWeight: number; // Weight applied to consistency component
+  layerAdjustments: LayerAdjustment[]; // Per-item scoring adjustments
+  total: number;
+  percentage: number;
+}
+
+// User settings interface for feature toggles
+export interface UserSettings {
+  showBrand: boolean; // Toggle for displaying brand information
+  // Future settings can be added here
+}
+
 // Utility functions for category mapping
 export const categoryToKey = (category: Category): CategoryKey => {
   switch (category) {
     case "Jacket/Overshirt": return "jacket";
     case "Shirt": return "shirt";
+    case "Undershirt": return "undershirt";
     case "Pants": return "pants";
     case "Shoes": return "shoes";
     case "Belt": return "belt";
@@ -65,6 +96,7 @@ export const keyToCategory = (key: CategoryKey): Category => {
   switch (key) {
     case "jacket": return "Jacket/Overshirt";
     case "shirt": return "Shirt";
+    case "undershirt": return "Undershirt";
     case "pants": return "Pants";
     case "shoes": return "Shoes";
     case "belt": return "Belt";
