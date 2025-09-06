@@ -56,6 +56,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
     const coreItems = [
         { label: 'Jacket/Overshirt', value: outfit.jacket?.name, showColor: true },
         { label: 'Shirt', value: outfit.shirt?.name, showColor: true },
+        { label: 'Undershirt', value: outfit.undershirt?.name, showColor: true },
         { label: 'Pants', value: outfit.pants?.name, showColor: true },
         { label: 'Shoes', value: outfit.shoes?.name, showColor: true }
     ];

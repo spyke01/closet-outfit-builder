@@ -6,7 +6,7 @@ interface AnchorRowProps {
   onCategorySelect: (category: Category) => void;
 }
 
-const categories: Category[] = ['Jacket/Overshirt', 'Shirt', 'Pants', 'Shoes'];
+const categories: Category[] = ['Jacket/Overshirt', 'Shirt', 'Undershirt', 'Pants', 'Shoes'];
 
 export const AnchorRow: React.FC<AnchorRowProps> = ({ selectedCategory, onCategorySelect }) => {
   return (

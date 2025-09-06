@@ -40,10 +40,11 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
     };
   }, [selection]);
 
-  // Define the four main categories for dropdowns
+  // Define the five main categories for dropdowns in layering hierarchy order
   const categories: { category: Category; key: keyof OutfitSelection }[] = [
     { category: 'Jacket/Overshirt', key: 'jacket' },
     { category: 'Shirt', key: 'shirt' },
+    { category: 'Undershirt', key: 'undershirt' },
     { category: 'Pants', key: 'pants' },
     { category: 'Shoes', key: 'shoes' },
   ];
@@ -167,7 +168,7 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
           </span>
           
           {/* Dropdowns Container - Stacked on mobile, horizontal on tablet+ */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 md:gap-3">
             {categories.map(({ category, key }) => {
               const selectedItem = selection[key] as WardrobeItem | undefined;
               const availableItems = compatibleItemsCache[category] || [];

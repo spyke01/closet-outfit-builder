@@ -1,4 +1,4 @@
-import { OutfitSelection, WardrobeItem } from '../types';
+import { OutfitSelection, WardrobeItem, LayerAdjustment, ScoreBreakdown } from '../types';
 
 /**
  * Consolidated scoring system for outfits
@@ -12,24 +12,84 @@ import { OutfitSelection, WardrobeItem } from '../types';
  * Optional items: jacket, belt
  */
 
-export interface ScoreBreakdown {
-    formalityScore: number;
-    consistencyBonus: number;
-    total: number;
-    percentage: number;
-}
+// ScoreBreakdown interface is now imported from types
 
 export const FORMALITY_WEIGHT = 0.93; // 93% of total score
 export const CONSISTENCY_WEIGHT = 0.07; // 7% of total score
 
 /**
- * Calculate the formality score component
+ * Calculate layer-aware formality score with visibility detection
+ * Applies weight reduction for covered items and tracks adjustments
+ */
+export const calculateLayerAwareFormalityScore = (selection: OutfitSelection): {
+    score: number;
+    adjustments: LayerAdjustment[];
+} => {
+    const adjustments: LayerAdjustment[] = [];
+    
+    // Determine visibility of each layer
+    const isUndershirtCovered = !!(selection.shirt || selection.jacket);
+    const isShirtCovered = !!selection.jacket;
+    
+    // Define items with their weights based on visibility and type
+    const items = [
+        { item: selection.jacket, weight: 1.0, reason: 'visible' as const },
+        { 
+            item: selection.shirt, 
+            weight: isShirtCovered ? 0.7 : 1.0, 
+            reason: isShirtCovered ? 'covered' as const : 'visible' as const 
+        },
+        { 
+            item: selection.undershirt, 
+            weight: isUndershirtCovered ? 0.3 : 1.0, 
+            reason: isUndershirtCovered ? 'covered' as const : 'visible' as const 
+        },
+        { item: selection.pants, weight: 1.0, reason: 'visible' as const },
+        { item: selection.shoes, weight: 1.0, reason: 'visible' as const },
+        { item: selection.belt, weight: 0.8, reason: 'accessory' as const },
+        { item: selection.watch, weight: 0.8, reason: 'accessory' as const }
+    ];
+    
+    // Calculate weighted formality score
+    let totalWeightedScore = 0;
+    let totalWeight = 0;
+    
+    items.forEach(({ item, weight, reason }) => {
+        if (item?.formalityScore !== undefined) {
+            const adjustedScore = item.formalityScore * weight;
+            totalWeightedScore += adjustedScore;
+            totalWeight += weight;
+            
+            adjustments.push({
+                itemId: item.id,
+                itemName: item.name,
+                category: item.category,
+                originalScore: item.formalityScore,
+                adjustedScore,
+                weight,
+                reason
+            });
+        }
+    });
+    
+    const averageScore = totalWeight > 0 ? totalWeightedScore / totalWeight : 0;
+    const formalityPercentage = (averageScore / 10) * 100 * FORMALITY_WEIGHT;
+    
+    return {
+        score: Math.round(formalityPercentage),
+        adjustments
+    };
+};
+
+/**
+ * Calculate the formality score component (legacy version)
  * Returns the percentage of formality based on selected items
  */
 export const calculateFormalityScore = (selection: OutfitSelection): number => {
     const items = [
         selection.jacket,    // optional
         selection.shirt,     // required
+        selection.undershirt, // optional
         selection.pants,     // required
         selection.shoes,     // required
         selection.belt,      // optional
@@ -62,6 +122,7 @@ export const calculateConsistencyBonus = (selection: OutfitSelection): number =>
     const items = [
         selection.jacket,
         selection.shirt,
+        selection.undershirt,
         selection.pants,
         selection.shoes,
         selection.belt,
@@ -92,18 +153,21 @@ export const calculateConsistencyBonus = (selection: OutfitSelection): number =>
 };
 
 /**
- * Calculate complete outfit score with breakdown
+ * Calculate complete outfit score with enhanced breakdown including layer adjustments
  */
 export const calculateOutfitScore = (selection: OutfitSelection): ScoreBreakdown => {
-    const formalityScore = calculateFormalityScore(selection);
+    const layerAwareResult = calculateLayerAwareFormalityScore(selection);
     const consistencyBonus = calculateConsistencyBonus(selection);
 
-    const total = formalityScore + consistencyBonus;
+    const total = layerAwareResult.score + consistencyBonus;
     const percentage = Math.min(total, 100);
 
     return {
-        formalityScore,
+        formalityScore: layerAwareResult.score,
+        formalityWeight: FORMALITY_WEIGHT,
         consistencyBonus,
+        consistencyWeight: CONSISTENCY_WEIGHT,
+        layerAdjustments: layerAwareResult.adjustments,
         total,
         percentage
     };

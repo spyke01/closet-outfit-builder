@@ -3,6 +3,7 @@ import {
   calculateOutfitScore, 
   calculateFormalityScore, 
   calculateConsistencyBonus,
+  calculateLayerAwareFormalityScore,
   FORMALITY_WEIGHT,
   CONSISTENCY_WEIGHT
 } from './scoring';
@@ -20,6 +21,9 @@ describe('Scoring System', () => {
     casualShirt: { id: 's2', name: 'Casual Shirt', category: 'Shirt', formalityScore: 2 } as WardrobeItem,
     casualPants: { id: 'p2', name: 'Casual Pants', category: 'Pants', formalityScore: 3 } as WardrobeItem,
     casualShoes: { id: 'sh2', name: 'Casual Shoes', category: 'Shoes', formalityScore: 1 } as WardrobeItem,
+    
+    undershirt: { id: 'u1', name: 'Basic Undershirt', category: 'Undershirt', formalityScore: 1 } as WardrobeItem,
+    formalUndershirt: { id: 'u2', name: 'Formal Undershirt', category: 'Undershirt', formalityScore: 3 } as WardrobeItem,
   };
 
   describe('calculateFormalityScore', () => {
@@ -143,7 +147,231 @@ describe('Scoring System', () => {
     });
   });
 
+  describe('calculateLayerAwareFormalityScore', () => {
+    it('should apply full weight to visible undershirt when no shirt or jacket', () => {
+      const selection: OutfitSelection = {
+        undershirt: mockItems.undershirt, // 1 formality, should get full weight (1.0)
+        pants: mockItems.formalPants,     // 8 formality
+        shoes: mockItems.formalShoes      // 9 formality
+      };
 
+      const result = calculateLayerAwareFormalityScore(selection);
+      
+      // Should have 3 adjustments
+      expect(result.adjustments).toHaveLength(3);
+      
+      // Find undershirt adjustment
+      const undershirtAdj = result.adjustments.find(adj => adj.category === 'Undershirt');
+      expect(undershirtAdj).toBeDefined();
+      expect(undershirtAdj!.weight).toBe(1.0);
+      expect(undershirtAdj!.reason).toBe('visible');
+      expect(undershirtAdj!.originalScore).toBe(1);
+      expect(undershirtAdj!.adjustedScore).toBe(1);
+    });
+
+    it('should apply reduced weight (0.3x) to covered undershirt when shirt is present', () => {
+      const selection: OutfitSelection = {
+        shirt: mockItems.formalShirt,     // 7 formality
+        undershirt: mockItems.undershirt, // 1 formality, should get 0.3 weight
+        pants: mockItems.formalPants,     // 8 formality
+        shoes: mockItems.formalShoes      // 9 formality
+      };
+
+      const result = calculateLayerAwareFormalityScore(selection);
+      
+      // Find undershirt adjustment
+      const undershirtAdj = result.adjustments.find(adj => adj.category === 'Undershirt');
+      expect(undershirtAdj).toBeDefined();
+      expect(undershirtAdj!.weight).toBe(0.3);
+      expect(undershirtAdj!.reason).toBe('covered');
+      expect(undershirtAdj!.originalScore).toBe(1);
+      expect(undershirtAdj!.adjustedScore).toBe(0.3);
+    });
+
+    it('should apply reduced weight (0.3x) to covered undershirt when jacket is present', () => {
+      const selection: OutfitSelection = {
+        jacket: mockItems.formalJacket,   // 8 formality
+        undershirt: mockItems.undershirt, // 1 formality, should get 0.3 weight
+        pants: mockItems.formalPants,     // 8 formality
+        shoes: mockItems.formalShoes      // 9 formality
+      };
+
+      const result = calculateLayerAwareFormalityScore(selection);
+      
+      // Find undershirt adjustment
+      const undershirtAdj = result.adjustments.find(adj => adj.category === 'Undershirt');
+      expect(undershirtAdj).toBeDefined();
+      expect(undershirtAdj!.weight).toBe(0.3);
+      expect(undershirtAdj!.reason).toBe('covered');
+    });
+
+    it('should apply reduced weight (0.7x) to covered shirt when jacket is present', () => {
+      const selection: OutfitSelection = {
+        jacket: mockItems.formalJacket,   // 8 formality
+        shirt: mockItems.formalShirt,     // 7 formality, should get 0.7 weight
+        pants: mockItems.formalPants,     // 8 formality
+        shoes: mockItems.formalShoes      // 9 formality
+      };
+
+      const result = calculateLayerAwareFormalityScore(selection);
+      
+      // Find shirt adjustment
+      const shirtAdj = result.adjustments.find(adj => adj.category === 'Shirt');
+      expect(shirtAdj).toBeDefined();
+      expect(shirtAdj!.weight).toBe(0.7);
+      expect(shirtAdj!.reason).toBe('covered');
+      expect(shirtAdj!.originalScore).toBe(7);
+      expect(shirtAdj!.adjustedScore).toBeCloseTo(4.9); // 7 * 0.7
+    });
+
+    it('should apply full weight to visible shirt when no jacket', () => {
+      const selection: OutfitSelection = {
+        shirt: mockItems.formalShirt,     // 7 formality, should get full weight
+        pants: mockItems.formalPants,     // 8 formality
+        shoes: mockItems.formalShoes      // 9 formality
+      };
+
+      const result = calculateLayerAwareFormalityScore(selection);
+      
+      // Find shirt adjustment
+      const shirtAdj = result.adjustments.find(adj => adj.category === 'Shirt');
+      expect(shirtAdj).toBeDefined();
+      expect(shirtAdj!.weight).toBe(1.0);
+      expect(shirtAdj!.reason).toBe('visible');
+    });
+
+    it('should apply accessory weight (0.8x) to belt and watch', () => {
+      const selection: OutfitSelection = {
+        shirt: mockItems.formalShirt,     // 7 formality
+        pants: mockItems.formalPants,     // 8 formality
+        shoes: mockItems.formalShoes,     // 9 formality
+        belt: mockItems.formalBelt,       // 7 formality, should get 0.8 weight
+        watch: mockItems.formalWatch      // 8 formality, should get 0.8 weight
+      };
+
+      const result = calculateLayerAwareFormalityScore(selection);
+      
+      // Find belt and watch adjustments
+      const beltAdj = result.adjustments.find(adj => adj.category === 'Belt');
+      const watchAdj = result.adjustments.find(adj => adj.category === 'Watch');
+      
+      expect(beltAdj).toBeDefined();
+      expect(beltAdj!.weight).toBe(0.8);
+      expect(beltAdj!.reason).toBe('accessory');
+      expect(beltAdj!.adjustedScore).toBeCloseTo(5.6); // 7 * 0.8
+      
+      expect(watchAdj).toBeDefined();
+      expect(watchAdj!.weight).toBe(0.8);
+      expect(watchAdj!.reason).toBe('accessory');
+      expect(watchAdj!.adjustedScore).toBeCloseTo(6.4); // 8 * 0.8
+    });
+
+    it('should handle complex layering scenario with all items', () => {
+      const selection: OutfitSelection = {
+        jacket: mockItems.formalJacket,     // 8 formality, visible (1.0x)
+        shirt: mockItems.formalShirt,       // 7 formality, covered by jacket (0.7x)
+        undershirt: mockItems.undershirt,   // 1 formality, covered by shirt (0.3x)
+        pants: mockItems.formalPants,       // 8 formality, visible (1.0x)
+        shoes: mockItems.formalShoes,       // 9 formality, visible (1.0x)
+        belt: mockItems.formalBelt,         // 7 formality, accessory (0.8x)
+        watch: mockItems.formalWatch        // 8 formality, accessory (0.8x)
+      };
+
+      const result = calculateLayerAwareFormalityScore(selection);
+      
+      // Should have 7 adjustments (one for each item)
+      expect(result.adjustments).toHaveLength(7);
+      
+      // Verify each layer's weight
+      const jacketAdj = result.adjustments.find(adj => adj.category === 'Jacket/Overshirt');
+      const shirtAdj = result.adjustments.find(adj => adj.category === 'Shirt');
+      const undershirtAdj = result.adjustments.find(adj => adj.category === 'Undershirt');
+      const pantsAdj = result.adjustments.find(adj => adj.category === 'Pants');
+      const shoesAdj = result.adjustments.find(adj => adj.category === 'Shoes');
+      const beltAdj = result.adjustments.find(adj => adj.category === 'Belt');
+      const watchAdj = result.adjustments.find(adj => adj.category === 'Watch');
+      
+      expect(jacketAdj!.weight).toBe(1.0);
+      expect(jacketAdj!.reason).toBe('visible');
+      
+      expect(shirtAdj!.weight).toBe(0.7);
+      expect(shirtAdj!.reason).toBe('covered');
+      
+      expect(undershirtAdj!.weight).toBe(0.3);
+      expect(undershirtAdj!.reason).toBe('covered');
+      
+      expect(pantsAdj!.weight).toBe(1.0);
+      expect(pantsAdj!.reason).toBe('visible');
+      
+      expect(shoesAdj!.weight).toBe(1.0);
+      expect(shoesAdj!.reason).toBe('visible');
+      
+      expect(beltAdj!.weight).toBe(0.8);
+      expect(beltAdj!.reason).toBe('accessory');
+      
+      expect(watchAdj!.weight).toBe(0.8);
+      expect(watchAdj!.reason).toBe('accessory');
+    });
+
+    it('should calculate correct weighted average score', () => {
+      const selection: OutfitSelection = {
+        jacket: { ...mockItems.formalJacket, formalityScore: 10 },   // 10 * 1.0 = 10
+        shirt: { ...mockItems.formalShirt, formalityScore: 8 },      // 8 * 0.7 = 5.6
+        undershirt: { ...mockItems.undershirt, formalityScore: 2 },  // 2 * 0.3 = 0.6
+        pants: { ...mockItems.formalPants, formalityScore: 6 }       // 6 * 1.0 = 6
+      };
+
+      const result = calculateLayerAwareFormalityScore(selection);
+      
+      // Total weighted score: 10 + 5.6 + 0.6 + 6 = 22.2
+      // Total weight: 1.0 + 0.7 + 0.3 + 1.0 = 3.0
+      // Average: 22.2 / 3.0 = 7.4
+      // Percentage: (7.4 / 10) * 100 * 0.93 = 68.82, rounded = 69
+      expect(result.score).toBe(69);
+    });
+
+    it('should handle empty selection', () => {
+      const selection: OutfitSelection = {};
+      const result = calculateLayerAwareFormalityScore(selection);
+      
+      expect(result.score).toBe(0);
+      expect(result.adjustments).toHaveLength(0);
+    });
+
+    it('should handle items without formality scores', () => {
+      const itemWithoutScore = { id: 'x1', name: 'No Score', category: 'Shirt' } as WardrobeItem;
+      const selection: OutfitSelection = {
+        shirt: itemWithoutScore,
+        pants: mockItems.formalPants
+      };
+
+      const result = calculateLayerAwareFormalityScore(selection);
+      
+      // Should only have adjustment for pants
+      expect(result.adjustments).toHaveLength(1);
+      expect(result.adjustments[0].category).toBe('Pants');
+    });
+
+    it('should track all adjustment details correctly', () => {
+      const selection: OutfitSelection = {
+        shirt: mockItems.formalShirt,     // 7 formality
+        undershirt: mockItems.undershirt  // 1 formality, covered
+      };
+
+      const result = calculateLayerAwareFormalityScore(selection);
+      
+      const undershirtAdj = result.adjustments.find(adj => adj.category === 'Undershirt');
+      expect(undershirtAdj).toEqual({
+        itemId: 'u1',
+        itemName: 'Basic Undershirt',
+        category: 'Undershirt',
+        originalScore: 1,
+        adjustedScore: 0.3,
+        weight: 0.3,
+        reason: 'covered'
+      });
+    });
+  });
 
   describe('calculateOutfitScore', () => {
     it('should calculate complete score breakdown with 93% formality + 7% consistency', () => {
@@ -158,8 +386,11 @@ describe('Scoring System', () => {
 
       const breakdown = calculateOutfitScore(selection);
       
-      expect(breakdown.formalityScore).toBe(73); // 93% of formality
+      expect(breakdown.formalityScore).toBe(74); // Layer-aware formality with accessory weights
+      expect(breakdown.formalityWeight).toBe(0.93);
       expect(breakdown.consistencyBonus).toBeGreaterThan(0);
+      expect(breakdown.consistencyWeight).toBe(0.07);
+      expect(breakdown.layerAdjustments).toHaveLength(6); // All 6 items should have adjustments
       expect(breakdown.total).toBe(breakdown.formalityScore + breakdown.consistencyBonus);
       expect(breakdown.percentage).toBe(breakdown.total);
     });

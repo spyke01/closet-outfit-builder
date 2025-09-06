@@ -1,5 +1,5 @@
-import { calculateOutfitScore, ScoreBreakdown } from '../utils/scoring';
-import { OutfitSelection, WardrobeItem } from '../types';
+import { calculateOutfitScore } from '../utils/scoring';
+import { OutfitSelection, WardrobeItem, ScoreBreakdown } from '../types';
 
 /**
  * Example demonstrating the new consolidated scoring system
@@ -48,10 +48,18 @@ const watch: WardrobeItem = {
   formalityScore: 8
 };
 
+const undershirt: WardrobeItem = {
+  id: 'undershirt-white',
+  name: 'White Undershirt',
+  category: 'Undershirt',
+  formalityScore: 1
+};
+
 // Example outfit selections
 const formalOutfit: OutfitSelection = {
   jacket: blazer,
   shirt,
+  undershirt,
   pants: trousers,
   shoes,
   belt,
@@ -59,11 +67,11 @@ const formalOutfit: OutfitSelection = {
 };
 
 const casualOutfit: OutfitSelection = {
-  shirt: {
-    id: 'tee-white',
-    name: 'White T-Shirt',
-    category: 'Shirt',
-    formalityScore: 2
+  undershirt: {
+    id: 'tee-casual',
+    name: 'Casual T-Shirt',
+    category: 'Undershirt',
+    formalityScore: 1
   },
   pants: {
     id: 'jeans-dark',
@@ -82,17 +90,27 @@ const casualOutfit: OutfitSelection = {
 // Calculate scores
 console.log('=== New Scoring System Examples ===\n');
 
-console.log('1. Formal Business Outfit:');
+console.log('1. Formal Business Outfit (with layering):');
 const formalScore: ScoreBreakdown = calculateOutfitScore(formalOutfit);
-console.log(`   Formality Score: ${formalScore.formalityScore}% (93% weight)`);
-console.log(`   Consistency Bonus: ${formalScore.consistencyBonus}% (7% weight)`);
-console.log(`   Total Score: ${formalScore.total}% (${formalScore.percentage}%)\n`);
+console.log(`   Formality Score: ${formalScore.formalityScore}% (${Math.round(formalScore.formalityWeight * 100)}% weight)`);
+console.log(`   Consistency Bonus: ${formalScore.consistencyBonus}% (${Math.round(formalScore.consistencyWeight * 100)}% weight)`);
+console.log(`   Total Score: ${formalScore.total}% (${formalScore.percentage}%)`);
+console.log('   Layer Adjustments:');
+formalScore.layerAdjustments.forEach(adj => {
+  console.log(`     ${adj.itemName}: ${adj.originalScore} × ${adj.weight} = ${adj.adjustedScore.toFixed(1)} (${adj.reason})`);
+});
+console.log('');
 
-console.log('2. Casual Weekend Outfit:');
+console.log('2. Casual Weekend Outfit (undershirt only):');
 const casualScore: ScoreBreakdown = calculateOutfitScore(casualOutfit);
-console.log(`   Formality Score: ${casualScore.formalityScore}% (93% weight)`);
-console.log(`   Consistency Bonus: ${casualScore.consistencyBonus}% (7% weight)`);
-console.log(`   Total Score: ${casualScore.total}% (${casualScore.percentage}%)\n`);
+console.log(`   Formality Score: ${casualScore.formalityScore}% (${Math.round(casualScore.formalityWeight * 100)}% weight)`);
+console.log(`   Consistency Bonus: ${casualScore.consistencyBonus}% (${Math.round(casualScore.consistencyWeight * 100)}% weight)`);
+console.log(`   Total Score: ${casualScore.total}% (${casualScore.percentage}%)`);
+console.log('   Layer Adjustments:');
+casualScore.layerAdjustments.forEach(adj => {
+  console.log(`     ${adj.itemName}: ${adj.originalScore} × ${adj.weight} = ${adj.adjustedScore.toFixed(1)} (${adj.reason})`);
+});
+console.log('');
 
 console.log('3. Perfect Score Example (all 10s):');
 const perfectOutfit: OutfitSelection = {
@@ -102,12 +120,18 @@ const perfectOutfit: OutfitSelection = {
   watch: { ...watch, formalityScore: 10 }
 };
 const perfectScore: ScoreBreakdown = calculateOutfitScore(perfectOutfit);
-console.log(`   Formality Score: ${perfectScore.formalityScore}% (93% weight)`);
-console.log(`   Consistency Bonus: ${perfectScore.consistencyBonus}% (7% weight)`);
-console.log(`   Total Score: ${perfectScore.total}% (${perfectScore.percentage}%)\n`);
+console.log(`   Formality Score: ${perfectScore.formalityScore}% (${Math.round(perfectScore.formalityWeight * 100)}% weight)`);
+console.log(`   Consistency Bonus: ${perfectScore.consistencyBonus}% (${Math.round(perfectScore.consistencyWeight * 100)}% weight)`);
+console.log(`   Total Score: ${perfectScore.total}% (${perfectScore.percentage}%)`);
+console.log('');
 
-console.log('=== New Scoring Breakdown ===');
-console.log('• Formality Score: 93% of total based on item formality levels (1-10 each)');
+console.log('=== Layer-Aware Scoring System ===');
+console.log('• Formality Score: 93% of total based on weighted item formality levels (1-10 each)');
 console.log('• Consistency Bonus: 7% of total for outfits with similar formality levels');
-console.log('• Jacket and Belt are optional items');
+console.log('• Layer Weights:');
+console.log('  - Visible items (jacket, pants, shoes): 1.0x weight');
+console.log('  - Covered shirt (when jacket present): 0.7x weight');
+console.log('  - Covered undershirt (when shirt/jacket present): 0.3x weight');
+console.log('  - Accessories (belt, watch): 0.8x weight');
+console.log('• All categories are optional');
 console.log('• Maximum Possible Score: 100%');
