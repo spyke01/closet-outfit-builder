@@ -118,6 +118,7 @@ The application will be available at:
 - `npm run dev` - Start Vite development server
 - `npm run dev:netlify` - Start Netlify dev environment with functions
 - `npm run build` - Build the application for production
+- `npm run generate:outfits` - Build outfits from wardrobe
 - `npm run preview` - Preview the production build locally
 - `npm run lint` - Run ESLint for code quality checks
 - `npm test` - Run tests in watch mode
@@ -211,7 +212,12 @@ The app now follows a mobile-first approach:
 1. Add items to `src/data/wardrobe.json` with proper categorization and tags
 2. The app will automatically load and categorize new items
 
-### Creating Outfit Combinations
+### Creating Outfit Combinations (automated)
+
+1. Run `npm run generate:outfits`
+2. If you would like more outfits to be generated you can adjust the tunable options in `scripts/generate-outfits.js`
+
+### Creating Outfit Combinations (Manual)
 
 1. Add outfit definitions to `src/data/outfits.json`
 2. Reference items by their unique IDs

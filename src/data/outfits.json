@@ -615,6 +615,315 @@
         "omega-300m"
       ],
       "tuck": "Untucked"
+    },
+    {
+      "id": "o-056",
+      "items": [
+        "camel-crewneck",
+        "rl-featherweight-blue",
+        "chinos-white",
+        "sneakers-white-leather",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-057",
+      "items": [
+        "shacket-olive",
+        "linen-black",
+        "denim-dark",
+        "apache-boots",
+        "belt-rugged",
+        "panerai-luminor"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-058",
+      "items": [
+        "camel-crewneck",
+        "rl-featherweight-blue",
+        "chinos-navy",
+        "sneakers-white-leather",
+        "belt-braided",
+        "omega-300m",
+        "tee-white"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-059",
+      "items": [
+        "camel-crewneck",
+        "rl-featherweight-blue",
+        "chinos-white",
+        "sneakers-white-leather",
+        "belt-braided",
+        "omega-300m",
+        "tee-white"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-060",
+      "items": [
+        "camel-crewneck",
+        "linen-striped-white-navy",
+        "chinos-navy",
+        "sneakers-white-leather",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-061",
+      "items": [
+        "camel-crewneck",
+        "linen-striped-white-navy",
+        "chinos-white",
+        "sneakers-white-leather",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-062",
+      "items": [
+        "camel-crewneck",
+        "linen-deep-navy",
+        "chinos-white",
+        "sneakers-white-leather",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-063",
+      "items": [
+        "camel-crewneck",
+        "rl-featherweight-blue",
+        "chinos-navy",
+        "loafers-dark-brown-suede",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-064",
+      "items": [
+        "shacket-olive",
+        "linen-black",
+        "denim-dark",
+        "apache-boots",
+        "belt-rugged",
+        "panerai-luminor",
+        "tee-white"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-065",
+      "items": [
+        "camel-crewneck",
+        "linen-striped-white-navy",
+        "chinos-white",
+        "loafers-dark-brown-suede",
+        "belt-braided",
+        "omega-300m",
+        "tee-white"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-066",
+      "items": [
+        "shacket-olive",
+        "linen-black",
+        "chinos-black",
+        "apache-boots",
+        "belt-rugged",
+        "panerai-luminor"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-067",
+      "items": [
+        "shacket-olive",
+        "linen-black",
+        "chinos-black",
+        "apache-boots",
+        "belt-rugged",
+        "panerai-luminor",
+        "tee-white"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-068",
+      "items": [
+        "mac-coat-navy",
+        "blue-ocbd",
+        "chinos-light-grey",
+        "loafers-dark-brown",
+        "belt-reversible",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-069",
+      "items": [
+        "camel-crewneck",
+        "linen-white",
+        "chinos-light-grey",
+        "loafers-light-tan",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-070",
+      "items": [
+        "mac-coat-navy",
+        "blue-ocbd",
+        "chinos-khaki",
+        "loafers-dark-brown-suede",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-071",
+      "items": [
+        "mac-coat-navy",
+        "white-ocbd",
+        "chinos-khaki",
+        "loafers-dark-brown",
+        "belt-reversible",
+        "omega-300m",
+        "tee-white"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-072",
+      "items": [
+        "camel-crewneck",
+        "grey-knit-polo",
+        "chinos-khaki",
+        "loafers-light-tan",
+        "belt-braided",
+        "omega-300m",
+        "tee-white"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-073",
+      "items": [
+        "camel-crewneck",
+        "linen-white",
+        "chinos-khaki",
+        "loafers-dark-brown-suede",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-074",
+      "items": [
+        "camel-crewneck",
+        "grey-knit-polo",
+        "chinos-light-grey",
+        "loafers-dark-brown-suede",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-075",
+      "items": [
+        "mac-coat-navy",
+        "white-ocbd",
+        "chinos-light-grey",
+        "loafers-dark-brown-suede",
+        "belt-braided",
+        "omega-300m",
+        "tee-white"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-076",
+      "items": [
+        "camel-crewneck",
+        "navy-ribbed-polo",
+        "chinos-light-grey",
+        "loafers-dark-brown-suede",
+        "belt-braided",
+        "omega-300m",
+        "tee-white"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-077",
+      "items": [
+        "camel-crewneck",
+        "navy-ribbed-polo",
+        "chinos-khaki",
+        "loafers-light-tan",
+        "belt-braided",
+        "omega-300m"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-078",
+      "items": [
+        "shacket-olive",
+        "grey-henley-knit",
+        "chinos-black",
+        "apache-boots",
+        "belt-rugged",
+        "panerai-luminor"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-079",
+      "items": [
+        "shacket-olive",
+        "grey-henley-knit",
+        "chinos-black",
+        "apache-boots",
+        "belt-rugged",
+        "panerai-luminor",
+        "tee-white"
+      ],
+      "tuck": "Tucked"
+    },
+    {
+      "id": "o-080",
+      "items": [
+        "grey-henley-knit",
+        "chinos-black",
+        "apache-boots",
+        "belt-rugged",
+        "panerai-luminor"
+      ],
+      "tuck": "Tucked"
     }
   ]
 }
