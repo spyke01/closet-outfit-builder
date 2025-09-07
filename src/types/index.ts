@@ -121,24 +121,10 @@ export interface LocationError {
   type: 'permission_denied' | 'position_unavailable' | 'timeout' | 'not_supported';
 }
 
-// Google Maps Geocoding API response types
-export interface GoogleGeocodingResponse {
-  results: Array<{
-    geometry: {
-      location: {
-        lat: number;
-        lng: number;
-      };
-    };
-    formatted_address: string;
-    place_id: string;
-    types: string[];
-  }>;
-  status: 'OK' | 'ZERO_RESULTS' | 'OVER_QUERY_LIMIT' | 'REQUEST_DENIED' | 'INVALID_REQUEST' | 'UNKNOWN_ERROR';
-}
 
-// Google Weather API response types
-export interface GoogleWeatherResponse {
+
+// Weather API response types
+export interface WeatherResponse {
   current: {
     temperature: number;
     condition: string;

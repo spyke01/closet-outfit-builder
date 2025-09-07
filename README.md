@@ -25,7 +25,7 @@ A React-based wardrobe management and outfit generation application that helps u
 - **Styling**: Tailwind CSS
 - **Icons**: Lucide React
 - **Backend**: Netlify Functions (serverless)
-- **APIs**: Google Maps Geocoding API, OpenWeatherMap API
+- **APIs**: OpenWeatherMap API
 - **PWA**: Service Worker for offline functionality
 - **Testing**: Vitest with Testing Library
 
@@ -88,7 +88,7 @@ src/
 netlify/
 └── functions/          # Serverless functions for secure API proxying
     ├── weather.ts      # Weather API proxy with rate limiting
-    ├── geocoding.ts    # Google Maps Geocoding API proxy
+
     ├── package.json    # Function dependencies
     └── tsconfig.json   # TypeScript configuration for functions
 ```
@@ -120,7 +120,7 @@ npm install
 cp .env.example .env.local
 
 # Edit .env.local with your actual API keys
-# GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
+
 # OPENWEATHER_API_KEY=your_openweathermap_api_key_here
 ```
 
@@ -150,7 +150,7 @@ The application will be available at:
 
 ## Weather Integration
 
-The app provides location-based weather forecasts using Google Maps Geocoding API and OpenWeatherMap API. Weather data is securely accessed through Netlify Functions.
+The app provides location-based weather forecasts using OpenWeatherMap API. Weather data is securely accessed through Netlify Functions, with location obtained directly from the browser's geolocation API.
 
 ### Quick Setup
 

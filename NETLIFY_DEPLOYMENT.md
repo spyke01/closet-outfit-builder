@@ -5,7 +5,7 @@ This guide covers the complete setup for deploying the Closet Outfit Builder app
 ## Prerequisites
 
 - Netlify account
-- Google Cloud Platform account with billing enabled
+
 - OpenWeatherMap API account
 - Git repository connected to Netlify
 
@@ -16,9 +16,9 @@ This guide covers the complete setup for deploying the Closet Outfit Builder app
 Set these in your Netlify dashboard under **Site Settings > Environment Variables**:
 
 ```bash
-# Google Maps API Key (for geocoding location data)
-# Get from: https://console.cloud.google.com/
-GOOGLE_MAPS_API_KEY=your_production_google_maps_api_key_here
+# OpenWeatherMap API Key for weather data
+# Get from: https://openweathermap.org/api
+OPENWEATHER_API_KEY=your_production_openweather_api_key_here
 
 # OpenWeatherMap API Key (for weather data)
 # Get from: https://openweathermap.org/api
@@ -40,7 +40,6 @@ NODE_VERSION=18
 - Use different API keys for production vs development
 - Never commit API keys to version control
 - API keys are accessed server-side via Netlify Functions only
-- Configure domain restrictions in Google Cloud Console
 
 ## 2. Build Settings Configuration
 
@@ -62,10 +61,7 @@ The `netlify.toml` file is already configured with optimal settings:
   to = "/.netlify/functions/weather"
   status = 200
 
-[[redirects]]
-  from = "/api/geocoding"
-  to = "/.netlify/functions/geocoding"
-  status = 200
+
 
 [build.environment]
   NODE_VERSION = "18"
@@ -80,7 +76,7 @@ The `netlify.toml` file is already configured with optimal settings:
    - **Functions directory**: `netlify/functions`
    - **Node.js version**: 18
 
-## 3. Google Cloud Platform Configuration
+## 3. OpenWeather Configuration
 
 ### API Setup
 
@@ -91,13 +87,11 @@ The `netlify.toml` file is already configured with optimal settings:
    gcloud config set project your-project-id
    ```
 
-2. **Enable Required APIs:**
-   ```bash
-   # Enable Geocoding API
-   gcloud services enable geocoding-backend.googleapis.com
-   
-   # Or via Console: APIs & Services > Library > Search "Geocoding API"
-   ```
+2. **Get OpenWeatherMap API Key:**
+   - Visit [OpenWeatherMap API](https://openweathermap.org/api)
+   - Sign up for a free account
+   - Generate an API key from your dashboard
+   - Free tier includes 1,000 calls/day, 60 calls/minute
 
 3. **Create API Key:**
    - Go to **APIs & Services > Credentials**
@@ -269,11 +263,6 @@ Monitor function performance:
 
 ### API Usage Monitoring
 
-**Google Cloud Console:**
-- Monitor API usage in **APIs & Services > Dashboard**
-- Set up billing alerts for cost management
-- Review quotas and limits
-
 **OpenWeatherMap:**
 - Check usage in account dashboard
 - Monitor daily/monthly limits
@@ -316,13 +305,11 @@ npm run build
 **API Key Errors:**
 ```bash
 # Test API keys locally first
-export GOOGLE_MAPS_API_KEY="your_key"
 export OPENWEATHER_API_KEY="your_key"
 npm run dev:netlify
 ```
 
 **Domain Restriction Errors:**
-- Verify domain is added to Google Cloud Console
 - Check for typos in domain configuration
 - Ensure HTTPS is used for production domains
 
@@ -340,7 +327,6 @@ This will provide more detailed error messages in function logs.
 ### API Key Security
 - ✅ API keys stored as environment variables
 - ✅ Keys accessed server-side only via Netlify Functions
-- ✅ Domain restrictions configured in Google Cloud Console
 - ✅ Rate limiting implemented in functions
 - ✅ Input validation and sanitization
 
@@ -356,7 +342,6 @@ This will provide more detailed error messages in function logs.
 Before going live:
 
 - [ ] All environment variables set in Netlify
-- [ ] Google Cloud APIs enabled and configured
 - [ ] Domain restrictions properly configured
 - [ ] OpenWeatherMap API key activated
 - [ ] Build settings verified in Netlify
@@ -374,4 +359,3 @@ For deployment issues:
 - Review function logs in Netlify dashboard
 - Test API endpoints directly
 - Verify environment variable configuration
-- Check Google Cloud Console for API errors

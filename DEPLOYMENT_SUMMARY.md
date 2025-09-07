@@ -9,7 +9,6 @@ Successfully configured Netlify deployment settings for the Closet Outfit Builde
 ### New Files Created
 1. **NETLIFY_DEPLOYMENT.md** - Comprehensive deployment guide covering:
    - Environment variable setup
-   - Google Cloud Platform configuration
    - OpenWeatherMap API setup
    - Domain restrictions and security
    - Build configuration
@@ -94,9 +93,8 @@ The application is now fully configured for production deployment with:
 
 1. Set up actual Netlify site and connect repository
 2. Configure production environment variables in Netlify dashboard
-3. Set up Google Cloud Platform project with proper domain restrictions
-4. Run deployment verification script against production environment
-5. Complete production checklist sign-off
+3. Run deployment verification script against production environment
+4. Complete production checklist sign-off
 
 ## Verification Commands
 

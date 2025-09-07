@@ -3,7 +3,7 @@
  * Provides weather data fetching with caching, retry logic, and error handling
  */
 
-import { WeatherData, WeatherError, GoogleWeatherResponse } from '../types';
+import { WeatherData, WeatherError, WeatherResponse } from '../types';
 
 // Cache configuration
 const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
@@ -43,11 +43,11 @@ const isCacheValid = (cachedData: CachedWeatherData): boolean => {
 };
 
 /**
- * Transforms Google Weather API response to WeatherData array
- * @param response - Google Weather API response
+ * Transforms Weather API response to WeatherData array
+ * @param response - Weather API response
  * @returns Array of WeatherData objects
  */
-const transformWeatherResponse = (response: GoogleWeatherResponse): WeatherData[] => {
+const transformWeatherResponse = (response: WeatherResponse): WeatherData[] => {
   return response.forecast.map(day => {
     const date = new Date(day.date);
     return {
@@ -83,7 +83,7 @@ const fetchWeatherWithRetry = async (
   lat: number, 
   lon: number, 
   attempt: number = 0
-): Promise<GoogleWeatherResponse> => {
+): Promise<WeatherResponse> => {
   try {
     // Create abort controller for timeout handling
     const controller = new AbortController();
@@ -153,7 +153,7 @@ const fetchWeatherWithRetry = async (
     }
 
     const data = await response.json();
-    return data as GoogleWeatherResponse;
+    return data as WeatherResponse;
 
   } catch (error) {
     // Handle AbortError from timeout

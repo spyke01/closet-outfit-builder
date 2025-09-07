@@ -6,11 +6,10 @@ Use this checklist to ensure your Netlify deployment is properly configured and 
 
 ### 1. API Keys Configuration
 
-- [ ] **Google Cloud Platform Setup**
-  - [ ] Project created with billing enabled
-  - [ ] Geocoding API enabled
-  - [ ] API key created with proper restrictions
-  - [ ] Domain restrictions configured for production URL
+- [ ] **OpenWeatherMap Setup**
+  - [ ] Account created (free tier available)
+  - [ ] API key generated
+  - [ ] API key configured in Netlify environment variables
   - [ ] API quotas and billing alerts set up
 
 - [ ] **OpenWeatherMap Setup**
@@ -23,7 +22,6 @@ Use this checklist to ensure your Netlify deployment is properly configured and 
 
 Set these in **Site Settings > Environment Variables**:
 
-- [ ] `GOOGLE_MAPS_API_KEY` - Production Google Maps API key
 - [ ] `OPENWEATHER_API_KEY` - Production OpenWeatherMap API key
 
 **Security Notes:**
@@ -53,7 +51,6 @@ Set these in **Site Settings > Environment Variables**:
 
 - [ ] Custom domain configured (if applicable)
 - [ ] SSL certificate active
-- [ ] Domain restrictions updated in Google Cloud Console
 - [ ] DNS propagation complete
 
 ## Post-Deployment Verification
@@ -83,7 +80,6 @@ Manual testing checklist:
 
 - [ ] **API Endpoints**
   - [ ] `/api/weather` responds correctly
-  - [ ] `/api/geocoding` responds correctly
   - [ ] Rate limiting prevents abuse
   - [ ] Error responses are user-friendly
 
@@ -96,7 +92,6 @@ Manual testing checklist:
 
 - [ ] **Rate Limiting**
   - [ ] Weather API: 10 requests/minute per IP
-  - [ ] Geocoding API: 20 requests/minute per IP
   - [ ] Rate limit responses return 429 status
 
 - [ ] **Input Validation**
@@ -145,7 +140,6 @@ Test these scenarios:
   - [ ] Usage analytics reviewed
 
 - [ ] **API Usage Monitoring**
-  - [ ] Google Cloud Console usage tracking
   - [ ] OpenWeatherMap usage monitoring
   - [ ] Billing alerts configured
 
@@ -184,8 +178,6 @@ Test these scenarios:
 
 **API Key Errors:**
 - Verify keys are set in Netlify environment variables
-- Check Google Cloud Console for API restrictions
-- Ensure billing is enabled for Google Cloud
 
 **Weather Not Loading:**
 - Test API endpoints directly
@@ -193,7 +185,6 @@ Test these scenarios:
 - Verify location permissions
 
 **Domain Restriction Errors:**
-- Update Google Cloud Console with correct domains
 - Include both www and non-www versions
 - Add Netlify preview URLs if needed
 
@@ -210,12 +201,10 @@ Test these scenarios:
    - Rollback if necessary
 
 3. **API Service Issues**
-   - Check Google Cloud Console status
    - Verify OpenWeatherMap service status
    - Enable fallback modes if available
 
 ### Contact Information
 
 - **Netlify Support**: [Netlify Support](https://www.netlify.com/support/)
-- **Google Cloud Support**: [Google Cloud Support](https://cloud.google.com/support)
 - **OpenWeatherMap Support**: [OpenWeatherMap Support](https://openweathermap.org/support)

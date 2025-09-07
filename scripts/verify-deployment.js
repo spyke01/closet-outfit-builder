@@ -84,40 +84,7 @@ async function testWeatherAPI() {
   }
 }
 
-async function testGeocodingAPI() {
-  log('\n🗺️  Testing Geocoding API...', 'blue');
-  
-  try {
-    const url = `${SITE_URL}/api/geocoding?address=${encodeURIComponent(TEST_ADDRESS)}`;
-    const response = await makeRequest(url);
-    
-    if (response.status === 200) {
-      const data = response.data;
-      
-      // Validate response structure
-      if (data.results && Array.isArray(data.results) && data.results.length > 0) {
-        const result = data.results[0];
-        if (result.geometry && result.geometry.location) {
-          log('✅ Geocoding API: SUCCESS', 'green');
-          log(`   Address: ${result.formatted_address}`, 'green');
-          log(`   Coordinates: ${result.geometry.location.lat}, ${result.geometry.location.lng}`, 'green');
-          return true;
-        }
-      }
-      
-      log('❌ Geocoding API: Invalid response structure', 'red');
-      log(`   Response: ${JSON.stringify(data, null, 2)}`, 'yellow');
-      return false;
-    } else {
-      log(`❌ Geocoding API: HTTP ${response.status}`, 'red');
-      log(`   Response: ${JSON.stringify(response.data, null, 2)}`, 'yellow');
-      return false;
-    }
-  } catch (error) {
-    log(`❌ Geocoding API: Network error - ${error.message}`, 'red');
-    return false;
-  }
-}
+
 
 async function testRateLimiting() {
   log('\n⏱️  Testing Rate Limiting...', 'blue');
@@ -162,11 +129,7 @@ async function testErrorHandling() {
       url: `${SITE_URL}/api/weather`,
       expectedStatus: 400
     },
-    {
-      name: 'Invalid geocoding address',
-      url: `${SITE_URL}/api/geocoding?address=`,
-      expectedStatus: 400
-    }
+
   ];
   
   let allPassed = true;
@@ -227,7 +190,7 @@ async function runAllTests() {
   const results = {
     mainApp: await testMainApp(),
     weatherAPI: await testWeatherAPI(),
-    geocodingAPI: await testGeocodingAPI(),
+
     rateLimiting: await testRateLimiting(),
     errorHandling: await testErrorHandling()
   };

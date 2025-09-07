@@ -6,15 +6,10 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-# API endpoint redirects for weather and geocoding services
+# API endpoint redirect for weather service
 [[redirects]]
   from = "/api/weather"
   to = "/.netlify/functions/weather"
-  status = 200
-
-[[redirects]]
-  from = "/api/geocoding"
-  to = "/.netlify/functions/geocoding"
   status = 200
 
 # Build environment configuration
@@ -46,6 +41,3 @@
 # Function-specific configuration
 [functions.weather]
   included_files = ["netlify/functions/weather.ts"]
-
-[functions.geocoding]
-  included_files = ["netlify/functions/geocoding.ts"]
