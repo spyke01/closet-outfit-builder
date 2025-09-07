@@ -3,10 +3,11 @@
   "short_name": "Outfits",
   "description": "Intelligent outfit composition for the modern wardrobe",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#fefefe",
   "theme_color": "#1e293b",
-  "orientation": "landscape-primary",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "/what-to-wear-logo.svg",
@@ -42,7 +43,14 @@
     {
       "src": "/android/android-launchericon-512-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android/android-launchericon-512-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/ios/180.png",
