@@ -125,7 +125,7 @@
         "Shorts"
       ],
       "formalityScore": 5,
-      "image": "",
+      "image": "/images/wardrobe/ocbd-linen-white.png",
       "brand": "Banana Republic"
     },
     {
@@ -137,7 +137,7 @@
         "Crossover"
       ],
       "formalityScore": 5,
-      "image": "",
+      "image": "/images/wardrobe/ocbd-linen-deep-navy.png",
       "brand": "Banana Republic"
     },
     {
@@ -149,7 +149,7 @@
         "Crossover"
       ],
       "formalityScore": 4,
-      "image": "",
+      "image": "/images/wardrobe/ocbd-linen-black.png",
       "brand": "Banana Republic"
     },
     {
@@ -182,7 +182,7 @@
         "Adventurer"
       ],
       "formalityScore": 3,
-      "image": "",
+      "image": "/images/wardrobe/grey-henley-knit.png",
       "brand": "Banana Republic"
     },
     {
@@ -243,7 +243,7 @@
         "Crossover"
       ],
       "formalityScore": 2,
-      "image": "",
+      "image": "/images/wardrobe/tee-grey.png",
       "brand": "Banana Republic"
     },
     {
@@ -324,7 +324,7 @@
         "Refined"
       ],
       "formalityScore": 8,
-      "image": "",
+      "image": "/images/wardrobe/trousers-charcoal.png",
       "brand": "Banana Republic"
     },
     {
@@ -413,7 +413,7 @@
         "Refined"
       ],
       "formalityScore": 7,
-      "image": "",
+      "image": "/images/wardrobe/loafers-dark-brown.png",
       "brand": "Allen Edmonds"
     },
     {
@@ -437,7 +437,7 @@
         "Shorts"
       ],
       "formalityScore": 6,
-      "image": "",
+      "image": "/images/wardrobe/loafers-light-tan.png",
       "brand": "Clarks"
     },
     {
@@ -448,7 +448,7 @@
         "Refined"
       ],
       "formalityScore": 8,
-      "image": ""
+      "image": "/images/wardrobe/loafers-black-horsebit.png"
     },
     {
       "id": "double-monk-black",
@@ -458,18 +458,18 @@
         "Refined"
       ],
       "formalityScore": 8,
-      "image": ""
+      "image": "/images/wardrobe/double-monk-black.png"
     },
     {
       "id": "sneakers-killshots",
-      "name": "Killshots (White)",
+      "name": "Killshots (White/Navy)",
       "category": "Shoes",
       "capsuleTags": [
         "Crossover",
         "Shorts"
       ],
       "formalityScore": 2,
-      "image": "",
+      "image": "/images/wardrobe/sneakers-killshots.png",
       "brand": "Nike"
     },
     {
@@ -482,7 +482,7 @@
         "Shorts"
       ],
       "formalityScore": 3,
-      "image": "",
+      "image": "/images/wardrobe/sneakers-white-leather.png",
       "brand": "Thursday Boot Company"
     },
     {
@@ -504,7 +504,7 @@
         "Refined"
       ],
       "formalityScore": 9,
-      "image": "",
+      "image": "/images/wardrobe/loafers-dark-dress.png",
       "brand": "Allen Edmonds"
     },
     {
@@ -549,7 +549,7 @@
         "Refined"
       ],
       "formalityScore": 7,
-      "image": "",
+      "image": "/images/wardrobe/belt-reversible.png",
       "brand": "Banana Republic"
     },
     {
@@ -631,18 +631,6 @@
       ],
       "formalityScore": 5,
       "image": "/images/wardrobe/luminor-panerai.png"
-    },
-    {
-      "id": "omega-speedmaster",
-      "name": "Speedmaster",
-      "category": "Watch",
-      "brand": "Omega",
-      "capsuleTags": [
-        "Adventurer",
-        "Tool"
-      ],
-      "formalityScore": 5,
-      "image": ""
     }
   ]
 }
