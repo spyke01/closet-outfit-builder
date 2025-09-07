@@ -21,7 +21,7 @@ A React-based wardrobe management and outfit generation application that helps u
 ## Screenshots
 Outfit List             |  Visual Mockup
 :-------------------------:|:-------------------------:
-![](https://raw.github.com/spyke01/closet-outfit-builder/main/screenshots/all-outfits.png)  |  ![](https://raw.github.com/spyke01/closet-outfit-builder/main/screenshots/visual-mockup.png)
+![](screenshots/all-outfits.png)  |  ![](screenshots/visual-mockup.png)
 
 ## Tech Stack
 
