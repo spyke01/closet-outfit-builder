@@ -4,8 +4,12 @@ A React-based wardrobe management and outfit generation application that helps u
 
 ## Features
 
-- **Interactive Wardrobe Management**: Browse and select items from categorized clothing collections
-- **Smart Outfit Generation**: AI-powered outfit recommendations based on style compatibility
+- **Interactive Wardrobe Management**: Browse and select items from categorized clothing collections with 7-category layering system
+- **Smart Outfit Generation**: AI-powered outfit recommendations based on style compatibility and layer-aware scoring
+- **Enhanced Scoring Algorithm**: Layer-aware formality calculations that account for clothing visibility and layering effects
+- **Visual Outfit Display**: Flip card interface with SVG-based clothing representations showing proper layering
+- **Brand Management**: Optional brand tracking and display for wardrobe items
+- **User Settings**: Customizable preferences including brand display toggles
 - **Anchor-Based Discovery**: Find outfits that work well with a specific item as the foundation
 - **Weather Integration**: 3-day weather forecast with location-based outfit suggestions
 - **Mobile-First Design**: Optimized responsive design for all device sizes
@@ -33,12 +37,28 @@ src/
 │   ├── AnchorRow.tsx   # Category selection interface
 │   ├── ItemsGrid.tsx   # Grid display for wardrobe items (direct click interactions)
 │   ├── OutfitDisplay.tsx # Main outfit visualization
-│   ├── OutfitCard.tsx  # Individual outfit card component
+│   ├── OutfitCard.tsx  # Individual outfit card component with flip functionality
 │   ├── OutfitList.tsx  # Outfit list display (default view)
 │   ├── ResultsPanel.tsx # Outfit recommendations panel
 │   ├── SelectionStrip.tsx # Selected items display (mobile-optimized)
 │   ├── TopBar.tsx      # Navigation with weather widget
 │   ├── WeatherWidget.tsx # 3-day weather forecast display
+│   ├── SettingsPage.tsx # User settings and preferences management
+│   ├── OutfitLayout.tsx # Visual SVG-based outfit display
+│   ├── ScoreBreakdown.tsx # Enhanced score breakdown with layer weights
+│   ├── svg/            # SVG clothing item components
+│   │   ├── ClothingItemSVG.tsx # Generic SVG clothing renderer
+│   │   ├── JacketSVG.tsx # Jacket and outerwear SVGs
+│   │   ├── TShirtSVG.tsx # T-shirt and undershirt SVGs
+│   │   ├── PoloSVG.tsx  # Polo shirt SVGs
+│   │   ├── LongSleeveSVG.tsx # Long sleeve shirt SVGs
+│   │   ├── ChinosSVG.tsx # Pants and chinos SVGs
+│   │   ├── ShortsSVG.tsx # Shorts SVGs
+│   │   ├── SneakersSVG.tsx # Sneakers and casual shoes SVGs
+│   │   ├── LoafersSVG.tsx # Loafers and dress shoes SVGs
+│   │   ├── BeltSVG.tsx  # Belt SVGs
+│   │   ├── DressWatchSVG.tsx # Dress watch SVGs
+│   │   └── DiverWatchSVG.tsx # Diver watch SVGs
 │   └── ScrollToTop.tsx # Navigation utility component
 ├── data/               # Static data files
 │   ├── outfits.json    # Curated outfit combinations
@@ -52,7 +72,11 @@ src/
 ├── types/              # TypeScript type definitions
 │   └── index.ts        # Core application and weather types
 ├── utils/              # Utility functions
-│   └── colorUtils.ts   # Color manipulation utilities
+│   ├── colorUtils.ts   # Color manipulation utilities
+│   ├── scoring.ts      # Enhanced scoring algorithms with layer awareness
+│   └── itemUtils.ts    # Item formatting and display utilities
+├── contexts/           # React context providers
+│   └── SettingsContext.tsx # User settings management and persistence
 ├── config/             # Configuration files
 │   └── env.ts          # Environment configuration
 ├── App.tsx             # Main application component (shows outfits by default)
@@ -145,9 +169,11 @@ For complete API setup and production deployment, see [NETLIFY_DEPLOYMENT.md](./
 ### Wardrobe Items
 
 Each clothing item includes:
-- **Category**: Jacket/Overshirt, Shirt, Pants, Shoes, Belt, Watch
+- **Category**: 7-category layering system - Jacket/Overshirt, Shirt, Undershirt, Pants, Shoes, Belt, Watch
+- **Brand**: Optional brand information for item identification and organization
 - **Capsule Tags**: Style classifications (Refined, Adventurer, Crossover, Shorts)
 - **Metadata**: Color, material, season, formality level
+- **Layering Hierarchy**: Items are organized by how they layer on the body for realistic outfit composition
 
 ### Curated Outfits
 
@@ -162,6 +188,61 @@ Weather integration provides:
 - **Current Conditions**: Temperature, weather description, icon
 - **3-Day Forecast**: High/low temperatures, conditions, precipitation chance
 - **Location Data**: Coordinates from browser geolocation or address input
+
+## Enhanced Features
+
+### 7-Category Layering System
+
+The wardrobe now uses a realistic layering hierarchy that matches how clothing is actually worn:
+
+1. **Jacket/Overshirt** (outermost layer)
+2. **Shirt** (middle layer)
+3. **Undershirt** (base layer) - NEW category for t-shirts and base layers
+4. **Pants** (lower body)
+5. **Shoes** (footwear)
+6. **Belt** (accessories)
+7. **Watch** (accessories)
+
+This structure allows for more accurate outfit composition and better reflects real-world dressing patterns.
+
+### Layer-Aware Scoring Algorithm
+
+The enhanced scoring system accounts for how clothing layers interact:
+
+- **Visibility Weighting**: Items covered by other layers have reduced impact on formality scores
+  - Undershirt covered by shirt: 30% weight
+  - Shirt covered by jacket: 70% weight
+  - Visible items: 100% weight
+- **Transparent Scoring**: Score breakdown shows individual item contributions and applied weights
+- **Layer Adjustments**: Clear indication of why certain items have reduced scoring impact
+
+### Visual Outfit Display
+
+Interactive flip cards provide visual outfit representations:
+
+- **SVG Clothing Items**: Scalable vector graphics for jackets, shirts, pants, shoes, and accessories
+- **Proper Layering**: Visual stacking matches clothing hierarchy (jacket over shirt over undershirt)
+- **Color Application**: SVG items display in the actual colors of selected wardrobe items
+- **Flip Animation**: Smooth transitions between text-based and visual outfit views
+- **Responsive Design**: Visual layouts adapt to different screen sizes
+
+### Brand Management System
+
+Optional brand tracking enhances wardrobe organization:
+
+- **Brand Field**: Optional brand information for each wardrobe item
+- **Flexible Display**: Items work with or without brand information
+- **Consistent Formatting**: "Brand Item (Color)" format when brands are shown
+- **Settings Integration**: User can toggle brand display on/off globally
+
+### User Settings
+
+Customizable preferences for personalized experience:
+
+- **Settings Page**: Dedicated interface for managing user preferences
+- **Brand Display Toggle**: Show or hide brand information throughout the app
+- **Persistent Storage**: Settings saved locally and persist across sessions
+- **Immediate Updates**: Changes take effect instantly without page refresh
 
 ## Component Architecture
 
@@ -190,6 +271,41 @@ Weather integration provides:
 - Graceful degradation when weather data is unavailable
 - Retry functionality for recoverable errors
 
+**OutfitCard Component (Enhanced):**
+- Flip card functionality with smooth CSS transitions
+- Front face shows traditional text-based outfit information
+- Back face displays visual SVG-based outfit layout
+- Interactive flip triggers and touch-friendly design
+- Responsive sizing for different screen sizes
+
+**SettingsPage Component:**
+- Dedicated settings interface with feature toggles
+- Brand display toggle with immediate effect
+- Local storage persistence for user preferences
+- Responsive design matching app aesthetic
+- Navigation integration with main app flow
+
+**OutfitLayout Component:**
+- Visual outfit representation using SVG components
+- Proper layering hierarchy (jacket over shirt over undershirt)
+- Color application from actual wardrobe item colors
+- Graceful handling of missing items (skips empty layers)
+- Responsive sizing and positioning
+
+**SVG Clothing Components:**
+- Scalable vector graphics for all clothing types
+- CSS-based coloring system for dynamic color application
+- Proper z-index layering for visual stacking
+- Optimized paths for fast rendering and small file sizes
+- Consistent styling and proportions across all items
+
+**ScoreBreakdown Component (Enhanced):**
+- Displays individual component scores with applied weights
+- Shows layer adjustment reasons (covered/visible/accessory)
+- Visual indicators for weight impacts on final score
+- Transparent scoring explanation for user understanding
+- Responsive layout for mobile and desktop viewing
+
 **SelectionStrip Component:**
 - Mobile-first responsive design with horizontal scrolling
 - Touch-friendly interactions with minimum 44px touch targets
@@ -210,7 +326,12 @@ The app now follows a mobile-first approach:
 ### Adding New Items
 
 1. Add items to `src/data/wardrobe.json` with proper categorization and tags
-2. The app will automatically load and categorize new items
+2. Use the 7-category system: Jacket/Overshirt, Shirt, Undershirt, Pants, Shoes, Belt, Watch
+3. Follow the standardized naming format: "Item Type (Color)"
+4. Optionally include brand information in the brand field
+5. The app will automatically load and categorize new items
+
+
 
 ### Creating Outfit Combinations (automated)
 
@@ -243,6 +364,10 @@ npm run test:run
 # Test specific features
 npm test -- --grep "weather"
 npm test -- --grep "WeatherWidget"
+npm test -- --grep "scoring"
+npm test -- --grep "OutfitCard"
+npm test -- --grep "SettingsPage"
+npm test -- --grep "SVG"
 ```
 
 ### Customizing Styles

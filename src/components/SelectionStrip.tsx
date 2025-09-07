@@ -4,7 +4,7 @@ import { CategoryDropdown } from './CategoryDropdown';
 import { OutfitList } from './OutfitList';
 import { useOutfitEngine } from '../hooks/useOutfitEngine';
 import { useSettings } from '../contexts/SettingsContext';
-import { formatItemName } from '../utils/migration';
+import { formatItemName } from '../utils/itemUtils';
 
 interface SelectionStripProps {
   selection: OutfitSelection;

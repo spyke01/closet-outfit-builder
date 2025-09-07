@@ -165,8 +165,6 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
 
     // Get API key from environment
     const apiKey = process.env.OPENWEATHER_API_KEY;
-    console.log('Environment check - OPENWEATHER_API_KEY exists:', !!process.env.OPENWEATHER_API_KEY);
-    console.log('Using API key:', apiKey ? `${apiKey.substring(0, 8)}...` : 'undefined');
     
     if (!apiKey) {
       console.error('No API key found in environment variables');
@@ -188,7 +186,6 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
     
     // If One Call API fails with 401/403, try the free tier APIs
     if (!response.ok && (response.status === 401 || response.status === 403)) {
-      console.log('One Call API failed, trying free tier APIs...');
       useOneCallAPI = false;
       
       // Use current weather + 5-day forecast (free tier)

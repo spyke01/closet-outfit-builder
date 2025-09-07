@@ -476,4 +476,359 @@ describe('Scoring System', () => {
       expect(FORMALITY_WEIGHT + CONSISTENCY_WEIGHT).toBe(1.0); // Should sum to 100%
     });
   });
+
+  describe('Edge Cases and Additional Scenarios', () => {
+    describe('Layer-aware formality edge cases', () => {
+      it('should handle zero formality scores', () => {
+        const selection: OutfitSelection = {
+          shirt: { ...mockItems.formalShirt, formalityScore: 0 },
+          pants: { ...mockItems.formalPants, formalityScore: 0 },
+          shoes: { ...mockItems.formalShoes, formalityScore: 0 }
+        };
+
+        const result = calculateLayerAwareFormalityScore(selection);
+        expect(result.score).toBe(0);
+        expect(result.adjustments).toHaveLength(3);
+        result.adjustments.forEach(adj => {
+          expect(adj.originalScore).toBe(0);
+          expect(adj.adjustedScore).toBe(0);
+        });
+      });
+
+      it('should handle maximum formality scores (10)', () => {
+        const selection: OutfitSelection = {
+          jacket: { ...mockItems.formalJacket, formalityScore: 10 },
+          shirt: { ...mockItems.formalShirt, formalityScore: 10 },
+          undershirt: { ...mockItems.undershirt, formalityScore: 10 },
+          pants: { ...mockItems.formalPants, formalityScore: 10 },
+          shoes: { ...mockItems.formalShoes, formalityScore: 10 },
+          belt: { ...mockItems.formalBelt, formalityScore: 10 },
+          watch: { ...mockItems.formalWatch, formalityScore: 10 }
+        };
+
+        const result = calculateLayerAwareFormalityScore(selection);
+        expect(result.score).toBe(93); // Should be exactly 93% for perfect scores
+        expect(result.adjustments).toHaveLength(7);
+      });
+
+      it('should handle single category selection', () => {
+        const selection: OutfitSelection = {
+          shirt: mockItems.formalShirt
+        };
+
+        const result = calculateLayerAwareFormalityScore(selection);
+        expect(result.adjustments).toHaveLength(1);
+        expect(result.adjustments[0].category).toBe('Shirt');
+        expect(result.adjustments[0].weight).toBe(1.0);
+        expect(result.adjustments[0].reason).toBe('visible');
+      });
+
+      it('should handle undershirt only selection', () => {
+        const selection: OutfitSelection = {
+          undershirt: mockItems.undershirt
+        };
+
+        const result = calculateLayerAwareFormalityScore(selection);
+        expect(result.adjustments).toHaveLength(1);
+        expect(result.adjustments[0].category).toBe('Undershirt');
+        expect(result.adjustments[0].weight).toBe(1.0);
+        expect(result.adjustments[0].reason).toBe('visible');
+      });
+
+      it('should handle jacket only selection', () => {
+        const selection: OutfitSelection = {
+          jacket: mockItems.formalJacket
+        };
+
+        const result = calculateLayerAwareFormalityScore(selection);
+        expect(result.adjustments).toHaveLength(1);
+        expect(result.adjustments[0].category).toBe('Jacket/Overshirt');
+        expect(result.adjustments[0].weight).toBe(1.0);
+        expect(result.adjustments[0].reason).toBe('visible');
+      });
+
+      it('should handle accessories only selection', () => {
+        const selection: OutfitSelection = {
+          belt: mockItems.formalBelt,
+          watch: mockItems.formalWatch
+        };
+
+        const result = calculateLayerAwareFormalityScore(selection);
+        expect(result.adjustments).toHaveLength(2);
+        
+        const beltAdj = result.adjustments.find(adj => adj.category === 'Belt');
+        const watchAdj = result.adjustments.find(adj => adj.category === 'Watch');
+        
+        expect(beltAdj!.weight).toBe(0.8);
+        expect(beltAdj!.reason).toBe('accessory');
+        expect(watchAdj!.weight).toBe(0.8);
+        expect(watchAdj!.reason).toBe('accessory');
+      });
+
+      it('should handle mixed formality scores with layering', () => {
+        const selection: OutfitSelection = {
+          jacket: { ...mockItems.formalJacket, formalityScore: 9 },     // 9 * 1.0 = 9
+          shirt: { ...mockItems.formalShirt, formalityScore: 3 },       // 3 * 0.7 = 2.1
+          undershirt: { ...mockItems.undershirt, formalityScore: 1 },   // 1 * 0.3 = 0.3
+          pants: { ...mockItems.formalPants, formalityScore: 7 },       // 7 * 1.0 = 7
+          shoes: { ...mockItems.formalShoes, formalityScore: 5 }        // 5 * 1.0 = 5
+        };
+
+        const result = calculateLayerAwareFormalityScore(selection);
+        
+        // Total weighted: 9 + 2.1 + 0.3 + 7 + 5 = 23.4
+        // Total weight: 1.0 + 0.7 + 0.3 + 1.0 + 1.0 = 4.0
+        // Average: 23.4 / 4.0 = 5.85
+        // Percentage: (5.85 / 10) * 100 * 0.93 = 54.405, rounded = 54
+        expect(result.score).toBe(54);
+      });
+
+      it('should handle undefined formality scores correctly', () => {
+        const itemWithUndefinedScore = { 
+          id: 'x1', 
+          name: 'Undefined Score', 
+          category: 'Shirt' as Category,
+          formalityScore: undefined 
+        } as WardrobeItem;
+        
+        const selection: OutfitSelection = {
+          shirt: itemWithUndefinedScore,
+          pants: mockItems.formalPants
+        };
+
+        const result = calculateLayerAwareFormalityScore(selection);
+        
+        // Should only process pants, ignore shirt with undefined score
+        expect(result.adjustments).toHaveLength(1);
+        expect(result.adjustments[0].category).toBe('Pants');
+      });
+
+      it('should handle fractional formality scores', () => {
+        const selection: OutfitSelection = {
+          shirt: { ...mockItems.formalShirt, formalityScore: 5.5 },
+          pants: { ...mockItems.formalPants, formalityScore: 7.3 }
+        };
+
+        const result = calculateLayerAwareFormalityScore(selection);
+        
+        expect(result.adjustments).toHaveLength(2);
+        expect(result.adjustments[0].originalScore).toBe(5.5);
+        expect(result.adjustments[1].originalScore).toBe(7.3);
+      });
+    });
+
+    describe('Consistency bonus edge cases', () => {
+      it('should handle identical formality scores across many items', () => {
+        const identicalScore = 6;
+        const selection: OutfitSelection = {
+          jacket: { ...mockItems.formalJacket, formalityScore: identicalScore },
+          shirt: { ...mockItems.formalShirt, formalityScore: identicalScore },
+          undershirt: { ...mockItems.undershirt, formalityScore: identicalScore },
+          pants: { ...mockItems.formalPants, formalityScore: identicalScore },
+          shoes: { ...mockItems.formalShoes, formalityScore: identicalScore },
+          belt: { ...mockItems.formalBelt, formalityScore: identicalScore },
+          watch: { ...mockItems.formalWatch, formalityScore: identicalScore }
+        };
+
+        const bonus = calculateConsistencyBonus(selection);
+        expect(bonus).toBe(7); // Perfect consistency should give maximum bonus
+      });
+
+      it('should handle maximum variance scenario', () => {
+        const selection: OutfitSelection = {
+          jacket: { ...mockItems.formalJacket, formalityScore: 10 },
+          shirt: { ...mockItems.formalShirt, formalityScore: 1 },
+          pants: { ...mockItems.formalPants, formalityScore: 10 },
+          shoes: { ...mockItems.formalShoes, formalityScore: 1 }
+        };
+
+        const bonus = calculateConsistencyBonus(selection);
+        expect(bonus).toBeGreaterThanOrEqual(0);
+        expect(bonus).toBeLessThan(7); // Should be significantly less than max
+      });
+
+      it('should handle fractional formality scores in consistency calculation', () => {
+        const selection: OutfitSelection = {
+          shirt: { ...mockItems.formalShirt, formalityScore: 5.5 },
+          pants: { ...mockItems.formalPants, formalityScore: 5.5 }
+        };
+
+        const bonus = calculateConsistencyBonus(selection);
+        expect(bonus).toBe(7); // Perfect consistency with fractional scores
+      });
+
+      it('should handle very small variance', () => {
+        const selection: OutfitSelection = {
+          shirt: { ...mockItems.formalShirt, formalityScore: 5.0 },
+          pants: { ...mockItems.formalPants, formalityScore: 5.1 },
+          shoes: { ...mockItems.formalShoes, formalityScore: 4.9 }
+        };
+
+        const bonus = calculateConsistencyBonus(selection);
+        expect(bonus).toBeGreaterThan(6); // Very small variance should give high bonus
+        expect(bonus).toBeLessThanOrEqual(7);
+      });
+    });
+
+    describe('Complete outfit scoring edge cases', () => {
+      it('should cap percentage at 100%', () => {
+        // Create a scenario that might theoretically exceed 100%
+        const selection: OutfitSelection = {
+          jacket: { ...mockItems.formalJacket, formalityScore: 10 },
+          shirt: { ...mockItems.formalShirt, formalityScore: 10 },
+          pants: { ...mockItems.formalPants, formalityScore: 10 },
+          shoes: { ...mockItems.formalShoes, formalityScore: 10 }
+        };
+
+        const breakdown = calculateOutfitScore(selection);
+        expect(breakdown.percentage).toBeLessThanOrEqual(100);
+      });
+
+      it('should handle outfit with only accessories', () => {
+        const selection: OutfitSelection = {
+          belt: mockItems.formalBelt,
+          watch: mockItems.formalWatch
+        };
+
+        const breakdown = calculateOutfitScore(selection);
+        expect(breakdown.layerAdjustments).toHaveLength(2);
+        expect(breakdown.formalityScore).toBeGreaterThan(0);
+        expect(breakdown.consistencyBonus).toBe(7); // Perfect consistency with 2 items
+      });
+
+      it('should handle outfit with mixed categories and missing items', () => {
+        const selection: OutfitSelection = {
+          jacket: mockItems.formalJacket,
+          // No shirt
+          undershirt: mockItems.undershirt,
+          pants: mockItems.formalPants,
+          // No shoes
+          belt: mockItems.formalBelt
+          // No watch
+        };
+
+        const breakdown = calculateOutfitScore(selection);
+        expect(breakdown.layerAdjustments).toHaveLength(4); // Only selected items
+        expect(breakdown.formalityScore).toBeGreaterThan(0);
+        expect(breakdown.consistencyBonus).toBeGreaterThanOrEqual(0);
+      });
+
+      it('should maintain score consistency across multiple calculations', () => {
+        const selection: OutfitSelection = {
+          shirt: mockItems.formalShirt,
+          pants: mockItems.formalPants,
+          shoes: mockItems.formalShoes,
+          watch: mockItems.formalWatch
+        };
+
+        const breakdown1 = calculateOutfitScore(selection);
+        const breakdown2 = calculateOutfitScore(selection);
+        
+        expect(breakdown1.percentage).toBe(breakdown2.percentage);
+        expect(breakdown1.formalityScore).toBe(breakdown2.formalityScore);
+        expect(breakdown1.consistencyBonus).toBe(breakdown2.consistencyBonus);
+      });
+
+      it('should handle extreme formality differences with layering', () => {
+        const selection: OutfitSelection = {
+          jacket: { ...mockItems.formalJacket, formalityScore: 10 },     // Formal jacket visible
+          shirt: { ...mockItems.casualShirt, formalityScore: 1 },       // Casual shirt covered
+          undershirt: { ...mockItems.formalUndershirt, formalityScore: 9 }, // Formal undershirt covered
+          pants: { ...mockItems.casualPants, formalityScore: 2 },       // Casual pants visible
+          shoes: { ...mockItems.formalShoes, formalityScore: 10 }       // Formal shoes visible
+        };
+
+        const breakdown = calculateOutfitScore(selection);
+        
+        // Verify layering affects the score appropriately
+        const jacketAdj = breakdown.layerAdjustments.find(adj => adj.category === 'Jacket/Overshirt');
+        const shirtAdj = breakdown.layerAdjustments.find(adj => adj.category === 'Shirt');
+        const undershirtAdj = breakdown.layerAdjustments.find(adj => adj.category === 'Undershirt');
+        
+        expect(jacketAdj!.weight).toBe(1.0); // Visible
+        expect(shirtAdj!.weight).toBe(0.7);  // Covered by jacket
+        expect(undershirtAdj!.weight).toBe(0.3); // Covered by shirt
+        
+        expect(breakdown.formalityScore).toBeGreaterThan(0);
+        expect(breakdown.consistencyBonus).toBeGreaterThanOrEqual(0);
+      });
+    });
+
+    describe('LayerAdjustment tracking accuracy', () => {
+      it('should track all required fields in LayerAdjustment', () => {
+        const selection: OutfitSelection = {
+          shirt: mockItems.formalShirt
+        };
+
+        const result = calculateLayerAwareFormalityScore(selection);
+        const adjustment = result.adjustments[0];
+        
+        expect(adjustment).toHaveProperty('itemId');
+        expect(adjustment).toHaveProperty('itemName');
+        expect(adjustment).toHaveProperty('category');
+        expect(adjustment).toHaveProperty('originalScore');
+        expect(adjustment).toHaveProperty('adjustedScore');
+        expect(adjustment).toHaveProperty('weight');
+        expect(adjustment).toHaveProperty('reason');
+        
+        expect(typeof adjustment.itemId).toBe('string');
+        expect(typeof adjustment.itemName).toBe('string');
+        expect(typeof adjustment.category).toBe('string');
+        expect(typeof adjustment.originalScore).toBe('number');
+        expect(typeof adjustment.adjustedScore).toBe('number');
+        expect(typeof adjustment.weight).toBe('number');
+        expect(['covered', 'visible', 'accessory']).toContain(adjustment.reason);
+      });
+
+      it('should maintain adjustment order consistency', () => {
+        const selection: OutfitSelection = {
+          jacket: mockItems.formalJacket,
+          shirt: mockItems.formalShirt,
+          undershirt: mockItems.undershirt,
+          pants: mockItems.formalPants,
+          shoes: mockItems.formalShoes,
+          belt: mockItems.formalBelt,
+          watch: mockItems.formalWatch
+        };
+
+        const result1 = calculateLayerAwareFormalityScore(selection);
+        const result2 = calculateLayerAwareFormalityScore(selection);
+        
+        expect(result1.adjustments).toHaveLength(result2.adjustments.length);
+        
+        // Adjustments should be in the same order
+        for (let i = 0; i < result1.adjustments.length; i++) {
+          expect(result1.adjustments[i].itemId).toBe(result2.adjustments[i].itemId);
+          expect(result1.adjustments[i].category).toBe(result2.adjustments[i].category);
+        }
+      });
+
+      it('should calculate adjusted scores correctly for all weight scenarios', () => {
+        const selection: OutfitSelection = {
+          jacket: { ...mockItems.formalJacket, formalityScore: 8 },     // 8 * 1.0 = 8
+          shirt: { ...mockItems.formalShirt, formalityScore: 6 },       // 6 * 0.7 = 4.2
+          undershirt: { ...mockItems.undershirt, formalityScore: 2 },   // 2 * 0.3 = 0.6
+          pants: { ...mockItems.formalPants, formalityScore: 7 },       // 7 * 1.0 = 7
+          shoes: { ...mockItems.formalShoes, formalityScore: 9 },       // 9 * 1.0 = 9
+          belt: { ...mockItems.formalBelt, formalityScore: 5 },         // 5 * 0.8 = 4.0
+          watch: { ...mockItems.formalWatch, formalityScore: 4 }        // 4 * 0.8 = 3.2
+        };
+
+        const result = calculateLayerAwareFormalityScore(selection);
+        
+        const adjustmentsByCategory = result.adjustments.reduce((acc, adj) => {
+          acc[adj.category] = adj;
+          return acc;
+        }, {} as Record<string, LayerAdjustment>);
+        
+        expect(adjustmentsByCategory['Jacket/Overshirt'].adjustedScore).toBeCloseTo(8.0);
+        expect(adjustmentsByCategory['Shirt'].adjustedScore).toBeCloseTo(4.2);
+        expect(adjustmentsByCategory['Undershirt'].adjustedScore).toBeCloseTo(0.6);
+        expect(adjustmentsByCategory['Pants'].adjustedScore).toBeCloseTo(7.0);
+        expect(adjustmentsByCategory['Shoes'].adjustedScore).toBeCloseTo(9.0);
+        expect(adjustmentsByCategory['Belt'].adjustedScore).toBeCloseTo(4.0);
+        expect(adjustmentsByCategory['Watch'].adjustedScore).toBeCloseTo(3.2);
+      });
+    });
+  });
 });

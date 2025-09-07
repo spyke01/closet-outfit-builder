@@ -161,7 +161,3 @@ export const getAvailableColors = (): Record<string, string> => {
 /**
  * Debug function to test color extraction
  */
-export const debugColorExtraction = (itemName: string): void => {
-  const colors = extractColorsFromName(itemName);
-  console.log(`"${itemName}" -> [${colors.join(', ')}]`);
-};

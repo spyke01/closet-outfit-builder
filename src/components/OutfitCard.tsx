@@ -5,7 +5,7 @@ import { ScoreCircle } from './ScoreCircle';
 import { ColorCircle } from './ColorCircle';
 import { OutfitLayout } from './OutfitLayout';
 import { useSettings } from '../contexts/SettingsContext';
-import { formatItemName } from '../utils/migration';
+import { formatItemName } from '../utils/itemUtils';
 
 // Error boundary component for visual layout
 class VisualLayoutErrorBoundary extends React.Component<
@@ -22,7 +22,7 @@ class VisualLayoutErrorBoundary extends React.Component<
     }
 
     componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-        console.error('Visual layout error:', error, errorInfo);
+        // Error caught and handled silently
     }
 
     render() {

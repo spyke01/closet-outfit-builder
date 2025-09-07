@@ -3,7 +3,7 @@ import { Search, Tag } from 'lucide-react';
 import { WardrobeItem, Category, CapsuleTag } from '../types';
 import { ColorCircle } from './ColorCircle';
 import { useSettings } from '../contexts/SettingsContext';
-import { formatItemName } from '../utils/migration';
+import { formatItemName } from '../utils/itemUtils';
 
 interface ItemsGridProps {
   category: Category;

@@ -219,7 +219,6 @@ export const getWeatherData = async (lat: number, lon: number): Promise<WeatherD
   const cachedData = weatherCache.get(cacheKey);
   
   if (cachedData && isCacheValid(cachedData)) {
-    console.log('Returning cached weather data');
     return cachedData.data;
   }
 

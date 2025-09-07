@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Lock } from 'lucide-react';
 import { Category, WardrobeItem } from '../types';
 import { useSettings } from '../contexts/SettingsContext';
-import { formatItemName } from '../utils/migration';
+import { formatItemName } from '../utils/itemUtils';
 
 interface CategoryDropdownProps {
   category: Category;

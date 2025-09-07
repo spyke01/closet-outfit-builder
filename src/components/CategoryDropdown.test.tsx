@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CategoryDropdown } from './CategoryDropdown';
 import { WardrobeItem, Category } from '../types';
+import { SettingsProvider } from '../contexts/SettingsContext';
 
 // Mock data
 const mockJacket: WardrobeItem = {
@@ -29,18 +30,66 @@ const mockBlackShirt: WardrobeItem = {
   formalityScore: 2
 };
 
+const mockUndershirt: WardrobeItem = {
+  id: 'white-undershirt',
+  name: 'White Undershirt',
+  category: 'Undershirt',
+  capsuleTags: ['Crossover', 'Adventurer', 'Refined'],
+  formalityScore: 1
+};
+
+const mockBlackUndershirt: WardrobeItem = {
+  id: 'black-undershirt',
+  name: 'Black Undershirt',
+  category: 'Undershirt',
+  capsuleTags: ['Crossover', 'Adventurer'],
+  formalityScore: 1
+};
+
 const mockAvailableItems: WardrobeItem[] = [mockShirt, mockBlackShirt];
+const mockUndershirtItems: WardrobeItem[] = [mockUndershirt, mockBlackUndershirt];
+
+// Mock localStorage
+const mockLocalStorage = (() => {
+  let store: Record<string, string> = {};
+  
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => {
+      store[key] = value;
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    }
+  };
+})();
+
+Object.defineProperty(window, 'localStorage', {
+  value: mockLocalStorage
+});
+
+const renderWithProvider = (component: React.ReactElement) => {
+  return render(
+    <SettingsProvider>
+      {component}
+    </SettingsProvider>
+  );
+};
 
 describe('CategoryDropdown', () => {
   const mockOnSelect = vi.fn();
 
   beforeEach(() => {
     mockOnSelect.mockClear();
+    mockLocalStorage.clear();
   });
 
   describe('Rendering', () => {
     it('renders with "Select One" when no item is selected', () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={null}
@@ -49,11 +98,11 @@ describe('CategoryDropdown', () => {
         />
       );
 
-      expect(screen.getByText('Select One')).toBeInTheDocument();
+      expect(screen.getByText('Select Shirt')).toBeInTheDocument();
     });
 
     it('renders selected item name when item is selected', () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={mockShirt}
@@ -66,7 +115,7 @@ describe('CategoryDropdown', () => {
     });
 
     it('displays "jacket" for "Jacket/Overshirt" category', () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Jacket/Overshirt"
           selectedItem={mockJacket}
@@ -79,7 +128,7 @@ describe('CategoryDropdown', () => {
     });
 
     it('shows "No compatible items" when availableItems is empty', () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={null}
@@ -88,11 +137,11 @@ describe('CategoryDropdown', () => {
         />
       );
 
-      expect(screen.getByText('No compatible items')).toBeInTheDocument();
+      expect(screen.getByText('No items')).toBeInTheDocument();
     });
 
     it('renders color indicator for selected item', () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={mockShirt}
@@ -108,7 +157,7 @@ describe('CategoryDropdown', () => {
 
   describe('Dropdown Interaction', () => {
     it('opens dropdown when trigger is clicked', async () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={null}
@@ -127,7 +176,7 @@ describe('CategoryDropdown', () => {
     });
 
     it('closes dropdown when clicking outside', async () => {
-      render(
+      renderWithProvider(
         <div>
           <CategoryDropdown
             category="Shirt"
@@ -157,7 +206,7 @@ describe('CategoryDropdown', () => {
     });
 
     it('shows chevron rotation when dropdown is open', async () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={null}
@@ -181,7 +230,7 @@ describe('CategoryDropdown', () => {
 
   describe('Item Selection', () => {
     it('calls onSelect with selected item when item is clicked', async () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={null}
@@ -206,7 +255,7 @@ describe('CategoryDropdown', () => {
     });
 
     it('calls onSelect with null when "Select One" is clicked', async () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={mockShirt}
@@ -231,7 +280,7 @@ describe('CategoryDropdown', () => {
     });
 
     it('closes dropdown after item selection', async () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={null}
@@ -259,7 +308,7 @@ describe('CategoryDropdown', () => {
     });
 
     it('highlights selected item in dropdown', async () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={mockShirt}
@@ -286,7 +335,7 @@ describe('CategoryDropdown', () => {
 
   describe('Disabled State', () => {
     it('does not open dropdown when disabled', () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={null}
@@ -306,7 +355,7 @@ describe('CategoryDropdown', () => {
     });
 
     it('applies disabled styling when disabled', () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={null}
@@ -323,7 +372,7 @@ describe('CategoryDropdown', () => {
 
   describe('Loading State', () => {
     it('shows loading text when isLoading is true', () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={null}
@@ -337,7 +386,7 @@ describe('CategoryDropdown', () => {
     });
 
     it('does not open dropdown when loading', () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={null}
@@ -357,7 +406,7 @@ describe('CategoryDropdown', () => {
     });
 
     it('applies loading styling when loading', () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={null}
@@ -372,7 +421,7 @@ describe('CategoryDropdown', () => {
     });
 
     it('does not show dropdown content when loading', async () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={null}
@@ -396,7 +445,7 @@ describe('CategoryDropdown', () => {
 
   describe('Empty State', () => {
     it('shows "No compatible items" message when no items available', async () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={null}
@@ -419,7 +468,7 @@ describe('CategoryDropdown', () => {
     });
 
     it('does not show "Select One" option when no items available', async () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={mockShirt}
@@ -445,7 +494,7 @@ describe('CategoryDropdown', () => {
 
   describe('Color Indicators', () => {
     it('renders color indicators for items in dropdown', async () => {
-      render(
+      renderWithProvider(
         <CategoryDropdown
           category="Shirt"
           selectedItem={null}
@@ -467,6 +516,152 @@ describe('CategoryDropdown', () => {
         
         expect(whiteColorIndicator).toHaveStyle('background-color: rgb(255, 255, 255)');
         expect(blackColorIndicator).toHaveStyle('background-color: rgb(0, 0, 0)');
+      });
+    });
+  });
+
+  describe('Undershirt Category Support', () => {
+    it('renders undershirt category correctly', () => {
+      renderWithProvider(
+        <CategoryDropdown
+          category="Undershirt"
+          selectedItem={null}
+          availableItems={mockUndershirtItems}
+          onSelect={mockOnSelect}
+        />
+      );
+
+      expect(screen.getByText('Select Undershirt')).toBeInTheDocument();
+    });
+
+    it('displays selected undershirt item', () => {
+      renderWithProvider(
+        <CategoryDropdown
+          category="Undershirt"
+          selectedItem={mockUndershirt}
+          availableItems={mockUndershirtItems}
+          onSelect={mockOnSelect}
+        />
+      );
+
+      expect(screen.getByText('White Undershirt')).toBeInTheDocument();
+    });
+
+    it('opens dropdown and shows undershirt items', async () => {
+      renderWithProvider(
+        <CategoryDropdown
+          category="Undershirt"
+          selectedItem={null}
+          availableItems={mockUndershirtItems}
+          onSelect={mockOnSelect}
+        />
+      );
+
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+
+      await waitFor(() => {
+        expect(screen.getByText('White Undershirt')).toBeInTheDocument();
+        expect(screen.getByText('Black Undershirt')).toBeInTheDocument();
+      });
+    });
+
+    it('selects undershirt item correctly', async () => {
+      renderWithProvider(
+        <CategoryDropdown
+          category="Undershirt"
+          selectedItem={null}
+          availableItems={mockUndershirtItems}
+          onSelect={mockOnSelect}
+        />
+      );
+
+      // Open dropdown
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+
+      await waitFor(() => {
+        expect(screen.getByText('White Undershirt')).toBeInTheDocument();
+      });
+
+      // Click on White Undershirt
+      const whiteUndershirtButton = screen.getByText('White Undershirt');
+      fireEvent.click(whiteUndershirtButton);
+
+      expect(mockOnSelect).toHaveBeenCalledWith(mockUndershirt);
+    });
+
+    it('highlights selected undershirt in dropdown', async () => {
+      renderWithProvider(
+        <CategoryDropdown
+          category="Undershirt"
+          selectedItem={mockUndershirt}
+          availableItems={mockUndershirtItems}
+          onSelect={mockOnSelect}
+        />
+      );
+
+      // Open dropdown
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+
+      await waitFor(() => {
+        // Get all buttons with "White Undershirt" text and find the one in the dropdown (not the trigger)
+        const allWhiteUndershirtElements = screen.getAllByText('White Undershirt');
+        const dropdownWhiteUndershirtElement = allWhiteUndershirtElements.find(el => 
+          el.closest('button')?.className.includes('bg-blue-50')
+        );
+        const whiteUndershirtButton = dropdownWhiteUndershirtElement?.closest('button');
+        expect(whiteUndershirtButton).toHaveClass('bg-blue-50', 'text-blue-800');
+      });
+    });
+
+    it('renders color indicators for undershirt items', async () => {
+      renderWithProvider(
+        <CategoryDropdown
+          category="Undershirt"
+          selectedItem={null}
+          availableItems={mockUndershirtItems}
+          onSelect={mockOnSelect}
+        />
+      );
+
+      // Open dropdown
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+
+      await waitFor(() => {
+        const whiteUndershirtButton = screen.getByText('White Undershirt').closest('button');
+        const blackUndershirtButton = screen.getByText('Black Undershirt').closest('button');
+        
+        const whiteColorIndicator = whiteUndershirtButton?.querySelector('div[style*="background-color"]');
+        const blackColorIndicator = blackUndershirtButton?.querySelector('div[style*="background-color"]');
+        
+        expect(whiteColorIndicator).toHaveStyle('background-color: rgb(255, 255, 255)');
+        expect(blackColorIndicator).toHaveStyle('background-color: rgb(0, 0, 0)');
+      });
+    });
+
+    it('shows "No compatible items" for empty undershirt category', async () => {
+      renderWithProvider(
+        <CategoryDropdown
+          category="Undershirt"
+          selectedItem={null}
+          availableItems={[]}
+          onSelect={mockOnSelect}
+        />
+      );
+
+      // Open dropdown
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+
+      await waitFor(() => {
+        // Get the specific "No compatible items" message in the dropdown (not the trigger)
+        const dropdownMessage = screen.getAllByText('No compatible items').find(el => 
+          el.className.includes('italic')
+        );
+        expect(dropdownMessage).toBeInTheDocument();
       });
     });
   });
