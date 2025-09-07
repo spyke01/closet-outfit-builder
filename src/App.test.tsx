@@ -66,14 +66,14 @@ describe('App', () => {
     });
 
     mockUseOutfitEngine.mockReturnValue({
-      generateRandomOutfit: vi.fn(() => ({
+      getRandomOutfit: vi.fn(() => ({
         id: 'random-1',
         jacket: { id: '1', name: 'Blue Jacket', category: 'Jacket/Overshirt', capsuleTags: ['Refined'] },
         shirt: { id: '2', name: 'White Shirt', category: 'Shirt', capsuleTags: ['Adventurer'] },
         pants: { id: '3', name: 'Black Chinos', category: 'Pants', capsuleTags: ['Refined'] },
         shoes: { id: '4', name: 'Brown Boots', category: 'Shoes', capsuleTags: ['Crossover'] },
         score: 85,
-        source: 'random'
+        source: 'curated'
       })),
       getAllOutfits: vi.fn(() => [
         {
@@ -190,7 +190,7 @@ describe('App', () => {
     it('shows empty message when no outfits are available', async () => {
       // Mock empty outfits
       mockUseOutfitEngine.mockReturnValue({
-        generateRandomOutfit: vi.fn(),
+        getRandomOutfit: vi.fn(),
         getAllOutfits: vi.fn(() => [])
       });
       

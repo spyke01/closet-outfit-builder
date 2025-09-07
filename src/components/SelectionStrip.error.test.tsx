@@ -48,10 +48,8 @@ describe('SelectionStrip Error Handling', () => {
       getCompatibleItems: mockGetCompatibleItems,
       getFilteredOutfits: mockGetFilteredOutfits,
       validatePartialSelection: mockValidatePartialSelection,
-      validateOutfit: vi.fn(),
       scoreOutfit: vi.fn(),
-      suggestAccessories: vi.fn(),
-      generateRandomOutfit: vi.fn(),
+      getRandomOutfit: vi.fn(),
       getOutfitsForAnchor: vi.fn(),
       getAllOutfits: vi.fn()
     });

@@ -19,7 +19,7 @@ vi.mock('../hooks/useWardrobe', () => ({
 
 vi.mock('../hooks/useOutfitEngine', () => ({
   useOutfitEngine: () => ({
-    generateRandomOutfit: vi.fn(),
+    getRandomOutfit: vi.fn(),
     getAllOutfits: () => [
       {
         id: 'outfit-1',

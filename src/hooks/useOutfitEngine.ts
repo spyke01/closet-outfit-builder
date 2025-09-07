@@ -4,19 +4,7 @@ import { useMemo, useCallback } from 'react';
 import { calculateOutfitScore } from '../utils/scoring';
 
 export const useOutfitEngine = () => {
-  const { items, outfits, getItemById } = useWardrobe();
-
-  const validateOutfit = (selection: OutfitSelection): boolean => {
-    // Hard rule: no shorts + boots
-    if (selection.pants?.name.toLowerCase().includes('shorts') &&
-      selection.shoes?.name.toLowerCase().includes('boots')) {
-      return false;
-    }
-
-    // Must have shirt, pants, shoes
-    const hasRequired = !!(selection.shirt && selection.pants && selection.shoes);
-    return hasRequired;
-  };
+  const { outfits, getItemById } = useWardrobe();
 
   const scoreOutfit = (selection: OutfitSelection): number => {
     return calculateOutfitScore(selection).percentage;
@@ -25,8 +13,6 @@ export const useOutfitEngine = () => {
   // Memoize all outfits to avoid recalculating on every render
   const allOutfits = useMemo(() => {
     const results: GeneratedOutfit[] = [];
-
-    // Use the new category mapping utility
 
     // Convert all curated outfits to GeneratedOutfit format
     outfits.forEach(outfit => {
@@ -43,123 +29,34 @@ export const useOutfitEngine = () => {
       });
       selection.tuck = outfit.tuck;
 
-      if (validateOutfit(selection)) {
-        const generatedOutfit = {
-          ...selection,
-          id: outfit.id,
-          score: scoreOutfit(selection),
-          source: 'curated' as const,
-          loved: outfit.loved
-        };
-        results.push(generatedOutfit);
-      }
+      // All curated outfits are valid by design
+      const generatedOutfit = {
+        ...selection,
+        id: outfit.id,
+        score: scoreOutfit(selection),
+        source: 'curated' as const,
+        loved: outfit.loved
+      };
+      results.push(generatedOutfit);
     });
     return results.sort((a, b) => b.score - a.score);
-  }, [outfits, getItemById, validateOutfit, scoreOutfit]);
+  }, [outfits, getItemById, scoreOutfit]);
 
-  const suggestAccessories = (selection: OutfitSelection): { belt?: WardrobeItem; watch?: WardrobeItem } => {
-    const suggestions: { belt?: WardrobeItem; watch?: WardrobeItem } = {};
-
-    // Belt suggestions
-    if (selection.shoes?.name.toLowerCase().includes('suede')) {
-      suggestions.belt = getItemById('belt-braided');
-    } else if (selection.pants?.id === 'trousers-charcoal') {
-      suggestions.belt = getItemById('belt-reversible');
-    } else if (selection.jacket?.id === 'moto-jacket' || selection.shoes?.id === 'apache-boots') {
-      suggestions.belt = getItemById('belt-rugged');
-    } else {
-      suggestions.belt = getItemById('belt-clean-brown');
-    }
-
-    // Watch suggestions
-    if (selection.shirt?.name.toLowerCase().includes('linen') ||
-      selection.pants?.name.toLowerCase().includes('shorts')) {
-      suggestions.watch = getItemById('rolex-panda');
-    } else if (selection.pants?.id === 'trousers-charcoal') {
-      suggestions.watch = getItemById('omega-300m');
-    } else if (selection.jacket?.id === 'moto-jacket') {
-      suggestions.watch = getItemById('panerai-luminor');
-    } else {
-      suggestions.watch = getItemById('omega-300m');
-    }
-
-    return suggestions;
-  };
-
-  const generateRandomOutfit = (currentSelection: OutfitSelection): GeneratedOutfit | null => {
-    const categories: Category[] = ['Jacket/Overshirt', 'Shirt', 'Pants', 'Shoes'];
-    const selection: OutfitSelection = { ...currentSelection };
-
-    // Fill or replace categories
-    for (const category of categories) {
-      const key = categoryToKey(category);
-      const availableItems = items.filter(item => item.category === category);
-
-      if (availableItems.length > 0) {
-        const randomItem = availableItems[Math.floor(Math.random() * availableItems.length)];
-        (selection as any)[key] = randomItem;
-      }
-    }
-
-    // Add suggested accessories
-    const accessories = suggestAccessories(selection);
-    if (accessories.belt) {
-      selection.belt = accessories.belt;
-    }
-    if (accessories.watch) {
-      selection.watch = accessories.watch;
-    }
-
-    // Determine tuck style (only if not already set)
-    if (!selection.tuck) {
-      const isRefined = selection.shirt?.capsuleTags?.includes('Refined');
-      const isLinen = selection.shirt?.name.toLowerCase().includes('linen');
-      const hasTrousers = selection.pants?.name.toLowerCase().includes('trousers');
-
-      selection.tuck = (isRefined && !isLinen) || hasTrousers ? 'Tucked' : 'Untucked';
-    }
-
-    if (!validateOutfit(selection)) {
+  const getRandomOutfit = (): GeneratedOutfit | null => {
+    if (allOutfits.length === 0) {
       return null;
     }
-
-    return {
-      ...selection,
-      id: `generated-${Date.now()}`,
-      score: scoreOutfit(selection),
-      source: 'generated'
-    };
+    
+    const randomIndex = Math.floor(Math.random() * allOutfits.length);
+    return allOutfits[randomIndex];
   };
 
   const getOutfitsForAnchor = (anchorItem: WardrobeItem): GeneratedOutfit[] => {
-    const results: GeneratedOutfit[] = [];
-
-    // Add curated outfits that include this item
-    outfits.forEach(outfit => {
-      if (outfit.items.includes(anchorItem.id)) {
-        const selection: OutfitSelection = {};
-        outfit.items.forEach(itemId => {
-          const item = getItemById(itemId);
-          if (item) {
-            const key = categoryToKey(item.category);
-            (selection as any)[key] = item;
-          }
-        });
-        selection.tuck = outfit.tuck;
-
-        if (validateOutfit(selection)) {
-          results.push({
-            ...selection,
-            id: outfit.id,
-            score: scoreOutfit(selection),
-            source: 'curated',
-            loved: outfit.loved
-          });
-        }
-      }
+    return allOutfits.filter(outfit => {
+      const anchorKey = categoryToKey(anchorItem.category);
+      const outfitItem = outfit[anchorKey] as WardrobeItem;
+      return outfitItem?.id === anchorItem.id;
     });
-
-    return results.sort((a, b) => b.score - a.score);
   };
 
   const getAllOutfits = useCallback((): GeneratedOutfit[] => {
@@ -292,15 +189,11 @@ export const useOutfitEngine = () => {
         return false;
       }
 
-      // Check hard rules that apply to partial selections
-
       // Hard rule: no shorts + boots (if both are selected)
       if (selection.pants?.name?.toLowerCase().includes('shorts') &&
         selection.shoes?.name?.toLowerCase().includes('boots')) {
         return false;
       }
-
-      // Additional validation rules can be added here
 
       // Validate that selected items have required properties
       const itemsToValidate = [
@@ -319,7 +212,6 @@ export const useOutfitEngine = () => {
       }
 
       // For partial selections, we don't require all items to be present
-      // Just validate that the selected items don't violate any rules
       return true;
     } catch (error) {
       console.error('Error in validatePartialSelection:', error);
@@ -328,10 +220,8 @@ export const useOutfitEngine = () => {
   };
 
   return {
-    validateOutfit,
     scoreOutfit,
-    suggestAccessories,
-    generateRandomOutfit,
+    getRandomOutfit,
     getOutfitsForAnchor,
     getAllOutfits,
     getCompatibleItems,

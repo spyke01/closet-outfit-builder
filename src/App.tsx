@@ -18,7 +18,7 @@ import { getWeatherData } from './services/weatherService';
 
 function App() {
   const { itemsByCategory, loading } = useWardrobe();
-  const { generateRandomOutfit, getAllOutfits } = useOutfitEngine();
+  const { getRandomOutfit, getAllOutfits } = useOutfitEngine();
 
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [selection, setSelection] = useState<OutfitSelection>({});
@@ -149,7 +149,7 @@ function App() {
 
 
   const handleRandomize = () => {
-    const randomOutfit = generateRandomOutfit(selection);
+    const randomOutfit = getRandomOutfit();
     if (randomOutfit) {
       setSelection({
         jacket: randomOutfit.jacket,
