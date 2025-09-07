@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Search, Tag } from 'lucide-react';
 import { WardrobeItem, Category, CapsuleTag } from '../types';
 import { ColorCircle } from './ColorCircle';
+import { useSettings } from '../contexts/SettingsContext';
+import { formatItemName } from '../utils/migration';
 
 interface ItemsGridProps {
   category: Category;
@@ -18,6 +20,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
   selectedItem,
   onItemSelect
 }) => {
+  const { settings } = useSettings();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<Set<CapsuleTag>>(new Set());
 
@@ -96,13 +99,13 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
                 onItemSelect(item);
               }
             }}
-            aria-label={`Select ${item.name} for outfit building`}
+            aria-label={`Select ${formatItemName(item, settings.showBrand)} for outfit building`}
           >
             <div className="text-left">
               <div className="flex items-center gap-2 mb-2">
                 <ColorCircle itemName={item.name} size="md" />
                 <h3 className="font-medium text-slate-800 dark:text-slate-200 leading-tight text-sm sm:text-base">
-                  {item.name}
+                  {formatItemName(item, settings.showBrand)}
                 </h3>
               </div>
 

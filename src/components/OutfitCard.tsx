@@ -1,9 +1,11 @@
 import React, { useState, ErrorInfo } from 'react';
-import { Shirt, RotateCcw, Eye, AlertTriangle, Heart } from 'lucide-react';
+import { RotateCcw, Eye, AlertTriangle, Heart } from 'lucide-react';
 import { OutfitSelection, GeneratedOutfit } from '../types';
 import { ScoreCircle } from './ScoreCircle';
 import { ColorCircle } from './ColorCircle';
 import { OutfitLayout } from './OutfitLayout';
+import { useSettings } from '../contexts/SettingsContext';
+import { formatItemName } from '../utils/migration';
 
 // Error boundary component for visual layout
 class VisualLayoutErrorBoundary extends React.Component<
@@ -62,6 +64,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
     enableFlip = false,
     defaultFlipped = false
 }) => {
+    const { settings } = useSettings();
     const isGenerated = 'source' in outfit;
     const score = propScore !== undefined ? propScore : (isGenerated ? outfit.score : 0);
     const [isFlipped, setIsFlipped] = useState(defaultFlipped);
@@ -114,16 +117,16 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
     };
 
     const coreItems = [
-        { label: 'Jacket/Overshirt', value: outfit.jacket?.name, showColor: true },
-        { label: 'Shirt', value: outfit.shirt?.name, showColor: true },
-        { label: 'Undershirt', value: outfit.undershirt?.name, showColor: true },
-        { label: 'Pants', value: outfit.pants?.name, showColor: true },
-        { label: 'Shoes', value: outfit.shoes?.name, showColor: true }
+        { label: 'Jacket/Overshirt', value: outfit.jacket ? formatItemName(outfit.jacket, settings.showBrand) : undefined, showColor: true },
+        { label: 'Shirt', value: outfit.shirt ? formatItemName(outfit.shirt, settings.showBrand) : undefined, showColor: true },
+        { label: 'Undershirt', value: outfit.undershirt ? formatItemName(outfit.undershirt, settings.showBrand) : undefined, showColor: true },
+        { label: 'Pants', value: outfit.pants ? formatItemName(outfit.pants, settings.showBrand) : undefined, showColor: true },
+        { label: 'Shoes', value: outfit.shoes ? formatItemName(outfit.shoes, settings.showBrand) : undefined, showColor: true }
     ];
 
     const accessories = [
-        { label: 'Belt', value: outfit.belt?.name, showColor: true },
-        { label: 'Watch', value: outfit.watch?.name, showColor: false },
+        { label: 'Belt', value: outfit.belt ? formatItemName(outfit.belt, settings.showBrand) : undefined, showColor: true },
+        { label: 'Watch', value: outfit.watch ? formatItemName(outfit.watch, settings.showBrand) : undefined, showColor: false },
         { label: 'Style', value: outfit.tuck, showColor: false }
     ];
 
@@ -365,7 +368,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                                     </span>
                                 ) : (
                                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                        {outfit.source === 'curated' ? 'Curated' : 'Generated'}
+                                        {isGenerated && outfit.source === 'curated' ? 'Curated' : 'Generated'}
                                     </span>
                                 )}
                             </div>
@@ -452,7 +455,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                                             </span>
                                         ) : (
                                             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                                {outfit.source === 'curated' ? 'Curated' : 'Generated'}
+                                                {isGenerated && outfit.source === 'curated' ? 'Curated' : 'Generated'}
                                             </span>
                                         )}
                                     </div>

@@ -1,11 +1,12 @@
 import React from 'react';
+import { Settings } from 'lucide-react';
 import { WeatherWidget } from './WeatherWidget';
-import { ThemeToggle } from './ThemeToggle';
 import { Logo } from './Logo';
 import { WeatherData, WeatherError } from '../types';
 
 interface TopBarProps {
   onTitleClick: () => void;
+  onSettingsClick?: () => void;
   weatherForecast?: WeatherData[];
   weatherLoading?: boolean;
   weatherError?: WeatherError | null;
@@ -14,6 +15,7 @@ interface TopBarProps {
 
 export const TopBar: React.FC<TopBarProps> = ({ 
   onTitleClick, 
+  onSettingsClick,
   weatherForecast = [], 
   weatherLoading = false, 
   weatherError = null,
@@ -38,7 +40,15 @@ export const TopBar: React.FC<TopBarProps> = ({
             onRetry={onWeatherRetry}
             className="text-sm"
           />
-          <ThemeToggle />
+          {onSettingsClick && (
+            <button
+              onClick={onSettingsClick}
+              className="flex items-center justify-center w-9 h-9 rounded-lg bg-stone-100 dark:bg-slate-700 hover:bg-stone-200 dark:hover:bg-slate-600 transition-colors"
+              aria-label="Open settings"
+            >
+              <Settings size={18} className="text-slate-700 dark:text-slate-300" />
+            </button>
+          )}
         </div>
       </div>
     </div>

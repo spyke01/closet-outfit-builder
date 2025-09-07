@@ -3,6 +3,8 @@ import { OutfitSelection, Category, WardrobeItem, GeneratedOutfit, categoryToKey
 import { CategoryDropdown } from './CategoryDropdown';
 import { OutfitList } from './OutfitList';
 import { useOutfitEngine } from '../hooks/useOutfitEngine';
+import { useSettings } from '../contexts/SettingsContext';
+import { formatItemName } from '../utils/migration';
 
 interface SelectionStripProps {
   selection: OutfitSelection;
@@ -17,6 +19,7 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
   onSelectionChange,
   onOutfitSelect
 }) => {
+  const { settings } = useSettings();
   const { getCompatibleItems, getFilteredOutfits, validatePartialSelection } = useOutfitEngine();
   const [loadingCategories, setLoadingCategories] = useState<Set<Category>>(new Set());
   const [error, setError] = useState<string | null>(null);
@@ -164,7 +167,7 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
         <div className="space-y-3 md:space-y-0">
           {/* Label */}
           <span className="block text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400">
-            {anchorItem ? `Building from ${anchorItem.name}:` : 'Build Outfit:'}
+            {anchorItem ? `Building from ${formatItemName(anchorItem, settings.showBrand)}:` : 'Build Outfit:'}
           </span>
           
           {/* Dropdowns Container - Stacked on mobile, horizontal on tablet+ */}

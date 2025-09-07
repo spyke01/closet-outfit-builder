@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Lock } from 'lucide-react';
 import { Category, WardrobeItem } from '../types';
+import { useSettings } from '../contexts/SettingsContext';
+import { formatItemName } from '../utils/migration';
 
 interface CategoryDropdownProps {
   category: Category;
@@ -21,6 +23,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
   isLoading = false,
   isLocked = false
 }) => {
+  const { settings } = useSettings();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -105,7 +108,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
                 style={{ backgroundColor: getColorIndicator(selectedItem) }}
               />
               <span className={`text-xs sm:text-sm font-medium truncate ${isLocked ? 'text-slate-600 dark:text-slate-400' : 'text-slate-800 dark:text-slate-200'}`}>
-                {selectedItem.name}
+                {formatItemName(selectedItem, settings.showBrand)}
                 {isLocked && <span className="ml-1 text-xs text-slate-500 dark:text-slate-400 hidden sm:inline">(Anchor)</span>}
               </span>
             </>
@@ -173,7 +176,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
                   className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border border-stone-300 dark:border-slate-500 flex-shrink-0 transition-transform duration-150 hover:scale-110"
                   style={{ backgroundColor: getColorIndicator(item) }}
                 />
-                <span className="truncate">{item.name}</span>
+                <span className="truncate">{formatItemName(item, settings.showBrand)}</span>
               </button>
             ))
           )}

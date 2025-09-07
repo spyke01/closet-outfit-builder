@@ -7,7 +7,9 @@ import { ItemsGrid } from './components/ItemsGrid';
 import { OutfitDisplay } from './components/OutfitDisplay';
 import { OutfitCard } from './components/OutfitCard';
 import { ScrollToTop } from './components/ScrollToTop';
+import { SettingsPage } from './components/SettingsPage';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { SettingsProvider } from './contexts/SettingsContext';
 import { useWardrobe } from './hooks/useWardrobe';
 import { useOutfitEngine } from './hooks/useOutfitEngine';
 import { Category, OutfitSelection, WardrobeItem, GeneratedOutfit, categoryToKey, WeatherData, WeatherError } from './types';
@@ -22,6 +24,7 @@ function App() {
   const [selection, setSelection] = useState<OutfitSelection>({});
   const [anchorItem, setAnchorItem] = useState<WardrobeItem | null>(null);
   const [showRandomOutfit, setShowRandomOutfit] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   // Weather state
   const [weatherForecast, setWeatherForecast] = useState<WeatherData[]>([]);
@@ -197,28 +200,52 @@ function App() {
     setSelection({});
     setAnchorItem(null);
     setShowRandomOutfit(false);
+    setShowSettings(false);
+  };
+
+  const handleSettingsClick = () => {
+    setShowSettings(true);
+  };
+
+  const handleSettingsBack = () => {
+    setShowSettings(false);
   };
 
   if (loading) {
     return (
-      <ThemeProvider>
-        <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800 dark:border-slate-200 mx-auto mb-4"></div>
-            <p className="text-slate-600 dark:text-slate-300">Loading your wardrobe...</p>
+      <SettingsProvider>
+        <ThemeProvider>
+          <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800 dark:border-slate-200 mx-auto mb-4"></div>
+              <p className="text-slate-600 dark:text-slate-300">Loading your wardrobe...</p>
+            </div>
           </div>
-        </div>
-      </ThemeProvider>
+        </ThemeProvider>
+      </SettingsProvider>
+    );
+  }
+
+  // Show settings page if requested
+  if (showSettings) {
+    return (
+      <SettingsProvider>
+        <ThemeProvider>
+          <SettingsPage onBack={handleSettingsBack} />
+        </ThemeProvider>
+      </SettingsProvider>
     );
   }
 
   return (
-    <ThemeProvider>
-      <div className="min-h-screen bg-stone-50 dark:bg-slate-900 overflow-x-hidden">
+    <SettingsProvider>
+      <ThemeProvider>
+        <div className="min-h-screen bg-stone-50 dark:bg-slate-900 overflow-x-hidden">
       {/* Fixed Header Container */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-stone-50 dark:bg-slate-900">
         <TopBar
           onTitleClick={handleTitleClick}
+          onSettingsClick={handleSettingsClick}
           weatherForecast={weatherForecast}
           weatherLoading={weatherLoading}
           weatherError={weatherError}
@@ -302,9 +329,10 @@ function App() {
         </div>
       </div>
 
-      <ScrollToTop />
-      </div>
-    </ThemeProvider>
+        <ScrollToTop />
+        </div>
+      </ThemeProvider>
+    </SettingsProvider>
   );
 }
 
