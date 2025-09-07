@@ -7,7 +7,7 @@ A React-based wardrobe management and outfit generation application that helps u
 - **Interactive Wardrobe Management**: Browse and select items from categorized clothing collections with 7-category layering system
 - **Smart Outfit Generation**: AI-powered outfit recommendations based on style compatibility and layer-aware scoring
 - **Enhanced Scoring Algorithm**: Layer-aware formality calculations that account for clothing visibility and layering effects
-- **Visual Outfit Display**: Flip card interface with SVG-based clothing representations showing proper layering
+- **Visual Outfit Display**: Flip card interface with representations showing proper layering
 - **Brand Management**: Optional brand tracking and display for wardrobe items
 - **User Settings**: Customizable preferences including brand display toggles
 - **Anchor-Based Discovery**: Find outfits that work well with a specific item as the foundation
@@ -17,6 +17,11 @@ A React-based wardrobe management and outfit generation application that helps u
 - **PWA Support**: Progressive Web App with offline capabilities
 - **Responsive Design**: Works seamlessly across desktop and mobile devices
 - **Secure API Integration**: Server-side API key protection via Netlify Functions
+
+## Screenshots
+Outfit List             |  Visual Mockup
+:-------------------------:|:-------------------------:
+![](https://raw.github.com/spyke01/closet-outfit-builder/main/screenshots/all-outfits.png)  |  ![](https://raw.github.com/spyke01/closet-outfit-builder/main/screenshots/visual-mockup.png)
 
 ## Tech Stack
 
@@ -44,7 +49,7 @@ src/
 │   ├── TopBar.tsx      # Navigation with weather widget
 │   ├── WeatherWidget.tsx # 3-day weather forecast display
 │   ├── SettingsPage.tsx # User settings and preferences management
-│   ├── OutfitLayout.tsx # Visual SVG-based outfit display
+│   ├── OutfitLayout.tsx # Visual outfit display
 │   ├── ScoreBreakdown.tsx # Enhanced score breakdown with layer weights
 │   └── ScrollToTop.tsx # Navigation utility component
 ├── data/               # Static data files
@@ -207,9 +212,7 @@ The enhanced scoring system accounts for how clothing layers interact:
 
 Interactive flip cards provide visual outfit representations:
 
-- **SVG Clothing Items**: Scalable vector graphics for jackets, shirts, pants, shoes, and accessories
 - **Proper Layering**: Visual stacking matches clothing hierarchy (jacket over shirt over undershirt)
-- **Color Application**: SVG items display in the actual colors of selected wardrobe items
 - **Flip Animation**: Smooth transitions between text-based and visual outfit views
 - **Responsive Design**: Visual layouts adapt to different screen sizes
 
@@ -261,7 +264,7 @@ Customizable preferences for personalized experience:
 **OutfitCard Component (Enhanced):**
 - Flip card functionality with smooth CSS transitions
 - Front face shows traditional text-based outfit information
-- Back face displays visual SVG-based outfit layout
+- Back face displays visual outfit layout
 - Interactive flip triggers and touch-friendly design
 - Responsive sizing for different screen sizes
 
@@ -273,18 +276,11 @@ Customizable preferences for personalized experience:
 - Navigation integration with main app flow
 
 **OutfitLayout Component:**
-- Visual outfit representation using SVG components
+- Visual outfit representation
 - Proper layering hierarchy (jacket over shirt over undershirt)
 - Color application from actual wardrobe item colors
 - Graceful handling of missing items (skips empty layers)
 - Responsive sizing and positioning
-
-**SVG Clothing Components:**
-- Scalable vector graphics for all clothing types
-- CSS-based coloring system for dynamic color application
-- Proper z-index layering for visual stacking
-- Optimized paths for fast rendering and small file sizes
-- Consistent styling and proportions across all items
 
 **ScoreBreakdown Component (Enhanced):**
 - Displays individual component scores with applied weights
@@ -331,6 +327,13 @@ The app now follows a mobile-first approach:
 2. Reference items by their unique IDs
 3. Include styling preferences and weight scores
 
+### Adding Images to Your Wardrobe
+1. Use ChatGPT or another tool to generate a "realistic image of the following wardrobe items" and pass it the JSON file.
+2. If you want to do it in bulk you can pass it the JSON file and ask it to identify all wardrobe items without an image then generate a grid containing 4 items.
+3. Split the grid image using [PineTools](https://pinetools.com/split-image).
+4. Use [Remove.bg](https://www.remove.bg/) to remove remove the background from the images. You can use the desktop app to do this in bulk.
+5. Use [TinyPNG](https://tinypng.com/) to compress the images.
+
 ### Weather Service Integration
 
 The weather service (`src/services/weatherService.ts`) provides:
@@ -354,7 +357,6 @@ npm test -- --grep "WeatherWidget"
 npm test -- --grep "scoring"
 npm test -- --grep "OutfitCard"
 npm test -- --grep "SettingsPage"
-npm test -- --grep "SVG"
 ```
 
 ### Customizing Styles
@@ -434,7 +436,3 @@ The application includes:
 5. Submit a pull request with detailed description
 
 For development setup including weather integration, see [NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md).
-
-## License
-
-This project is private and proprietary
