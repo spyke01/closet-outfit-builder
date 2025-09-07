@@ -11,7 +11,7 @@ interface OutfitDisplayProps {
 
 export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({ selection, onRandomize }) => {
   const { scoreOutfit } = useOutfitEngine();
-  const hasCompleteOutfit = selection.shirt && selection.pants && selection.shoes;
+  const hasCompleteOutfit = (selection.shirt || selection.undershirt) && selection.pants && selection.shoes;
   const outfitScore = hasCompleteOutfit ? scoreOutfit(selection) : 0;
 
   if (!hasCompleteOutfit) {

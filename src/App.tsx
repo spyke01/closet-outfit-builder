@@ -153,7 +153,8 @@ function App() {
     if (randomOutfit) {
       setSelection({
         jacket: randomOutfit.jacket,
-        shirt: randomOutfit.shirt,
+        shirt: randomOutfit?.shirt,
+        undershirt: randomOutfit?.undershirt,
         pants: randomOutfit.pants,
         shoes: randomOutfit.shoes,
         belt: randomOutfit.belt,
@@ -181,7 +182,8 @@ function App() {
   const handleOutfitSelect = (outfit: GeneratedOutfit) => {
     setSelection({
       jacket: outfit.jacket,
-      shirt: outfit.shirt,
+      shirt: outfit?.shirt,
+      undershirt: outfit?.undershirt,
       pants: outfit.pants,
       shoes: outfit.shoes,
       belt: outfit.belt,

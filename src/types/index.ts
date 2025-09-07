@@ -38,7 +38,7 @@ export interface CuratedOutfit {
 export interface OutfitSelection {
   jacket?: WardrobeItem;
   shirt?: WardrobeItem;
-  undershirt?: WardrobeItem; // New undershirt category for layering
+  undershirt?: WardrobeItem;
   pants?: WardrobeItem;
   shoes?: WardrobeItem;
   belt?: WardrobeItem;
