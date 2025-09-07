@@ -46,19 +46,6 @@ src/
 │   ├── SettingsPage.tsx # User settings and preferences management
 │   ├── OutfitLayout.tsx # Visual SVG-based outfit display
 │   ├── ScoreBreakdown.tsx # Enhanced score breakdown with layer weights
-│   ├── svg/            # SVG clothing item components
-│   │   ├── ClothingItemSVG.tsx # Generic SVG clothing renderer
-│   │   ├── JacketSVG.tsx # Jacket and outerwear SVGs
-│   │   ├── TShirtSVG.tsx # T-shirt and undershirt SVGs
-│   │   ├── PoloSVG.tsx  # Polo shirt SVGs
-│   │   ├── LongSleeveSVG.tsx # Long sleeve shirt SVGs
-│   │   ├── ChinosSVG.tsx # Pants and chinos SVGs
-│   │   ├── ShortsSVG.tsx # Shorts SVGs
-│   │   ├── SneakersSVG.tsx # Sneakers and casual shoes SVGs
-│   │   ├── LoafersSVG.tsx # Loafers and dress shoes SVGs
-│   │   ├── BeltSVG.tsx  # Belt SVGs
-│   │   ├── DressWatchSVG.tsx # Dress watch SVGs
-│   │   └── DiverWatchSVG.tsx # Diver watch SVGs
 │   └── ScrollToTop.tsx # Navigation utility component
 ├── data/               # Static data files
 │   ├── outfits.json    # Curated outfit combinations

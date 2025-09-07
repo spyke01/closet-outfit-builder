@@ -8,7 +8,9 @@
         "Refined",
         "Crossover"
       ],
-      "formalityScore": 7
+      "formalityScore": 7,
+      "image": "/images/wardrobe/mac-coat-navy.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "moto-jacket",
@@ -18,7 +20,9 @@
         "Adventurer",
         "Crossover"
       ],
-      "formalityScore": 3
+      "formalityScore": 3,
+      "image": "/images/wardrobe/goodthreads-moto-jacket.png",
+      "brand": "Goodthreads"
     },
     {
       "id": "shacket-olive",
@@ -27,7 +31,9 @@
       "capsuleTags": [
         "Crossover"
       ],
-      "formalityScore": 4
+      "formalityScore": 4,
+      "image": "/images/wardrobe/shacket-olive.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "shacket-beige",
@@ -36,7 +42,9 @@
       "capsuleTags": [
         "Crossover"
       ],
-      "formalityScore": 4
+      "formalityScore": 4,
+      "image": "/images/wardrobe/shacket-cream.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "camel-crewneck",
@@ -45,7 +53,9 @@
       "capsuleTags": [
         "Refined"
       ],
-      "formalityScore": 6
+      "formalityScore": 6,
+      "image": "/images/wardrobe/sweater-orange.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "grey-shawl-cardigan",
@@ -55,7 +65,9 @@
         "Refined",
         "Crossover"
       ],
-      "formalityScore": 6
+      "formalityScore": 6,
+      "image": "/images/wardrobe/cardigan-grey.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "blue-ocbd",
@@ -64,7 +76,9 @@
       "capsuleTags": [
         "Refined"
       ],
-      "formalityScore": 7
+      "formalityScore": 7,
+      "image": "/images/wardrobe/ocbd-navy.png",
+      "brand": "Polo Ralph Lauren"
     },
     {
       "id": "white-ocbd",
@@ -73,18 +87,21 @@
       "capsuleTags": [
         "Refined"
       ],
-      "formalityScore": 7
+      "formalityScore": 7,
+      "image": "/images/wardrobe/ocbd-white.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "rl-featherweight-blue",
       "name": "Featherweight Shirt (Blue)",
       "category": "Shirt",
-      "brand": "Ralph Lauren",
+      "brand": "Polo Ralph Lauren",
       "capsuleTags": [
         "Refined",
         "Crossover"
       ],
-      "formalityScore": 6
+      "formalityScore": 6,
+      "image": "/images/wardrobe/ocbd-blue.png"
     },
     {
       "id": "linen-striped-white-navy",
@@ -95,7 +112,9 @@
         "Crossover",
         "Shorts"
       ],
-      "formalityScore": 5
+      "formalityScore": 5,
+      "image": "/images/wardrobe/ocbd-striped.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "linen-white",
@@ -105,7 +124,9 @@
         "Refined",
         "Shorts"
       ],
-      "formalityScore": 5
+      "formalityScore": 5,
+      "image": "",
+      "brand": "Banana Republic"
     },
     {
       "id": "linen-deep-navy",
@@ -115,7 +136,9 @@
         "Refined",
         "Crossover"
       ],
-      "formalityScore": 5
+      "formalityScore": 5,
+      "image": "",
+      "brand": "Banana Republic"
     },
     {
       "id": "linen-black",
@@ -125,7 +148,9 @@
         "Adventurer",
         "Crossover"
       ],
-      "formalityScore": 4
+      "formalityScore": 4,
+      "image": "",
+      "brand": "Banana Republic"
     },
     {
       "id": "grey-knit-polo",
@@ -134,7 +159,9 @@
       "capsuleTags": [
         "Refined"
       ],
-      "formalityScore": 5
+      "formalityScore": 5,
+      "image": "/images/wardrobe/polo-grey.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "navy-ribbed-polo",
@@ -143,7 +170,9 @@
       "capsuleTags": [
         "Refined"
       ],
-      "formalityScore": 5
+      "formalityScore": 5,
+      "image": "/images/wardrobe/polo-navy.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "grey-henley-knit",
@@ -152,7 +181,9 @@
       "capsuleTags": [
         "Adventurer"
       ],
-      "formalityScore": 3
+      "formalityScore": 3,
+      "image": "",
+      "brand": "Banana Republic"
     },
     {
       "id": "tee-white",
@@ -163,7 +194,9 @@
         "Adventurer",
         "Refined"
       ],
-      "formalityScore": 2
+      "formalityScore": 2,
+      "image": "/images/wardrobe/tee-white.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "tee-cream",
@@ -174,7 +207,9 @@
         "Adventurer",
         "Refined"
       ],
-      "formalityScore": 2
+      "formalityScore": 2,
+      "image": "/images/wardrobe/tee-cream.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "tee-black",
@@ -184,7 +219,9 @@
         "Crossover",
         "Adventurer"
       ],
-      "formalityScore": 2
+      "formalityScore": 2,
+      "image": "/images/wardrobe/polo-black.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "tee-navy",
@@ -194,7 +231,9 @@
         "Crossover",
         "Refined"
       ],
-      "formalityScore": 2
+      "formalityScore": 2,
+      "image": "/images/wardrobe/tee-navy.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "tee-grey",
@@ -203,7 +242,9 @@
       "capsuleTags": [
         "Crossover"
       ],
-      "formalityScore": 2
+      "formalityScore": 2,
+      "image": "",
+      "brand": "Banana Republic"
     },
     {
       "id": "chinos-white",
@@ -213,7 +254,9 @@
         "Refined",
         "Crossover"
       ],
-      "formalityScore": 6
+      "formalityScore": 6,
+      "image": "/images/wardrobe/chinos-white.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "chinos-light-grey",
@@ -222,7 +265,9 @@
       "capsuleTags": [
         "Refined"
       ],
-      "formalityScore": 6
+      "formalityScore": 6,
+      "image": "/images/wardrobe/chinos-grey.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "chinos-khaki",
@@ -231,7 +276,9 @@
       "capsuleTags": [
         "Refined"
       ],
-      "formalityScore": 6
+      "formalityScore": 6,
+      "image": "/images/wardrobe/chino-khaki.png",
+      "brand": "Perry Ellis"
     },
     {
       "id": "chinos-black",
@@ -241,7 +288,9 @@
         "Adventurer",
         "Crossover"
       ],
-      "formalityScore": 6
+      "formalityScore": 6,
+      "image": "/images/wardrobe/chinos-black.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "chinos-navy",
@@ -251,7 +300,9 @@
         "Refined",
         "Crossover"
       ],
-      "formalityScore": 6
+      "formalityScore": 6,
+      "image": "/images/wardrobe/chino-navy.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "chinos-olive",
@@ -261,7 +312,9 @@
         "Adventurer",
         "Crossover"
       ],
-      "formalityScore": 6
+      "formalityScore": 6,
+      "image": "/images/wardrobe/chinos-olive.png",
+      "brand": "Ben Sherman"
     },
     {
       "id": "trousers-charcoal",
@@ -270,7 +323,9 @@
       "capsuleTags": [
         "Refined"
       ],
-      "formalityScore": 8
+      "formalityScore": 8,
+      "image": "",
+      "brand": "Banana Republic"
     },
     {
       "id": "jeans-medium",
@@ -280,7 +335,9 @@
         "Crossover",
         "Adventurer"
       ],
-      "formalityScore": 3
+      "formalityScore": 3,
+      "image": "/images/wardrobe/jean-medium.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "denim-dark",
@@ -290,7 +347,9 @@
         "Crossover",
         "Adventurer"
       ],
-      "formalityScore": 4
+      "formalityScore": 4,
+      "image": "/images/wardrobe/jean-black.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "shorts-white",
@@ -299,7 +358,9 @@
       "capsuleTags": [
         "Shorts"
       ],
-      "formalityScore": 2
+      "formalityScore": 2,
+      "image": "/images/wardrobe/shorts-white.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "shorts-khaki",
@@ -308,7 +369,9 @@
       "capsuleTags": [
         "Shorts"
       ],
-      "formalityScore": 2
+      "formalityScore": 2,
+      "image": "/images/wardrobe/shorts-khaki.png",
+      "brand": "Perry Ellis"
     },
     {
       "id": "shorts-olive",
@@ -317,7 +380,9 @@
       "capsuleTags": [
         "Shorts"
       ],
-      "formalityScore": 2
+      "formalityScore": 2,
+      "image": "/images/wardrobe/shorts-olive.png",
+      "brand": "Ben Sherman"
     },
     {
       "id": "shorts-navy",
@@ -326,7 +391,9 @@
       "capsuleTags": [
         "Shorts"
       ],
-      "formalityScore": 2
+      "formalityScore": 2,
+      "image": "/images/wardrobe/navy-shorts.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "shorts-dark-brown",
@@ -335,7 +402,8 @@
       "capsuleTags": [
         "Shorts"
       ],
-      "formalityScore": 2
+      "formalityScore": 2,
+      "image": "/images/wardrobe/shorts-brown.png"
     },
     {
       "id": "loafers-dark-brown",
@@ -344,7 +412,9 @@
       "capsuleTags": [
         "Refined"
       ],
-      "formalityScore": 7
+      "formalityScore": 7,
+      "image": "",
+      "brand": "Allen Edmonds"
     },
     {
       "id": "loafers-dark-brown-suede",
@@ -354,7 +424,9 @@
         "Refined",
         "Shorts"
       ],
-      "formalityScore": 6
+      "formalityScore": 6,
+      "image": "/images/wardrobe/rockport-dark-sude-loafers.png",
+      "brand": "Rockport"
     },
     {
       "id": "loafers-light-tan",
@@ -364,7 +436,9 @@
         "Refined",
         "Shorts"
       ],
-      "formalityScore": 6
+      "formalityScore": 6,
+      "image": "",
+      "brand": "Clarks"
     },
     {
       "id": "loafers-black-horsebit",
@@ -373,7 +447,8 @@
       "capsuleTags": [
         "Refined"
       ],
-      "formalityScore": 8
+      "formalityScore": 8,
+      "image": ""
     },
     {
       "id": "double-monk-black",
@@ -382,7 +457,8 @@
       "capsuleTags": [
         "Refined"
       ],
-      "formalityScore": 8
+      "formalityScore": 8,
+      "image": ""
     },
     {
       "id": "sneakers-killshots",
@@ -392,7 +468,9 @@
         "Crossover",
         "Shorts"
       ],
-      "formalityScore": 2
+      "formalityScore": 2,
+      "image": "",
+      "brand": "Nike"
     },
     {
       "id": "sneakers-white-leather",
@@ -403,7 +481,9 @@
         "Crossover",
         "Shorts"
       ],
-      "formalityScore": 3
+      "formalityScore": 3,
+      "image": "",
+      "brand": "Thursday Boot Company"
     },
     {
       "id": "apache-boots",
@@ -412,7 +492,9 @@
       "capsuleTags": [
         "Adventurer"
       ],
-      "formalityScore": 4
+      "formalityScore": 4,
+      "image": "/images/wardrobe/apache-boots.png",
+      "brand": "Chippewa"
     },
     {
       "id": "loafers-dark-dress",
@@ -421,7 +503,9 @@
       "capsuleTags": [
         "Refined"
       ],
-      "formalityScore": 9
+      "formalityScore": 9,
+      "image": "",
+      "brand": "Allen Edmonds"
     },
     {
       "id": "belt-braided",
@@ -431,7 +515,9 @@
         "Crossover",
         "Refined"
       ],
-      "formalityScore": 5
+      "formalityScore": 5,
+      "image": "/images/wardrobe/braided-belt.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "belt-clean-brown",
@@ -440,7 +526,9 @@
       "capsuleTags": [
         "Refined"
       ],
-      "formalityScore": 6
+      "formalityScore": 6,
+      "image": "/images/wardrobe/belt-brown-clean.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "belt-rugged",
@@ -449,7 +537,9 @@
       "capsuleTags": [
         "Adventurer"
       ],
-      "formalityScore": 3
+      "formalityScore": 3,
+      "image": "/images/wardrobe/belt-rugged.png",
+      "brand": "Levi's"
     },
     {
       "id": "belt-reversible",
@@ -458,7 +548,9 @@
       "capsuleTags": [
         "Refined"
       ],
-      "formalityScore": 7
+      "formalityScore": 7,
+      "image": "",
+      "brand": "Banana Republic"
     },
     {
       "id": "belt-black-pebbled",
@@ -467,7 +559,9 @@
       "capsuleTags": [
         "Refined"
       ],
-      "formalityScore": 7
+      "formalityScore": 7,
+      "image": "/images/wardrobe/belt-black-pebbled.png",
+      "brand": "Banana Republic"
     },
     {
       "id": "rolex-panda",
@@ -478,7 +572,8 @@
         "Refined",
         "Shorts"
       ],
-      "formalityScore": 8
+      "formalityScore": 8,
+      "image": "/images/wardrobe/rolex-panda.png"
     },
     {
       "id": "rolex-black",
@@ -488,7 +583,8 @@
       "capsuleTags": [
         "Refined"
       ],
-      "formalityScore": 8
+      "formalityScore": 8,
+      "image": "/images/wardrobe/role-submariner-black.png"
     },
     {
       "id": "omega-nttd",
@@ -498,18 +594,32 @@
       "capsuleTags": [
         "Crossover"
       ],
-      "formalityScore": 6
+      "formalityScore": 6,
+      "image": "/images/wardrobe/omega-nttd.png"
     },
     {
       "id": "omega-300m",
-      "name": "Seamaster 300M",
+      "name": "Seamaster 300M (Blue Dial)",
       "category": "Watch",
       "brand": "Omega",
       "capsuleTags": [
         "Refined",
         "Sport"
       ],
-      "formalityScore": 7
+      "formalityScore": 7,
+      "image": "/images/wardrobe/omega-seamaster-diver-300m.png"
+    },
+    {
+      "id": "omega-300m-rose-gold",
+      "name": "Seamaster 300M (Blue Dial, Rose Gold)",
+      "category": "Watch",
+      "brand": "Omega",
+      "capsuleTags": [
+        "Refined",
+        "Sport"
+      ],
+      "formalityScore": 7,
+      "image": "/images/wardrobe/omega-seamaster-diver-300m-rose-gold.png"
     },
     {
       "id": "panerai-luminor",
@@ -519,7 +629,8 @@
       "capsuleTags": [
         "Adventurer"
       ],
-      "formalityScore": 5
+      "formalityScore": 5,
+      "image": "/images/wardrobe/luminor-panerai.png"
     },
     {
       "id": "omega-speedmaster",
@@ -530,7 +641,8 @@
         "Adventurer",
         "Tool"
       ],
-      "formalityScore": 5
+      "formalityScore": 5,
+      "image": ""
     }
   ]
 }

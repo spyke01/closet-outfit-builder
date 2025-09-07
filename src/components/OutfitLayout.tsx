@@ -1,6 +1,6 @@
 import React from 'react';
 import { OutfitSelection } from '../types';
-import { ClothingItemSVG } from './svg';
+import { ClothingItemDisplay } from './ClothingItemDisplay';
 
 interface OutfitLayoutProps {
   selection: OutfitSelection;
@@ -13,14 +13,14 @@ export const OutfitLayout: React.FC<OutfitLayoutProps> = ({
   className = '',
   size = 'medium'
 }) => {
-  // Define size classes for responsive sizing - more compact
+  // Define size classes for responsive sizing - using standard Tailwind classes
   const sizeClasses = {
-    small: 'w-72 h-56', // More compact for flat lay
-    medium: 'w-80 h-64',
-    large: 'w-96 h-72'
+    small: 'w-80 h-64', // 320px x 256px
+    medium: 'w-96 h-80', // 384px x 320px  
+    large: 'w-[28rem] h-96' // 448px x 384px (using arbitrary value for w-112 equivalent)
   };
 
-  // Get all items that have been selected
+  // Get all items that have been selected and have valid images
   const items = [
     { item: selection.jacket, category: 'jacket' },
     { item: selection.shirt, category: 'shirt' },
@@ -29,85 +29,82 @@ export const OutfitLayout: React.FC<OutfitLayoutProps> = ({
     { item: selection.shoes, category: 'shoes' },
     { item: selection.belt, category: 'belt' },
     { item: selection.watch, category: 'watch' }
-  ].filter(({ item }) => item !== undefined);
+  ].filter(({ item }) => {
+    // Only include items that exist and have valid images
+    return item && item.image && item.image.trim() !== '';
+  });
 
-  // Smart flat lay positioning - adapts based on available items and fills space efficiently
+  // Simplified flat lay positioning - better spacing and visibility
   const getFlatLayPosition = (category: string, index: number): React.CSSProperties => {
-    // Check which items we have to optimize layout
-    const hasJacket = items.some(({ category }) => category === 'jacket');
-    const hasUndershirt = items.some(({ category }) => category === 'undershirt');
-    const hasBelt = items.some(({ category }) => category === 'belt');
-    const hasWatch = items.some(({ category }) => category === 'watch');
-    
     const positions: Record<string, React.CSSProperties> = {
-      // Left side - jacket (prominent position)
+      // Left side - jacket
       jacket: {
         position: 'absolute',
         top: '5%',
-        left: '3%',
-        width: '45%',
-        height: '60%',
-        transform: 'rotate(-10deg)'
-      },
-      
-      // Center-right - shirt (adjust based on undershirt presence)
-      shirt: {
-        position: 'absolute',
-        top: hasUndershirt ? '8%' : '5%',
-        right: hasUndershirt ? '25%' : '5%',
-        width: hasUndershirt ? '28%' : '40%',
-        height: hasUndershirt ? '40%' : '55%',
-        transform: hasUndershirt ? 'rotate(5deg)' : 'rotate(-3deg)'
-      },
-      
-      // Far right - undershirt (when present)
-      undershirt: {
-        position: 'absolute',
-        top: '12%',
-        right: '3%',
-        width: '35%',
-        height: '45%',
-        transform: 'rotate(12deg)'
-      },
-      
-      // Center-bottom - pants (larger, prominent)
-      pants: {
-        position: 'absolute',
-        top: hasJacket ? '40%' : '25%',
-        left: hasJacket ? '25%' : '15%',
-        width: '45%',
+        left: '5%',
+        width: '40%',
         height: '50%',
         transform: 'rotate(-8deg)'
       },
       
-      // Bottom - shoes (spread across bottom)
+      // Center-right - shirt
+      shirt: {
+        position: 'absolute',
+        top: '8%',
+        right: '15%',
+        width: '35%',
+        height: '45%',
+        transform: 'rotate(3deg)'
+      },
+      
+      // Far right - undershirt
+      undershirt: {
+        position: 'absolute',
+        top: '12%',
+        right: '5%',
+        width: '30%',
+        height: '40%',
+        transform: 'rotate(8deg)'
+      },
+      
+      // Center-bottom - pants
+      pants: {
+        position: 'absolute',
+        top: '45%',
+        left: '25%',
+        width: '45%',
+        height: '40%',
+        transform: 'rotate(-5deg)'
+      },
+      
+      // Bottom-right - shoes
       shoes: {
         position: 'absolute',
-        bottom: '5%',
-        left: '50%',
-        width: '50%',
-        height: '30%',
-        transform: 'translateX(-50%) rotate(2deg)'
+        bottom: '8%',
+        right: '10%',
+        width: '35%',
+        height: '25%',
+        transform: 'rotate(2deg)'
       },
       
-      // Mid-left - belt (larger, more visible)
+      // Mid-left - belt
       belt: {
         position: 'absolute',
-        top: hasJacket ? '50%' : '35%',
-        left: hasJacket ? '5%' : '8%',
-        width: '40%',
-        height: '20%',
-        transform: 'rotate(-30deg)'
+        top: '60%',
+        left: '8%',
+        width: '30%',
+        height: '15%',
+        transform: 'rotate(-25deg)'
       },
       
-      // Top-right corner - watch (visible but not intrusive)
+      // Mid-right - watch
       watch: {
         position: 'absolute',
-        top: hasUndershirt ? '3%' : '8%',
-        right: hasUndershirt ? '40%' : '15%',
-        width: '20%',
-        height: '25%',
-        transform: 'rotate(18deg)'
+        top: '50%',
+        right: '25%',
+        width: '18%',
+        height: '20%',
+        transform: 'rotate(15deg)'
       }
     };
 
@@ -124,8 +121,9 @@ export const OutfitLayout: React.FC<OutfitLayoutProps> = ({
     return (
       <div className={`${sizeClasses[size]} ${className} flex items-center justify-center bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 rounded-lg border-2 border-dashed border-amber-300 dark:border-amber-600`}>
         <div className="text-center text-amber-600 dark:text-amber-400">
-          <div className="text-2xl mb-2">👔</div>
-          <div className="text-sm">No items selected</div>
+          <div className="text-2xl mb-2">📷</div>
+          <div className="text-sm">No items with images</div>
+          <div className="text-xs mt-1 opacity-75">Add images to wardrobe items to see visual layout</div>
         </div>
       </div>
     );
@@ -165,9 +163,9 @@ export const OutfitLayout: React.FC<OutfitLayoutProps> = ({
           <div
             key={`${item.id}-${index}`}
             style={itemStyle}
-            className="transition-all duration-300 hover:scale-105 hover:z-10 drop-shadow-md"
+            className="transition-all drop-shadow-md"
           >
-            <ClothingItemSVG 
+            <ClothingItemDisplay 
               item={item}
               className="w-full h-full filter drop-shadow-sm"
             />

@@ -3,33 +3,26 @@ import { vi } from 'vitest';
 import { OutfitLayout } from './OutfitLayout';
 import { OutfitSelection, WardrobeItem } from '../types';
 
-// Mock SVG components to avoid rendering issues in tests
-vi.mock('./svg', () => ({
-  ClothingItemSVG: ({ item }: { item: WardrobeItem }) => (
-    <div data-testid={`svg-${item.category.toLowerCase().replace('/', '-')}`}>
-      {item.name}
-    </div>
-  ),
-  getLayerZIndex: (category: string) => {
-    const zIndexMap: Record<string, number> = {
-      'Jacket/Overshirt': 50,
-      'Shirt': 40,
-      'Undershirt': 30,
-      'Pants': 20,
-      'Shoes': 10,
-      'Belt': 25,
-      'Watch': 60
-    };
-    return zIndexMap[category] || 0;
+// Mock ClothingItemDisplay component to avoid rendering issues in tests
+vi.mock('./ClothingItemDisplay', () => ({
+  ClothingItemDisplay: ({ item }: { item: WardrobeItem }) => {
+    // Only render if item has image (simulating real behavior)
+    if (!item.image || item.image.trim() === '') return null;
+    return (
+      <div data-testid={`display-${item.category.toLowerCase().replace('/', '-')}`}>
+        {item.name}
+      </div>
+    );
   }
 }));
 
-const createMockItem = (id: string, name: string, category: any): WardrobeItem => ({
+const createMockItem = (id: string, name: string, category: any, image?: string): WardrobeItem => ({
   id,
   name,
   category,
   formalityScore: 5,
-  active: true
+  active: true,
+  image: image !== undefined ? image : 'https://example.com/image.jpg' // Only default if undefined
 });
 
 describe('OutfitLayout', () => {
@@ -38,8 +31,8 @@ describe('OutfitLayout', () => {
     
     render(<OutfitLayout selection={emptySelection} />);
     
-    expect(screen.getByText('No items selected')).toBeInTheDocument();
-    expect(screen.getByText('👔')).toBeInTheDocument();
+    expect(screen.getByText('No items with images')).toBeInTheDocument();
+    expect(screen.getByText('📷')).toBeInTheDocument();
   });
 
   it('renders selected clothing items', () => {
@@ -51,9 +44,9 @@ describe('OutfitLayout', () => {
     
     render(<OutfitLayout selection={selection} />);
     
-    expect(screen.getByTestId('svg-shirt')).toBeInTheDocument();
-    expect(screen.getByTestId('svg-pants')).toBeInTheDocument();
-    expect(screen.getByTestId('svg-shoes')).toBeInTheDocument();
+    expect(screen.getByTestId('display-shirt')).toBeInTheDocument();
+    expect(screen.getByTestId('display-pants')).toBeInTheDocument();
+    expect(screen.getByTestId('display-shoes')).toBeInTheDocument();
     expect(screen.getByText('3 items')).toBeInTheDocument();
   });
 
@@ -64,7 +57,7 @@ describe('OutfitLayout', () => {
     
     render(<OutfitLayout selection={selection} />);
     
-    expect(screen.getByTestId('svg-shirt')).toBeInTheDocument();
+    expect(screen.getByTestId('display-shirt')).toBeInTheDocument();
     expect(screen.getByText('1 item')).toBeInTheDocument();
   });
 
@@ -81,13 +74,13 @@ describe('OutfitLayout', () => {
     
     render(<OutfitLayout selection={selection} />);
     
-    expect(screen.getByTestId('svg-jacket-overshirt')).toBeInTheDocument();
-    expect(screen.getByTestId('svg-shirt')).toBeInTheDocument();
-    expect(screen.getByTestId('svg-undershirt')).toBeInTheDocument();
-    expect(screen.getByTestId('svg-pants')).toBeInTheDocument();
-    expect(screen.getByTestId('svg-shoes')).toBeInTheDocument();
-    expect(screen.getByTestId('svg-belt')).toBeInTheDocument();
-    expect(screen.getByTestId('svg-watch')).toBeInTheDocument();
+    expect(screen.getByTestId('display-jacket-overshirt')).toBeInTheDocument();
+    expect(screen.getByTestId('display-shirt')).toBeInTheDocument();
+    expect(screen.getByTestId('display-undershirt')).toBeInTheDocument();
+    expect(screen.getByTestId('display-pants')).toBeInTheDocument();
+    expect(screen.getByTestId('display-shoes')).toBeInTheDocument();
+    expect(screen.getByTestId('display-belt')).toBeInTheDocument();
+    expect(screen.getByTestId('display-watch')).toBeInTheDocument();
     expect(screen.getByText('7 items')).toBeInTheDocument();
   });
 
@@ -113,5 +106,17 @@ describe('OutfitLayout', () => {
     
     render(<OutfitLayout selection={selection} className="custom-class" />);
     expect(document.querySelector('.custom-class')).toBeInTheDocument();
+  });
+
+  it('shows empty state when items have no images', () => {
+    const selection: OutfitSelection = {
+      shirt: createMockItem('1', 'White OCBD', 'Shirt', ''), // No image
+      pants: createMockItem('2', 'Navy Chinos', 'Pants', '') // No image
+    };
+    
+    render(<OutfitLayout selection={selection} />);
+    
+    expect(screen.getByText('No items with images')).toBeInTheDocument();
+    expect(screen.getByText('Add images to wardrobe items to see visual layout')).toBeInTheDocument();
   });
 });
