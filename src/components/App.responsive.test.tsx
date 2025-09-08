@@ -110,7 +110,7 @@ describe('App Responsive Design Tests', () => {
       const { container } = render(<App />);
       
       // Check content container has proper top padding for mobile
-      const contentContainer = container.querySelector('.pt-\\[234px\\].md\\:pt-\\[210px\\]');
+      const contentContainer = container.querySelector('.pt-\\[286px\\].md\\:pt-\\[210px\\]');
       expect(contentContainer).toBeInTheDocument();
     });
 

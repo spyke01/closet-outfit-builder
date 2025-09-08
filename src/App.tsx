@@ -266,7 +266,7 @@ function App() {
       </div>
 
       {/* Content container with top padding to account for fixed header */}
-      <div className="pt-[234px] md:pt-[210px] flex flex-col min-h-screen">
+      <div className="pt-[286px] md:pt-[210px] flex flex-col min-h-screen">
         <SelectionStrip
           selection={selection}
           anchorItem={anchorItem}
