@@ -220,7 +220,6 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                     <div 
                         className="flip-card-face flip-card-front"
                         style={{
-                            position: 'absolute',
                             width: '100%',
                             height: '100%',
                             backfaceVisibility: 'hidden',
@@ -228,7 +227,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                         }}
                     >
                         <div
-                            className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-stone-200 dark:border-slate-700 p-8 h-full"
+                            className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-stone-200 dark:border-slate-700 p-8"
                             onClick={handleCardClick}
                         >
                             <div className="text-center mb-8">
@@ -302,14 +301,13 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                     <div 
                         className="flip-card-face flip-card-back"
                         style={{
-                            position: 'absolute',
                             width: '100%',
                             height: '100%',
                             backfaceVisibility: 'hidden',
                             transform: 'rotateY(180deg)'
                         }}
                     >
-                        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-stone-200 dark:border-slate-700 p-8 h-full">
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-stone-200 dark:border-slate-700 p-8">
                             <div className="text-center mb-6">
                                 <div className="flex items-center justify-center gap-4 mb-4">
                                     <h3 className="text-2xl font-light text-slate-800 dark:text-slate-200">
@@ -424,7 +422,6 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                 <div 
                     className="flip-card-face flip-card-front"
                     style={{
-                        position: 'absolute',
                         width: '100%',
                         height: '100%',
                         backfaceVisibility: 'hidden',
@@ -432,7 +429,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                     }}
                 >
                     <div
-                        className={`bg-stone-50 dark:bg-slate-800 rounded-xl p-5 border border-stone-200 dark:border-slate-700 hover:shadow-md transition-shadow h-full ${onClick && !enableFlip ? 'cursor-pointer' : ''}`}
+                        className={`bg-stone-50 dark:bg-slate-800 rounded-xl p-5 border border-stone-200 dark:border-slate-700 hover:shadow-md transition-shadow ${onClick && !enableFlip ? 'cursor-pointer' : ''}`}
                         onClick={handleCardClick}
                     >
                         <div className="flex items-center justify-between mb-4">
@@ -493,14 +490,13 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                 <div 
                     className="flip-card-face flip-card-back"
                     style={{
-                        position: 'absolute',
                         width: '100%',
                         height: '100%',
                         backfaceVisibility: 'hidden',
                         transform: 'rotateY(180deg)'
                     }}
                 >
-                    <div className="bg-stone-50 dark:bg-slate-800 rounded-xl p-5 border border-stone-200 dark:border-slate-700 h-full">
+                    <div className="bg-stone-50 dark:bg-slate-800 rounded-xl p-5 border border-stone-200 dark:border-slate-700">
                         <div className="flex items-center justify-between mb-4">
                             <button
                                 onClick={handleFlip}
