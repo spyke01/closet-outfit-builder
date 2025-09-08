@@ -49,7 +49,7 @@ const isCacheValid = (cachedData: CachedWeatherData): boolean => {
  */
 const transformWeatherResponse = (response: WeatherResponse): WeatherData[] => {
   return response.forecast.map(day => {
-    const date = new Date(day.date);
+    const date = new Date(`${day.date}T12:00:00Z`);
     return {
       date: day.date,
       dayOfWeek: date.toLocaleDateString('en-US', { weekday: 'long' }),
