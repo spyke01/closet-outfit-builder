@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { OutfitList } from './OutfitList';
 import { GeneratedOutfit, WardrobeItem } from '../types';
+import { SettingsProvider } from '../contexts/SettingsContext';
 
 // Mock data
 const mockJacket: WardrobeItem = {
@@ -69,13 +70,17 @@ const mockOutfit3: GeneratedOutfit = {
 describe('OutfitList', () => {
   const mockOnOutfitSelect = vi.fn();
 
+  const renderWithProvider = (component: React.ReactElement) => {
+    return render(<SettingsProvider>{component}</SettingsProvider>);
+  };
+
   beforeEach(() => {
     mockOnOutfitSelect.mockClear();
   });
 
   describe('Rendering', () => {
     it('renders outfit count message for single outfit', () => {
-      render(
+      renderWithProvider(
         <OutfitList
           outfits={[mockOutfit1]}
           onOutfitSelect={mockOnOutfitSelect}
@@ -86,7 +91,7 @@ describe('OutfitList', () => {
     });
 
     it('renders outfit count message for multiple outfits', () => {
-      render(
+      renderWithProvider(
         <OutfitList
           outfits={[mockOutfit1, mockOutfit2, mockOutfit3]}
           onOutfitSelect={mockOnOutfitSelect}
@@ -121,7 +126,7 @@ describe('OutfitList', () => {
     });
 
     it('renders all provided outfits in horizontal scrollable grid', () => {
-      render(
+      renderWithProvider(
         <OutfitList
           outfits={[mockOutfit1, mockOutfit2, mockOutfit3]}
           onOutfitSelect={mockOnOutfitSelect}
@@ -136,7 +141,7 @@ describe('OutfitList', () => {
     });
 
     it('applies custom className when provided', () => {
-      const { container } = render(
+      const { container } = renderWithProvider(
         <OutfitList
           outfits={[mockOutfit1]}
           onOutfitSelect={mockOnOutfitSelect}
@@ -150,7 +155,7 @@ describe('OutfitList', () => {
 
   describe('Outfit Cards', () => {
     it('renders outfit cards with compact variant', () => {
-      render(
+      renderWithProvider(
         <OutfitList
           outfits={[mockOutfit1]}
           onOutfitSelect={mockOnOutfitSelect}
@@ -163,19 +168,19 @@ describe('OutfitList', () => {
     });
 
     it('renders outfit cards with scores', () => {
-      render(
+      renderWithProvider(
         <OutfitList
           outfits={[mockOutfit1]}
           onOutfitSelect={mockOnOutfitSelect}
         />
       );
 
-      // Should show score as percentage (85 becomes 100% in ScoreCircle due to maxScore of 85)
-      expect(screen.getByText('100%')).toBeInTheDocument();
+      // Should show score as percentage (85 score with default maxScore of 100)
+      expect(screen.getByText('85%')).toBeInTheDocument();
     });
 
     it('renders outfit cards as clickable', () => {
-      render(
+      renderWithProvider(
         <OutfitList
           outfits={[mockOutfit1]}
           onOutfitSelect={mockOnOutfitSelect}
@@ -187,55 +192,52 @@ describe('OutfitList', () => {
     });
 
     it('sets fixed width for outfit cards', () => {
-      render(
+      const { container } = renderWithProvider(
         <OutfitList
           outfits={[mockOutfit1, mockOutfit2]}
           onOutfitSelect={mockOnOutfitSelect}
         />
       );
 
-      // Check that cards have fixed width wrapper
-      const cardWrappers = screen.getAllByText('Moto Jacket').map(el => 
-        el.closest('.w-64')
-      );
-      expect(cardWrappers).toHaveLength(2);
-      cardWrappers.forEach(wrapper => {
-        expect(wrapper).toHaveClass('w-64', 'flex-shrink-0');
-      });
+      // OutfitList uses a grid layout, not fixed width cards
+      const gridContainer = container.querySelector('.grid');
+      expect(gridContainer).toHaveClass('grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3', 'xl:grid-cols-4');
     });
   });
 
   describe('Horizontal Scrolling', () => {
     it('renders horizontal scrollable container', () => {
-      render(
+      const { container } = renderWithProvider(
         <OutfitList
           outfits={[mockOutfit1, mockOutfit2, mockOutfit3]}
           onOutfitSelect={mockOnOutfitSelect}
         />
       );
 
-      const scrollContainer = screen.getByText('White Tee').closest('.overflow-x-auto');
-      expect(scrollContainer).toBeInTheDocument();
-      expect(scrollContainer).toHaveClass('overflow-x-auto');
+      // OutfitList uses a grid layout, not horizontal scroll
+      const gridContainer = container.querySelector('.grid');
+      expect(gridContainer).toBeInTheDocument();
+      expect(gridContainer).toHaveClass('grid');
     });
 
     it('renders flex container with gap for outfit cards', () => {
-      render(
+      const { container } = renderWithProvider(
         <OutfitList
           outfits={[mockOutfit1, mockOutfit2]}
           onOutfitSelect={mockOnOutfitSelect}
         />
       );
 
-      const flexContainer = screen.getByText('White Tee').closest('.flex.gap-4');
-      expect(flexContainer).toBeInTheDocument();
-      expect(flexContainer).toHaveClass('flex', 'gap-4', 'pb-2');
+      // OutfitList uses a grid layout with gaps
+      const gridContainer = container.querySelector('.grid');
+      expect(gridContainer).toBeInTheDocument();
+      expect(gridContainer).toHaveClass('gap-4', 'sm:gap-6');
     });
   });
 
   describe('Outfit Selection', () => {
     it('calls onOutfitSelect when outfit card is clicked', () => {
-      render(
+      renderWithProvider(
         <OutfitList
           outfits={[mockOutfit1]}
           onOutfitSelect={mockOnOutfitSelect}
@@ -249,7 +251,7 @@ describe('OutfitList', () => {
     });
 
     it('calls onOutfitSelect with correct outfit when multiple outfits present', () => {
-      render(
+      renderWithProvider(
         <OutfitList
           outfits={[mockOutfit1, mockOutfit2, mockOutfit3]}
           onOutfitSelect={mockOnOutfitSelect}
@@ -264,7 +266,7 @@ describe('OutfitList', () => {
     });
 
     it('calls onOutfitSelect with correct outfit when clicking different cards', () => {
-      render(
+      renderWithProvider(
         <OutfitList
           outfits={[mockOutfit1, mockOutfit3]}
           onOutfitSelect={mockOnOutfitSelect}
@@ -330,7 +332,7 @@ describe('OutfitList', () => {
     });
 
     it('shows outfits when not loading', () => {
-      render(
+      renderWithProvider(
         <OutfitList
           outfits={[mockOutfit1]}
           onOutfitSelect={mockOnOutfitSelect}
@@ -365,7 +367,7 @@ describe('OutfitList', () => {
         source: 'generated'
       };
 
-      render(
+      renderWithProvider(
         <OutfitList
           outfits={[incompleteOutfit]}
           onOutfitSelect={mockOnOutfitSelect}
@@ -383,7 +385,7 @@ describe('OutfitList', () => {
         shirt: { ...mockShirt, id: `shirt-${i}`, name: `Shirt ${i}` }
       }));
 
-      render(
+      renderWithProvider(
         <OutfitList
           outfits={manyOutfits}
           onOutfitSelect={mockOnOutfitSelect}
@@ -397,7 +399,7 @@ describe('OutfitList', () => {
 
     it('handles null or undefined outfits gracefully', () => {
       // Test with null outfits array (should not crash)
-      const { rerender } = render(
+      const { rerender } = renderWithProvider(
         <OutfitList
           outfits={[]}
           onOutfitSelect={mockOnOutfitSelect}
@@ -415,10 +417,12 @@ describe('OutfitList', () => {
       ].filter(Boolean);
 
       rerender(
-        <OutfitList
-          outfits={outfitsWithNulls}
-          onOutfitSelect={mockOnOutfitSelect}
-        />
+        <SettingsProvider>
+          <OutfitList
+            outfits={outfitsWithNulls}
+            onOutfitSelect={mockOnOutfitSelect}
+          />
+        </SettingsProvider>
       );
 
       expect(screen.getByText('2 outfits found')).toBeInTheDocument();
@@ -432,7 +436,7 @@ describe('OutfitList', () => {
         source: 'generated'
       } as any;
 
-      render(
+      renderWithProvider(
         <OutfitList
           outfits={[invalidOutfit]}
           onOutfitSelect={mockOnOutfitSelect}

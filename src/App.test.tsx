@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from './test/test-utils';
 import App from './App';
 import * as useWardrobeModule from './hooks/useWardrobe';
 import * as useOutfitEngineModule from './hooks/useOutfitEngine';
@@ -47,54 +47,61 @@ describe('App', () => {
     vi.clearAllMocks();
     
     // Set up default mocks
+    const mockItems = [
+      { id: '1', name: 'Blue Jacket', category: 'Jacket/Overshirt', capsuleTags: ['Refined'] },
+      { id: '2', name: 'White Shirt', category: 'Shirt', capsuleTags: ['Adventurer'] },
+      { id: '3', name: 'Black Chinos', category: 'Pants', capsuleTags: ['Refined'] },
+      { id: '4', name: 'Brown Boots', category: 'Shoes', capsuleTags: ['Crossover'] }
+    ];
+
     mockUseWardrobe.mockReturnValue({
+      items: mockItems,
+      outfits: [],
       itemsByCategory: {
-        'Jacket/Overshirt': [
-          { id: '1', name: 'Blue Jacket', category: 'Jacket/Overshirt', capsuleTags: ['Refined'] }
-        ],
-        'Shirt': [
-          { id: '2', name: 'White Shirt', category: 'Shirt', capsuleTags: ['Adventurer'] }
-        ],
-        'Pants': [
-          { id: '3', name: 'Black Chinos', category: 'Pants', capsuleTags: ['Refined'] }
-        ],
-        'Shoes': [
-          { id: '4', name: 'Brown Boots', category: 'Shoes', capsuleTags: ['Crossover'] }
-        ]
+        'Jacket/Overshirt': [mockItems[0]],
+        'Shirt': [mockItems[1]],
+        'Pants': [mockItems[2]],
+        'Shoes': [mockItems[3]]
       },
+      getItemById: vi.fn((id: string) => mockItems.find(item => item.id === id)),
       loading: false
     });
 
     mockUseOutfitEngine.mockReturnValue({
+      scoreOutfit: vi.fn(() => 85),
       getRandomOutfit: vi.fn(() => ({
         id: 'random-1',
-        jacket: { id: '1', name: 'Blue Jacket', category: 'Jacket/Overshirt', capsuleTags: ['Refined'] },
-        shirt: { id: '2', name: 'White Shirt', category: 'Shirt', capsuleTags: ['Adventurer'] },
-        pants: { id: '3', name: 'Black Chinos', category: 'Pants', capsuleTags: ['Refined'] },
-        shoes: { id: '4', name: 'Brown Boots', category: 'Shoes', capsuleTags: ['Crossover'] },
+        jacket: mockItems[0],
+        shirt: mockItems[1],
+        pants: mockItems[2],
+        shoes: mockItems[3],
         score: 85,
-        source: 'curated'
+        source: 'curated' as const
       })),
+      getOutfitsForAnchor: vi.fn(() => []),
       getAllOutfits: vi.fn(() => [
         {
           id: 'outfit-1',
-          jacket: { id: '1', name: 'Blue Jacket', category: 'Jacket/Overshirt', capsuleTags: ['Refined'] },
-          shirt: { id: '2', name: 'White Shirt', category: 'Shirt', capsuleTags: ['Adventurer'] },
-          pants: { id: '3', name: 'Black Chinos', category: 'Pants', capsuleTags: ['Refined'] },
-          shoes: { id: '4', name: 'Brown Boots', category: 'Shoes', capsuleTags: ['Crossover'] },
+          jacket: mockItems[0],
+          shirt: mockItems[1],
+          pants: mockItems[2],
+          shoes: mockItems[3],
           score: 90,
-          source: 'generated'
+          source: 'generated' as const
         },
         {
           id: 'outfit-2',
-          jacket: { id: '1', name: 'Blue Jacket', category: 'Jacket/Overshirt', capsuleTags: ['Refined'] },
-          shirt: { id: '2', name: 'White Shirt', category: 'Shirt', capsuleTags: ['Adventurer'] },
-          pants: { id: '3', name: 'Black Chinos', category: 'Pants', capsuleTags: ['Refined'] },
-          shoes: { id: '4', name: 'Brown Boots', category: 'Shoes', capsuleTags: ['Crossover'] },
+          jacket: mockItems[0],
+          shirt: mockItems[1],
+          pants: mockItems[2],
+          shoes: mockItems[3],
           score: 88,
-          source: 'generated'
+          source: 'generated' as const
         }
-      ])
+      ]),
+      getCompatibleItems: vi.fn(() => []),
+      getFilteredOutfits: vi.fn(() => []),
+      validatePartialSelection: vi.fn(() => true)
     });
   });
 
@@ -150,7 +157,10 @@ describe('App', () => {
     it('shows loading spinner when wardrobe is loading', () => {
       // Mock loading state
       mockUseWardrobe.mockReturnValue({
+        items: [],
+        outfits: [],
         itemsByCategory: {},
+        getItemById: vi.fn(() => undefined),
         loading: true
       });
       
@@ -190,8 +200,13 @@ describe('App', () => {
     it('shows empty message when no outfits are available', async () => {
       // Mock empty outfits
       mockUseOutfitEngine.mockReturnValue({
-        getRandomOutfit: vi.fn(),
-        getAllOutfits: vi.fn(() => [])
+        scoreOutfit: vi.fn(() => 0),
+        getRandomOutfit: vi.fn(() => null),
+        getOutfitsForAnchor: vi.fn(() => []),
+        getAllOutfits: vi.fn(() => []),
+        getCompatibleItems: vi.fn(() => []),
+        getFilteredOutfits: vi.fn(() => []),
+        validatePartialSelection: vi.fn(() => true)
       });
       
       render(<App />);

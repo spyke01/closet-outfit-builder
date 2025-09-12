@@ -1,7 +1,7 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '../test/test-utils';
 import { SelectionStrip } from './SelectionStrip';
 import { OutfitSelection, WardrobeItem, GeneratedOutfit } from '../types';
-import { vi } from 'vitest';
+import { vi, describe, it, beforeEach, expect } from 'vitest';
 
 // Mock the useOutfitEngine hook
 const mockGetCompatibleItems = vi.fn();

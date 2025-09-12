@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '../test/test-utils';
 import { describe, it, expect } from 'vitest';
 import { ScoreCircle } from './ScoreCircle';
 import { OutfitSelection } from '../types';
@@ -49,8 +49,8 @@ describe('ScoreCircle', () => {
       
       // Should show breakdown
       expect(screen.getByText('Total Score')).toBeInTheDocument();
-      expect(screen.getByText('Formality')).toBeInTheDocument();
-      expect(screen.getByText('Consistency')).toBeInTheDocument();
+      expect(screen.getByText(/Formality/)).toBeInTheDocument();
+      expect(screen.getByText(/Consistency/)).toBeInTheDocument();
     }
   });
 

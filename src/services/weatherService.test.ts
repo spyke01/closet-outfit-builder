@@ -359,7 +359,7 @@ describe('Weather Service Error Handling', () => {
       expect(result).toHaveLength(2);
       expect(result[0]).toMatchObject({
         date: '2024-01-01',
-        dayOfWeek: 'Sunday', // JavaScript Date parsing returns Sunday for 2024-01-01 in local timezone
+        dayOfWeek: 'Monday',
         high: 75,
         low: 60,
         condition: 'Sunny',
@@ -368,7 +368,7 @@ describe('Weather Service Error Handling', () => {
       });
       expect(result[1]).toMatchObject({
         date: '2024-01-02',
-        dayOfWeek: 'Monday', // JavaScript Date parsing returns Monday for 2024-01-02 in local timezone
+        dayOfWeek: 'Tuesday',
         high: 72,
         low: 58,
         condition: 'Partly cloudy',

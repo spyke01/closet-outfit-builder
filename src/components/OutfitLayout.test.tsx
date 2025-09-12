@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import { vi } from 'vitest';
+import { render, screen } from '../test/test-utils';
+import { vi, describe, it, expect } from 'vitest';
 import { OutfitLayout } from './OutfitLayout';
 import { OutfitSelection, WardrobeItem } from '../types';
 
@@ -89,14 +89,14 @@ describe('OutfitLayout', () => {
       shirt: createMockItem('1', 'White OCBD', 'Shirt')
     };
     
-    const { rerender } = render(<OutfitLayout selection={selection} size="small" />);
-    expect(document.querySelector('.w-72')).toBeInTheDocument();
+    const { container, rerender } = render(<OutfitLayout selection={selection} size="small" />);
+    expect(container.querySelector('.w-80')).toBeInTheDocument();
     
     rerender(<OutfitLayout selection={selection} size="medium" />);
-    expect(document.querySelector('.w-80')).toBeInTheDocument();
+    expect(container.querySelector('.w-96')).toBeInTheDocument();
     
     rerender(<OutfitLayout selection={selection} size="large" />);
-    expect(document.querySelector('.w-96')).toBeInTheDocument();
+    expect(container.querySelector('.w-\\[28rem\\]')).toBeInTheDocument();
   });
 
   it('applies custom className', () => {
@@ -104,8 +104,8 @@ describe('OutfitLayout', () => {
       shirt: createMockItem('1', 'White OCBD', 'Shirt')
     };
     
-    render(<OutfitLayout selection={selection} className="custom-class" />);
-    expect(document.querySelector('.custom-class')).toBeInTheDocument();
+    const { container } = render(<OutfitLayout selection={selection} className="custom-class" />);
+    expect(container.querySelector('.custom-class')).toBeInTheDocument();
   });
 
   it('shows empty state when items have no images', () => {

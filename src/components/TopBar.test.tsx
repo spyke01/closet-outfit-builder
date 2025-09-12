@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent } from '../test/test-utils';
 import { TopBar } from './TopBar';
 import { WeatherData, WeatherError } from '../types';
 
@@ -38,9 +38,9 @@ describe('TopBar', () => {
   it('renders the logo image', () => {
     render(<TopBar {...defaultProps} />);
     
-    const logoImage = screen.getByAltText('What to Wear');
-    expect(logoImage).toBeInTheDocument();
-    expect(logoImage).toHaveAttribute('src', '/what-to-wear-logo.svg');
+    const logoSvg = screen.getByLabelText('What to Wear');
+    expect(logoSvg).toBeInTheDocument();
+    expect(logoSvg.tagName).toBe('svg');
   });
 
   it('calls onTitleClick when logo is clicked', () => {
@@ -158,6 +158,6 @@ describe('TopBar', () => {
     // Check that the main container has proper responsive flex layout
     const logoButton = screen.getByRole('button');
     const mainContainer = logoButton.parentElement;
-    expect(mainContainer).toHaveClass('flex', 'flex-col', 'sm:flex-row', 'sm:items-center', 'sm:justify-between', 'gap-4');
+    expect(mainContainer).toHaveClass('flex', 'flex-row', 'items-center', 'justify-between', 'gap-4');
   });
 });

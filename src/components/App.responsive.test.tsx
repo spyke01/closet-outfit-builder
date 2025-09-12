@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '../test/test-utils';
 import App from '../App';
 
 // Mock all the hooks and services
@@ -99,7 +99,7 @@ describe('App Responsive Design Tests', () => {
       render(<App />);
       
       // Wait for component to render
-      await screen.findByAltText('What to Wear');
+      await screen.findByLabelText('What to Wear');
       
       // Check fixed header container
       const fixedHeader = document.querySelector('.fixed.top-0.left-0.right-0.z-50');
@@ -179,7 +179,7 @@ describe('App Responsive Design Tests', () => {
       render(<App />);
       
       // Wait for component to render
-      await screen.findByAltText('What to Wear');
+      await screen.findByLabelText('What to Wear');
       
       // Check that header uses different padding calculation
       const contentContainer = document.querySelector('.md\\:pt-\\[210px\\]');
@@ -235,7 +235,7 @@ describe('App Responsive Design Tests', () => {
       render(<App />);
       
       // Wait for logo to appear
-      const logo = await screen.findByAltText('What to Wear');
+      const logo = await screen.findByLabelText('What to Wear');
       const logoButton = logo.parentElement;
       
       // Logo button should be clickable and have proper hover states
