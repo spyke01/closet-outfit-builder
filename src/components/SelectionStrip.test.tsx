@@ -72,7 +72,7 @@ describe('SelectionStrip Progressive Filtering', () => {
     jacket: { id: 'moto-jacket', name: 'Moto Jacket', category: 'Jacket/Overshirt' as const },
     shirt: { id: 'cream-tee', name: 'Cream Tee', category: 'Shirt' as const },
     pants: { id: 'dark-denim', name: 'Dark Denim', category: 'Pants' as const },
-    shoes: { id: 'apache-boots', name: 'Apache Boots', category: 'Shoes' as const }
+    shoes: { id: 'boots-brown-apache', name: 'Apache Boots', category: 'Shoes' as const }
   };
 
   const mockOutfits: GeneratedOutfit[] = [

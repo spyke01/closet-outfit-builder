@@ -29,7 +29,7 @@ const mockPants: WardrobeItem = {
 };
 
 const mockShoes: WardrobeItem = {
-  id: 'apache-boots',
+  id: 'boots-brown-apache',
   name: 'Apache Boots',
   category: 'Shoes',
   capsuleTags: ['Adventurer'],

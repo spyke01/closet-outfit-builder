@@ -26,7 +26,7 @@ vi.mock('../hooks/useOutfitEngine', () => ({
         jacket: { id: 'moto-jacket', name: 'Moto Jacket', category: 'Jacket/Overshirt' },
         shirt: { id: 'cream-tee', name: 'Cream Tee', category: 'Shirt' },
         pants: { id: 'dark-denim', name: 'Dark Denim', category: 'Pants' },
-        shoes: { id: 'apache-boots', name: 'Apache Boots', category: 'Shoes' },
+        shoes: { id: 'boots-brown-apache', name: 'Apache Boots', category: 'Shoes' },
         score: 85,
         source: 'curated'
       }

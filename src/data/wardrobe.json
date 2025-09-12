@@ -47,7 +47,7 @@
       "brand": "Banana Republic"
     },
     {
-      "id": "camel-crewneck",
+      "id": "sweater-camel-crewneck",
       "name": "Crewneck (Camel)",
       "category": "Jacket/Overshirt",
       "capsuleTags": [
@@ -58,7 +58,7 @@
       "brand": "Banana Republic"
     },
     {
-      "id": "grey-shawl-cardigan",
+      "id": "cardigan-grey-shawl",
       "name": "Shawl Cardigan (Grey)",
       "category": "Jacket/Overshirt",
       "capsuleTags": [
@@ -70,7 +70,7 @@
       "brand": "Banana Republic"
     },
     {
-      "id": "blue-ocbd",
+      "id": "ocbd-blue",
       "name": "OCBD (Blue)",
       "category": "Shirt",
       "capsuleTags": [
@@ -81,7 +81,7 @@
       "brand": "Polo Ralph Lauren"
     },
     {
-      "id": "slate-ocbd",
+      "id": "ocbd-slate",
       "name": "OCBD (Slate)",
       "category": "Shirt",
       "capsuleTags": [
@@ -92,7 +92,7 @@
       "brand": "Polo Ralph Lauren"
     },
     {
-      "id": "white-ocbd",
+      "id": "ocbd-white",
       "name": "OCBD (White)",
       "category": "Shirt",
       "capsuleTags": [
@@ -103,7 +103,7 @@
       "brand": "Banana Republic"
     },
     {
-      "id": "rl-featherweight-blue",
+      "id": "ocbd-blue-featherweight",
       "name": "Featherweight Shirt (Blue)",
       "category": "Shirt",
       "brand": "Polo Ralph Lauren",
@@ -115,7 +115,7 @@
       "image": "/images/wardrobe/ocbd-blue.png"
     },
     {
-      "id": "linen-striped-white-navy",
+      "id": "ocbd-white-navy-linen-striped",
       "name": "Striped Linen Shirt (White/Navy)",
       "category": "Shirt",
       "capsuleTags": [
@@ -128,7 +128,7 @@
       "brand": "Banana Republic"
     },
     {
-      "id": "linen-white",
+      "id": "ocbd-white-linen",
       "name": "Linen Shirt (White)",
       "category": "Shirt",
       "capsuleTags": [
@@ -140,7 +140,7 @@
       "brand": "Banana Republic"
     },
     {
-      "id": "linen-deep-navy",
+      "id": "ocbd-deep-navy-linen",
       "name": "Linen Shirt (Deep Navy)",
       "category": "Shirt",
       "capsuleTags": [
@@ -152,7 +152,7 @@
       "brand": "Banana Republic"
     },
     {
-      "id": "linen-black",
+      "id": "ocbd-black-linen",
       "name": "Linen Shirt (Black)",
       "category": "Shirt",
       "capsuleTags": [
@@ -197,7 +197,7 @@
       "brand": "Banana Republic"
     },
     {
-      "id": "grey-henley-knit",
+      "id": "henley-grey-knit",
       "name": "Henley Knit (Grey)",
       "category": "Shirt",
       "capsuleTags": [
@@ -519,14 +519,14 @@
       "brand": "Thursday Boot Company"
     },
     {
-      "id": "apache-boots",
+      "id": "boots-brown-apache",
       "name": "Apache Boots",
       "category": "Shoes",
       "capsuleTags": [
         "Adventurer"
       ],
       "formalityScore": 4,
-      "image": "/images/wardrobe/apache-boots.png",
+      "image": "/images/wardrobe/boots-brown-apache.png",
       "brand": "Chippewa"
     },
     {

@@ -18,7 +18,7 @@
       "id": "o-002",
       "items": [
         "mac-coat-navy",
-        "blue-ocbd",
+        "ocbd-blue",
         "chinos-light-grey",
         "loafers-dark-brown",
         "belt-clean-brown",
@@ -43,8 +43,8 @@
     {
       "id": "o-004",
       "items": [
-        "camel-crewneck",
-        "blue-ocbd",
+        "sweater-camel-crewneck",
+        "ocbd-blue",
         "trousers-charcoal",
         "loafers-dark-brown",
         "belt-reversible",
@@ -55,7 +55,7 @@
     {
       "id": "o-005",
       "items": [
-        "linen-white",
+        "ocbd-white-linen",
         "chinos-white",
         "loafers-light-tan",
         "rolex-panda"
@@ -69,7 +69,7 @@
         "moto-jacket",
         "tee-cream",
         "denim-dark",
-        "apache-boots",
+        "boots-brown-apache",
         "belt-rugged",
         "omega-nttd"
       ],
@@ -78,7 +78,7 @@
     {
       "id": "o-007",
       "items": [
-        "linen-striped-white-navy",
+        "ocbd-white-navy-linen-striped",
         "jeans-medium",
         "sneakers-killshots",
         "belt-braided",
@@ -92,7 +92,7 @@
         "moto-jacket",
         "tee-white",
         "chinos-olive",
-        "apache-boots",
+        "boots-brown-apache",
         "belt-rugged",
         "panerai-luminor"
       ],
@@ -102,9 +102,9 @@
       "id": "o-009",
       "items": [
         "moto-jacket",
-        "grey-henley-knit",
+        "henley-grey-knit",
         "chinos-black",
-        "apache-boots",
+        "boots-brown-apache",
         "belt-rugged",
         "omega-nttd"
       ],
@@ -137,9 +137,9 @@
     {
       "id": "o-012",
       "items": [
-        "blue-ocbd",
+        "ocbd-blue",
         "chinos-white",
-        "apache-boots",
+        "boots-brown-apache",
         "belt-rugged",
         "panerai-luminor"
       ],
@@ -148,7 +148,7 @@
     {
       "id": "o-013",
       "items": [
-        "rl-featherweight-blue",
+        "ocbd-blue-featherweight",
         "shorts-navy",
         "sneakers-white-leather",
         "belt-clean-brown",
@@ -159,7 +159,7 @@
     {
       "id": "o-015",
       "items": [
-        "linen-striped-white-navy",
+        "ocbd-white-navy-linen-striped",
         "shorts-white",
         "loafers-light-tan",
         "belt-braided",
@@ -170,7 +170,7 @@
     {
       "id": "o-016",
       "items": [
-        "blue-ocbd",
+        "ocbd-blue",
         "chinos-khaki",
         "loafers-light-tan",
         "belt-braided",
@@ -182,7 +182,7 @@
     {
       "id": "o-017",
       "items": [
-        "blue-ocbd",
+        "ocbd-blue",
         "denim-dark",
         "loafers-dark-dress",
         "belt-braided",
@@ -193,7 +193,7 @@
     {
       "id": "o-018",
       "items": [
-        "rl-featherweight-blue",
+        "ocbd-blue-featherweight",
         "chinos-white",
         "loafers-dark-brown",
         "belt-reversible",
@@ -204,7 +204,7 @@
     {
       "id": "o-019",
       "items": [
-        "rl-featherweight-blue",
+        "ocbd-blue-featherweight",
         "denim-dark",
         "sneakers-killshots",
         "belt-braided",
@@ -215,7 +215,7 @@
     {
       "id": "o-020",
       "items": [
-        "linen-striped-white-navy",
+        "ocbd-white-navy-linen-striped",
         "chinos-navy",
         "loafers-dark-brown-suede",
         "belt-clean-brown",
@@ -226,7 +226,7 @@
     {
       "id": "o-021",
       "items": [
-        "linen-striped-white-navy",
+        "ocbd-white-navy-linen-striped",
         "chinos-olive",
         "sneakers-white-leather",
         "belt-braided",
@@ -284,7 +284,7 @@
         "moto-jacket",
         "tee-black",
         "chinos-black",
-        "apache-boots",
+        "boots-brown-apache",
         "belt-rugged",
         "rolex-black"
       ],
@@ -340,7 +340,7 @@
       "id": "o-031",
       "items": [
         "mac-coat-navy",
-        "blue-ocbd",
+        "ocbd-blue",
         "chinos-white",
         "loafers-dark-brown-suede",
         "belt-braided",
@@ -351,8 +351,8 @@
     {
       "id": "o-032",
       "items": [
-        "grey-shawl-cardigan",
-        "blue-ocbd",
+        "cardigan-grey-shawl",
+        "ocbd-blue",
         "trousers-charcoal",
         "loafers-dark-dress",
         "belt-reversible",
@@ -365,7 +365,7 @@
       "id": "o-033",
       "items": [
         "shacket-olive",
-        "linen-deep-navy",
+        "ocbd-deep-navy-linen",
         "chinos-khaki",
         "loafers-light-tan",
         "belt-braided",
@@ -377,7 +377,7 @@
       "id": "o-034",
       "items": [
         "shacket-beige",
-        "linen-black",
+        "ocbd-black-linen",
         "jeans-medium",
         "loafers-dark-dress",
         "belt-braided",
@@ -388,7 +388,7 @@
     {
       "id": "o-035",
       "items": [
-        "rl-featherweight-blue",
+        "ocbd-blue-featherweight",
         "shorts-khaki",
         "sneakers-killshots",
         "belt-braided",
@@ -432,7 +432,7 @@
     {
       "id": "o-039",
       "items": [
-        "camel-crewneck",
+        "sweater-camel-crewneck",
         "polo-navy-ribbed",
         "trousers-charcoal",
         "loafers-dark-dress",
@@ -445,7 +445,7 @@
       "id": "o-040",
       "items": [
         "mac-coat-navy",
-        "linen-white",
+        "ocbd-white-linen",
         "chinos-white",
         "loafers-light-tan",
         "belt-clean-brown",
@@ -457,9 +457,9 @@
       "id": "o-041",
       "items": [
         "moto-jacket",
-        "linen-black",
+        "ocbd-black-linen",
         "denim-dark",
-        "apache-boots",
+        "boots-brown-apache",
         "belt-rugged",
         "panerai-luminor"
       ],
@@ -569,7 +569,7 @@
     {
       "id": "o-051",
       "items": [
-        "linen-deep-navy",
+        "ocbd-deep-navy-linen",
         "chinos-white",
         "loafers-dark-brown-suede",
         "belt-braided",
@@ -580,7 +580,7 @@
     {
       "id": "o-052",
       "items": [
-        "linen-deep-navy",
+        "ocbd-deep-navy-linen",
         "chinos-olive",
         "sneakers-white-leather",
         "belt-braided",
@@ -591,7 +591,7 @@
     {
       "id": "o-053",
       "items": [
-        "linen-white",
+        "ocbd-white-linen",
         "chinos-khaki",
         "loafers-light-tan",
         "belt-braided",
@@ -602,7 +602,7 @@
     {
       "id": "o-054",
       "items": [
-        "white-ocbd",
+        "ocbd-white",
         "chinos-black",
         "sneakers-killshots",
         "belt-black-pebbled",
@@ -613,7 +613,7 @@
     {
       "id": "o-055",
       "items": [
-        "white-ocbd",
+        "ocbd-white",
         "chinos-navy",
         "sneakers-killshots",
         "belt-clean-brown",
@@ -624,8 +624,8 @@
     {
       "id": "o-056",
       "items": [
-        "camel-crewneck",
-        "rl-featherweight-blue",
+        "sweater-camel-crewneck",
+        "ocbd-blue-featherweight",
         "chinos-white",
         "sneakers-white-leather",
         "belt-braided",
@@ -637,9 +637,9 @@
       "id": "o-057",
       "items": [
         "shacket-olive",
-        "linen-black",
+        "ocbd-black-linen",
         "denim-dark",
-        "apache-boots",
+        "boots-brown-apache",
         "belt-rugged",
         "panerai-luminor"
       ],
@@ -648,8 +648,8 @@
     {
       "id": "o-058",
       "items": [
-        "camel-crewneck",
-        "rl-featherweight-blue",
+        "sweater-camel-crewneck",
+        "ocbd-blue-featherweight",
         "chinos-navy",
         "sneakers-white-leather",
         "belt-braided",
@@ -661,8 +661,8 @@
     {
       "id": "o-059",
       "items": [
-        "camel-crewneck",
-        "rl-featherweight-blue",
+        "sweater-camel-crewneck",
+        "ocbd-blue-featherweight",
         "chinos-white",
         "sneakers-white-leather",
         "belt-braided",
@@ -674,8 +674,8 @@
     {
       "id": "o-060",
       "items": [
-        "camel-crewneck",
-        "linen-striped-white-navy",
+        "sweater-camel-crewneck",
+        "ocbd-white-navy-linen-striped",
         "chinos-navy",
         "sneakers-white-leather",
         "belt-braided",
@@ -686,8 +686,8 @@
     {
       "id": "o-061",
       "items": [
-        "camel-crewneck",
-        "linen-striped-white-navy",
+        "sweater-camel-crewneck",
+        "ocbd-white-navy-linen-striped",
         "chinos-white",
         "sneakers-white-leather",
         "belt-braided",
@@ -698,8 +698,8 @@
     {
       "id": "o-062",
       "items": [
-        "camel-crewneck",
-        "linen-deep-navy",
+        "sweater-camel-crewneck",
+        "ocbd-deep-navy-linen",
         "chinos-white",
         "sneakers-white-leather",
         "belt-braided",
@@ -710,8 +710,8 @@
     {
       "id": "o-063",
       "items": [
-        "camel-crewneck",
-        "rl-featherweight-blue",
+        "sweater-camel-crewneck",
+        "ocbd-blue-featherweight",
         "chinos-navy",
         "loafers-dark-brown-suede",
         "belt-braided",
@@ -723,9 +723,9 @@
       "id": "o-064",
       "items": [
         "shacket-olive",
-        "linen-black",
+        "ocbd-black-linen",
         "denim-dark",
-        "apache-boots",
+        "boots-brown-apache",
         "belt-rugged",
         "panerai-luminor",
         "tee-white"
@@ -735,8 +735,8 @@
     {
       "id": "o-065",
       "items": [
-        "camel-crewneck",
-        "linen-striped-white-navy",
+        "sweater-camel-crewneck",
+        "ocbd-white-navy-linen-striped",
         "chinos-white",
         "loafers-dark-brown-suede",
         "belt-braided",
@@ -749,9 +749,9 @@
       "id": "o-066",
       "items": [
         "shacket-olive",
-        "linen-black",
+        "ocbd-black-linen",
         "chinos-black",
-        "apache-boots",
+        "boots-brown-apache",
         "belt-rugged",
         "panerai-luminor"
       ],
@@ -761,9 +761,9 @@
       "id": "o-067",
       "items": [
         "shacket-olive",
-        "linen-black",
+        "ocbd-black-linen",
         "chinos-black",
-        "apache-boots",
+        "boots-brown-apache",
         "belt-rugged",
         "panerai-luminor",
         "tee-white"
@@ -774,7 +774,7 @@
       "id": "o-068",
       "items": [
         "mac-coat-navy",
-        "blue-ocbd",
+        "ocbd-blue",
         "chinos-light-grey",
         "loafers-dark-brown",
         "belt-reversible",
@@ -785,8 +785,8 @@
     {
       "id": "o-069",
       "items": [
-        "camel-crewneck",
-        "linen-white",
+        "sweater-camel-crewneck",
+        "ocbd-white-linen",
         "chinos-light-grey",
         "loafers-light-tan",
         "belt-braided",
@@ -798,7 +798,7 @@
       "id": "o-070",
       "items": [
         "mac-coat-navy",
-        "blue-ocbd",
+        "ocbd-blue",
         "chinos-khaki",
         "loafers-dark-brown-suede",
         "belt-braided",
@@ -810,7 +810,7 @@
       "id": "o-071",
       "items": [
         "mac-coat-navy",
-        "white-ocbd",
+        "ocbd-white",
         "chinos-khaki",
         "loafers-dark-brown",
         "belt-reversible",
@@ -822,7 +822,7 @@
     {
       "id": "o-072",
       "items": [
-        "camel-crewneck",
+        "sweater-camel-crewneck",
         "polo-grey-knit",
         "chinos-khaki",
         "loafers-light-tan",
@@ -835,8 +835,8 @@
     {
       "id": "o-073",
       "items": [
-        "camel-crewneck",
-        "linen-white",
+        "sweater-camel-crewneck",
+        "ocbd-white-linen",
         "chinos-khaki",
         "loafers-dark-brown-suede",
         "belt-braided",
@@ -847,7 +847,7 @@
     {
       "id": "o-074",
       "items": [
-        "camel-crewneck",
+        "sweater-camel-crewneck",
         "polo-grey-knit",
         "chinos-light-grey",
         "loafers-dark-brown-suede",
@@ -860,7 +860,7 @@
       "id": "o-075",
       "items": [
         "mac-coat-navy",
-        "white-ocbd",
+        "ocbd-white",
         "chinos-light-grey",
         "loafers-dark-brown-suede",
         "belt-braided",
@@ -872,7 +872,7 @@
     {
       "id": "o-076",
       "items": [
-        "camel-crewneck",
+        "sweater-camel-crewneck",
         "polo-navy-ribbed",
         "chinos-light-grey",
         "loafers-dark-brown-suede",
@@ -885,7 +885,7 @@
     {
       "id": "o-077",
       "items": [
-        "camel-crewneck",
+        "sweater-camel-crewneck",
         "polo-navy-ribbed",
         "chinos-khaki",
         "loafers-light-tan",
@@ -898,9 +898,9 @@
       "id": "o-078",
       "items": [
         "shacket-olive",
-        "grey-henley-knit",
+        "henley-grey-knit",
         "chinos-black",
-        "apache-boots",
+        "boots-brown-apache",
         "belt-rugged",
         "panerai-luminor"
       ],
@@ -910,9 +910,9 @@
       "id": "o-079",
       "items": [
         "shacket-olive",
-        "grey-henley-knit",
+        "henley-grey-knit",
         "chinos-black",
-        "apache-boots",
+        "boots-brown-apache",
         "belt-rugged",
         "panerai-luminor",
         "tee-white"
@@ -922,9 +922,9 @@
     {
       "id": "o-080",
       "items": [
-        "grey-henley-knit",
+        "henley-grey-knit",
         "chinos-black",
-        "apache-boots",
+        "boots-brown-apache",
         "belt-rugged",
         "panerai-luminor"
       ],
@@ -933,7 +933,7 @@
     {
       "id": "o-081",
       "items": [
-        "linen-striped-white-navy",
+        "ocbd-white-navy-linen-striped",
         "shorts-navy",
         "sneakers-killshots",
         "tee-grey",
@@ -945,7 +945,7 @@
     {
       "id": "o-082",
       "items": [
-        "slate-ocbd",
+        "ocbd-slate",
         "chinos-navy",
         "loafers-dark-brown-suede",
         "rolex-cellini-moonphase"

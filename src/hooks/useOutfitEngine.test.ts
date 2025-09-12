@@ -9,14 +9,14 @@ vi.mock('./useWardrobe')
 
 const mockItems: WardrobeItem[] = [
   { id: 'moto-jacket', name: 'Moto Jacket', category: 'Jacket/Overshirt', formalityScore: 3 },
-  { id: 'grey-henley-knit', name: 'Grey Henley Knit', category: 'Shirt', formalityScore: 3 },
+  { id: 'henley-grey-knit', name: 'Grey Henley Knit', category: 'Shirt', formalityScore: 3 },
   { id: 'tee-cream', name: 'Cream Tee', category: 'Shirt', formalityScore: 2 },
   { id: 'tee-white', name: 'White Tee', category: 'Shirt', formalityScore: 2 },
   { id: 'tee-black', name: 'Black Tee', category: 'Shirt', formalityScore: 2 },
-  { id: 'linen-black', name: 'Black Linen', category: 'Shirt', formalityScore: 4 },
+  { id: 'ocbd-black-linen', name: 'Black Linen', category: 'Shirt', formalityScore: 4 },
   { id: 'denim-dark', name: 'Dark Denim', category: 'Pants', formalityScore: 4 },
   { id: 'chinos-black', name: 'Black Chinos', category: 'Pants', formalityScore: 6 },
-  { id: 'apache-boots', name: 'Apache Boots', category: 'Shoes', formalityScore: 4 },
+  { id: 'boots-brown-apache', name: 'Apache Boots', category: 'Shoes', formalityScore: 4 },
   { id: 'shorts-navy', name: 'Navy Shorts', category: 'Pants', formalityScore: 2 },
   // Add belt and watch items to make outfits complete
   { id: 'belt-rugged', name: 'Rugged Belt', category: 'Belt', formalityScore: 3 },
@@ -26,27 +26,27 @@ const mockItems: WardrobeItem[] = [
 const mockOutfits = [
   {
     id: 'o-001',
-    items: ['moto-jacket', 'grey-henley-knit', 'denim-dark', 'apache-boots', 'belt-rugged', 'omega-speedmaster'],
+    items: ['moto-jacket', 'henley-grey-knit', 'denim-dark', 'boots-brown-apache', 'belt-rugged', 'omega-speedmaster'],
     tuck: 'Untucked' as const
   },
   {
     id: 'o-002', 
-    items: ['moto-jacket', 'tee-cream', 'denim-dark', 'apache-boots', 'belt-rugged', 'omega-speedmaster'],
+    items: ['moto-jacket', 'tee-cream', 'denim-dark', 'boots-brown-apache', 'belt-rugged', 'omega-speedmaster'],
     tuck: 'Tucked' as const
   },
   {
     id: 'o-003',
-    items: ['moto-jacket', 'tee-white', 'chinos-black', 'apache-boots', 'belt-rugged', 'omega-speedmaster'], 
+    items: ['moto-jacket', 'tee-white', 'chinos-black', 'boots-brown-apache', 'belt-rugged', 'omega-speedmaster'], 
     tuck: 'Tucked' as const
   },
   {
     id: 'o-004',
-    items: ['moto-jacket', 'tee-black', 'chinos-black', 'apache-boots', 'belt-rugged', 'omega-speedmaster'],
+    items: ['moto-jacket', 'tee-black', 'chinos-black', 'boots-brown-apache', 'belt-rugged', 'omega-speedmaster'],
     tuck: 'Tucked' as const
   },
   {
     id: 'o-005',
-    items: ['moto-jacket', 'linen-black', 'denim-dark', 'apache-boots', 'belt-rugged', 'omega-speedmaster'],
+    items: ['moto-jacket', 'ocbd-black-linen', 'denim-dark', 'boots-brown-apache', 'belt-rugged', 'omega-speedmaster'],
     tuck: 'Untucked' as const
   }
 ]
@@ -75,11 +75,11 @@ describe('useOutfitEngine filtering methods', () => {
       
       // Should return all shirts that appear in any outfit
       expect(compatibleShirts).toHaveLength(5)
-      expect(compatibleShirts.map(item => item.id)).toContain('grey-henley-knit')
+      expect(compatibleShirts.map(item => item.id)).toContain('henley-grey-knit')
       expect(compatibleShirts.map(item => item.id)).toContain('tee-cream')
       expect(compatibleShirts.map(item => item.id)).toContain('tee-white')
       expect(compatibleShirts.map(item => item.id)).toContain('tee-black')
-      expect(compatibleShirts.map(item => item.id)).toContain('linen-black')
+      expect(compatibleShirts.map(item => item.id)).toContain('ocbd-black-linen')
     })
 
     it('should filter items based on current selection - Requirement 2.1', () => {
@@ -92,7 +92,7 @@ describe('useOutfitEngine filtering methods', () => {
       // Should only return shirts that appear in outfits with moto jacket
       expect(compatibleShirts).toHaveLength(5)
       expect(compatibleShirts.map(item => item.id)).toEqual(
-        expect.arrayContaining(['grey-henley-knit', 'tee-cream', 'tee-white', 'tee-black', 'linen-black'])
+        expect.arrayContaining(['henley-grey-knit', 'tee-cream', 'tee-white', 'tee-black', 'ocbd-black-linen'])
       )
     })
 
@@ -113,7 +113,7 @@ describe('useOutfitEngine filtering methods', () => {
       expect(compatiblePants[0].id).toBe('denim-dark')
       
       expect(compatibleShoes).toHaveLength(1)
-      expect(compatibleShoes[0].id).toBe('apache-boots')
+      expect(compatibleShoes[0].id).toBe('boots-brown-apache')
     })
 
     it('should return empty array when no compatible items exist', () => {
@@ -249,7 +249,7 @@ describe('useOutfitEngine filtering methods', () => {
     it('should return false for shorts + boots combination - Requirement 2.3', () => {
       const { result } = renderHook(() => useOutfitEngine())
       const navyShorts = mockGetItemById('shorts-navy')!
-      const apacheBoots = mockGetItemById('apache-boots')!
+      const apacheBoots = mockGetItemById('boots-brown-apache')!
       const selection: OutfitSelection = { 
         pants: navyShorts,
         shoes: apacheBoots
@@ -274,7 +274,7 @@ describe('useOutfitEngine filtering methods', () => {
 
     it('should return true when only boots are selected (no shorts)', () => {
       const { result } = renderHook(() => useOutfitEngine())
-      const apacheBoots = mockGetItemById('apache-boots')!
+      const apacheBoots = mockGetItemById('boots-brown-apache')!
       const selection: OutfitSelection = { 
         shoes: apacheBoots
       }
