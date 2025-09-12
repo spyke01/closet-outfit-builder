@@ -941,6 +941,28 @@
       ],
       "tuck": "Tucked",
       "loved": true
+    },
+    {
+      "id": "o-082",
+      "items": [
+        "slate-ocbd",
+        "chinos-navy",
+        "loafers-dark-brown-suede",
+        "rolex-cellini-moonphase"
+      ],
+      "tuck": "Tucked",
+      "loved": true
+    },
+    {
+      "id": "o-083",
+      "items": [
+        "polo-black",
+        "trousers-white",
+        "loafers-light-tan",
+        "omega-300m"
+      ],
+      "tuck": "Untucked",
+      "loved": true
     }
   ]
 }

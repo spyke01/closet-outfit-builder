@@ -81,6 +81,17 @@
       "brand": "Polo Ralph Lauren"
     },
     {
+      "id": "slate-ocbd",
+      "name": "OCBD (Slate)",
+      "category": "Shirt",
+      "capsuleTags": [
+        "Refined"
+      ],
+      "formalityScore": 7,
+      "image": "/images/wardrobe/ocbd-slate.png",
+      "brand": "Polo Ralph Lauren"
+    },
+    {
       "id": "white-ocbd",
       "name": "OCBD (White)",
       "category": "Shirt",
@@ -172,6 +183,17 @@
       ],
       "formalityScore": 5,
       "image": "/images/wardrobe/polo-navy.png",
+      "brand": "Banana Republic"
+    },
+    {
+      "id": "polo-black",
+      "name": "Polo (Black)",
+      "category": "Shirt",
+      "capsuleTags": [
+        "Refined"
+      ],
+      "formalityScore": 5,
+      "image": "/images/wardrobe/polo-black.png",
       "brand": "Banana Republic"
     },
     {
@@ -326,6 +348,17 @@
       "formalityScore": 8,
       "image": "/images/wardrobe/trousers-charcoal.png",
       "brand": "Banana Republic"
+    },
+    {
+      "id": "trousers-white",
+      "name": "Trousers (White)",
+      "category": "Pants",
+      "capsuleTags": [
+        "Refined"
+      ],
+      "formalityScore": 7,
+      "image": "/images/wardrobe/trousers-white.png",
+      "brand": "Polo Ralph Lauren"
     },
     {
       "id": "jeans-medium",
@@ -562,6 +595,18 @@
       "formalityScore": 7,
       "image": "/images/wardrobe/belt-black-pebbled.png",
       "brand": "Banana Republic"
+    },
+    {
+      "id": "rolex-cellini-moonphase",
+      "name": "Cellini Moonphase",
+      "category": "Watch",
+      "brand": "Rolex",
+      "capsuleTags": [
+        "Refined",
+        "Shorts"
+      ],
+      "formalityScore": 8,
+      "image": "/images/wardrobe/rolex-panda.png"
     },
     {
       "id": "rolex-panda",
