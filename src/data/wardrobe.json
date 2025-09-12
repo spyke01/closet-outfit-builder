@@ -153,7 +153,7 @@
       "brand": "Banana Republic"
     },
     {
-      "id": "grey-knit-polo",
+      "id": "polo-grey-knit",
       "name": "Knit Polo (Grey)",
       "category": "Shirt",
       "capsuleTags": [
@@ -164,7 +164,7 @@
       "brand": "Banana Republic"
     },
     {
-      "id": "navy-ribbed-polo",
+      "id": "polo-navy-ribbed",
       "name": "Ribbed Polo (Navy)",
       "category": "Shirt",
       "capsuleTags": [
