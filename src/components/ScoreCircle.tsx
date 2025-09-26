@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { OutfitSelection } from '../types';
 import { calculateOutfitScore } from '../utils/scoring';
 import { ScoreBreakdown } from './ScoreBreakdown';
+import { createInteractiveProps } from '../utils/accessibilityUtils';
 
 interface ScoreCircleProps {
     score: number;
@@ -105,7 +106,11 @@ export const ScoreCircle: React.FC<ScoreCircleProps> = ({
                     className={`relative ${container} ${breakdown ? 'cursor-pointer hover:scale-105 transition-transform duration-200' : ''}`}
                     onMouseEnter={() => breakdown && setShowTooltip(true)}
                     onMouseLeave={() => setShowTooltip(false)}
-                    onClick={() => breakdown && setShowTooltip(!showTooltip)}
+                    {...(breakdown ? createInteractiveProps(
+                        () => setShowTooltip(!showTooltip),
+                        'View score breakdown',
+                        'button'
+                    ) : {})}
                 >
                 <svg className="transform -rotate-90 w-full h-full" viewBox={`0 0 ${radius * 2 + 8} ${radius * 2 + 8}`}>
                     {/* Background circle */}

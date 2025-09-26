@@ -25,25 +25,28 @@ Outfit List             |  Visual Mockup
 
 ## Tech Stack
 
-- **Frontend**: React 18 with TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide React
+- **Frontend**: React 18.3.1 with TypeScript 5.6.3
+- **Build Tool**: Vite 5.4.20
+- **Styling**: Tailwind CSS 3.4.17 with dark mode support
+- **Icons**: Lucide React 0.344.0
 - **Backend**: Netlify Functions (serverless)
-- **APIs**: OpenWeatherMap API
+- **APIs**: OpenWeatherMap API (weather data)
 - **PWA**: Service Worker for offline functionality
-- **Testing**: Vitest with Testing Library
+- **Testing**: Vitest 3.2.4 with Testing Library and jsdom
+- **Linting**: ESLint 9.36.0 with accessibility (jsx-a11y) plugin
+- **Coverage**: Vitest coverage with v8 provider
 
 ## Project Structure
 
 ```
 src/
-├── components/          # React components
+├── components/          # React components (28 components with tests)
 │   ├── AnchorRow.tsx   # Category selection interface
 │   ├── ItemsGrid.tsx   # Grid display for wardrobe items (direct click interactions)
 │   ├── OutfitDisplay.tsx # Main outfit visualization
 │   ├── OutfitCard.tsx  # Individual outfit card component with flip functionality
 │   ├── OutfitList.tsx  # Outfit list display (default view)
+│   ├── ClothingItemDisplay.tsx # Individual clothing item display
 │   ├── ResultsPanel.tsx # Outfit recommendations panel
 │   ├── SelectionStrip.tsx # Selected items display (mobile-optimized)
 │   ├── TopBar.tsx      # Navigation with weather widget
@@ -51,11 +54,17 @@ src/
 │   ├── SettingsPage.tsx # User settings and preferences management
 │   ├── OutfitLayout.tsx # Visual outfit display
 │   ├── ScoreBreakdown.tsx # Enhanced score breakdown with layer weights
+│   ├── ScoreCircle.tsx # Score visualization component
+│   ├── ColorCircle.tsx # Color display utility
+│   ├── CategoryDropdown.tsx # Category selection dropdown
+│   ├── ThemeToggle.tsx # Dark/light theme toggle
+│   ├── Logo.tsx        # Application logo component
 │   └── ScrollToTop.tsx # Navigation utility component
 ├── data/               # Static data files
 │   ├── outfits.json    # Curated outfit combinations
 │   └── wardrobe.json   # Wardrobe items database
 ├── hooks/              # Custom React hooks
+│   ├── outfit-engine/  # Outfit generation engine components
 │   ├── useOutfitEngine.ts # Outfit generation logic
 │   └── useWardrobe.ts  # Wardrobe data management
 ├── services/           # API integration services
@@ -66,11 +75,18 @@ src/
 ├── utils/              # Utility functions
 │   ├── colorUtils.ts   # Color manipulation utilities
 │   ├── scoring.ts      # Enhanced scoring algorithms with layer awareness
-│   └── itemUtils.ts    # Item formatting and display utilities
+│   ├── itemUtils.ts    # Item formatting and display utilities
+│   └── accessibilityUtils.ts # Accessibility helper functions
 ├── contexts/           # React context providers
-│   └── SettingsContext.tsx # User settings management and persistence
+│   ├── SettingsContext.tsx # User settings management and persistence
+│   └── ThemeContext.tsx # Theme management context
 ├── config/             # Configuration files
 │   └── env.ts          # Environment configuration
+├── test/               # Test utilities and setup
+│   ├── setup.ts        # Test environment setup
+│   └── test-utils.tsx  # Testing utilities
+├── integration/        # Integration tests
+│   └── wardrobe-enhancement.integration.test.tsx
 ├── App.tsx             # Main application component (shows outfits by default)
 ├── main.tsx           # Application entry point
 └── index.css          # Global styles
@@ -137,8 +153,13 @@ The application will be available at:
 - `npm run generate:outfits` - Build outfits from wardrobe
 - `npm run preview` - Preview the production build locally
 - `npm run lint` - Run ESLint for code quality checks
+- `npm run lint:a11y` - Run accessibility-specific linting
 - `npm test` - Run tests in watch mode
 - `npm run test:run` - Run tests once
+- `npm run test:a11y` - Run accessibility compliance tests
+- `npm run test:keyboard` - Test keyboard navigation
+- `npm run verify:local` - Test deployment locally
+- `npm run verify:production` - Test production deployment
 
 ## Weather Integration
 

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { GeneratedOutfit } from '../types';
 import { OutfitCard } from './OutfitCard';
+import { trapFocus, handleEscapeKey } from '../utils/accessibilityUtils';
 
 interface ResultsPanelProps {
   isOpen: boolean;
@@ -16,20 +17,53 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
   outfits,
   anchorItemName
 }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEscape = (event: KeyboardEvent) => {
+      handleEscapeKey(event, onClose);
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    
+    // Set up focus trap
+    let cleanupFocusTrap: (() => void) | undefined;
+    if (modalRef.current) {
+      cleanupFocusTrap = trapFocus(modalRef.current);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      cleanupFocusTrap?.();
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
+
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
 
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4"
-      onClick={onClose}
+      onClick={handleOverlayClick}
+      role="presentation"
     >
       <div
+        ref={modalRef}
         className="bg-white rounded-xl sm:rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
       >
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-stone-200">
           <div className="min-w-0 flex-1 mr-4">
-            <h2 className="text-lg sm:text-2xl font-light text-slate-800 truncate">
+            <h2 id="modal-title" className="text-lg sm:text-2xl font-light text-slate-800 truncate">
               {anchorItemName ? `Outfits featuring ${anchorItemName}` : 'All Outfits'}
             </h2>
             <p className="text-slate-600 mt-1 text-sm sm:text-base">{outfits.length} combinations found</p>

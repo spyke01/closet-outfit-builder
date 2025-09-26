@@ -6,7 +6,7 @@ This directory contains serverless functions for the What to Wear app that provi
 
 ### Weather Function (`/api/weather`)
 
-Proxies requests to the OpenWeatherMap API to fetch weather forecast data.
+Proxies requests to the OpenWeatherMap API to fetch weather forecast data with comprehensive error handling and rate limiting.
 
 **Endpoint:** `GET /.netlify/functions/weather`  
 **Alias:** `GET /api/weather`
@@ -47,16 +47,21 @@ GET /api/weather?lat=40.7128&lon=-74.0060
 
 ### Rate Limiting
 - Weather API: 10 requests per minute per IP
+- Rate limit headers included in responses
+- Proper 429 status codes when limits exceeded
 
 ### Input Validation
-- Coordinate range validation
+- Coordinate range validation (-90 to 90 for lat, -180 to 180 for lon)
 - Input sanitization for XSS prevention
-- Parameter type checking
+- Parameter type checking and conversion
+- Malformed request handling
 
 ### Error Handling
-- Graceful API failure handling
-- Proper HTTP status codes
-- User-friendly error messages
+- Comprehensive API failure handling with retry logic
+- Proper HTTP status codes (400, 401, 403, 429, 500, 503)
+- User-friendly error messages without exposing sensitive information
+- Timeout handling (15-second request timeout)
+- Service unavailable detection
 
 ## Environment Variables
 
@@ -115,10 +120,11 @@ Functions are automatically deployed when pushing to the main branch. Ensure env
 
 ## Error Codes
 
-- `400`: Bad Request (invalid parameters)
+- `400`: Bad Request (invalid or missing parameters)
 - `401`: Unauthorized (invalid API key)
 - `403`: Forbidden (API access denied)
-
 - `405`: Method Not Allowed (non-GET requests)
-- `429`: Too Many Requests (rate limit exceeded)
-- `500`: Internal Server Error (API failures)
+- `429`: Too Many Requests (rate limit exceeded, includes Retry-After header)
+- `500`: Internal Server Error (API failures, network issues)
+- `503`: Service Unavailable (OpenWeatherMap service down)
+- `504`: Gateway Timeout (request timeout after 15 seconds)

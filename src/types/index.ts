@@ -197,3 +197,42 @@ export interface WeatherServiceStatus {
   lastChecked: Date;
   nextRetryAt?: Date;
 }
+
+// Test utility types to replace 'any' usage
+export interface MockFunction<TArgs extends unknown[] = unknown[], TReturn = unknown> {
+  (...args: TArgs): TReturn;
+  mockReturnValue: (value: TReturn) => MockFunction<TArgs, TReturn>;
+  mockResolvedValue: (value: TReturn) => MockFunction<TArgs, Promise<TReturn>>;
+  mockRejectedValue: (error: unknown) => MockFunction<TArgs, Promise<TReturn>>;
+  mockImplementation: (fn: (...args: TArgs) => TReturn) => MockFunction<TArgs, TReturn>;
+  mockClear: () => void;
+  mockReset: () => void;
+}
+
+export interface TestComponentProps {
+  [key: string]: unknown;
+}
+
+export interface TestRenderResult {
+  container: HTMLElement;
+  getByText: (text: string) => HTMLElement;
+  getByTestId: (testId: string) => HTMLElement;
+  queryByText: (text: string) => HTMLElement | null;
+  queryByTestId: (testId: string) => HTMLElement | null;
+  rerender: (props: TestComponentProps) => void;
+  unmount: () => void;
+}
+
+// Service error handling types
+export interface ServiceResponse<T> {
+  data?: T;
+  error?: ServiceError;
+  success: boolean;
+}
+
+export interface ServiceError {
+  code: string;
+  message: string;
+  details?: unknown;
+  timestamp: Date;
+}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Shuffle } from 'lucide-react';
 import { TopBar } from './components/TopBar';
 import { AnchorRow } from './components/AnchorRow';
@@ -34,7 +34,7 @@ function App() {
   const [locationPermissionDenied, setLocationPermissionDenied] = useState(false);
 
   // Load weather data with comprehensive error handling
-  const loadWeatherData = async (isRetry = false) => {
+  const loadWeatherData = useCallback(async (isRetry = false) => {
     // Don't retry if location permission was explicitly denied
     if (locationPermissionDenied && !isRetry) {
       return;
@@ -102,7 +102,7 @@ function App() {
     } finally {
       setWeatherLoading(false);
     }
-  };
+  }, [locationPermissionDenied]);
 
   // Retry weather data loading with exponential backoff
   const retryWeatherData = () => {
@@ -131,7 +131,7 @@ function App() {
     }
 
     loadWeatherData();
-  }, []);
+  }, [loadWeatherData]);
 
   const handleItemSelect = (item: WardrobeItem) => {
     // Reset all selections when starting with a new anchor item

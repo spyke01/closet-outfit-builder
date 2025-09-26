@@ -17,7 +17,7 @@ interface SettingsContextType {
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 // Settings validation function
-const validateSettings = (settings: any): UserSettings => {
+const validateSettings = (settings: unknown): UserSettings => {
   const validated: UserSettings = { ...DEFAULT_SETTINGS };
   
   if (settings && typeof settings === 'object') {

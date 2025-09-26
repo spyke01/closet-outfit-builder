@@ -1,0 +1,43 @@
+{
+  "daily": {
+    "enabled": true,
+    "time": "09:00",
+    "checks": [
+      "security",
+      "quality"
+    ]
+  },
+  "weekly": {
+    "enabled": true,
+    "day": "monday",
+    "time": "08:00",
+    "checks": [
+      "security",
+      "quality",
+      "accessibility",
+      "build"
+    ]
+  },
+  "monthly": {
+    "enabled": true,
+    "day": 1,
+    "time": "07:00",
+    "checks": [
+      "security",
+      "quality",
+      "accessibility",
+      "build",
+      "documentation"
+    ]
+  },
+  "notifications": {
+    "email": null,
+    "slack": null,
+    "webhook": null
+  },
+  "thresholds": {
+    "criticalIssues": 0,
+    "failedChecks": 3,
+    "coverageThreshold": 80
+  }
+}

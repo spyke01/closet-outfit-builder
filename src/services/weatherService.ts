@@ -295,7 +295,7 @@ export const prefetchWeatherData = async (lat: number, lon: number): Promise<voi
  * @returns Object with cache statistics
  */
 export const getWeatherCacheStats = () => {
-  const now = Date.now();
+  const _now = Date.now(); // Prefix with underscore to indicate intentionally unused
   const entries = Array.from(weatherCache.entries());
   
   return {

@@ -6,6 +6,7 @@ import { ColorCircle } from './ColorCircle';
 import { OutfitLayout } from './OutfitLayout';
 import { useSettings } from '../contexts/SettingsContext';
 import { formatItemName } from '../utils/itemUtils';
+import { createInteractiveProps } from '../utils/accessibilityUtils';
 
 // Error boundary component for visual layout
 class VisualLayoutErrorBoundary extends React.Component<
@@ -21,7 +22,7 @@ class VisualLayoutErrorBoundary extends React.Component<
         return { hasError: true, error };
     }
 
-    componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    componentDidCatch(_error: Error, _errorInfo: ErrorInfo) {
         // Error caught and handled silently
     }
 
@@ -138,7 +139,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
             return (
                 <div
                     className={`bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-stone-200 dark:border-slate-700 p-8 ${className}`}
-                    onClick={onClick}
+                    {...createInteractiveProps(onClick, 'View outfit details', 'button')}
                 >
                     <div className="text-center mb-8">
                         <div className="flex items-center justify-center gap-6 mb-4">
@@ -228,7 +229,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                     >
                         <div
                             className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-stone-200 dark:border-slate-700 p-8"
-                            onClick={handleCardClick}
+                            {...createInteractiveProps(handleCardClick, 'View outfit details', 'button')}
                         >
                             <div className="text-center mb-8">
                                 <div className="flex items-center justify-center gap-6 mb-4">
@@ -353,7 +354,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
         return (
             <div
                 className={`bg-stone-50 dark:bg-slate-800 rounded-xl p-5 border border-stone-200 dark:border-slate-700 hover:shadow-md transition-shadow ${onClick ? 'cursor-pointer' : ''} ${className}`}
-                onClick={onClick}
+                {...createInteractiveProps(onClick, 'Select outfit', 'button')}
             >
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
@@ -430,7 +431,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                 >
                     <div
                         className={`bg-stone-50 dark:bg-slate-800 rounded-xl p-5 border border-stone-200 dark:border-slate-700 hover:shadow-md transition-shadow ${onClick && !enableFlip ? 'cursor-pointer' : ''}`}
-                        onClick={handleCardClick}
+                        {...createInteractiveProps(handleCardClick, 'Select outfit', 'button')}
                     >
                         <div className="flex items-center justify-between mb-4">
                             <button

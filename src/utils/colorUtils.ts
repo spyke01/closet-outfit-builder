@@ -74,7 +74,7 @@ const COLOR_MAP: Record<string, string> = {
  */
 export const extractColorsFromName = (itemName: string): string[] => {
   const lowerName = itemName.toLowerCase();
-  let foundColors: string[] = [];
+  const foundColors: string[] = [];
   
   // Sort by length (longest first) to match more specific colors first
   const sortedColors = Object.keys(COLOR_MAP).sort((a, b) => b.length - a.length);
@@ -84,7 +84,7 @@ export const extractColorsFromName = (itemName: string): string[] => {
   if (parenthesesMatch) {
     const colorsInParens = parenthesesMatch[1];
     // Split by common separators
-    const colorParts = colorsInParens.split(/[\/,&\s]+/).filter(part => part.trim());
+    const colorParts = colorsInParens.split(/[/,&\s]+/).filter(part => part.trim());
     
     for (const part of colorParts) {
       for (const colorKeyword of sortedColors) {

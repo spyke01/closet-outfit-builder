@@ -44,13 +44,13 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
   }, [selection]);
 
   // Define the five main categories for dropdowns in layering hierarchy order
-  const categories: { category: Category; key: keyof OutfitSelection }[] = [
-    { category: 'Jacket/Overshirt', key: 'jacket' },
-    { category: 'Shirt', key: 'shirt' },
-    { category: 'Undershirt', key: 'undershirt' },
-    { category: 'Pants', key: 'pants' },
-    { category: 'Shoes', key: 'shoes' },
-  ];
+  const categories = useMemo(() => [
+    { category: 'Jacket/Overshirt' as Category, key: 'jacket' as keyof OutfitSelection },
+    { category: 'Shirt' as Category, key: 'shirt' as keyof OutfitSelection },
+    { category: 'Undershirt' as Category, key: 'undershirt' as keyof OutfitSelection },
+    { category: 'Pants' as Category, key: 'pants' as keyof OutfitSelection },
+    { category: 'Shoes' as Category, key: 'shoes' as keyof OutfitSelection },
+  ], []);
 
   // Enhanced selection change handler with progressive filtering and error handling
   const handleSelectionChange = useCallback(async (category: Category, item: WardrobeItem | null) => {
@@ -60,8 +60,8 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
 
       // Create a test selection to validate before applying
       const testSelection = { ...selection };
-      const key = category.toLowerCase().replace('/', '') as keyof OutfitSelection;
-      (testSelection as any)[key] = item;
+      const key = categoryToKey(category);
+      testSelection[key] = item;
 
       // Validate the partial selection
       if (validatePartialSelection(testSelection)) {
@@ -90,10 +90,10 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
   const filteredOutfits = useMemo(() => {
     try {
       // Ensure anchor item is included in the selection for outfit filtering
-      let selectionWithAnchor = { ...debouncedSelection };
+      const selectionWithAnchor = { ...debouncedSelection };
       if (anchorItem && !Object.values(debouncedSelection).some(item => item?.id === anchorItem.id)) {
         const anchorKey = categoryToKey(anchorItem.category);
-        (selectionWithAnchor as any)[anchorKey] = anchorItem;
+        selectionWithAnchor[anchorKey] = anchorItem;
       }
       
       return getFilteredOutfits(selectionWithAnchor);
@@ -109,10 +109,10 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
     const cache: Record<string, WardrobeItem[]> = {};
     
     // Ensure anchor item is included in the selection for compatibility checking
-    let selectionWithAnchor = { ...debouncedSelection };
+    const selectionWithAnchor = { ...debouncedSelection };
     if (anchorItem && !Object.values(debouncedSelection).some(item => item?.id === anchorItem.id)) {
       const anchorKey = categoryToKey(anchorItem.category);
-      (selectionWithAnchor as any)[anchorKey] = anchorItem;
+      selectionWithAnchor[anchorKey] = anchorItem;
     }
     
     categories.forEach(({ category }) => {
@@ -125,7 +125,7 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
       }
     });
     return cache;
-  }, [debouncedSelection, anchorItem, getCompatibleItems]);
+  }, [debouncedSelection, anchorItem, getCompatibleItems, categories]);
 
   // Only show SelectionStrip when anchor item is present
   if (!anchorItem) {

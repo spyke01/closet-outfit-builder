@@ -6,9 +6,9 @@ import { calculateOutfitScore } from '../utils/scoring';
 export const useOutfitEngine = () => {
   const { outfits, getItemById } = useWardrobe();
 
-  const scoreOutfit = (selection: OutfitSelection): number => {
+  const scoreOutfit = useCallback((selection: OutfitSelection): number => {
     return calculateOutfitScore(selection).percentage;
-  };
+  }, []);
 
   // Memoize all outfits to avoid recalculating on every render
   const allOutfits = useMemo(() => {
@@ -22,7 +22,7 @@ export const useOutfitEngine = () => {
         const item = getItemById(itemId);
         if (item) {
           const key = categoryToKey(item.category);
-          (selection as any)[key] = item;
+          selection[key] = item;
         } else {
           console.warn(`Item not found: ${itemId}`);
         }
