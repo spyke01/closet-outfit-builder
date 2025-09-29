@@ -54,22 +54,39 @@ interface OpenWeatherForecastResponse {
   }>;
 }
 
+interface ForecastItem {
+  dt: number;
+  main: {
+    temp: number;
+    temp_max: number;
+    temp_min: number;
+  };
+  weather: Array<{
+    main: string;
+    description: string;
+    icon: string;
+  }>;
+  pop: number;
+}
+
+interface WeatherForecast {
+  date: string;
+  temperature: {
+    high: number;
+    low: number;
+  };
+  condition: string;
+  icon: string;
+  precipitationProbability?: number;
+}
+
 interface WeatherResponse {
   current: {
     temperature: number;
     condition: string;
     icon: string;
   };
-  forecast: Array<{
-    date: string;
-    temperature: {
-      high: number;
-      low: number;
-    };
-    condition: string;
-    icon: string;
-    precipitationProbability?: number;
-  }>;
+  forecast: WeatherForecast[];
 }
 
 // Rate limiting store (in production, use Redis or similar)
@@ -179,14 +196,12 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
     }
 
     // Try One Call API 3.0 first, fall back to free tier if needed
-    let weatherUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial&exclude=minutely,hourly,alerts`;
-    let useOneCallAPI = true;
+    const weatherUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial&exclude=minutely,hourly,alerts`;
     
-    let response = await fetch(weatherUrl);
+    const response = await fetch(weatherUrl);
     
     // If One Call API fails with 401/403, try the free tier APIs
     if (!response.ok && (response.status === 401 || response.status === 403)) {
-      useOneCallAPI = false;
       
       // Use current weather + 5-day forecast (free tier)
       const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial`;
@@ -233,7 +248,7 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
           condition: currentData.weather[0].description,
           icon: currentData.weather[0].icon,
         },
-        forecast: forecastData.list.slice(0, 24).reduce((acc: any[], item: any, index: number) => {
+        forecast: forecastData.list.slice(0, 24).reduce((acc: WeatherForecast[], item: ForecastItem, index: number) => {
           // Group by day (every 8 items = 1 day with 3-hour intervals)
           if (index % 8 === 0) {
             const date = new Date(item.dt * 1000);

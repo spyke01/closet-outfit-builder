@@ -6,9 +6,13 @@ import { GeneratedOutfit } from '../types';
 // Mock OutfitCard component to avoid rendering complexity in performance tests
 vi.mock('./OutfitCard', () => ({
   OutfitCard: ({ outfit, onClick }: { outfit: GeneratedOutfit; onClick: () => void }) => (
-    <div data-testid={`outfit-card-${outfit.id}`} onClick={onClick}>
+    <button 
+      data-testid={`outfit-card-${outfit.id}`} 
+      onClick={onClick}
+      type="button"
+    >
       {outfit.id}
-    </div>
+    </button>
   )
 }));
 

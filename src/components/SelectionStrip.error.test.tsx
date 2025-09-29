@@ -147,9 +147,15 @@ describe('SelectionStrip Error Handling', () => {
 
       expect(screen.getByText(/Building from.*Moto Jacket/)).toBeInTheDocument();
       
-      // Should render dropdowns for categories
-      const dropdowns = screen.getAllByRole('button');
-      expect(dropdowns.length).toBe(5); // 5 categories total
+      // Should render dropdown buttons for categories
+      // Look for buttons that start with "Select" (category dropdown buttons)
+      const allButtons = screen.getAllByRole('button');
+      const dropdownButtons = allButtons.filter(button => {
+        const text = button.textContent || '';
+        return text.startsWith('Select');
+      });
+      
+      expect(dropdownButtons.length).toBe(5); // 5 categories total
     });
 
     it('handles malformed selection data', () => {
