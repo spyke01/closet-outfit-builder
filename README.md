@@ -25,15 +25,15 @@ Outfit List             |  Visual Mockup
 
 ## Tech Stack
 
-- **Frontend**: React 18.3.1 with TypeScript 5.6.3
-- **Build Tool**: Vite 5.4.20
-- **Styling**: Tailwind CSS 3.4.17 with dark mode support
-- **Icons**: Lucide React 0.344.0
+- **Frontend**: React 19.1.1 with TypeScript 5.5.3
+- **Build Tool**: Vite 5.4.2
+- **Styling**: Tailwind CSS 4.1.13 with dark mode support
+- **Icons**: Lucide React 0.544.0
 - **Backend**: Netlify Functions (serverless)
 - **APIs**: OpenWeatherMap API (weather data)
 - **PWA**: Service Worker for offline functionality
 - **Testing**: Vitest 3.2.4 with Testing Library and jsdom
-- **Linting**: ESLint 9.36.0 with accessibility (jsx-a11y) plugin
+- **Linting**: ESLint 9.9.1 with accessibility (jsx-a11y) plugin
 - **Coverage**: Vitest coverage with v8 provider
 
 ## Project Structure
