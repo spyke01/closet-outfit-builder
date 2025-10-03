@@ -7,6 +7,9 @@ import { OutfitLayout } from './OutfitLayout';
 import { useSettings } from '../contexts/SettingsContext';
 import { formatItemName } from '../utils/itemUtils';
 import { createInteractiveProps } from '../utils/accessibilityUtils';
+import { cn, buildVariantClasses, a11yClasses } from '../utils/designSystem';
+import { useFeatureSupport, ConditionalEnhancement } from '../hooks/useFeatureSupport';
+import { Card, Button, Text, Loading } from './DesignSystemComponents';
 
 // Error boundary component for visual layout
 class VisualLayoutErrorBoundary extends React.Component<
@@ -29,12 +32,12 @@ class VisualLayoutErrorBoundary extends React.Component<
     render() {
         if (this.state.hasError) {
             return this.props.fallback || (
-                <div className="flex items-center justify-center h-32 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-                    <div className="text-center text-red-600 dark:text-red-400">
-                        <AlertTriangle size={24} className="mx-auto mb-2" />
-                        <div className="text-sm">Visual layout unavailable</div>
+                <Card variant="secondary" className="h-32 flex items-center justify-center border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
+                    <div className="text-center">
+                        <AlertTriangle size={24} className="mx-auto mb-2 text-red-600 dark:text-red-400" />
+                        <Text variant="secondary" size="sm">Visual layout unavailable</Text>
                     </div>
-                </div>
+                </Card>
             );
         }
 
@@ -260,14 +263,16 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                                     </div>
                                     {showScore && <ScoreCircle score={score} size="lg" outfit={outfit} />}
                                 </div>
-                                <button
+                                <Button
                                     onClick={handleFlip}
-                                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm font-medium"
+                                    variant="primary"
+                                    size="sm"
                                     disabled={isLoading}
+                                    className="inline-flex items-center gap-2"
                                 >
                                     <Eye size={16} />
                                     {isLoading ? 'Loading...' : 'View Mockup'}
-                                </button>
+                                </Button>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -316,14 +321,16 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                                     </h3>
                                     {showScore && <ScoreCircle score={score} size="md" outfit={outfit} />}
                                 </div>
-                                <button
+                                <Button
                                     onClick={handleFlip}
-                                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm font-medium"
+                                    variant="secondary"
+                                    size="sm"
                                     disabled={isLoading}
+                                    className="inline-flex items-center gap-2"
                                 >
                                     <RotateCcw size={16} />
                                     {isLoading ? 'Loading...' : 'Back to Details'}
-                                </button>
+                                </Button>
                             </div>
 
                             <div className="flex justify-center items-center flex-1 min-h-[400px]">

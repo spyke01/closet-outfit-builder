@@ -26,11 +26,13 @@
     "audit:validate": "node scripts/validate-audit-implementation.js"
   },
   "dependencies": {
+    "clsx": "^2.1.1",
     "lucide-react": "^0.544.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
   "devDependencies": {
+    "@axe-core/react": "^4.10.2",
     "@eslint/js": "^9.9.1",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/postcss": "^4.1.13",
@@ -46,6 +48,7 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.11",
     "globals": "^15.9.0",
+    "jest-axe": "^10.0.0",
     "jsdom": "^26.1.0",
     "netlify-cli": "^23.8.1",
     "postcss": "^8.4.35",

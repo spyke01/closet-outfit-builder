@@ -1,7 +1,34 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  content: {
+    files: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+    extract: {
+      // Enhanced extraction for dynamic classes and CSS custom properties
+      js: (content: string) => {
+        const matches = content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || [];
+        return matches.filter(match => 
+          match.includes('bg-') || 
+          match.includes('text-') || 
+          match.includes('border-') ||
+          match.includes('hover:') ||
+          match.includes('dark:') ||
+          match.includes('@') ||
+          match.includes('primary') ||
+          match.includes('surface') ||
+          match.includes('animate-') ||
+          match.includes('transition-')
+        );
+      }
+    },
+    transform: {
+      // Transform dynamic class generation
+      js: (content: string) => {
+        // Extract classes from template literals and dynamic generation
+        return content.replace(/`([^`]*)`/g, (_, match) => match);
+      }
+    }
+  },
   darkMode: 'class',
   theme: {
     extend: {
@@ -94,6 +121,55 @@ const config: Config = {
   },
   plugins: [
     require('@tailwindcss/container-queries'),
+  ],
+  corePlugins: {
+    // Optimize bundle size by disabling unused core plugins
+    preflight: true,
+    container: false, // Using container queries instead
+    accessibility: true,
+    // Keep essential plugins enabled
+    backgroundColor: true,
+    textColor: true,
+    borderColor: true,
+    animation: true,
+    transform: true,
+    transition: true,
+  },
+  // Advanced purging configuration
+  safelist: [
+    // Preserve dynamic classes that might be generated at runtime
+    'animate-shimmer',
+    'animate-theme-transition',
+    'animate-fade-in',
+    'animate-slide-up',
+    'bg-primary-50',
+    'bg-primary-500',
+    'bg-surface',
+    'bg-surface-secondary',
+    'text-text-primary',
+    'text-text-secondary',
+    'border-border',
+    'hover:bg-primary-600',
+    'dark:bg-surface',
+    'dark:text-text-primary',
+    // Container query classes
+    '@xs:grid-cols-2',
+    '@sm:grid-cols-3',
+    '@md:grid-cols-4',
+    '@lg:grid-cols-5',
+    '@xl:grid-cols-6',
+    // Responsive grid patterns
+    {
+      pattern: /grid-cols-(1|2|3|4|5|6)/,
+      variants: ['sm', 'md', 'lg', 'xl', '2xl'],
+    },
+    {
+      pattern: /@(xs|sm|md|lg|xl):grid-cols-(1|2|3|4|5|6)/,
+    },
+    {
+      pattern: /bg-(primary|surface|text)-(50|100|200|300|400|500|600|700|800|900|950)/,
+      variants: ['hover', 'focus', 'dark'],
+    },
   ],
 };
 
