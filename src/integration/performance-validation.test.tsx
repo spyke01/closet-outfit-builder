@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useOptimizedOutfitGeneration } from '../hooks/useOptimizedOutfitGeneration';
+import { useOutfitEngine } from '../hooks/useOutfitEngine';
 import { usePerformanceMonitoring } from '../hooks/usePerformanceMonitoring';
 import { WardrobeItem } from '../types';
 
@@ -36,7 +36,7 @@ describe('Performance Validation Tests', () => {
 
   describe('Interaction Response Time Validation', () => {
     it('should maintain sub-100ms response times for outfit generation', async () => {
-      const { result } = renderHook(() => useOptimizedOutfitGeneration());
+      const { result } = renderHook(() => useOutfitEngine());
       const { result: perfResult } = renderHook(() => usePerformanceMonitoring());
 
       const mockAnchorItem: WardrobeItem = {
@@ -77,7 +77,7 @@ describe('Performance Validation Tests', () => {
     });
 
     it('should maintain responsiveness during concurrent search and filtering', async () => {
-      const { result } = renderHook(() => useOptimizedOutfitGeneration());
+      const { result } = renderHook(() => useOutfitEngine());
       const { result: perfResult } = renderHook(() => usePerformanceMonitoring());
 
       // Generate initial data
@@ -136,7 +136,7 @@ describe('Performance Validation Tests', () => {
 
   describe('Memory Usage Validation', () => {
     it('should not leak memory during repeated operations', async () => {
-      const { result } = renderHook(() => useOptimizedOutfitGeneration());
+      const { result } = renderHook(() => useOutfitEngine());
 
       const initialMemory = (performance as any).memory?.usedJSHeapSize || 0;
 
@@ -205,7 +205,7 @@ describe('Performance Validation Tests', () => {
 
   describe('Concurrent Rendering Validation', () => {
     it('should handle rapid state updates without blocking', async () => {
-      const { result } = renderHook(() => useOptimizedOutfitGeneration());
+      const { result } = renderHook(() => useOutfitEngine());
 
       const updateTimes: number[] = [];
 
@@ -235,7 +235,7 @@ describe('Performance Validation Tests', () => {
     });
 
     it('should maintain UI responsiveness during heavy filtering', async () => {
-      const { result } = renderHook(() => useOptimizedOutfitGeneration());
+      const { result } = renderHook(() => useOutfitEngine());
 
       // Generate a large dataset
       act(() => {
@@ -329,7 +329,7 @@ describe('Performance Validation Tests', () => {
 
   describe('Edge Case Performance', () => {
     it('should handle empty datasets efficiently', () => {
-      const { result } = renderHook(() => useOptimizedOutfitGeneration());
+      const { result } = renderHook(() => useOutfitEngine());
 
       const startTime = performance.now();
       
@@ -347,7 +347,7 @@ describe('Performance Validation Tests', () => {
     });
 
     it('should handle malformed filter criteria gracefully', () => {
-      const { result } = renderHook(() => useOptimizedOutfitGeneration());
+      const { result } = renderHook(() => useOutfitEngine());
 
       const startTime = performance.now();
       

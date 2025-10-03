@@ -2,18 +2,28 @@
  * WeatherWidget component for displaying 3-day weather forecast
  * Shows high/low temperatures, dates, weather icons, and precipitation chances
  * Includes comprehensive error handling and graceful degradation
+ * Supports both direct data props and optimistic updates with location-based loading
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { WeatherData, WeatherError } from '../types';
 import { Cloud, CloudRain, Sun, CloudSnow, Zap, CloudDrizzle, Loader2, AlertCircle, MapPin, RefreshCw } from 'lucide-react';
+import { useOptimisticWeather } from '../hooks/useOptimisticWeather';
 
 interface WeatherWidgetProps {
-  forecast: WeatherData[];
+  // Direct data props (for backward compatibility)
+  forecast?: WeatherData[];
   loading?: boolean;
   error?: WeatherError | null;
-  className?: string;
   onRetry?: () => void;
+  
+  // Optimistic weather props (for enhanced functionality)
+  location?: string;
+  autoLoad?: boolean;
+  useOptimistic?: boolean;
+  
+  // Common props
+  className?: string;
   showFallback?: boolean;
 }
 
@@ -122,15 +132,51 @@ const getErrorIcon = (error: WeatherError) => {
 
 /**
  * WeatherWidget component displaying 3-day forecast with comprehensive error handling
+ * Supports both direct props and optimistic updates based on useOptimistic flag
  */
 export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
-  forecast,
-  loading = false,
-  error = null,
+  // Direct props
+  forecast: directForecast,
+  loading: directLoading = false,
+  error: directError = null,
+  onRetry: directOnRetry,
+  
+  // Optimistic props
+  location = 'New York, NY',
+  autoLoad = true,
+  useOptimistic = false,
+  
+  // Common props
   className = '',
-  onRetry,
   showFallback = true
 }) => {
+  // Use optimistic weather hook if enabled
+  const optimisticWeather = useOptimisticWeather();
+  
+  // Auto-load weather data on mount if optimistic mode is enabled
+  useEffect(() => {
+    if (useOptimistic && autoLoad && location) {
+      optimisticWeather.updateLocation(location);
+    }
+  }, [useOptimistic, autoLoad, location, optimisticWeather.updateLocation]);
+
+  // Determine which data source to use
+  const forecast = useOptimistic ? optimisticWeather.weather : (directForecast || []);
+  const loading = useOptimistic ? optimisticWeather.isUpdating : directLoading;
+  const error = useOptimistic ? optimisticWeather.error : directError;
+  
+  // Handle retry with appropriate method
+  const handleRetry = async () => {
+    if (useOptimistic) {
+      try {
+        await optimisticWeather.retryWeatherUpdate();
+      } catch (error) {
+        console.error('Weather retry failed:', error);
+      }
+    } else if (directOnRetry) {
+      directOnRetry();
+    }
+  };
   // Loading state
   if (loading) {
     return (
@@ -159,9 +205,9 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
         }`}>
           {errorMessage}
         </span>
-        {canRetry && onRetry && (
+        {canRetry && (directOnRetry || useOptimistic) && (
           <button
-            onClick={onRetry}
+            onClick={handleRetry}
             className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline ml-1"
             aria-label="Retry loading weather"
           >
@@ -182,9 +228,9 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
       <div className={`flex items-center space-x-2 text-gray-500 dark:text-gray-400 ${className}`}>
         <Cloud className="w-4 h-4" />
         <span className="text-sm">Weather data unavailable</span>
-        {onRetry && (
+        {(directOnRetry || useOptimistic) && (
           <button
-            onClick={onRetry}
+            onClick={handleRetry}
             className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline ml-1"
             aria-label="Retry loading weather"
           >

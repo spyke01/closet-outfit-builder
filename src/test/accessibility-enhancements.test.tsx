@@ -6,15 +6,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import { EnhancedThemeToggle } from '../components/EnhancedThemeToggle';
-import { ResponsiveOutfitCard } from '../components/ResponsiveOutfitCard';
-import { useEnhancedTheme } from '../hooks/useEnhancedTheme';
+import { ThemeToggle } from '../components/ThemeToggle';
+import { OutfitCard } from '../components/OutfitCard';
+import { useTheme } from '../hooks/useTheme';
 import { GeneratedOutfit } from '../types';
 
 expect.extend(toHaveNoViolations);
 
-// Mock the enhanced theme hook
-vi.mock('../hooks/useEnhancedTheme');
+// Mock the theme hook
+vi.mock('../hooks/useTheme');
 
 const mockOutfit: GeneratedOutfit = {
   id: 'test-outfit-1',
@@ -44,11 +44,9 @@ describe('Accessibility - Enhanced Dark Mode', () => {
     vi.clearAllMocks();
     
     // Mock theme hook with default light mode
-    (useEnhancedTheme as any).mockReturnValue({
+    (useTheme as any).mockReturnValue({
       theme: 'light',
-      resolvedTheme: 'light',
       isDark: false,
-      systemPreference: 'light',
       setTheme: vi.fn(),
       toggleTheme: vi.fn()
     });
@@ -56,18 +54,16 @@ describe('Accessibility - Enhanced Dark Mode', () => {
 
   describe('color contrast compliance', () => {
     it('should meet WCAG AA contrast requirements in light mode', async () => {
-      const { container } = render(<EnhancedThemeToggle />);
+      const { container } = render(<ThemeToggle />);
       
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
 
     it('should meet WCAG AA contrast requirements in dark mode', async () => {
-      (useEnhancedTheme as any).mockReturnValue({
+      (useTheme as any).mockReturnValue({
         theme: 'dark',
-        resolvedTheme: 'dark',
         isDark: true,
-        systemPreference: 'dark',
         setTheme: vi.fn(),
         toggleTheme: vi.fn()
       });
@@ -75,7 +71,7 @@ describe('Accessibility - Enhanced Dark Mode', () => {
       // Add dark class to document for testing
       document.documentElement.classList.add('dark');
 
-      const { container } = render(<EnhancedThemeToggle />);
+      const { container } = render(<ThemeToggle />);
       
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -85,18 +81,16 @@ describe('Accessibility - Enhanced Dark Mode', () => {
     });
 
     it('should have sufficient contrast for interactive elements in dark mode', () => {
-      (useEnhancedTheme as any).mockReturnValue({
+      (useTheme as any).mockReturnValue({
         theme: 'dark',
-        resolvedTheme: 'dark',
         isDark: true,
-        systemPreference: 'dark',
         setTheme: vi.fn(),
         toggleTheme: vi.fn()
       });
 
       document.documentElement.classList.add('dark');
 
-      render(<EnhancedThemeToggle />);
+      render(<ThemeToggle />);
       
       const button = screen.getByRole('button');
       const computedStyle = window.getComputedStyle(button);
@@ -112,16 +106,14 @@ describe('Accessibility - Enhanced Dark Mode', () => {
   describe('keyboard navigation', () => {
     it('should support keyboard navigation for theme toggle', () => {
       const mockToggleTheme = vi.fn();
-      (useEnhancedTheme as any).mockReturnValue({
+      (useTheme as any).mockReturnValue({
         theme: 'light',
-        resolvedTheme: 'light',
         isDark: false,
-        systemPreference: 'light',
         setTheme: vi.fn(),
         toggleTheme: mockToggleTheme
       });
 
-      render(<EnhancedThemeToggle />);
+      render(<ThemeToggle />);
       
       const button = screen.getByRole('button');
       
@@ -139,7 +131,7 @@ describe('Accessibility - Enhanced Dark Mode', () => {
     });
 
     it('should have proper tab order in responsive components', () => {
-      render(<ResponsiveOutfitCard outfit={mockOutfit} />);
+      render(<OutfitCard outfit={mockOutfit} />);
       
       const interactiveElements = screen.getAllByRole('button');
       
@@ -156,7 +148,7 @@ describe('Accessibility - Enhanced Dark Mode', () => {
 
   describe('screen reader support', () => {
     it('should provide appropriate ARIA labels for theme toggle', () => {
-      render(<EnhancedThemeToggle />);
+      render(<ThemeToggle />);
       
       const button = screen.getByRole('button');
       
@@ -168,11 +160,9 @@ describe('Accessibility - Enhanced Dark Mode', () => {
       const mockToggleTheme = vi.fn();
       let currentTheme = 'light';
       
-      (useEnhancedTheme as any).mockImplementation(() => ({
+      (useTheme as any).mockImplementation(() => ({
         theme: currentTheme,
-        resolvedTheme: currentTheme,
         isDark: currentTheme === 'dark',
-        systemPreference: 'light',
         setTheme: vi.fn(),
         toggleTheme: () => {
           currentTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -180,7 +170,7 @@ describe('Accessibility - Enhanced Dark Mode', () => {
         }
       }));
 
-      const { rerender } = render(<EnhancedThemeToggle />);
+      const { rerender } = render(<ThemeToggle />);
       
       const button = screen.getByRole('button');
       const initialLabel = button.getAttribute('aria-label');
@@ -188,23 +178,21 @@ describe('Accessibility - Enhanced Dark Mode', () => {
       fireEvent.click(button);
       
       // Re-render with new theme
-      (useEnhancedTheme as any).mockReturnValue({
+      (useTheme as any).mockReturnValue({
         theme: 'dark',
-        resolvedTheme: 'dark',
         isDark: true,
-        systemPreference: 'light',
         setTheme: vi.fn(),
         toggleTheme: mockToggleTheme
       });
       
-      rerender(<EnhancedThemeToggle />);
+      rerender(<ThemeToggle />);
       
       const newLabel = button.getAttribute('aria-label');
       expect(newLabel).not.toBe(initialLabel);
     });
 
     it('should provide semantic structure for outfit cards', () => {
-      render(<ResponsiveOutfitCard outfit={mockOutfit} />);
+      render(<OutfitCard outfit={mockOutfit} />);
       
       // Should have proper heading structure
       const heading = screen.getByRole('heading');
@@ -247,7 +235,7 @@ ibe('Accessibility - Responsive Design', () => {
         value: 375,
       });
 
-      render(<EnhancedThemeToggle />);
+      render(<ThemeToggle />);
       
       const button = screen.getByRole('button');
       const computedStyle = window.getComputedStyle(button);
@@ -262,7 +250,7 @@ ibe('Accessibility - Responsive Design', () => {
     });
 
     it('should maintain touch targets in responsive outfit cards', () => {
-      render(<ResponsiveOutfitCard outfit={mockOutfit} />);
+      render(<OutfitCard outfit={mockOutfit} />);
       
       const buttons = screen.getAllByRole('button');
       
@@ -276,7 +264,7 @@ ibe('Accessibility - Responsive Design', () => {
 
   describe('responsive behavior', () => {
     it('should adapt layout for different screen sizes', async () => {
-      const { rerender } = render(<ResponsiveOutfitCard outfit={mockOutfit} />);
+      const { rerender } = render(<OutfitCard outfit={mockOutfit} />);
       
       // Desktop layout
       Object.defineProperty(window, 'innerWidth', {
@@ -295,7 +283,7 @@ ibe('Accessibility - Responsive Design', () => {
       });
       fireEvent(window, new Event('resize'));
       
-      rerender(<ResponsiveOutfitCard outfit={mockOutfit} />);
+      rerender(<OutfitCard outfit={mockOutfit} />);
       
       // Should maintain accessibility in mobile layout
       const results = await axe(screen.getByTestId('outfit-card'));
@@ -303,7 +291,7 @@ ibe('Accessibility - Responsive Design', () => {
     });
 
     it('should maintain focus management across breakpoints', () => {
-      render(<ResponsiveOutfitCard outfit={mockOutfit} />);
+      render(<OutfitCard outfit={mockOutfit} />);
       
       const button = screen.getAllByRole('button')[0];
       button.focus();
@@ -336,7 +324,7 @@ ibe('Accessibility - Responsive Design', () => {
         })),
       });
 
-      render(<EnhancedThemeToggle />);
+      render(<ThemeToggle />);
       
       const button = screen.getByRole('button');
       const computedStyle = window.getComputedStyle(button);
@@ -363,7 +351,7 @@ ibe('Accessibility - Responsive Design', () => {
         })),
       });
 
-      const { container } = render(<EnhancedThemeToggle />);
+      const { container } = render(<ThemeToggle />);
       
       // Should not have accessibility violations in high contrast mode
       return axe(container).then(results => {
@@ -374,7 +362,7 @@ ibe('Accessibility - Responsive Design', () => {
 
   describe('color accessibility', () => {
     it('should not rely solely on color to convey information', () => {
-      render(<ResponsiveOutfitCard outfit={mockOutfit} />);
+      render(<OutfitCard outfit={mockOutfit} />);
       
       // Score should be conveyed through text, not just color
       const scoreElement = screen.getByText(/score/i);
@@ -389,7 +377,7 @@ ibe('Accessibility - Responsive Design', () => {
     });
 
     it('should provide alternative text for color-coded elements', () => {
-      render(<ResponsiveOutfitCard outfit={mockOutfit} />);
+      render(<OutfitCard outfit={mockOutfit} />);
       
       // Any color-coded elements should have descriptive text
       const colorElements = screen.container.querySelectorAll('[class*="color"]');

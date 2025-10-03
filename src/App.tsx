@@ -8,7 +8,8 @@ import { OutfitDisplay } from './components/OutfitDisplay';
 import { OutfitCard } from './components/OutfitCard';
 import { ScrollToTop } from './components/ScrollToTop';
 import { SettingsPage } from './components/SettingsPage';
-import { ThemeProvider } from './contexts/ThemeContext';
+import { ThemeInitializer } from './components/ThemeInitializer';
+
 import { SettingsProvider } from './contexts/SettingsContext';
 import { useWardrobe } from './hooks/useWardrobe';
 import { useOutfitEngine } from './hooks/useOutfitEngine';
@@ -216,14 +217,14 @@ function App() {
   if (loading) {
     return (
       <SettingsProvider>
-        <ThemeProvider>
+        <ThemeInitializer>
           <div className="min-h-screen bg-stone-50 dark:bg-slate-900 flex items-center justify-center">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800 dark:border-slate-200 mx-auto mb-4"></div>
               <p className="text-slate-600 dark:text-slate-300">Loading your wardrobe...</p>
             </div>
           </div>
-        </ThemeProvider>
+        </ThemeInitializer>
       </SettingsProvider>
     );
   }
@@ -232,16 +233,16 @@ function App() {
   if (showSettings) {
     return (
       <SettingsProvider>
-        <ThemeProvider>
+        <ThemeInitializer>
           <SettingsPage onBack={handleSettingsBack} />
-        </ThemeProvider>
+        </ThemeInitializer>
       </SettingsProvider>
     );
   }
 
   return (
     <SettingsProvider>
-      <ThemeProvider>
+      <ThemeInitializer>
         <div className="min-h-screen bg-stone-50 dark:bg-slate-900 overflow-x-hidden">
       {/* Fixed Header Container */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-stone-50 dark:bg-slate-900">
@@ -286,6 +287,9 @@ function App() {
             <OutfitDisplay
               selection={selection}
               onRandomize={handleRandomize}
+              enableErrorBoundary={true}
+              onError={(error) => console.error('Outfit display error:', error)}
+              onRetry={() => window.location.reload()}
             />
           ) : anchorItem ? (
             // When an anchor item is selected, don't show "All Outfits" - let SelectionStrip handle it
@@ -333,7 +337,7 @@ function App() {
 
         <ScrollToTop />
         </div>
-      </ThemeProvider>
+      </ThemeInitializer>
     </SettingsProvider>
   );
 }

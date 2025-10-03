@@ -6,7 +6,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { OutfitDisplay } from '../components/OutfitDisplay';
-import { OptimisticWeatherWidget } from '../components/OptimisticWeatherWidget';
+import { WeatherWidget } from '../components/WeatherWidget';
 import { OutfitSelection } from '../types';
 
 // Mock the hooks
@@ -182,9 +182,9 @@ describe('Optimistic Updates Integration', () => {
     });
   });
 
-  describe('OptimisticWeatherWidget Integration', () => {
+  describe('WeatherWidget with Optimistic Updates Integration', () => {
     it('should render weather widget with optimistic weather data', () => {
-      render(<OptimisticWeatherWidget location="Miami, FL" />);
+      render(<WeatherWidget location="Miami, FL" useOptimistic={true} />);
 
       expect(screen.getByTestId('weather-widget')).toBeInTheDocument();
       expect(screen.getByText('Weather: Sunny')).toBeInTheDocument();
@@ -200,7 +200,7 @@ describe('Optimistic Updates Integration', () => {
         retryWeatherUpdate: vi.fn()
       });
 
-      render(<OptimisticWeatherWidget location="Seattle, WA" />);
+      render(<WeatherWidget location="Seattle, WA" useOptimistic={true} />);
 
       expect(screen.getByText('Loading...')).toBeInTheDocument();
     });
@@ -217,7 +217,7 @@ describe('Optimistic Updates Integration', () => {
         retryWeatherUpdate: vi.fn()
       });
 
-      render(<OptimisticWeatherWidget location="Unknown City" />);
+      render(<WeatherWidget location="Unknown City" useOptimistic={true} />);
 
       expect(screen.getByText('Error: Weather service unavailable')).toBeInTheDocument();
     });
@@ -233,7 +233,7 @@ describe('Optimistic Updates Integration', () => {
         retryWeatherUpdate: vi.fn()
       });
 
-      render(<OptimisticWeatherWidget location="Chicago, IL" autoLoad={true} />);
+      render(<WeatherWidget location="Chicago, IL" autoLoad={true} useOptimistic={true} />);
 
       expect(mockUpdateLocation).toHaveBeenCalledWith('Chicago, IL');
     });
@@ -296,7 +296,7 @@ describe('Optimistic Updates Integration', () => {
         )
       );
 
-      render(<OptimisticWeatherWidget location="Test City" />);
+      render(<WeatherWidget location="Test City" useOptimistic={true} />);
 
       const retryButton = screen.getByText('Retry');
       fireEvent.click(retryButton);
@@ -357,7 +357,7 @@ describe('Optimistic Updates Integration', () => {
         retryWeatherUpdate: vi.fn()
       });
 
-      render(<OptimisticWeatherWidget location="Denver, CO" />);
+      render(<WeatherWidget location="Denver, CO" useOptimistic={true} />);
 
       // Should show both optimistic weather and loading state
       expect(screen.getByText('Loading...')).toBeInTheDocument();

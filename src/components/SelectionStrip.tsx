@@ -198,6 +198,8 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
         <OutfitList
           outfits={filteredOutfits}
           onOutfitSelect={onOutfitSelect}
+          enableErrorBoundary={true}
+          onError={(error) => console.error('Outfit list error:', error)}
         />
       </div>
     </div>

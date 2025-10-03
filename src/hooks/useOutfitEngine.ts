@@ -1,10 +1,27 @@
 import { WardrobeItem, OutfitSelection, GeneratedOutfit, Category, categoryToKey } from '../types';
 import { useWardrobe } from './useWardrobe';
-import { useState, useOptimistic, useMemo, useCallback, startTransition } from 'react';
+import { useState, useOptimistic, useMemo, useCallback, startTransition, useDeferredValue } from 'react';
 import { calculateOutfitScore } from '../utils/scoring';
+
+// Enhanced filtering interface
+interface OutfitFilterCriteria {
+  minScore?: number;
+  maxScore?: number;
+  source?: 'curated' | 'generated';
+  loved?: boolean;
+  categories?: string[];
+}
 
 export const useOutfitEngine = () => {
   const { outfits, getItemById } = useWardrobe();
+
+  // Enhanced filtering and search state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCriteria, setFilterCriteria] = useState<OutfitFilterCriteria>({});
+
+  // Use deferred values for expensive search operations
+  const deferredSearchTerm = useDeferredValue(searchTerm);
+  const deferredFilterCriteria = useDeferredValue(filterCriteria);
 
   const scoreOutfit = useCallback((selection: OutfitSelection): number => {
     return calculateOutfitScore(selection).percentage;
@@ -42,11 +59,93 @@ export const useOutfitEngine = () => {
     return results.sort((a, b) => b.score - a.score);
   }, [outfits, getItemById, scoreOutfit]);
 
+  // Enhanced search and filtering functionality
+  const searchAndFilterOutfits = useMemo(() => {
+    const startTime = performance.now();
+
+    let result = [...allOutfits];
+
+    // Apply search filter
+    if (deferredSearchTerm.trim()) {
+      const searchLower = deferredSearchTerm.toLowerCase();
+      result = result.filter(outfit => {
+        // Search in outfit items
+        const itemNames = [
+          outfit.jacket?.name,
+          outfit.shirt?.name,
+          outfit.undershirt?.name,
+          outfit.pants?.name,
+          outfit.shoes?.name,
+          outfit.belt?.name,
+          outfit.watch?.name
+        ].filter(Boolean).join(' ').toLowerCase();
+
+        // Search in outfit properties
+        const outfitText = [
+          outfit.id,
+          outfit.source,
+          itemNames
+        ].join(' ').toLowerCase();
+
+        return outfitText.includes(searchLower);
+      });
+    }
+
+    // Apply advanced filters
+    if (deferredFilterCriteria.minScore !== undefined) {
+      result = result.filter(outfit => outfit.score >= deferredFilterCriteria.minScore!);
+    }
+
+    if (deferredFilterCriteria.maxScore !== undefined) {
+      result = result.filter(outfit => outfit.score <= deferredFilterCriteria.maxScore!);
+    }
+
+    if (deferredFilterCriteria.source) {
+      result = result.filter(outfit => outfit.source === deferredFilterCriteria.source);
+    }
+
+    if (deferredFilterCriteria.loved !== undefined) {
+      result = result.filter(outfit => outfit.loved === deferredFilterCriteria.loved);
+    }
+
+    if (deferredFilterCriteria.categories && deferredFilterCriteria.categories.length > 0) {
+      result = result.filter(outfit => {
+        const outfitCategories = [
+          outfit.jacket?.category,
+          outfit.shirt?.category,
+          outfit.undershirt?.category,
+          outfit.pants?.category,
+          outfit.shoes?.category,
+          outfit.belt?.category,
+          outfit.watch?.category
+        ].filter(Boolean) as string[];
+
+        return deferredFilterCriteria.categories!.some(category =>
+          outfitCategories.includes(category)
+        );
+      });
+    }
+
+    // Limit results to 50 for performance
+    const limitedResult = result.slice(0, 50);
+
+    const endTime = performance.now();
+    console.log(`Search and filter took ${endTime - startTime}ms`);
+
+    return limitedResult;
+  }, [allOutfits, deferredSearchTerm, deferredFilterCriteria]);
+
+  // Check if we're currently filtering (deferred values are different from current)
+  const isCurrentlyFiltering = useMemo(() => {
+    return searchTerm !== deferredSearchTerm ||
+      JSON.stringify(filterCriteria) !== JSON.stringify(deferredFilterCriteria);
+  }, [searchTerm, deferredSearchTerm, filterCriteria, deferredFilterCriteria]);
+
   const getRandomOutfit = (): GeneratedOutfit | null => {
     if (allOutfits.length === 0) {
       return null;
     }
-    
+
     const randomIndex = Math.floor(Math.random() * allOutfits.length);
     return allOutfits[randomIndex];
   };
@@ -58,6 +157,49 @@ export const useOutfitEngine = () => {
       return outfitItem?.id === anchorItem.id;
     });
   };
+
+  // Enhanced outfit generation with filtering
+  const generateOutfitsForAnchor = useCallback((anchorItem: WardrobeItem, count: number = 10) => {
+    startTransition(() => {
+      const anchorOutfits = getOutfitsForAnchor(anchorItem);
+      const limitedOutfits = anchorOutfits.slice(0, count);
+
+      setGeneratedOutfits(prev => {
+        // Remove existing outfits for this anchor
+        const filtered = prev.filter(outfit => {
+          const anchorKey = categoryToKey(anchorItem.category);
+          const outfitItem = outfit[anchorKey] as WardrobeItem;
+          return outfitItem?.id !== anchorItem.id;
+        });
+
+        return [...limitedOutfits, ...filtered].slice(0, 50); // Limit total to 50
+      });
+    });
+  }, [getOutfitsForAnchor]);
+
+  // Generate random outfits with count
+  const generateRandomOutfits = useCallback((count: number = 5) => {
+    startTransition(() => {
+      const randomOutfits: GeneratedOutfit[] = [];
+      const availableOutfits = [...allOutfits];
+
+      for (let i = 0; i < Math.min(count, availableOutfits.length); i++) {
+        const randomIndex = Math.floor(Math.random() * availableOutfits.length);
+        const randomOutfit = availableOutfits.splice(randomIndex, 1)[0];
+        randomOutfits.push(randomOutfit);
+      }
+
+      setGeneratedOutfits(prev => [...randomOutfits, ...prev].slice(0, 50));
+    });
+  }, [allOutfits]);
+
+  // Clear all outfits and filters
+  const clearOutfitsAndFilters = useCallback(() => {
+    setGeneratedOutfits([]);
+    setSearchTerm('');
+    setFilterCriteria({});
+    setGenerationError(null);
+  }, []);
 
   const getAllOutfits = useCallback((): GeneratedOutfit[] => {
     return allOutfits;
@@ -234,7 +376,7 @@ export const useOutfitEngine = () => {
   // Create optimistic outfit for immediate feedback
   const createOptimisticOutfit = useCallback((anchorItem: WardrobeItem): GeneratedOutfit => {
     const optimisticSelection: OutfitSelection = {};
-    
+
     // Place the anchor item in the appropriate category
     switch (anchorItem.category) {
       case 'Jacket/Overshirt':
@@ -275,13 +417,13 @@ export const useOutfitEngine = () => {
   // Simulate outfit generation with delay
   const performOutfitGeneration = useCallback(async (anchorItem: WardrobeItem): Promise<GeneratedOutfit[]> => {
     await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400));
-    
+
     const actualOutfits = getOutfitsForAnchor(anchorItem);
-    
+
     if (Math.random() < 0.05) {
       throw new Error('Outfit generation failed - please try again');
     }
-    
+
     return actualOutfits;
   }, [getOutfitsForAnchor]);
 
@@ -289,29 +431,29 @@ export const useOutfitEngine = () => {
   const generateOutfit = useCallback(async (anchorItem: WardrobeItem) => {
     try {
       setGenerationError(null);
-      
+
       const optimisticResult = createOptimisticOutfit(anchorItem);
       startTransition(() => {
         addOptimisticOutfit(optimisticResult);
       });
-      
+
       const actualResults = await performOutfitGeneration(anchorItem);
-      
+
       setGeneratedOutfits(prev => {
         const filtered = prev.filter(outfit => {
           const anchorKey = anchorItem.category === 'Jacket/Overshirt' ? 'jacket' :
-                           anchorItem.category === 'Shirt' ? 'shirt' :
-                           anchorItem.category === 'Undershirt' ? 'undershirt' :
-                           anchorItem.category === 'Pants' ? 'pants' :
-                           anchorItem.category === 'Shoes' ? 'shoes' :
-                           anchorItem.category === 'Belt' ? 'belt' : 'watch';
+            anchorItem.category === 'Shirt' ? 'shirt' :
+              anchorItem.category === 'Undershirt' ? 'undershirt' :
+                anchorItem.category === 'Pants' ? 'pants' :
+                  anchorItem.category === 'Shoes' ? 'shoes' :
+                    anchorItem.category === 'Belt' ? 'belt' : 'watch';
           const outfitItem = outfit[anchorKey] as WardrobeItem;
           return outfitItem?.id !== anchorItem.id;
         });
-        
+
         return [...actualResults, ...filtered];
       });
-      
+
     } catch (error) {
       const errorMessage = error instanceof Error ? error : new Error('Unknown error occurred');
       setGenerationError(errorMessage);
@@ -323,26 +465,26 @@ export const useOutfitEngine = () => {
   const generateRandomOutfit = useCallback(async () => {
     try {
       setGenerationError(null);
-      
+
       const randomOutfit = getRandomOutfit();
       if (!randomOutfit) {
         throw new Error('No outfits available for randomization');
       }
-      
+
       const optimisticResult = {
         ...randomOutfit,
         id: `optimistic-random-${Date.now()}`,
         score: randomOutfit.score * 0.9
       };
-      
+
       startTransition(() => {
         addOptimisticOutfit(optimisticResult);
       });
-      
+
       await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 200));
-      
+
       setGeneratedOutfits(prev => [randomOutfit, ...prev.slice(0, 9)]);
-      
+
     } catch (error) {
       const errorMessage = error instanceof Error ? error : new Error('Random outfit generation failed');
       setGenerationError(errorMessage);
@@ -369,12 +511,22 @@ export const useOutfitEngine = () => {
     getCompatibleItems,
     getFilteredOutfits,
     validatePartialSelection,
-    // New optimistic functionality
+    // Optimistic functionality
     generateOutfit,
     generateRandomOutfit,
     generatedOutfits: optimisticOutfits,
     isGenerating,
     generationError,
-    clearOptimistic
+    clearOptimistic,
+    // Enhanced search and filtering functionality
+    searchTerm,
+    setSearchTerm,
+    filterCriteria,
+    setFilterCriteria,
+    searchAndFilterOutfits,
+    isFiltering: isCurrentlyFiltering,
+    generateOutfitsForAnchor,
+    generateRandomOutfits,
+    clearOutfitsAndFilters
   };
 };

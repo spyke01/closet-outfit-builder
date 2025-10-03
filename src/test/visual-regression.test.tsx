@@ -5,8 +5,8 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { ResponsiveOutfitCard } from '../components/ResponsiveOutfitCard';
-import { OptimizedItemsGrid } from '../components/OptimizedItemsGrid';
+import { OutfitCard } from '../components/OutfitCard';
+import { ItemsGrid } from '../components/ItemsGrid';
 import { GeneratedOutfit, WardrobeItem } from '../types';
 
 // Mock ResizeObserver for container query testing
@@ -134,11 +134,11 @@ describe('Visual Regression - Container Queries', () => {
     vi.restoreAllMocks();
   });
 
-  describe('ResponsiveOutfitCard container adaptations', () => {
+  describe('OutfitCard container adaptations', () => {
     it('should adapt layout based on container width (small)', async () => {
       const { container } = render(
         <div style={{ width: '200px' }}>
-          <ResponsiveOutfitCard outfit={mockOutfit} />
+          <OutfitCard outfit={mockOutfit} />
         </div>
       );
 
@@ -165,7 +165,7 @@ describe('Visual Regression - Container Queries', () => {
     it('should adapt layout based on container width (medium)', async () => {
       const { container } = render(
         <div style={{ width: '400px' }}>
-          <ResponsiveOutfitCard outfit={mockOutfit} />
+          <OutfitCard outfit={mockOutfit} />
         </div>
       );
 
@@ -186,7 +186,7 @@ describe('Visual Regression - Container Queries', () => {
     it('should adapt layout based on container width (large)', async () => {
       const { container } = render(
         <div style={{ width: '600px' }}>
-          <ResponsiveOutfitCard outfit={mockOutfit} />
+          <OutfitCard outfit={mockOutfit} />
         </div>
       );
 
@@ -209,7 +209,7 @@ describe('Visual Regression - Container Queries', () => {
     it('should adapt grid columns based on container size', async () => {
       const { container, rerender } = render(
         <div style={{ width: '300px' }}>
-          <OptimizedItemsGrid items={mockItems} onItemSelect={vi.fn()} />
+          <ItemsGrid items={mockItems} onItemSelect={vi.fn()} />
         </div>
       );
 
@@ -225,7 +225,7 @@ describe('Visual Regression - Container Queries', () => {
       // Test wider container
       rerender(
         <div style={{ width: '600px' }}>
-          <OptimizedItemsGrid items={mockItems} onItemSelect={vi.fn()} />
+          <ItemsGrid items={mockItems} onItemSelect={vi.fn()} />
         </div>
       );
 
@@ -263,7 +263,7 @@ be('Visual Regression - Responsive Breakpoints', () => {
       });
 
       it('should render outfit card correctly', () => {
-        const { container } = render(<ResponsiveOutfitCard outfit={mockOutfit} />);
+        const { container } = render(<OutfitCard outfit={mockOutfit} />);
         
         const card = container.querySelector('.outfit-card');
         expect(card).toBeInTheDocument();
@@ -281,7 +281,7 @@ be('Visual Regression - Responsive Breakpoints', () => {
       });
 
       it('should maintain proper spacing and typography', () => {
-        const { container } = render(<ResponsiveOutfitCard outfit={mockOutfit} />);
+        const { container } = render(<OutfitCard outfit={mockOutfit} />);
         
         // Text should be readable at all sizes
         const headings = container.querySelectorAll('h1, h2, h3, h4, h5, h6');
@@ -299,7 +299,7 @@ be('Visual Regression - Responsive Breakpoints', () => {
 
       it('should handle touch interactions appropriately', () => {
         const onSelect = vi.fn();
-        render(<ResponsiveOutfitCard outfit={mockOutfit} onSelect={onSelect} />);
+        render(<OutfitCard outfit={mockOutfit} onSelect={onSelect} />);
         
         const buttons = screen.getAllByRole('button');
         
@@ -327,7 +327,7 @@ be('Visual Regression - Responsive Breakpoints', () => {
           value: viewport.width,
         });
 
-        const { container } = render(<ResponsiveOutfitCard outfit={mockOutfit} />);
+        const { container } = render(<OutfitCard outfit={mockOutfit} />);
         
         // Should always have a clear hierarchy
         const heading = container.querySelector('h1, h2, h3, h4, h5, h6');
@@ -343,7 +343,7 @@ be('Visual Regression - Responsive Breakpoints', () => {
     });
 
     it('should prevent layout shifts during responsive changes', async () => {
-      const { container, rerender } = render(<ResponsiveOutfitCard outfit={mockOutfit} />);
+      const { container, rerender } = render(<OutfitCard outfit={mockOutfit} />);
       
       // Get initial layout
       const initialCard = container.querySelector('.outfit-card');
@@ -354,7 +354,7 @@ be('Visual Regression - Responsive Breakpoints', () => {
         value: 375,
       });
       
-      rerender(<ResponsiveOutfitCard outfit={mockOutfit} />);
+      rerender(<OutfitCard outfit={mockOutfit} />);
       
       await waitFor(() => {
         const newCard = container.querySelector('.outfit-card');
@@ -380,7 +380,7 @@ be('Visual Regression - Responsive Breakpoints', () => {
         })
       });
 
-      const { container } = render(<ResponsiveOutfitCard outfit={mockOutfit} />);
+      const { container } = render(<OutfitCard outfit={mockOutfit} />);
       
       // Should still render correctly
       const card = container.querySelector('.outfit-card');
@@ -401,7 +401,7 @@ be('Visual Regression - Responsive Breakpoints', () => {
 
       const { container } = render(
         <div style={{ width: '300px' }}>
-          <ResponsiveOutfitCard outfit={mockOutfit} />
+          <OutfitCard outfit={mockOutfit} />
         </div>
       );
       
@@ -421,7 +421,7 @@ be('Visual Regression - Responsive Breakpoints', () => {
       
       const TestComponent = () => {
         renderSpy();
-        return <ResponsiveOutfitCard outfit={mockOutfit} />;
+        return <OutfitCard outfit={mockOutfit} />;
       };
 
       const { container } = render(<TestComponent />);
@@ -448,7 +448,7 @@ be('Visual Regression - Responsive Breakpoints', () => {
     it('should efficiently handle container size changes', async () => {
       const { container } = render(
         <div data-testid="container" style={{ width: '200px', resize: 'horizontal', overflow: 'auto' }}>
-          <ResponsiveOutfitCard outfit={mockOutfit} />
+          <OutfitCard outfit={mockOutfit} />
         </div>
       );
 

@@ -202,25 +202,25 @@ Weather integration provides:
 - **3-Day Forecast**: High/low temperatures, conditions, precipitation chance
 - **Location Data**: Coordinates from browser geolocation or address input
 
-## Enhanced Features
+## Core Features
 
 ### 7-Category Layering System
 
-The wardrobe now uses a realistic layering hierarchy that matches how clothing is actually worn:
+The wardrobe uses a realistic layering hierarchy that matches how clothing is actually worn:
 
 1. **Jacket/Overshirt** (outermost layer)
 2. **Shirt** (middle layer)
-3. **Undershirt** (base layer) - NEW category for t-shirts and base layers
+3. **Undershirt** (base layer) - for t-shirts and base layers
 4. **Pants** (lower body)
 5. **Shoes** (footwear)
 6. **Belt** (accessories)
 7. **Watch** (accessories)
 
-This structure allows for more accurate outfit composition and better reflects real-world dressing patterns.
+This structure allows for accurate outfit composition and reflects real-world dressing patterns.
 
 ### Layer-Aware Scoring Algorithm
 
-The enhanced scoring system accounts for how clothing layers interact:
+The scoring system accounts for how clothing layers interact:
 
 - **Visibility Weighting**: Items covered by other layers have reduced impact on formality scores
   - Undershirt covered by shirt: 30% weight
@@ -239,7 +239,7 @@ Interactive flip cards provide visual outfit representations:
 
 ### Brand Management System
 
-Optional brand tracking enhances wardrobe organization:
+Optional brand tracking for wardrobe organization:
 
 - **Brand Field**: Optional brand information for each wardrobe item
 - **Flexible Display**: Items work with or without brand information
@@ -257,22 +257,21 @@ Customizable preferences for personalized experience:
 
 ## Component Architecture
 
-### Key Component Changes
+### Key Components
 
 **App Component:**
-- Now displays all outfits by default on page load
-- Removed dependency on "Show All" button functionality
+- Displays all outfits by default on page load
 - Integrated weather service initialization
+- Manages global application state
 
 **TopBar Component:**
-- Removed "Show All" button (functionality no longer needed)
 - Integrated WeatherWidget for location-based weather display
-- Maintains responsive design for mobile devices
+- Responsive design for mobile devices
+- Navigation and branding elements
 
 **ItemsGrid Component:**
-- Removed "View" and "Build From" buttons from item cards
-- Implemented direct click interactions on item containers
-- Added hover states with pointer cursor for better UX
+- Direct click interactions on item containers
+- Hover states with pointer cursor for better UX
 - Enhanced accessibility with proper ARIA labels
 
 **WeatherWidget Component:**
@@ -282,7 +281,7 @@ Customizable preferences for personalized experience:
 - Graceful degradation when weather data is unavailable
 - Retry functionality for recoverable errors
 
-**OutfitCard Component (Enhanced):**
+**OutfitCard Component:**
 - Flip card functionality with smooth CSS transitions
 - Front face shows traditional text-based outfit information
 - Back face displays visual outfit layout
@@ -303,7 +302,7 @@ Customizable preferences for personalized experience:
 - Graceful handling of missing items (skips empty layers)
 - Responsive sizing and positioning
 
-**ScoreBreakdown Component (Enhanced):**
+**ScoreBreakdown Component:**
 - Displays individual component scores with applied weights
 - Shows layer adjustment reasons (covered/visible/accessory)
 - Visual indicators for weight impacts on final score
@@ -317,7 +316,7 @@ Customizable preferences for personalized experience:
 
 ### Mobile Responsiveness
 
-The app now follows a mobile-first approach:
+The app follows a mobile-first approach:
 
 - **Breakpoints**: Mobile (320px+), Tablet (768px+), Desktop (1024px+)
 - **Touch Targets**: Minimum 44px for all interactive elements

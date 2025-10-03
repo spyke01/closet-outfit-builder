@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, act } from '../test/test-utils';
-import { useOptimizedOutfitGeneration } from '../hooks/useOptimizedOutfitGeneration';
+import { useOutfitEngine } from '../hooks/useOutfitEngine';
 import { usePerformanceMonitoring } from '../hooks/usePerformanceMonitoring';
-import { OptimizedOutfitList } from '../components/OptimizedOutfitList';
-import { OptimizedItemsGrid } from '../components/OptimizedItemsGrid';
+import { OutfitList } from '../components/OutfitList';
+import { ItemsGrid } from '../components/ItemsGrid';
 import { SettingsProvider } from '../contexts/SettingsContext';
 import { WardrobeItem, GeneratedOutfit } from '../types';
 
@@ -62,18 +62,18 @@ describe('Concurrent Features Integration', () => {
     vi.clearAllMocks();
   });
 
-  describe('useOptimizedOutfitGeneration Integration', () => {
+  describe('useOutfitEngine Enhanced Features Integration', () => {
     const TestComponent = () => {
       const {
-        outfits,
+        searchAndFilterOutfits: outfits,
         searchTerm,
         setSearchTerm,
         filterCriteria,
         setFilterCriteria,
-        generateOutfits,
+        generateOutfitsForAnchor: generateOutfits,
         isGenerating,
         isFiltering
-      } = useOptimizedOutfitGeneration();
+      } = useOutfitEngine();
 
       const mockAnchorItem: WardrobeItem = {
         id: 'jacket-1',
@@ -221,7 +221,7 @@ describe('Concurrent Features Integration', () => {
     });
   });
 
-  describe('OptimizedOutfitList Integration', () => {
+  describe('OutfitList Integration', () => {
     const createMockOutfit = (id: string, overrides: Partial<GeneratedOutfit> = {}): GeneratedOutfit => ({
       id,
       score: 85,
@@ -239,7 +239,7 @@ describe('Concurrent Features Integration', () => {
       const startTime = performance.now();
       
       render(
-        <OptimizedOutfitList
+        <OutfitList
           outfits={largeOutfitList}
           onOutfitSelect={() => {}}
           searchTerm="outfit"
@@ -267,7 +267,7 @@ describe('Concurrent Features Integration', () => {
       );
 
       const { rerender } = render(
-        <OptimizedOutfitList
+        <OutfitList
           outfits={outfits}
           onOutfitSelect={() => {}}
         />
@@ -284,7 +284,7 @@ describe('Concurrent Features Integration', () => {
         const startTime = performance.now();
         
         rerender(
-          <OptimizedOutfitList
+          <OutfitList
             outfits={outfits}
             onOutfitSelect={() => {}}
             {...filter}
@@ -297,7 +297,7 @@ describe('Concurrent Features Integration', () => {
     });
   });
 
-  describe('OptimizedItemsGrid Integration', () => {
+  describe('ItemsGrid Integration', () => {
     const createMockItem = (id: string, overrides: Partial<WardrobeItem> = {}): WardrobeItem => ({
       id,
       name: `Item ${id}`,
@@ -319,7 +319,7 @@ describe('Concurrent Features Integration', () => {
       
       render(
         <TestWrapper>
-          <OptimizedItemsGrid
+          <ItemsGrid
             category="Shirt"
             items={largeItemList}
             onItemSelect={() => {}}
@@ -343,7 +343,7 @@ describe('Concurrent Features Integration', () => {
 
       render(
         <TestWrapper>
-          <OptimizedItemsGrid
+          <ItemsGrid
             category="Shirt"
             items={items}
             onItemSelect={() => {}}
@@ -380,7 +380,7 @@ describe('Concurrent Features Integration', () => {
       const mockOnSelect = vi.fn();
       
       render(
-        <OptimizedOutfitList
+        <OutfitList
           outfits={outfits}
           onOutfitSelect={mockOnSelect}
         />
@@ -410,7 +410,7 @@ describe('Concurrent Features Integration', () => {
       }));
 
       const { unmount } = render(
-        <OptimizedOutfitList
+        <OutfitList
           outfits={largeOutfitList}
           onOutfitSelect={() => {}}
           searchTerm="test"

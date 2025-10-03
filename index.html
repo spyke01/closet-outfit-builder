@@ -14,6 +14,38 @@
     <title>What to Wear</title>
     <meta name="description" content="Intelligent outfit composition for the modern wardrobe" />
     <meta name="theme-color" content="#1e293b" />
+    <script>
+      // Initialize theme immediately to prevent flash
+      (function() {
+        const STORAGE_KEY = 'theme-preference';
+        
+        // Clear any conflicting theme values
+        const keysToRemove = ['theme', 'enhanced-theme-preference'];
+        keysToRemove.forEach(key => {
+          if (localStorage.getItem(key)) {
+            localStorage.removeItem(key);
+          }
+        });
+        
+        // Get saved theme or system preference
+        let theme = localStorage.getItem(STORAGE_KEY);
+        if (!theme || (theme !== 'light' && theme !== 'dark')) {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          localStorage.setItem(STORAGE_KEY, theme);
+        }
+        
+        // Apply theme immediately
+        document.documentElement.classList.remove('dark', 'light');
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.add('light');
+        }
+        document.documentElement.style.setProperty('--theme-mode', theme);
+        
+        console.log('Initial theme applied:', theme, 'classList:', document.documentElement.classList.toString());
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

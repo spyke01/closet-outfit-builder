@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowLeft, Settings, Moon, Sun } from 'lucide-react';
 import { useSettings } from '../contexts/SettingsContext';
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from '../hooks/useTheme';
 
 interface SettingsPageProps {
   onBack: () => void;
