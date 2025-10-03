@@ -47,21 +47,23 @@ export const OutfitList: React.FC<OutfitListProps> = ({
         </div>
       )}
 
-      {/* Grid layout for outfit cards */}
+      {/* Container query grid layout for outfit cards */}
       {!isLoading && outfitCount > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-          {outfits.map((outfit) => (
-            <OutfitCard
-              key={outfit.id}
-              outfit={outfit}
-              variant="compact"
-              showScore={true}
-              showSource={false}
-              onClick={() => onOutfitSelect(outfit)}
-              className="transition-shadow duration-200 hover:shadow-lg"
-              enableFlip={enableFlip}
-            />
-          ))}
+        <div className="outfit-grid-container">
+          <div className="outfit-grid">
+            {outfits.map((outfit) => (
+              <OutfitCard
+                key={outfit.id}
+                outfit={outfit}
+                variant="compact"
+                showScore={true}
+                showSource={false}
+                onClick={() => onOutfitSelect(outfit)}
+                className="transition-shadow duration-200 hover:shadow-lg"
+                enableFlip={enableFlip}
+              />
+            ))}
+          </div>
         </div>
       )}
 

@@ -82,49 +82,51 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
           </div>
         </div>
 
-        {/* Responsive grid - 2 cols on mobile, up to 6 on larger screens */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
-          {filteredItems.map(item => (
-            <div
-              key={item.id}
-              onClick={() => onItemSelect(item)}
-              className={`p-3 sm:p-4 rounded-xl border-2 transition-all min-h-[80px] cursor-pointer touch-manipulation ${selectedItem?.id === item.id
-                ? 'border-slate-800 dark:border-slate-400 bg-slate-50 dark:bg-slate-700 shadow-sm'
-                : 'border-stone-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-md active:scale-95'
-                }`}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  onItemSelect(item);
-                }
-              }}
-              aria-label={`Select ${formatItemName(item, settings.showBrand)} for outfit building`}
-            >
-              <div className="text-left">
-                <div className="flex items-center gap-2 mb-2">
-                  <ColorCircle itemName={item.name} size="md" />
-                  <h3 className="font-medium text-slate-800 dark:text-slate-200 leading-tight text-sm sm:text-base">
-                    {formatItemName(item, settings.showBrand)}
-                  </h3>
-                </div>
-
-                {item.capsuleTags && (
-                  <div className="flex flex-wrap gap-1">
-                    {item.capsuleTags.map(tag => (
-                      <span
-                        key={tag}
-                        className="px-2 py-1 bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300 text-xs rounded-md"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+        {/* Container query responsive grid */}
+        <div className="items-grid-container">
+          <div className="items-grid">
+            {filteredItems.map(item => (
+              <div
+                key={item.id}
+                onClick={() => onItemSelect(item)}
+                className={`p-3 md:p-4 rounded-xl border-2 transition-all min-h-[80px] cursor-pointer touch-manipulation ${selectedItem?.id === item.id
+                  ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20 shadow-sm'
+                  : 'border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-gray-400 dark:hover:border-slate-500 hover:shadow-md active:scale-95'
+                  }`}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onItemSelect(item);
+                  }
+                }}
+                aria-label={`Select ${formatItemName(item, settings.showBrand)} for outfit building`}
+              >
+                <div className="text-left">
+                  <div className="flex items-center gap-2 mb-2">
+                    <ColorCircle itemName={item.name} size="md" />
+                    <h3 className="font-medium text-slate-800 dark:text-slate-200 leading-tight text-sm md:text-base">
+                      {formatItemName(item, settings.showBrand)}
+                    </h3>
                   </div>
-                )}
+
+                  {item.capsuleTags && (
+                    <div className="flex flex-wrap gap-1">
+                      {item.capsuleTags.map(tag => (
+                        <span
+                          key={tag}
+                          className="px-2 py-1 bg-gray-100 dark:bg-slate-600 text-gray-600 dark:text-slate-300 text-xs rounded-md"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         {filteredItems.length === 0 && (
