@@ -26,6 +26,7 @@ function App() {
   const [anchorItem, setAnchorItem] = useState<WardrobeItem | null>(null);
   const [showRandomOutfit, setShowRandomOutfit] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [isOutfitMockupView, setIsOutfitMockupView] = useState(false);
 
   // Weather state
   const [weatherForecast, setWeatherForecast] = useState<WeatherData[]>([]);
@@ -204,6 +205,7 @@ function App() {
     setAnchorItem(null);
     setShowRandomOutfit(false);
     setShowSettings(false);
+    setIsOutfitMockupView(false);
   };
 
   const handleSettingsClick = () => {
@@ -290,6 +292,8 @@ function App() {
               enableErrorBoundary={true}
               onError={(error) => console.error('Outfit display error:', error)}
               onRetry={() => window.location.reload()}
+              isInMockupView={isOutfitMockupView}
+              onMockupViewChange={setIsOutfitMockupView}
             />
           ) : anchorItem ? (
             // When an anchor item is selected, don't show "All Outfits" - let SelectionStrip handle it

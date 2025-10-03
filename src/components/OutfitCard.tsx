@@ -18,6 +18,7 @@ interface OutfitCardProps {
   onClick?: () => void;
   enableFlip?: boolean;
   defaultFlipped?: boolean;
+  onFlipChange?: (isFlipped: boolean) => void;
 }
 
 export const OutfitCard: React.FC<OutfitCardProps> = ({
@@ -29,7 +30,8 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
   className = '',
   onClick,
   enableFlip = false,
-  defaultFlipped = false
+  defaultFlipped = false,
+  onFlipChange
 }) => {
   const { settings } = useSettings();
   const isGenerated = 'source' in outfit;
@@ -42,7 +44,13 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
     if (!enableFlip) return;
     
     setIsLoading(true);
-    setIsFlipped(!isFlipped);
+    const newFlippedState = !isFlipped;
+    setIsFlipped(newFlippedState);
+    
+    // Notify parent component about the flip state change
+    if (onFlipChange) {
+      onFlipChange(newFlippedState);
+    }
     
     setTimeout(() => {
       setIsLoading(false);
@@ -63,15 +71,15 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
     if (!value) return null;
 
     return (
-      <div className="flex justify-between items-center py-1 md:py-2">
-        <span className="text-xs md:text-sm text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+      <div className="flex justify-between items-center py-1">
+        <span className="outfit-card-compact-text text-slate-500 dark:text-slate-400 uppercase tracking-wide">
           {label}
         </span>
-        <div className="flex items-center gap-2">
-          <span className="text-sm md:text-base font-medium text-slate-800 dark:text-slate-200">
+        <div className="flex items-center gap-1.5">
+          <span className="outfit-card-compact-text-medium text-slate-800 dark:text-slate-200 text-right">
             {value}
           </span>
-          {showColor && <ColorCircle itemName={value} size={variant === 'detailed' ? 'md' : 'sm'} />}
+          {showColor && <ColorCircle itemName={value} size="sm" />}
         </div>
       </div>
     );
@@ -202,28 +210,28 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
         className="outfit-card-compact rounded-xl p-3 md:p-4 lg:p-5 border cursor-pointer"
         {...createInteractiveProps(handleCardClick, 'Select outfit', 'button')}
       >
-        <div className="flex items-center justify-between mb-3 md:mb-4">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             {enableFlip && (
               <button
                 onClick={handleFlip}
-                className="inline-flex items-center gap-1 px-2 py-1 md:px-3 md:py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors text-xs font-medium"
+                className="inline-flex items-center gap-1 px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors outfit-card-compact-text-medium"
                 disabled={isLoading}
               >
-                <Eye size={10} className="md:w-3 md:h-3" />
-                {isLoading ? 'Loading...' : (isFlipped ? 'Back to Details' : 'View Mockup')}
+                <Eye size={10} />
+                {isLoading ? 'Loading...' : (isFlipped ? 'Back' : 'View')}
               </button>
             )}
             
             {showSource && (
               <div className="flex items-center gap-2">
                 {outfit.loved ? (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full outfit-card-compact-text-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
                     <Heart size={8} className="fill-current" />
                     Loved
                   </span>
                 ) : (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full outfit-card-compact-text-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                     {isGenerated && outfit.source === 'curated' ? 'Curated' : 'Generated'}
                   </span>
                 )}
@@ -235,7 +243,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
         </div>
 
         {!isFlipped && (
-          <div className="space-y-2 md:space-y-3">
+          <div className="space-y-1.5 flex-1">
             {coreItems.map(item => (
               <ItemRow
                 key={item.label}
@@ -246,7 +254,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
             ))}
 
             {hasAccessories && (
-              <div className="border-t border-slate-300 dark:border-slate-600 pt-2 md:pt-3 mt-2 md:mt-3">
+              <div className="border-t border-slate-300 dark:border-slate-600 pt-1.5 mt-1.5">
                 {accessories.map(item => (
                   <ItemRow
                     key={item.label}

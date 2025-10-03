@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Shirt, RefreshCw, Loader2 } from 'lucide-react';
 import { OutfitSelection } from '../types';
 import { OutfitCard } from './OutfitCard';
@@ -16,6 +16,9 @@ interface OutfitDisplayProps {
   onTryDifferentAnchor?: () => void;
   // Enhanced functionality props
   enableErrorBoundary?: boolean;
+  // Mockup view state props
+  isInMockupView?: boolean;
+  onMockupViewChange?: (isInMockupView: boolean) => void;
 }
 
 export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({ 
@@ -25,20 +28,34 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
   onRetry,
   onShowAlternatives,
   onTryDifferentAnchor,
-  enableErrorBoundary = false
+  enableErrorBoundary = false,
+  isInMockupView = false,
+  onMockupViewChange
 }) => {
-  const { generateRandomOutfit, isGenerating, generationError } = useOutfitEngine();
+  const { getRandomOutfit, isGenerating, generationError } = useOutfitEngine();
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const hasCompleteOutfit = (selection.shirt || selection.undershirt) && selection.pants && selection.shoes;
   const outfitScore = hasCompleteOutfit ? calculateOutfitScore(selection).percentage : 0;
 
   // Enhanced randomize handler with error recovery
-  const handleRandomize = async () => {
+  const handleRandomize = () => {
     try {
-      await generateRandomOutfit();
-      // Call the original onRandomize to update the selection state
-      onRandomize();
+      // Show transition state
+      setIsTransitioning(true);
+      
+      // Add a small delay to show the loading state before changing
+      setTimeout(() => {
+        // Call the original onRandomize to update the selection state
+        onRandomize();
+        
+        // Hide transition state after a brief moment
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 100);
+      }, 200);
     } catch (error) {
       console.error('Failed to generate random outfit:', error);
+      setIsTransitioning(false);
       
       // Enhanced error handling
       if (onError) {
@@ -52,9 +69,6 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
       if (onTryDifferentAnchor) {
         window.dispatchEvent(new CustomEvent('tryDifferentAnchor'));
       }
-      
-      // Fallback to original randomize function
-      onRandomize();
     }
   };
 
@@ -115,21 +129,33 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
     return (
       <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
         <div className="max-w-2xl mx-auto">
-          <OutfitCard
-            outfit={selection}
-            variant="detailed"
-            showScore={true}
-            score={outfitScore}
-            enableFlip={true}
-          />
+          <div className="relative">
+            {(isGenerating || isTransitioning) && (
+              <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl">
+                <div className="flex flex-col items-center gap-3">
+                  <Loader2 size={32} className="animate-spin text-slate-600 dark:text-slate-300" />
+                  <p className="text-slate-600 dark:text-slate-300 font-medium">Generating new outfit...</p>
+                </div>
+              </div>
+            )}
+            <OutfitCard
+              outfit={selection}
+              variant="detailed"
+              showScore={true}
+              score={outfitScore}
+              enableFlip={true}
+              defaultFlipped={isInMockupView}
+              onFlipChange={onMockupViewChange}
+            />
+          </div>
 
           <div className="mt-6 sm:mt-8 text-center">
             <button
               onClick={handleRandomize}
-              disabled={isGenerating}
+              disabled={isGenerating || isTransitioning}
               className="flex items-center justify-center gap-2 px-6 sm:px-8 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors mx-auto min-h-[44px] w-full sm:w-auto"
             >
-              {isGenerating ? (
+              {(isGenerating || isTransitioning) ? (
                 <>
                   <Loader2 size={18} className="animate-spin" />
                   Generating...
