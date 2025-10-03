@@ -1,8 +1,9 @@
 import React from 'react';
-import { Shirt, RefreshCw } from 'lucide-react';
+import { Shirt, RefreshCw, Loader2 } from 'lucide-react';
 import { OutfitSelection } from '../types';
 import { OutfitCard } from './OutfitCard';
 import { useOutfitEngine } from '../hooks/useOutfitEngine';
+import { calculateOutfitScore } from '../utils/scoring';
 
 interface OutfitDisplayProps {
   selection: OutfitSelection;
@@ -10,9 +11,22 @@ interface OutfitDisplayProps {
 }
 
 export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({ selection, onRandomize }) => {
-  const { scoreOutfit } = useOutfitEngine();
+  const { generateRandomOutfit, isGenerating, generationError } = useOutfitEngine();
   const hasCompleteOutfit = (selection.shirt || selection.undershirt) && selection.pants && selection.shoes;
-  const outfitScore = hasCompleteOutfit ? scoreOutfit(selection) : 0;
+  const outfitScore = hasCompleteOutfit ? calculateOutfitScore(selection).percentage : 0;
+
+  // Handle randomize with optimistic updates
+  const handleRandomize = async () => {
+    try {
+      await generateRandomOutfit();
+      // Call the original onRandomize to update the selection state
+      onRandomize();
+    } catch (error) {
+      console.error('Failed to generate random outfit:', error);
+      // Fallback to original randomize function
+      onRandomize();
+    }
+  };
 
   if (!hasCompleteOutfit) {
     return (
@@ -26,12 +40,27 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({ selection, onRando
             Select a category above to begin composing your outfit, or use Randomize for instant inspiration.
           </p>
           <button
-            onClick={onRandomize}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors mx-auto min-h-[44px] w-full sm:w-auto"
+            onClick={handleRandomize}
+            disabled={isGenerating}
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors mx-auto min-h-[44px] w-full sm:w-auto"
           >
-            <RefreshCw size={18} />
-            Get Random Outfit
+            {isGenerating ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <RefreshCw size={18} />
+                Get Random Outfit
+              </>
+            )}
           </button>
+          {generationError && (
+            <p className="text-red-600 dark:text-red-400 text-sm mt-2 text-center">
+              {generationError.message}
+            </p>
+          )}
         </div>
       </div>
     );
@@ -50,12 +79,27 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({ selection, onRando
 
         <div className="mt-6 sm:mt-8 text-center">
           <button
-            onClick={onRandomize}
-            className="flex items-center justify-center gap-2 px-6 sm:px-8 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors mx-auto min-h-[44px] w-full sm:w-auto"
+            onClick={handleRandomize}
+            disabled={isGenerating}
+            className="flex items-center justify-center gap-2 px-6 sm:px-8 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors mx-auto min-h-[44px] w-full sm:w-auto"
           >
-            <RefreshCw size={18} />
-            Try Another Combination
+            {isGenerating ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <RefreshCw size={18} />
+                Try Another Combination
+              </>
+            )}
           </button>
+          {generationError && (
+            <p className="text-red-600 dark:text-red-400 text-sm mt-2 text-center">
+              {generationError.message}
+            </p>
+          )}
         </div>
       </div>
     </div>

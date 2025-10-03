@@ -1,6 +1,6 @@
 import { WardrobeItem, OutfitSelection, GeneratedOutfit, Category, categoryToKey } from '../types';
 import { useWardrobe } from './useWardrobe';
-import { useMemo, useCallback } from 'react';
+import { useState, useOptimistic, useMemo, useCallback, startTransition } from 'react';
 import { calculateOutfitScore } from '../utils/scoring';
 
 export const useOutfitEngine = () => {
@@ -219,6 +219,148 @@ export const useOutfitEngine = () => {
     }
   };
 
+  // Optimistic updates functionality
+  const [generatedOutfits, setGeneratedOutfits] = useState<GeneratedOutfit[]>([]);
+  const [generationError, setGenerationError] = useState<Error | null>(null);
+
+  // useOptimistic hook for immediate UI updates
+  const [optimisticOutfits, addOptimisticOutfit] = useOptimistic(
+    generatedOutfits,
+    (state: GeneratedOutfit[], newOutfit: GeneratedOutfit) => {
+      return [newOutfit, ...state];
+    }
+  );
+
+  // Create optimistic outfit for immediate feedback
+  const createOptimisticOutfit = useCallback((anchorItem: WardrobeItem): GeneratedOutfit => {
+    const optimisticSelection: OutfitSelection = {};
+    
+    // Place the anchor item in the appropriate category
+    switch (anchorItem.category) {
+      case 'Jacket/Overshirt':
+        optimisticSelection.jacket = anchorItem;
+        break;
+      case 'Shirt':
+        optimisticSelection.shirt = anchorItem;
+        break;
+      case 'Undershirt':
+        optimisticSelection.undershirt = anchorItem;
+        break;
+      case 'Pants':
+        optimisticSelection.pants = anchorItem;
+        break;
+      case 'Shoes':
+        optimisticSelection.shoes = anchorItem;
+        break;
+      case 'Belt':
+        optimisticSelection.belt = anchorItem;
+        break;
+      case 'Watch':
+        optimisticSelection.watch = anchorItem;
+        break;
+    }
+
+    const optimisticId = `optimistic-${anchorItem.id}-${Date.now()}`;
+    const preliminaryScore = calculateOutfitScore(optimisticSelection).percentage;
+
+    return {
+      ...optimisticSelection,
+      id: optimisticId,
+      score: preliminaryScore,
+      source: 'generated' as const,
+      loved: false
+    };
+  }, []);
+
+  // Simulate outfit generation with delay
+  const performOutfitGeneration = useCallback(async (anchorItem: WardrobeItem): Promise<GeneratedOutfit[]> => {
+    await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400));
+    
+    const actualOutfits = getOutfitsForAnchor(anchorItem);
+    
+    if (Math.random() < 0.05) {
+      throw new Error('Outfit generation failed - please try again');
+    }
+    
+    return actualOutfits;
+  }, [getOutfitsForAnchor]);
+
+  // Generate outfit with optimistic updates
+  const generateOutfit = useCallback(async (anchorItem: WardrobeItem) => {
+    try {
+      setGenerationError(null);
+      
+      const optimisticResult = createOptimisticOutfit(anchorItem);
+      startTransition(() => {
+        addOptimisticOutfit(optimisticResult);
+      });
+      
+      const actualResults = await performOutfitGeneration(anchorItem);
+      
+      setGeneratedOutfits(prev => {
+        const filtered = prev.filter(outfit => {
+          const anchorKey = anchorItem.category === 'Jacket/Overshirt' ? 'jacket' :
+                           anchorItem.category === 'Shirt' ? 'shirt' :
+                           anchorItem.category === 'Undershirt' ? 'undershirt' :
+                           anchorItem.category === 'Pants' ? 'pants' :
+                           anchorItem.category === 'Shoes' ? 'shoes' :
+                           anchorItem.category === 'Belt' ? 'belt' : 'watch';
+          const outfitItem = outfit[anchorKey] as WardrobeItem;
+          return outfitItem?.id !== anchorItem.id;
+        });
+        
+        return [...actualResults, ...filtered];
+      });
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error : new Error('Unknown error occurred');
+      setGenerationError(errorMessage);
+      console.error('Outfit generation failed:', errorMessage);
+    }
+  }, [addOptimisticOutfit, createOptimisticOutfit, performOutfitGeneration]);
+
+  // Generate random outfit with optimistic updates
+  const generateRandomOutfit = useCallback(async () => {
+    try {
+      setGenerationError(null);
+      
+      const randomOutfit = getRandomOutfit();
+      if (!randomOutfit) {
+        throw new Error('No outfits available for randomization');
+      }
+      
+      const optimisticResult = {
+        ...randomOutfit,
+        id: `optimistic-random-${Date.now()}`,
+        score: randomOutfit.score * 0.9
+      };
+      
+      startTransition(() => {
+        addOptimisticOutfit(optimisticResult);
+      });
+      
+      await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 200));
+      
+      setGeneratedOutfits(prev => [randomOutfit, ...prev.slice(0, 9)]);
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error : new Error('Random outfit generation failed');
+      setGenerationError(errorMessage);
+      console.error('Random outfit generation failed:', errorMessage);
+    }
+  }, [getRandomOutfit, addOptimisticOutfit]);
+
+  // Check if we're currently generating
+  const isGenerating = useMemo(() => {
+    return optimisticOutfits.length > generatedOutfits.length;
+  }, [optimisticOutfits.length, generatedOutfits.length]);
+
+  // Clear optimistic state
+  const clearOptimistic = useCallback(() => {
+    setGeneratedOutfits([]);
+    setGenerationError(null);
+  }, []);
+
   return {
     scoreOutfit,
     getRandomOutfit,
@@ -226,6 +368,13 @@ export const useOutfitEngine = () => {
     getAllOutfits,
     getCompatibleItems,
     getFilteredOutfits,
-    validatePartialSelection
+    validatePartialSelection,
+    // New optimistic functionality
+    generateOutfit,
+    generateRandomOutfit,
+    generatedOutfits: optimisticOutfits,
+    isGenerating,
+    generationError,
+    clearOptimistic
   };
 };
