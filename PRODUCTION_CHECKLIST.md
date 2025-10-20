@@ -1,41 +1,47 @@
 # Production Deployment Checklist
 
-Use this checklist to ensure your Netlify deployment is properly configured and secure.
+Use this checklist to ensure your Next.js + Supabase deployment is properly configured and secure.
 
 ## Pre-Deployment Setup
 
-### 1. API Keys Configuration
+### 1. Supabase Configuration
 
-- [ ] **OpenWeatherMap Setup**
-  - [ ] Account created (free tier available)
-  - [ ] API key generated
-  - [ ] API key configured in Netlify environment variables
-  - [ ] API quotas and billing alerts set up
+- [ ] **Production Supabase Project**
+  - [ ] New project created for production
+  - [ ] Database schema migrated
+  - [ ] Row Level Security policies applied
+  - [ ] Storage buckets configured
+  - [ ] Edge Functions deployed
 
-- [ ] **OpenWeatherMap Setup**
-  - [ ] Account created and API key obtained
-  - [ ] API key tested and activated
-  - [ ] Usage limits understood (1,000 calls/day for free tier)
-  - [ ] Optional: One Call API 3.0 subscription for enhanced features
+- [ ] **Environment Variables**
+  - [ ] NEXT_PUBLIC_SUPABASE_URL configured
+  - [ ] NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY configured
+  - [ ] NEXTAUTH_SECRET generated and set
+  - [ ] NODE_ENV set to production
 
-### 2. Netlify Environment Variables
+### 2. Deployment Platform Environment Variables
 
-Set these in **Site Settings > Environment Variables**:
+Set these in your deployment platform (Netlify/Vercel):
 
-- [ ] `OPENWEATHER_API_KEY` - Production OpenWeatherMap API key
+- [ ] `NEXT_PUBLIC_SUPABASE_URL` - Production Supabase project URL
+- [ ] `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` - Production publishable key
+- [ ] `NODE_ENV` - Set to "production"
+- [ ] `NEXTAUTH_SECRET` - Secure random string for authentication
+- [ ] `NEXTAUTH_URL` - Production domain URL
 
 **Security Notes:**
-- [ ] Different API keys used for production vs development
-- [ ] API keys never committed to version control
-- [ ] Domain restrictions properly configured
+- [ ] Different Supabase projects for development vs production
+- [ ] Secrets never committed to version control
+- [ ] Row Level Security properly configured
 
 ### 3. Build Configuration
 
-- [ ] `netlify.toml` file present and configured
-- [ ] Build command: `npm run build`
-- [ ] Publish directory: `dist`
-- [ ] Functions directory: `netlify/functions`
+- [ ] `netlify.toml` or `vercel.json` file present and configured
+- [ ] Build command: `cd next && npm run build`
+- [ ] Publish directory: `next/out`
+- [ ] Functions directory: `netlify/functions` (if using Netlify)
 - [ ] Node.js version: 18
+- [ ] Static export configuration in `next.config.ts`
 
 ## Deployment Process
 
@@ -59,29 +65,34 @@ Set these in **Site Settings > Environment Variables**:
 
 Run the verification script:
 ```bash
-# Update the URL in package.json first
-npm run verify:production
+# Test production deployment
+SITE_URL=https://your-app.netlify.app npm run verify:production
+
+# Test local build
+npm run verify:local
 ```
 
 Manual testing checklist:
 
 - [ ] **Main Application**
   - [ ] Site loads without errors
-  - [ ] All outfits display by default
+  - [ ] Authentication flows work correctly
+  - [ ] Protected routes redirect properly
   - [ ] Mobile responsiveness works
   - [ ] No console errors
 
-- [ ] **Weather Integration**
-  - [ ] Location permission request appears
-  - [ ] Weather widget displays 3-day forecast
-  - [ ] Temperature and conditions show correctly
-  - [ ] Weather icons load properly
-  - [ ] Error handling works when location denied
+- [ ] **Supabase Integration**
+  - [ ] User registration and login work
+  - [ ] Database queries execute successfully
+  - [ ] Image upload and storage work
+  - [ ] Real-time features function properly
+  - [ ] Row Level Security enforced
 
 - [ ] **API Endpoints**
-  - [ ] `/api/weather` responds correctly
-  - [ ] Rate limiting prevents abuse
+  - [ ] `/api/health` responds correctly
+  - [ ] `/api/monitoring` accepts data
   - [ ] Error responses are user-friendly
+  - [ ] Rate limiting prevents abuse
 
 ### 7. Security Verification
 

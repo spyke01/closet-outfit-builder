@@ -1,22 +1,22 @@
-# Closet Outfit Builder
+# What to Wear
 
-A React-based wardrobe management and outfit generation application that helps users create and discover clothing combinations from their personal wardrobe. The app features an intelligent outfit engine that generates combinations based on style compatibility, seasonal appropriateness, and user preferences, enhanced with real-time weather integration for location-based outfit recommendations.
+A Next.js full-stack wardrobe management and outfit generation application that helps users create and discover clothing combinations from their personal wardrobe. The app features multi-user authentication, persistent data storage, custom image upload with background removal, and an intelligent outfit engine that generates combinations based on style compatibility, seasonal appropriateness, and user preferences, enhanced with real-time weather integration for location-based outfit recommendations.
 
 ## Features
 
+- **Multi-User Authentication**: Secure user accounts with email/password and Google OAuth via Supabase Auth
+- **Personal Wardrobe Management**: Private, user-specific wardrobe collections with database persistence and Row Level Security
+- **Custom Image Upload**: Upload wardrobe item photos with automatic background removal processing using custom algorithms
 - **Interactive Wardrobe Management**: Browse and select items from categorized clothing collections with 7-category layering system
 - **Smart Outfit Generation**: AI-powered outfit recommendations based on style compatibility and layer-aware scoring
-- **Enhanced Scoring Algorithm**: Layer-aware formality calculations that account for clothing visibility and layering effects
-- **Visual Outfit Display**: Flip card interface with representations showing proper layering
-- **Brand Management**: Optional brand tracking and display for wardrobe items
-- **User Settings**: Customizable preferences including brand display toggles
+- **Real-Time Scoring**: Live outfit compatibility scoring with detailed breakdown popovers
+- **Visual Outfit Display**: Flat and visual layout options showing proper layering and item details
 - **Anchor-Based Discovery**: Find outfits that work well with a specific item as the foundation
-- **Weather Integration**: 3-day weather forecast with location-based outfit suggestions
-- **Mobile-First Design**: Optimized responsive design for all device sizes
-- **Direct Item Interactions**: Simplified UI with direct click interactions on wardrobe items
-- **PWA Support**: Progressive Web App with offline capabilities
-- **Responsive Design**: Works seamlessly across desktop and mobile devices
-- **Secure API Integration**: Server-side API key protection via Netlify Functions
+- **Weather Integration**: 3-day weather forecast with location-based outfit suggestions (authenticated users only)
+- **Cross-Device Sync**: Access your wardrobe from any device with cloud-based data storage
+- **Mobile-First Design**: Optimized responsive design for all device sizes with touch-friendly interactions
+- **PWA Support**: Progressive Web App with offline capabilities and service worker
+- **Data Security**: Complete data isolation between users with Supabase Row Level Security
 
 ## Screenshots
 Outfit List             |  Visual Mockup
@@ -25,80 +25,84 @@ Outfit List             |  Visual Mockup
 
 ## Tech Stack
 
-- **Frontend**: React 19.1.1 with TypeScript 5.5.3
-- **Build Tool**: Vite 5.4.2
+- **Frontend**: Next.js 15 with React 19.1.1 and TypeScript 5.5.3
+- **Build Tool**: Next.js with Turbopack for fast development builds
 - **Styling**: Tailwind CSS 4.1.13 with dark mode support
 - **Icons**: Lucide React 0.544.0
-- **Backend**: Netlify Functions (serverless)
-- **APIs**: OpenWeatherMap API (weather data)
+- **Backend**: Supabase (PostgreSQL, Auth, Storage, Edge Functions)
+- **State Management**: TanStack Query 5.90.3 for server state, Immer 10.1.3 for immutable updates
+- **Validation**: Zod 4.1.12 for runtime type validation and schema definition
+- **UI Components**: Radix UI primitives with custom styling
+- **APIs**: OpenWeatherMap API (weather data), Google Maps Geocoding API
+- **Deployment**: Netlify with serverless functions
 - **PWA**: Service Worker for offline functionality
-- **Testing**: Vitest 3.2.4 with Testing Library and jsdom
-- **Linting**: ESLint 9.9.1 with accessibility (jsx-a11y) plugin
-- **Coverage**: Vitest coverage with v8 provider
+- **Testing**: Vitest 3.2.4 with Testing Library and jsdom (maintained for compatibility)
+- **Linting**: ESLint 9.9.1 with Next.js config and accessibility (jsx-a11y) plugin
 
 ## Project Structure
 
 ```
-src/
-├── components/          # React components (28 components with tests)
-│   ├── AnchorRow.tsx   # Category selection interface
-│   ├── ItemsGrid.tsx   # Grid display for wardrobe items (direct click interactions)
-│   ├── OutfitDisplay.tsx # Main outfit visualization
-│   ├── OutfitCard.tsx  # Individual outfit card component with flip functionality
-│   ├── OutfitList.tsx  # Outfit list display (default view)
-│   ├── ClothingItemDisplay.tsx # Individual clothing item display
-│   ├── ResultsPanel.tsx # Outfit recommendations panel
-│   ├── SelectionStrip.tsx # Selected items display (mobile-optimized)
-│   ├── TopBar.tsx      # Navigation with weather widget
-│   ├── WeatherWidget.tsx # 3-day weather forecast display
-│   ├── SettingsPage.tsx # User settings and preferences management
-│   ├── OutfitLayout.tsx # Visual outfit display
-│   ├── ScoreBreakdown.tsx # Enhanced score breakdown with layer weights
-│   ├── ScoreCircle.tsx # Score visualization component
-│   ├── ColorCircle.tsx # Color display utility
-│   ├── CategoryDropdown.tsx # Category selection dropdown
-│   ├── ThemeToggle.tsx # Dark/light theme toggle
-│   ├── Logo.tsx        # Application logo component
-│   └── ScrollToTop.tsx # Navigation utility component
-├── data/               # Static data files
-│   ├── outfits.json    # Curated outfit combinations
-│   └── wardrobe.json   # Wardrobe items database
-├── hooks/              # Custom React hooks
-│   ├── outfit-engine/  # Outfit generation engine components
-│   ├── useOutfitEngine.ts # Outfit generation logic
-│   └── useWardrobe.ts  # Wardrobe data management
-├── services/           # API integration services
-│   ├── weatherService.ts # Weather API integration
-│   └── locationService.ts # Geolocation handling
-├── types/              # TypeScript type definitions
-│   └── index.ts        # Core application and weather types
-├── utils/              # Utility functions
-│   ├── colorUtils.ts   # Color manipulation utilities
-│   ├── scoring.ts      # Enhanced scoring algorithms with layer awareness
-│   ├── itemUtils.ts    # Item formatting and display utilities
-│   └── accessibilityUtils.ts # Accessibility helper functions
-├── contexts/           # React context providers
-│   ├── SettingsContext.tsx # User settings management and persistence
-│   └── ThemeContext.tsx # Theme management context
-├── config/             # Configuration files
-│   └── env.ts          # Environment configuration
-├── test/               # Test utilities and setup
-│   ├── setup.ts        # Test environment setup
-│   └── test-utils.tsx  # Testing utilities
-├── integration/        # Integration tests
-│   └── wardrobe-enhancement.integration.test.tsx
-├── App.tsx             # Main application component (shows outfits by default)
-├── main.tsx           # Application entry point
-└── index.css          # Global styles
-```
+app/                    # Next.js App Router (pages and layouts)
+├── api/               # API routes (Next.js API handlers)
+├── auth/              # Authentication pages and callbacks
+├── wardrobe/          # Wardrobe management pages
+├── outfits/           # Outfit collection and detail pages
+├── anchor/            # Anchor-based outfit browsing
+├── settings/          # User settings and preferences
+├── protected/         # Protected route layouts
+├── globals.css        # Global styles
+├── layout.tsx         # Root layout component
+└── page.tsx           # Homepage
 
-```
+components/             # React components (UI layer)
+├── __tests__/         # Component tests
+├── ui/                # Reusable UI components (Radix-based)
+├── error-boundaries/  # Error boundary components
+├── tutorial/          # Tutorial and onboarding components
+├── auth-button.tsx    # Authentication button component
+├── image-upload.tsx   # Custom image upload with background removal
+├── items-grid.tsx     # Grid display for wardrobe items
+├── outfit-display.tsx # Main outfit visualization
+├── outfit-flat-layout.tsx # Flat layout for outfit details
+├── outfit-visual-layout.tsx # Visual outfit representation
+├── score-breakdown.tsx # Score breakdown with popover
+├── score-circle.tsx   # Score visualization component
+├── selection-strip.tsx # Selected items display (mobile-optimized)
+├── top-bar.tsx        # Navigation with authentication
+├── weather-widget.tsx # 3-day weather forecast display
+└── ...                # Additional feature components
+
+lib/                   # Shared utilities and business logic
+├── hooks/             # Custom React hooks with TanStack Query
+│   ├── use-auth.ts    # Supabase authentication hooks
+│   ├── use-wardrobe-items.ts # Wardrobe CRUD operations
+│   ├── use-outfits.ts # Outfit management hooks
+│   ├── use-categories.ts # Category management
+│   └── use-user-preferences.ts # User settings hooks
+├── supabase/          # Supabase client configuration
+│   ├── client.ts      # Browser client
+│   ├── server.ts      # Server-side client
+│   └── middleware.ts  # Authentication middleware
+├── providers/         # React context providers
+├── utils/             # Pure utility functions
+├── types/             # TypeScript type definitions
+├── schemas/           # Zod validation schemas
+└── test/              # Test setup and utilities
+
+supabase/              # Supabase backend configuration
+├── functions/         # Edge Functions (Deno runtime)
+│   ├── seed-user/     # User onboarding function
+│   ├── score-outfit/  # Outfit scoring function
+│   ├── process-image/ # Background removal function
+│   └── ...            # Additional business logic functions
+├── migrations/        # Database migrations
+└── supabase/          # Supabase CLI configuration
+
 netlify/
-└── functions/          # Serverless functions for secure API proxying
-    ├── weather.ts      # Weather API proxy with rate limiting
-
-    ├── package.json    # Function dependencies
-    └── tsconfig.json   # TypeScript configuration for functions
+└── functions/         # Netlify Functions (weather APIs)
+    ├── weather.ts     # Weather API proxy with rate limiting
+    ├── package.json   # Function dependencies
+    └── tsconfig.json  # TypeScript configuration
 ```
 
 ## Getting Started
@@ -107,6 +111,7 @@ netlify/
 
 - Node.js (version 18 or higher)
 - npm or yarn package manager
+- Supabase account and project setup
 - API keys for weather integration (see [NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md) for setup)
 
 ### Local Development Setup
@@ -114,7 +119,7 @@ netlify/
 1. **Clone the repository:**
 ```bash
 git clone <repository-url>
-cd closet-outfit-builder
+cd what-to-wear
 ```
 
 2. **Install dependencies:**
@@ -127,37 +132,60 @@ npm install
 # Copy the example environment file
 cp .env.example .env.local
 
-# Edit .env.local with your actual API keys
+# Edit .env.local with your actual API keys and Supabase configuration
 
+# Supabase Configuration
+# NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+# NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+# SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# Weather API (optional)
 # OPENWEATHER_API_KEY=your_openweathermap_api_key_here
 ```
 
-4. **Start the development server:**
+4. **Set up Supabase database:**
 ```bash
-# For basic development (without weather features)
+# Install Supabase CLI (if not already installed)
+npm install -g supabase
+
+# Initialize Supabase (if not already done)
+supabase init
+
+# Start local Supabase (optional for local development)
+supabase start
+
+# Apply database migrations
+supabase db push
+```
+
+5. **Start the development server:**
+```bash
+# For Next.js development
 npm run dev
 
-# For full development with Netlify Functions (recommended)
+# For full development with Netlify Functions (recommended for weather features)
 npm run dev:netlify
 ```
 
 The application will be available at:
-- Basic dev server: `http://localhost:5173`
+- Next.js dev server: `http://localhost:3000`
 - Netlify dev server: `http://localhost:8888`
 
 ### Available Scripts
 
-- `npm run dev` - Start Vite development server
+- `npm run dev` - Start Next.js development server with Turbopack
 - `npm run dev:netlify` - Start Netlify dev environment with functions
-- `npm run build` - Build the application for production
-- `npm run generate:outfits` - Build outfits from wardrobe
-- `npm run preview` - Preview the production build locally
+- `npm run build` - Build the Next.js application for production
+- `npm run start` - Start production server
+- `npm run generate:outfits` - Build outfits from wardrobe (legacy)
 - `npm run lint` - Run ESLint for code quality checks
 - `npm run lint:a11y` - Run accessibility-specific linting
 - `npm test` - Run tests in watch mode
 - `npm run test:run` - Run tests once
+- `npm run test:coverage` - Run tests with coverage report
 - `npm run test:a11y` - Run accessibility compliance tests
 - `npm run test:keyboard` - Test keyboard navigation
+- `npm run verify:build` - Build and test verification
 - `npm run verify:local` - Test deployment locally
 - `npm run verify:production` - Test production deployment
 
@@ -179,21 +207,47 @@ For complete API setup and production deployment, see [NETLIFY_DEPLOYMENT.md](./
 
 ## Data Structure
 
-### Wardrobe Items
+### Database Schema (Supabase PostgreSQL)
 
+#### Wardrobe Items
 Each clothing item includes:
-- **Category**: 7-category layering system - Jacket/Overshirt, Shirt, Undershirt, Pants, Shoes, Belt, Watch
-- **Brand**: Optional brand information for item identification and organization
-- **Capsule Tags**: Style classifications (Refined, Adventurer, Crossover, Shorts)
-- **Metadata**: Color, material, season, formality level
-- **Layering Hierarchy**: Items are organized by how they layer on the body for realistic outfit composition
+- **User Ownership**: Items are private to each user via Row Level Security
+- **Category**: References to user-specific categories
+- **Metadata**: Name, brand, color, material, formality score (1-10)
+- **Capsule Tags**: Style classifications array
+- **Season**: Seasonal appropriateness array
+- **Image**: Custom uploaded photos with background removal
+- **Active Status**: Soft delete capability
 
-### Curated Outfits
+#### Categories
+User-specific categories with:
+- **Name**: Category display name
+- **Anchor Item**: Flag for anchor-based outfit building
+- **Display Order**: Custom ordering for UI
+- **User Ownership**: Private to each user
 
-Pre-defined outfit combinations with:
-- Item references by ID
-- Tuck style preferences (Tucked/Untucked)
-- Weight scoring for recommendation priority
+#### Outfits
+Complete outfit combinations with:
+- **User Ownership**: Private outfit collections
+- **Item References**: Links to wardrobe items via junction table
+- **Scoring**: Calculated compatibility scores
+- **Tuck Style**: Tucked/Untucked preferences
+- **Source**: Curated vs generated outfits
+- **Loved Status**: User favorites
+
+#### User Preferences
+Personalized settings including:
+- **Theme**: Light/dark/system preference
+- **Feature Toggles**: Brand display, weather integration
+- **Default Settings**: Tuck style preferences
+- **Cross-Device Sync**: Stored in database, not localStorage
+
+### Authentication & Security
+
+- **Multi-User Support**: Complete user isolation via Supabase Auth
+- **Row Level Security**: Database-level access control
+- **OAuth Integration**: Google OAuth and email/password authentication
+- **Session Management**: Automatic token refresh and secure storage
 
 ### Weather Data
 
@@ -201,6 +255,7 @@ Weather integration provides:
 - **Current Conditions**: Temperature, weather description, icon
 - **3-Day Forecast**: High/low temperatures, conditions, precipitation chance
 - **Location Data**: Coordinates from browser geolocation or address input
+- **Authenticated Access**: Weather features only available to logged-in users
 
 ## Core Features
 
@@ -326,37 +381,71 @@ The app follows a mobile-first approach:
 
 ## Development
 
-### Adding New Items
+### Database Development
 
-1. Add items to `src/data/wardrobe.json` with proper categorization and tags
-2. Use the 7-category system: Jacket/Overshirt, Shirt, Undershirt, Pants, Shoes, Belt, Watch
-3. Follow the standardized naming format: "Item Type (Color)"
-4. Optionally include brand information in the brand field
-5. The app will automatically load and categorize new items
+#### Adding New Items
+1. Use the web interface to upload items with photos
+2. Items are automatically processed with background removal
+3. All data is stored in Supabase with user isolation
+4. Categories are user-specific and customizable
 
+#### Database Migrations
+```bash
+# Create new migration
+supabase migration new migration_name
 
+# Apply migrations locally
+supabase db reset
 
-### Creating Outfit Combinations (automated)
+# Apply to production
+supabase db push --linked
+```
 
-1. Run `npm run generate:outfits`
-2. If you would like more outfits to be generated you can adjust the tunable options in `scripts/generate-outfits.js`
+#### Edge Functions Development
+```bash
+# Create new Edge Function
+supabase functions new function-name
 
-### Creating Outfit Combinations (Manual)
+# Deploy Edge Function
+supabase functions deploy function-name
 
-1. Add outfit definitions to `src/data/outfits.json`
-2. Reference items by their unique IDs
-3. Include styling preferences and weight scores
+# Test locally
+supabase functions serve
+```
+
+### Authentication Development
+
+#### Testing Authentication Flows
+```bash
+# Test with different user accounts
+# Use Supabase dashboard to manage test users
+# Verify RLS policies are working correctly
+```
+
+### Legacy Data Migration
+
+#### Converting Static Data (if needed)
+1. Use the seed-user Edge Function for initial data population
+2. Import existing JSON data through the web interface
+3. Ensure proper user association and category mapping
 
 ### Adding Images to Your Wardrobe
-1. Use ChatGPT or another tool to generate a "realistic image of the following wardrobe items" and pass it the JSON file.
-2. If you want to do it in bulk you can pass it the JSON file and ask it to identify all wardrobe items without an image then generate a grid containing 4 items.
-3. Split the grid image using [PineTools](https://pinetools.com/split-image).
-4. Use [Remove.bg](https://www.remove.bg/) to remove remove the background from the images. You can use the desktop app to do this in bulk.
-5. Use [TinyPNG](https://tinypng.com/) to compress the images.
+
+#### Automatic Background Removal
+1. Upload images directly through the web interface
+2. Custom background removal processing happens automatically
+3. Fallback to original image if processing fails
+4. Images are stored securely in Supabase Storage
+
+#### Manual Image Processing (if needed)
+1. Use ChatGPT or another tool to generate wardrobe item images
+2. Upload through the web interface for automatic processing
+3. Alternative: Use [Remove.bg](https://www.remove.bg/) for manual background removal
+4. Use [TinyPNG](https://tinypng.com/) to compress images before upload
 
 ### Weather Service Integration
 
-The weather service (`src/services/weatherService.ts`) provides:
+The weather service (`lib/hooks/use-weather.ts`) provides:
 - Location-based weather fetching via browser geolocation
 - Integration with Netlify Functions for secure API access
 - Caching and retry logic for improved reliability
@@ -383,7 +472,7 @@ npm test -- --grep "SettingsPage"
 
 The app uses Tailwind CSS for styling. Key customization areas:
 - Modify component classes for visual changes
-- Extend `tailwind.config.js` for custom breakpoints or utilities
+- Extend `tailwind.config.ts` for custom breakpoints or utilities
 - Update responsive design breakpoints in components
 - Customize weather widget appearance and layout
 
@@ -397,7 +486,7 @@ npm run build
 npm run preview
 ```
 
-This creates an optimized build in the `dist/` directory with:
+This creates an optimized build in the `out/` directory with:
 - Minified JavaScript and CSS
 - Optimized assets and images
 - Service worker for PWA functionality

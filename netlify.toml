@@ -1,15 +1,42 @@
 [build]
-  publish = "dist"
+  publish = "out"
   command = "npm run build"
 
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-# API endpoint redirect for weather service
+# Next.js specific configuration
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  bundle = true
+  minify = true
+
+[build.processing.html]
+  pretty_urls = true
+
+# API endpoint redirects
 [[redirects]]
   from = "/api/weather"
   to = "/.netlify/functions/weather"
+  status = 200
+
+# Next.js API routes
+[[redirects]]
+  from = "/api/*"
+  to = "/api/:splat"
+  status = 200
+
+# Next.js catch-all for client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
   status = 200
 
 # Build environment configuration
@@ -18,6 +45,8 @@
   NPM_FLAGS = "--production=false"
   # Enable build optimizations
   NODE_OPTIONS = "--max-old-space-size=4096"
+  # Next.js specific environment
+  NEXT_TELEMETRY_DISABLED = "1"
 
 # Headers for security and performance
 [[headers]]
@@ -29,11 +58,11 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "geolocation=(self), camera=(), microphone=(), payment=()"
     # Content Security Policy for enhanced security
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.openweathermap.org https://maps.googleapis.com; frame-ancestors 'none';"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: *.supabase.co; font-src 'self'; connect-src 'self' https://api.openweathermap.org https://maps.googleapis.com *.supabase.co wss://*.supabase.co; frame-ancestors 'none';"
 
 # Cache static assets with optimized headers
 [[headers]]
-  for = "/assets/*"
+  for = "/_next/static/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
     # Enable compression
