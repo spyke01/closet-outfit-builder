@@ -112,7 +112,7 @@ netlify/
 - Node.js (version 18 or higher)
 - npm or yarn package manager
 - Supabase account and project setup
-- API keys for weather integration (see [NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md) for setup)
+- OpenWeatherMap API key for weather integration (optional)
 
 ### Local Development Setup
 
@@ -132,15 +132,11 @@ npm install
 # Copy the example environment file
 cp .env.example .env.local
 
-# Edit .env.local with your actual API keys and Supabase configuration
-
-# Supabase Configuration
+# Edit .env.local with your configuration:
 # NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 # NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 # SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-
-# Weather API (optional)
-# OPENWEATHER_API_KEY=your_openweathermap_api_key_here
+# OPENWEATHER_API_KEY=your_openweathermap_api_key_here (optional)
 ```
 
 4. **Set up Supabase database:**
@@ -193,17 +189,20 @@ The application will be available at:
 
 The app provides location-based weather forecasts using OpenWeatherMap API. Weather data is securely accessed through Netlify Functions, with location obtained directly from the browser's geolocation API.
 
-### Quick Setup
+### Weather Integration Setup
 
 ```bash
 # Copy environment template and add your API keys
 cp .env.example .env.local
 
+# Add your OpenWeatherMap API key to .env.local
+# OPENWEATHER_API_KEY=your_api_key_here
+
 # Start development with weather functions
 npm run dev:netlify
 ```
 
-For complete API setup and production deployment, see [NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md).
+Get your free API key from [OpenWeatherMap](https://openweathermap.org/api) (1,000 calls/day free tier).
 
 ## Data Structure
 
@@ -494,37 +493,66 @@ This creates an optimized build in the `out/` directory with:
 
 ## Deployment
 
-For complete deployment instructions and production setup:
+### Production Deployment
 
-- **[NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md)** - Comprehensive deployment guide with API setup, security configuration, and testing
-- **[PRODUCTION_CHECKLIST.md](./PRODUCTION_CHECKLIST.md)** - Step-by-step checklist to ensure proper deployment
+1. **Set up production Supabase project:**
+   - Create new Supabase project for production
+   - Apply database migrations: `supabase db push`
+   - Configure Row Level Security policies
+   - Deploy Edge Functions: `supabase functions deploy`
 
-### Quick Deploy
+2. **Configure environment variables in your deployment platform:**
+   ```bash
+   NEXT_PUBLIC_SUPABASE_URL=your_production_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_production_anon_key
+   OPENWEATHER_API_KEY=your_production_api_key
+   NODE_ENV=production
+   ```
 
-```bash
-# Build for production
-npm run build
+3. **Deploy to Netlify/Vercel:**
+   ```bash
+   # Build for production
+   npm run build
+   
+   # Deploy (platform-specific)
+   netlify deploy --prod
+   # or
+   vercel --prod
+   ```
 
-# Test deployment locally
-npm run verify:local
-```
+4. **Verify deployment:**
+   ```bash
+   # Test production deployment
+   npm run verify:production
+   ```
 
 ## Troubleshooting
-
-For detailed troubleshooting guides, see:
-- **[NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md)** - Deployment and API configuration issues
-- **[PRODUCTION_CHECKLIST.md](./PRODUCTION_CHECKLIST.md)** - Production environment troubleshooting
 
 ### Common Development Issues
 
 **Functions Not Working Locally:**
 ```bash
-npm run dev:netlify  # Use this instead of npm run dev
+npm run dev:netlify  # Use this instead of npm run dev for weather features
 ```
 
 **Environment Variables:**
 - Copy `.env.example` to `.env.local` and add your API keys
 - Restart dev server after changing environment variables
+
+**Build Failures:**
+```bash
+# Check Node.js version (should be 18+)
+node --version
+
+# Clear cache and rebuild
+rm -rf .next node_modules
+npm install && npm run build
+```
+
+**Weather API Issues:**
+- Verify OpenWeatherMap API key is valid
+- Check API usage limits (1,000 calls/day free tier)
+- Ensure location permissions are granted in browser
 
 ## PWA Features
 
@@ -544,4 +572,4 @@ The application includes:
 4. Run linting and ensure all tests pass
 5. Submit a pull request with detailed description
 
-For development setup including weather integration, see [NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md).
+For questions or issues, please check the troubleshooting section above or create an issue in the repository.
