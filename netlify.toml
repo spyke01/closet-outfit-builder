@@ -46,7 +46,7 @@
 
 # Build environment configuration
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
   NPM_FLAGS = "--production=false"
   # Enable build optimizations
   NODE_OPTIONS = "--max-old-space-size=4096"

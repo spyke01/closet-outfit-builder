@@ -109,7 +109,7 @@ netlify/
 
 ### Prerequisites
 
-- Node.js (version 18 or higher)
+- Node.js (version 20 or higher)
 - npm or yarn package manager
 - Supabase account and project setup
 - OpenWeatherMap API key for weather integration (optional)
@@ -541,7 +541,7 @@ npm run dev:netlify  # Use this instead of npm run dev for weather features
 
 **Build Failures:**
 ```bash
-# Check Node.js version (should be 18+)
+# Check Node.js version (should be 20+)
 node --version
 
 # Clear cache and rebuild
