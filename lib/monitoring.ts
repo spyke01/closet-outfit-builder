@@ -42,8 +42,8 @@ class ProductionMonitoring {
     const errorReport: ErrorReport = {
       message: error.message,
       stack: error.stack,
-      url: window.location.href,
-      userAgent: navigator.userAgent,
+      url: typeof window !== 'undefined' ? window.location.href : 'server',
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'server',
       timestamp: new Date().toISOString(),
       context,
     };
@@ -64,11 +64,13 @@ class ProductionMonitoring {
     }
 
     // Fallback to Navigation Timing API
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        this.collectNavigationMetrics();
-      }, 0);
-    });
+    if (typeof window !== 'undefined') {
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          this.collectNavigationMetrics();
+        }, 0);
+      });
+    }
   }
 
   /**
@@ -116,7 +118,7 @@ class ProductionMonitoring {
         largestContentfulPaint: this.getMetricValue('largest-contentful-paint'),
         cumulativeLayoutShift: 0, // Will be updated by observer
         firstInputDelay: 0, // Will be updated by observer
-        url: window.location.href,
+        url: typeof window !== 'undefined' ? window.location.href : 'server',
         timestamp: new Date().toISOString(),
       };
 
@@ -139,7 +141,7 @@ class ProductionMonitoring {
     this.sendToMonitoring('metric', {
       name,
       value,
-      url: window.location.href,
+      url: typeof window !== 'undefined' ? window.location.href : 'server',
       timestamp: new Date().toISOString(),
     }).catch(console.error);
   }
@@ -173,7 +175,7 @@ class ProductionMonitoring {
     this.sendToMonitoring('event', {
       name: eventName,
       properties,
-      url: window.location.href,
+      url: typeof window !== 'undefined' ? window.location.href : 'server',
       timestamp: new Date().toISOString(),
     }).catch(console.error);
   }
@@ -217,13 +219,15 @@ export function withErrorBoundary<T extends Record<string, any>>(
         });
       };
 
-      window.addEventListener('error', handleError);
-      window.addEventListener('unhandledrejection', handleUnhandledRejection);
+      if (typeof window !== 'undefined') {
+        window.addEventListener('error', handleError);
+        window.addEventListener('unhandledrejection', handleUnhandledRejection);
 
-      return () => {
-        window.removeEventListener('error', handleError);
-        window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-      };
+        return () => {
+          window.removeEventListener('error', handleError);
+          window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+        };
+      }
     }, []);
 
     return React.createElement(Component, props);

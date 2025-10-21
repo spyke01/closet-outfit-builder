@@ -2,25 +2,28 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
 
-  
+
   // Performance optimizations
   experimental: {
     optimizePackageImports: ['lucide-react', '@tanstack/react-query'],
   },
-  
+
+  // Disable static generation to prevent server-side execution issues
+  output: 'standalone',
+
   // Server external packages (moved from experimental.serverComponentsExternalPackages)
   serverExternalPackages: ['@supabase/supabase-js'],
-  
+
   // Compiler optimizations
   compiler: {
     // Remove console logs in production
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  
+
   // Remove static export for now to enable server features
   // output: 'export',
   trailingSlash: true,
-  
+
   // Disable image optimization for static export
   images: {
     unoptimized: true,
@@ -33,14 +36,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  
+
   // Enable compression
   compress: true,
-  
+
   // Optimize bundle
   webpack: (config, { dev, isServer }) => {
     // Production optimizations
-    if (!dev) {
+    if (!dev && !isServer) {
       config.optimization = {
         ...config.optimization,
         splitChunks: {
@@ -65,10 +68,10 @@ const nextConfig: NextConfig = {
         },
       };
     }
-    
+
     return config;
   },
-  
+
   // Headers for caching (commented out for development)
   // async headers() {
   //   return [
