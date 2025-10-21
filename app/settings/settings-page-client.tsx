@@ -6,21 +6,30 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useResetUserPreferences, useUserPreferences } from '@/lib/hooks/use-user-preferences';
 import { RotateCcw, Settings } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 export function SettingsPageClient() {
   const resetPreferences = useResetUserPreferences();
   const { isLoading: preferencesLoading } = useUserPreferences();
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
-  const handleResetPreferences = async () => {
+  // Memoize handlers to prevent re-renders
+  const handleResetPreferences = useCallback(async () => {
     try {
       await resetPreferences.mutateAsync();
       setShowResetConfirm(false);
     } catch (error) {
       console.error('Failed to reset preferences:', error);
     }
-  };
+  }, [resetPreferences]);
+
+  const handleShowResetConfirm = useCallback(() => {
+    setShowResetConfirm(true);
+  }, []);
+
+  const handleCancelReset = useCallback(() => {
+    setShowResetConfirm(false);
+  }, []);
 
   // Show loading state while preferences are being fetched
   if (preferencesLoading) {
@@ -91,7 +100,7 @@ export function SettingsPageClient() {
                 {!showResetConfirm ? (
                   <Button
                     variant="destructive"
-                    onClick={() => setShowResetConfirm(true)}
+                    onClick={handleShowResetConfirm}
                     disabled={resetPreferences.isPending}
                   >
                     Reset to Defaults
@@ -116,7 +125,7 @@ export function SettingsPageClient() {
                       </Button>
                       <Button
                         variant="outline"
-                        onClick={() => setShowResetConfirm(false)}
+                        onClick={handleCancelReset}
                         disabled={resetPreferences.isPending}
                       >
                         Cancel

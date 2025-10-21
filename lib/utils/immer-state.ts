@@ -35,202 +35,111 @@ export function useImmerReducer<T, A>(
 }
 
 /**
- * Create an Immer-based state updater function
- */
-export function createImmerUpdater<T>(
-  setState: React.Dispatch<React.SetStateAction<T>>
-) {
-  return useCallback((updater: (draft: Draft<T>) => void) => {
-    setState(current => produce(current, updater));
-  }, [setState]);
-}
-
-/**
- * Utility for creating immutable array operations
+ * Utility functions for working with arrays in Immer
  */
 export const immerArrayUtils = {
   /**
-   * Add item to array
+   * Add item to array if it doesn't exist
    */
-  addItem: <T>(array: T[], item: T): T[] => 
-    produce(array, draft => {
-      (draft as T[]).push(item);
-    }),
-  
+  addUnique: <T>(array: T[], item: T, compareFn?: (a: T, b: T) => boolean) => {
+    const exists = compareFn 
+      ? array.some(existing => compareFn(existing, item))
+      : array.includes(item);
+    
+    if (!exists) {
+      array.push(item);
+    }
+  },
+
   /**
-   * Remove item by index
+   * Remove item from array
    */
-  removeByIndex: <T>(array: T[], index: number): T[] =>
-    produce(array, draft => {
-      (draft as T[]).splice(index, 1);
-    }),
-  
+  remove: <T>(array: T[], predicate: (item: T) => boolean) => {
+    const index = array.findIndex(predicate);
+    if (index !== -1) {
+      array.splice(index, 1);
+    }
+  },
+
   /**
-   * Remove item by predicate
+   * Update item in array
    */
-  removeBy: <T>(array: T[], predicate: (item: T) => boolean): T[] =>
-    produce(array, draft => {
-      const index = (draft as T[]).findIndex(predicate);
-      if (index !== -1) {
-        (draft as T[]).splice(index, 1);
-      }
-    }),
-  
+  update: <T>(array: T[], predicate: (item: T) => boolean, updater: (draft: Draft<T>) => void) => {
+    const index = array.findIndex(predicate);
+    if (index !== -1) {
+      updater(array[index] as Draft<T>);
+    }
+  },
+
   /**
-   * Update item by index
+   * Replace item in array
    */
-  updateByIndex: <T>(array: T[], index: number, updater: (draft: Draft<T>) => void): T[] =>
-    produce(array, draft => {
-      if ((draft as T[])[index]) {
-        updater((draft as T[])[index] as Draft<T>);
-      }
-    }),
-  
-  /**
-   * Update item by predicate
-   */
-  updateBy: <T>(array: T[], predicate: (item: T) => boolean, updater: (draft: Draft<T>) => void): T[] =>
-    produce(array, draft => {
-      const index = (draft as T[]).findIndex(predicate);
-      if (index !== -1) {
-        updater((draft as T[])[index] as Draft<T>);
-      }
-    }),
-  
-  /**
-   * Replace item by predicate
-   */
-  replaceBy: <T>(array: T[], predicate: (item: T) => boolean, newItem: T): T[] =>
-    produce(array, draft => {
-      const index = (draft as T[]).findIndex(predicate);
-      if (index !== -1) {
-        (draft as T[])[index] = newItem;
-      }
-    }),
-  
-  /**
-   * Toggle item in array (add if not present, remove if present)
-   */
-  toggle: <T>(array: T[], item: T, compareFn?: (a: T, b: T) => boolean): T[] =>
-    produce(array, draft => {
-      const compare = compareFn || ((a, b) => a === b);
-      const index = (draft as T[]).findIndex(existing => compare(existing, item));
-      
-      if (index !== -1) {
-        (draft as T[]).splice(index, 1);
-      } else {
-        (draft as T[]).push(item);
-      }
-    }),
+  replace: <T>(array: T[], predicate: (item: T) => boolean, newItem: T) => {
+    const index = array.findIndex(predicate);
+    if (index !== -1) {
+      array[index] = newItem;
+    }
+  }
 };
 
 /**
- * Utility for creating immutable object operations
+ * Utility functions for working with objects in Immer
+ * Note: These are simplified versions to avoid complex Draft type issues
  */
 export const immerObjectUtils = {
   /**
-   * Deep merge objects
+   * Merge objects deeply - simplified version
    */
-  merge: <T extends Record<string, any>>(target: T, source: Partial<T>): T =>
-    produce(target, draft => {
-      // Deep merge logic
-      function deepMerge(target: any, source: any) {
-        for (const key in source) {
-          if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-            if (!target[key] || typeof target[key] !== 'object') {
-              target[key] = {};
-            }
-            deepMerge(target[key], source[key]);
-          } else {
-            target[key] = source[key];
+  merge: <T extends Record<string, any>>(target: any, source: Partial<T>) => {
+    Object.keys(source).forEach(key => {
+      const sourceValue = source[key];
+      if (sourceValue !== undefined) {
+        if (typeof sourceValue === 'object' && sourceValue !== null && !Array.isArray(sourceValue)) {
+          if (!target[key] || typeof target[key] !== 'object') {
+            target[key] = {};
           }
+          immerObjectUtils.merge(target[key], sourceValue);
+        } else {
+          target[key] = sourceValue;
         }
       }
-      deepMerge(draft, source);
-    }),
-  
+    });
+  },
+
   /**
-   * Set nested property
+   * Set nested property safely - simplified version
    */
-  setNested: <T>(obj: T, path: string[], value: any): T =>
-    produce(obj, draft => {
-      let current: any = draft;
-      for (let i = 0; i < path.length - 1; i++) {
-        if (!(path[i] in current)) {
-          current[path[i]] = {};
-        }
-        current = current[path[i]];
+  setNested: (obj: any, path: string, value: any) => {
+    const keys = path.split('.');
+    let current = obj;
+    
+    for (let i = 0; i < keys.length - 1; i++) {
+      const key = keys[i];
+      if (!current[key] || typeof current[key] !== 'object') {
+        current[key] = {};
       }
-      current[path[path.length - 1]] = value;
-    }),
-  
+      current = current[key];
+    }
+    
+    current[keys[keys.length - 1]] = value;
+  },
+
   /**
-   * Delete property
+   * Delete nested property safely - simplified version
    */
-  deleteProperty: <T extends Record<string, any>>(obj: T, key: keyof T): T =>
-    produce(obj, draft => {
-      delete (draft as any)[key];
-    }),
-  
-  /**
-   * Update property if it exists
-   */
-  updateProperty: <T extends Record<string, any>, K extends keyof T>(
-    obj: T,
-    key: K,
-    updater: (value: T[K]) => T[K]
-  ): T =>
-    produce(obj, draft => {
-      if (key in draft) {
-        (draft as any)[key] = updater((draft as any)[key]);
+  deleteNested: (obj: any, path: string) => {
+    const keys = path.split('.');
+    let current = obj;
+    
+    for (let i = 0; i < keys.length - 1; i++) {
+      const key = keys[i];
+      if (!current[key] || typeof current[key] !== 'object') {
+        return; // Path doesn't exist
       }
-    }),
+      current = current[key];
+    }
+    
+    delete current[keys[keys.length - 1]];
+  }
 };
 
-/**
- * Create a memoized Immer updater for performance
- */
-export function createMemoizedImmerUpdater<T, Args extends any[]>(
-  updaterFactory: (...args: Args) => (draft: Draft<T>) => void
-) {
-  return useCallback(
-    (state: T, ...args: Args): T => {
-      const updater = updaterFactory(...args);
-      return produce(state, updater);
-    },
-    [updaterFactory]
-  );
-}
-
-/**
- * Batch multiple Immer operations
- */
-export function batchImmerUpdates<T>(
-  initialState: T,
-  operations: Array<(draft: Draft<T>) => void>
-): T {
-  return produce(initialState, draft => {
-    operations.forEach(operation => operation(draft));
-  });
-}
-
-/**
- * Create a state machine with Immer
- */
-export function createImmerStateMachine<State, Action>(
-  initialState: State,
-  transitions: Record<string, (draft: Draft<State>, action: Action) => void>
-) {
-  return function useStateMachine() {
-    const [state, setState] = useState(initialState);
-    
-    const dispatch = useCallback((action: Action & { type: string }) => {
-      const transition = transitions[action.type];
-      if (transition) {
-        setState(current => produce(current, draft => transition(draft, action)));
-      }
-    }, []);
-    
-    return [state, dispatch] as const;
-  };
-}

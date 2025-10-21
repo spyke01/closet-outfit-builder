@@ -1,28 +1,26 @@
 import '@testing-library/jest-dom';
 import { beforeEach, vi } from 'vitest';
 
-// Create a chainable mock for Supabase client
+// Create a chainable mock for Supabase client that properly implements promises
 const createChainableMock = () => {
-  const mock = {
-    select: vi.fn().mockReturnThis(),
-    insert: vi.fn().mockReturnThis(),
-    update: vi.fn().mockReturnThis(),
-    delete: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    order: vi.fn().mockReturnThis(),
-    limit: vi.fn().mockReturnThis(),
-    single: vi.fn(),
-    mockResolvedValue: vi.fn().mockReturnThis(),
+  // Create a promise-like object that can be chained
+  const createPromiseMock = (defaultData: any = []) => {
+    const promiseMock = Promise.resolve({ data: defaultData, error: null });
+    
+    // Add chainable methods to the promise
+    (promiseMock as any).select = vi.fn(() => createPromiseMock(defaultData));
+    (promiseMock as any).insert = vi.fn(() => createPromiseMock(defaultData));
+    (promiseMock as any).update = vi.fn(() => createPromiseMock(defaultData));
+    (promiseMock as any).delete = vi.fn(() => createPromiseMock(defaultData));
+    (promiseMock as any).eq = vi.fn(() => createPromiseMock(defaultData));
+    (promiseMock as any).order = vi.fn(() => createPromiseMock(defaultData));
+    (promiseMock as any).limit = vi.fn(() => createPromiseMock(defaultData));
+    (promiseMock as any).single = vi.fn(() => Promise.resolve({ data: defaultData[0] || null, error: null }));
+    
+    return promiseMock;
   };
   
-  // Make all methods return the mock itself for chaining
-  Object.keys(mock).forEach((key: string) => {
-    if (key !== 'single' && key !== 'mockResolvedValue') {
-      (mock as any)[key].mockReturnValue(mock);
-    }
-  });
-  
-  return mock;
+  return createPromiseMock();
 };
 
 // Mock Supabase client
@@ -34,6 +32,12 @@ const mockSupabaseClient = {
   auth: {
     getUser: vi.fn(),
     getSession: vi.fn(),
+    onAuthStateChange: vi.fn(() => ({
+      data: { subscription: { unsubscribe: vi.fn() } }
+    })),
+    signOut: vi.fn(),
+    signInWithPassword: vi.fn(),
+    signUp: vi.fn(),
   },
 };
 
@@ -41,6 +45,34 @@ const mockSupabaseClient = {
 vi.mock('@/lib/supabase/client', () => ({
   createClient: () => mockSupabaseClient,
 }));
+
+// Mock the useAuth hook
+vi.mock('@/lib/hooks/use-auth', () => ({
+  useAuth: () => ({
+    user: { id: mockUserId, email: 'test@example.com' },
+    userId: mockUserId,
+    isAuthenticated: true,
+    isLoading: false,
+    signIn: vi.fn(),
+    signUp: vi.fn(),
+    signOut: vi.fn(),
+  }),
+}));
+
+// Mock geolocation API
+const mockGeolocation = {
+  getCurrentPosition: vi.fn(),
+  watchPosition: vi.fn(),
+  clearWatch: vi.fn(),
+};
+
+Object.defineProperty(global.navigator, 'geolocation', {
+  value: mockGeolocation,
+  writable: true,
+});
+
+// Mock fetch globally
+global.fetch = vi.fn();
 
 // Mock getCurrentUserId function in all hook files
 const mockUserId = 'test-user-id';

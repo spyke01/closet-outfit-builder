@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { RotateCcw, Heart } from 'lucide-react';
-import { z } from 'zod';
+
 import { safeValidate } from '@/lib/utils/validation';
 import { OutfitSelectionSchema, type OutfitSelection } from '@/lib/schemas';
 import { ScoreCircle, type ScoreBreakdownData } from './score-circle';

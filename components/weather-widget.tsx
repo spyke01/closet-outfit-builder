@@ -9,7 +9,7 @@ export const WeatherWidget: React.FC<{ className?: string }> = ({
 }) => {
   const { user } = useAuth();
   const showWeather = useShowWeather(!!user);
-  const { current, loading, error, retry } = useWeather(showWeather);
+  const { current, loading, error, retry, usingFallback } = useWeather(showWeather);
 
   // Don't render if user is not authenticated or weather is disabled
   if (!showWeather) {
@@ -52,19 +52,26 @@ export const WeatherWidget: React.FC<{ className?: string }> = ({
   }
 
   if (error) {
+    // Determine if error is recoverable
+    const isRecoverable = !error.error.includes('Location access') && 
+                         !error.error.includes('permission') &&
+                         !error.error.includes('Maximum retry attempts');
+
     return (
       <div className={`flex items-center gap-2 ${className}`}>
         <AlertCircle size={16} className="text-red-500" />
-        <span className="text-red-600 dark:text-red-400 text-xs">
+        <span className="text-red-600 dark:text-red-400 text-xs max-w-48 truncate" title={error.error}>
           {error.error}
         </span>
-        <button
-          onClick={retry}
-          className="text-xs text-blue-600 dark:text-blue-400 hover:underline ml-1"
-          aria-label="Retry loading weather"
-        >
-          Retry
-        </button>
+        {isRecoverable && (
+          <button
+            onClick={retry}
+            className="text-xs text-blue-600 dark:text-blue-400 hover:underline ml-1 flex-shrink-0"
+            aria-label="Retry loading weather"
+          >
+            Retry
+          </button>
+        )}
       </div>
     );
   }
@@ -82,6 +89,14 @@ export const WeatherWidget: React.FC<{ className?: string }> = ({
       <span className="text-slate-500 dark:text-slate-400 text-xs hidden sm:inline">
         {current.condition}
       </span>
+      {usingFallback && (
+        <span 
+          className="text-amber-600 dark:text-amber-400 text-xs"
+          title="Using estimated weather data"
+        >
+          ~
+        </span>
+      )}
     </div>
   );
 };

@@ -374,8 +374,7 @@ describe('Error Logging System', () => {
 
   describe('Production vs Development Behavior', () => {
     it('should log to console in development', () => {
-      const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'development';
+      vi.stubEnv('NODE_ENV', 'development');
       
       // Mock all console methods that might be called
       const consoleGroupSpy = vi.spyOn(console, 'group').mockImplementation(() => {});
@@ -386,24 +385,19 @@ describe('Error Logging System', () => {
       
       // Check that console.group was called (which is what the logger actually uses)
       expect(consoleGroupSpy).toHaveBeenCalled();
-      
-      process.env.NODE_ENV = originalEnv;
       consoleGroupSpy.mockRestore();
       consoleLogSpy.mockRestore();
       consoleGroupEndSpy.mockRestore();
     });
 
     it('should not log to console in production', () => {
-      const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'production';
+      vi.stubEnv('NODE_ENV', 'production');
       
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       
       errorLogger.logError(new Error('Test error'), 'system', 'medium');
       
       expect(consoleSpy).not.toHaveBeenCalled();
-      
-      process.env.NODE_ENV = originalEnv;
       consoleSpy.mockRestore();
     });
   });

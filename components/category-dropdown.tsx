@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Lock, Loader2 } from 'lucide-react';
-import { z } from 'zod';
+
 import { safeValidate } from '@/lib/utils/validation';
 import { WardrobeItemSchema, type WardrobeItem } from '@/lib/schemas';
 

@@ -8,24 +8,22 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Eye, EyeOff, Cloud, CloudOff, Shirt } from 'lucide-react';
 
-export const PreferencesForm = React.memo(function PreferencesForm() {
+export function PreferencesForm() {
   const { data: preferences, isLoading } = useUserPreferences();
   const updatePreferences = useUpdateUserPreferences();
   
-  // Use preferences directly or fallback to defaults
-  const currentPreferences = React.useMemo(() => ({
-    show_brands: preferences?.show_brands ?? true,
-    weather_enabled: preferences?.weather_enabled ?? true,
-    default_tuck_style: preferences?.default_tuck_style ?? 'Untucked' as 'Tucked' | 'Untucked',
-  }), [preferences]);
+  // Use stable values to prevent re-renders
+  const showBrands = preferences?.show_brands ?? true;
+  const weatherEnabled = preferences?.weather_enabled ?? true;
+  const defaultTuckStyle = preferences?.default_tuck_style ?? 'Untucked';
 
-  const handleToggle = async (key: keyof typeof currentPreferences, value: boolean | string) => {
+  const handleToggle = React.useCallback(async (key: string, value: boolean | string) => {
     try {
       await updatePreferences.mutateAsync({ [key]: value });
     } catch (error) {
       console.error(`Failed to update ${key}:`, error);
     }
-  };
+  }, [updatePreferences]);
 
   if (isLoading) {
     return (
@@ -51,7 +49,7 @@ export const PreferencesForm = React.memo(function PreferencesForm() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            {currentPreferences.show_brands ? (
+            {showBrands ? (
               <Eye className="w-5 h-5" />
             ) : (
               <EyeOff className="w-5 h-5" />
@@ -72,7 +70,7 @@ export const PreferencesForm = React.memo(function PreferencesForm() {
             </Label>
             <Switch
               id="show-brands"
-              checked={currentPreferences.show_brands}
+              checked={showBrands}
               onCheckedChange={(checked) => handleToggle('show_brands', checked)}
               disabled={updatePreferences.isPending}
             />
@@ -84,7 +82,7 @@ export const PreferencesForm = React.memo(function PreferencesForm() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            {currentPreferences.weather_enabled ? (
+            {weatherEnabled ? (
               <Cloud className="w-5 h-5" />
             ) : (
               <CloudOff className="w-5 h-5" />
@@ -105,7 +103,7 @@ export const PreferencesForm = React.memo(function PreferencesForm() {
             </Label>
             <Switch
               id="weather-enabled"
-              checked={currentPreferences.weather_enabled}
+              checked={weatherEnabled}
               onCheckedChange={(checked) => handleToggle('weather_enabled', checked)}
               disabled={updatePreferences.isPending}
             />
@@ -131,13 +129,13 @@ export const PreferencesForm = React.memo(function PreferencesForm() {
               {(['Tucked', 'Untucked'] as const).map((style) => (
                 <Button
                   key={style}
-                  variant={currentPreferences.default_tuck_style === style ? 'default' : 'outline'}
+                  variant={defaultTuckStyle === style ? 'default' : 'outline'}
                   className="flex-1"
                   onClick={() => handleToggle('default_tuck_style', style)}
                   disabled={updatePreferences.isPending}
                 >
                   {style}
-                  {currentPreferences.default_tuck_style === style && (
+                  {defaultTuckStyle === style && (
                     <span className="ml-2 text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded">
                       Default
                     </span>
@@ -167,4 +165,4 @@ export const PreferencesForm = React.memo(function PreferencesForm() {
       )}
     </div>
   );
-});
+}

@@ -15,7 +15,7 @@ const compat = new FlatCompat({
 });
 
 export default tseslint.config(
-  { ignores: ['dist', '.next', 'node_modules', 'next_backup'] },
+  { ignores: ['dist', '.next', 'node_modules', 'next_backup', 'next-env.d.ts', 'coverage/**', '.netlify/**'] },
   {
     extends: [
       js.configs.recommended,

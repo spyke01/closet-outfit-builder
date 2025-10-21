@@ -28,7 +28,10 @@
     "audit:schedule": "node scripts/audit-scheduler.js",
     "audit:trends": "node scripts/audit-scheduler.js trends",
     "audit:status": "node scripts/audit-scheduler.js status",
-    "audit:validate": "node scripts/validate-audit-implementation.js"
+    "audit:validate": "node scripts/validate-audit-implementation.js",
+    "weather:check": "node scripts/check-weather-deployment.js",
+    "weather:validate": "node scripts/validate-weather-production.js",
+    "weather:env": "node scripts/validate-weather-environment.js"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.3.1",
@@ -43,6 +46,7 @@
     "@tanstack/react-query-devtools": "^5.90.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^17.2.3",
     "immer": "^10.1.3",
     "lucide-react": "^0.544.0",
     "next": "latest",

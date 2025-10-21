@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
-import { produce } from 'immer';
-import { useImmerState, immerArrayUtils } from '../utils/immer-state';
+import { useImmerState } from '../utils/immer-state';
 import { WardrobeItem, Category, OutfitSelection } from '../schemas';
 
 /**

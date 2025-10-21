@@ -358,7 +358,7 @@ describe('Feature Parity Validation Tests', () => {
       expect(typeof expensiveComputation).toBe('function');
     });
 
-    it('maintains debouncing patterns for search', () => {
+    it('maintains debouncing patterns for search', async () => {
       // Test debouncing pattern structure
       let debounceTimeout: NodeJS.Timeout | null = null;
       
@@ -379,9 +379,8 @@ describe('Feature Parity Validation Tests', () => {
       expect(mockCallback).not.toHaveBeenCalled();
       
       // Wait for debounce
-      setTimeout(() => {
-        expect(mockCallback).toHaveBeenCalledWith('test');
-      }, 15);
+      await new Promise(resolve => setTimeout(resolve, 15));
+      expect(mockCallback).toHaveBeenCalledWith('test');
     });
 
     it('maintains lazy loading patterns', () => {

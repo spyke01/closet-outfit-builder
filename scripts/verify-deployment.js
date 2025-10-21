@@ -163,7 +163,7 @@ async function testMainApp() {
       const html = response.data;
       
       // Check for key elements
-      const hasTitle = html.includes('Closet Outfit Builder') || html.includes('<title>');
+      const hasTitle = html.includes('What to Wear') || html.includes('<title>');
       const hasReact = html.includes('react') || html.includes('div id="root"');
       
       if (hasTitle && hasReact) {

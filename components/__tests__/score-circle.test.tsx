@@ -17,24 +17,39 @@ describe('ScoreCircle', () => {
   const mockOutfit: OutfitSelection = {
     shirt: {
       id: '550e8400-e29b-41d4-a716-446655440001',
+      user_id: 'test-user',
       name: 'Blue Oxford Shirt',
       category_id: '550e8400-e29b-41d4-a716-446655440002',
       formality_score: 7,
-      brand: 'Test Brand'
+      brand: 'Test Brand',
+      season: ['All'],
+      active: true,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z'
     },
     pants: {
       id: '550e8400-e29b-41d4-a716-446655440003',
+      user_id: 'test-user',
       name: 'Navy Chinos',
       category_id: '550e8400-e29b-41d4-a716-446655440004',
       formality_score: 6,
-      brand: 'Test Brand'
+      brand: 'Test Brand',
+      season: ['All'],
+      active: true,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z'
     },
     shoes: {
       id: '550e8400-e29b-41d4-a716-446655440005',
+      user_id: 'test-user',
       name: 'Brown Loafers',
       category_id: '550e8400-e29b-41d4-a716-446655440006',
       formality_score: 8,
-      brand: 'Test Brand'
+      brand: 'Test Brand',
+      season: ['All'],
+      active: true,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z'
     },
     tuck_style: 'Tucked'
   };
@@ -88,7 +103,7 @@ describe('ScoreCircle', () => {
 
   it('shows outfit score label when outfit is provided', () => {
     render(<ScoreCircle score={90} showLabel={true} outfit={mockOutfit} />);
-    expect(screen.getByText('Outfit Score')).toBeInTheDocument();
+    expect(screen.getByText('Score')).toBeInTheDocument();
   });
 
   it('handles invalid scores gracefully', () => {
@@ -155,7 +170,7 @@ describe('ScoreCircle', () => {
       fireEvent.mouseEnter(scoreCircle);
       // Should show calculated breakdown
       await waitFor(() => {
-        expect(screen.getByText('Total Score')).toBeInTheDocument();
+        expect(screen.getByText('Score')).toBeInTheDocument();
       });
     }
   });

@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { z } from 'zod';
+
 import { safeValidate } from '@/lib/utils/validation';
 import { OutfitSelectionSchema, type OutfitSelection } from '@/lib/schemas';
 import { ScoreBreakdown } from './score-breakdown';

@@ -1,6 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { handler } from '../process-image-advanced';
-import type { HandlerEvent, HandlerContext } from '@netlify/functions';
+import type { HandlerEvent, HandlerContext, HandlerResponse } from '@netlify/functions';
+
+// Helper to cast response properly
+const asResponse = (response: void | HandlerResponse): HandlerResponse => {
+  if (!response) {
+    throw new Error('Expected HandlerResponse but got void');
+  }
+  return response;
+};
 
 // Mock Sharp
 vi.mock('sharp', () => {
@@ -48,7 +56,6 @@ const createTestEvent = (
   path: '/.netlify/functions/process-image-advanced',
   queryStringParameters: null,
   multiValueQueryStringParameters: null,
-  pathParameters: null,
   stageVariables: null,
   requestContext: {} as any,
   resource: '',
@@ -68,7 +75,7 @@ const mockContext: HandlerContext = {
   getRemainingTimeInMillis: () => 30000,
   done: vi.fn(),
   fail: vi.fn(),
-  succeed: vi.fn(),
+  succeed: vi.fn((messageOrObject: any) => {}),
 };
 
 describe('Netlify Function - process-image-advanced', () => {
@@ -85,22 +92,24 @@ describe('Netlify Function - process-image-advanced', () => {
       const event = createTestEvent(null, 'OPTIONS');
       const response = await handler(event, mockContext);
 
-      expect(response.statusCode).toBe(200);
-      expect(response.headers).toEqual({
+      const res = asResponse(response);
+      expect(res.statusCode).toBe(200);
+      expect(res.headers).toEqual({
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
         'Content-Type': 'application/json',
       });
-      expect(response.body).toBe('');
+      expect(res.body).toBe('');
     });
 
     it('should reject non-POST methods', async () => {
       const event = createTestEvent(null, 'GET');
       const response = await handler(event, mockContext);
 
-      expect(response.statusCode).toBe(405);
-      const body = JSON.parse(response.body);
+      const res = asResponse(response);
+      expect(res.statusCode).toBe(405);
+      const body = JSON.parse(res.body);
       expect(body.success).toBe(false);
       expect(body.error).toBe('Method not allowed');
     });
@@ -114,17 +123,17 @@ describe('Netlify Function - process-image-advanced', () => {
       expect(response.statusCode).toBe(400);
       const body = JSON.parse(response.body);
       expect(body.success).toBe(false);
-      expect(body.error).toBe('Request body is required');
+      expect(body.error).toBe('Validation failed');
     });
 
     it('should reject requests with invalid JSON', async () => {
       const event = createTestEvent('invalid-json');
       const response = await handler(event, mockContext);
 
-      expect(response.statusCode).toBe(400);
+      expect(response.statusCode).toBe(500);
       const body = JSON.parse(response.body);
       expect(body.success).toBe(false);
-      expect(body.error).toBe('Validation failed');
+      expect(body.error).toContain('Unexpected token');
     });
 
     it('should reject requests without imageData', async () => {

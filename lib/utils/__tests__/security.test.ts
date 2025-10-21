@@ -402,8 +402,7 @@ describe('Security Utils', () => {
   describe('logSecurityEvent', () => {
     it('should log security events with sanitized data', () => {
       // Mock the environment to be development
-      const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'development';
+      vi.stubEnv('NODE_ENV', 'development');
       
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       
@@ -423,15 +422,12 @@ describe('Security Utils', () => {
       expect(loggedEvent.details.password).toBe('[REDACTED]');
       expect(loggedEvent.details.token).toBe('[REDACTED]');
       expect(loggedEvent.details.normalField).toBe('safe-value');
-      
-      process.env.NODE_ENV = originalEnv;
       consoleSpy.mockRestore();
     });
 
     it('should include timestamp in security events', () => {
       // Mock the environment to be development
-      const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'development';
+      vi.stubEnv('NODE_ENV', 'development');
       
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       
@@ -444,8 +440,6 @@ describe('Security Utils', () => {
       const loggedEvent = consoleSpy.mock.calls[0][1];
       expect(loggedEvent.timestamp).toBeDefined();
       expect(new Date(loggedEvent.timestamp)).toBeInstanceOf(Date);
-      
-      process.env.NODE_ENV = originalEnv;
       consoleSpy.mockRestore();
     });
   });

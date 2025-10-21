@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { z } from 'zod';
 import { safeValidate } from '@/lib/utils/validation';
+import { useWeatherFallback } from './use-weather-fallback';
 
 // Weather data schemas
 const WeatherDataSchema = z.object({
@@ -40,6 +41,7 @@ interface UseWeatherReturn {
   loading: boolean;
   error: WeatherError | null;
   retry: () => void;
+  usingFallback: boolean;
 }
 
 interface LocationData {
@@ -104,31 +106,114 @@ async function getCurrentLocation(): Promise<LocationData> {
 }
 
 /**
- * Fetch weather data from Netlify function
+ * Fetch weather data from Netlify function with enhanced error handling
  */
 async function fetchWeatherData(latitude: number, longitude: number): Promise<WeatherResponse> {
-  const response = await fetch(`/.netlify/functions/weather?lat=${latitude}&lon=${longitude}`);
-  
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({ error: 'Network error' }));
-    const validatedError = safeValidate(WeatherErrorSchema, errorData);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+  try {
+    const response = await fetch(`/.netlify/functions/weather?lat=${latitude}&lon=${longitude}`, {
+      signal: controller.signal,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
     
-    if (validatedError.success) {
-      throw validatedError.data;
-    } else {
-      throw { error: 'Failed to fetch weather data', details: `HTTP ${response.status}` };
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) {
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch {
+        // If JSON parsing fails, create a generic error based on status
+        errorData = {
+          error: getErrorMessageForStatus(response.status),
+          details: `HTTP ${response.status}`
+        };
+      }
+      
+      const validatedError = safeValidate(WeatherErrorSchema, errorData);
+      
+      if (validatedError.success) {
+        throw validatedError.data;
+      } else {
+        throw { 
+          error: getErrorMessageForStatus(response.status), 
+          details: `HTTP ${response.status}` 
+        };
+      }
     }
+    
+    const data = await response.json();
+    const validation = safeValidate(WeatherResponseSchema, data);
+    
+    if (!validation.success) {
+      console.warn('Invalid weather response:', validation.error);
+      throw { 
+        error: 'Weather service returned invalid data. Please try again later.', 
+        details: 'Data validation failed' 
+      };
+    }
+    
+    return validation.data;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    
+    // Handle specific error types
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        throw {
+          error: 'Weather request timed out. Please check your internet connection.',
+          details: 'Request timeout after 10 seconds'
+        };
+      }
+      
+      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+        throw {
+          error: 'Unable to connect to weather service. Please check your internet connection.',
+          details: 'Network connection failed'
+        };
+      }
+    }
+    
+    // Re-throw if it's already a WeatherError
+    if (error && typeof error === 'object' && 'error' in error) {
+      throw error;
+    }
+    
+    // Generic fallback
+    throw {
+      error: 'Weather service is temporarily unavailable. Please try again later.',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    };
   }
-  
-  const data = await response.json();
-  const validation = safeValidate(WeatherResponseSchema, data);
-  
-  if (!validation.success) {
-    console.warn('Invalid weather response:', validation.error);
-    throw { error: 'Invalid weather data received', details: 'Data validation failed' };
+}
+
+/**
+ * Get user-friendly error message based on HTTP status code
+ */
+function getErrorMessageForStatus(status: number): string {
+  switch (status) {
+    case 400:
+      return 'Invalid location data. Please try again.';
+    case 401:
+    case 403:
+      return 'Weather service authentication failed. Please try again later.';
+    case 404:
+      return 'Weather service not found. Please try again later.';
+    case 429:
+      return 'Too many weather requests. Please wait a moment and try again.';
+    case 500:
+    case 502:
+    case 503:
+    case 504:
+      return 'Weather service is temporarily unavailable. Please try again later.';
+    default:
+      return 'Weather service is currently unavailable. Please try again later.';
   }
-  
-  return validation.data;
 }
 
 /**
@@ -142,6 +227,9 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
   const [error, setError] = useState<WeatherError | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [locationPermissionDenied, setLocationPermissionDenied] = useState(false);
+  const [usingFallback, setUsingFallback] = useState(false);
+  
+  const { generateFallbackWeather } = useWeatherFallback();
 
   const loadWeatherData = useCallback(async (isRetry = false) => {
     // Don't load if hook is disabled
@@ -162,11 +250,36 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
 
       if (location.granted) {
         setLocationPermissionDenied(false);
-        const weatherData = await fetchWeatherData(location.latitude, location.longitude);
         
-        setForecast(weatherData.forecast);
-        setCurrent(weatherData.current);
-        setRetryCount(0); // Reset retry count on success
+        try {
+          const weatherData = await fetchWeatherData(location.latitude, location.longitude);
+          
+          setForecast(weatherData.forecast);
+          setCurrent(weatherData.current);
+          setRetryCount(0); // Reset retry count on success
+          setUsingFallback(false);
+        } catch (weatherError) {
+          // If main weather service fails after multiple retries, try fallback
+          if (retryCount >= 2) {
+            console.log('Main weather service failed, attempting fallback...');
+            try {
+              const fallbackData = await generateFallbackWeather(location.latitude, location.longitude);
+              setForecast(fallbackData.forecast);
+              setCurrent(fallbackData.current);
+              setUsingFallback(true);
+              setError({
+                error: 'Using estimated weather data. Actual weather service is temporarily unavailable.',
+                details: 'Fallback weather data active'
+              });
+              return; // Exit early to avoid throwing the error
+            } catch (fallbackError) {
+              console.error('Fallback weather generation failed:', fallbackError);
+            }
+          }
+          
+          // Re-throw the original error if fallback fails or we haven't reached retry limit
+          throw weatherError;
+        }
       } else {
         // Handle location permission denied
         setLocationPermissionDenied(true);
@@ -187,10 +300,15 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
         weatherError = err as WeatherError;
       } else if (err instanceof Error) {
         // Network or other generic errors
-        if (err.message.includes('fetch')) {
+        if (err.message.includes('fetch') || err.message.includes('NetworkError')) {
           weatherError = {
             error: 'Unable to connect to weather service. Please check your internet connection.',
             details: err.message
+          };
+        } else if (err.name === 'AbortError') {
+          weatherError = {
+            error: 'Weather request timed out. Please try again.',
+            details: 'Request timeout'
           };
         } else {
           weatherError = {
@@ -207,6 +325,12 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
 
       setError(weatherError);
 
+      // Implement graceful degradation - clear any stale data on persistent errors
+      if (retryCount >= 2) {
+        setForecast([]);
+        setCurrent(null);
+      }
+
       // Increment retry count for rate limiting
       if (isRetry) {
         setRetryCount(prev => prev + 1);
@@ -216,7 +340,7 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
     }
   }, [locationPermissionDenied, enabled]);
 
-  // Retry weather data loading with exponential backoff
+  // Retry weather data loading with intelligent backoff
   const retry = useCallback(() => {
     // Limit retry attempts to prevent spam
     if (retryCount >= 3) {
@@ -227,13 +351,24 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
       return;
     }
 
-    // Exponential backoff delay
-    const delay = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
+    // Don't retry if location permission was denied
+    if (locationPermissionDenied) {
+      setError({
+        error: 'Location access is required for weather information. Please enable location permissions and refresh the page.',
+        details: 'Location permission denied'
+      });
+      return;
+    }
+
+    // Exponential backoff delay with jitter to prevent thundering herd
+    const baseDelay = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s
+    const jitter = Math.random() * 1000; // Add up to 1s random delay
+    const delay = baseDelay + jitter;
 
     setTimeout(() => {
       loadWeatherData(true);
     }, delay);
-  }, [loadWeatherData, retryCount]);
+  }, [loadWeatherData, retryCount, locationPermissionDenied]);
 
   // Load weather data on mount, but only if enabled
   useEffect(() => {
@@ -254,5 +389,6 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
     loading,
     error,
     retry,
+    usingFallback,
   };
 }

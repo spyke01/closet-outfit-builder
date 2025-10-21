@@ -1,8 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { withSecurity, SecurityConfigs, SecureRequest } from '@/lib/middleware/security-middleware';
-import { WardrobeItemSchema } from '@/lib/schemas';
-import { logError, logValidationError } from '@/lib/utils/error-logging';
+import { logError } from '@/lib/utils/error-logging';
 import { createClient } from '@/lib/supabase/server';
 
 // Input validation schema for this endpoint

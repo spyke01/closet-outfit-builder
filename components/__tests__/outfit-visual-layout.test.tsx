@@ -1,19 +1,7 @@
 import { render, screen } from '@testing-library/react';
-import { vi } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
 import { OutfitVisualLayout } from '../outfit-visual-layout';
 import { WardrobeItem } from '@/lib/types/database';
-import { it } from 'zod/v4/locales';
-import { it } from 'zod/v4/locales';
-import { it } from 'zod/v4/locales';
-import { it } from 'zod/v4/locales';
-import { it } from 'zod/v4/locales';
-import { it } from 'zod/v4/locales';
-import { it } from 'zod/v4/locales';
-import { it } from 'zod/v4/locales';
-import { it } from 'zod/v4/locales';
-import { it } from 'zod/v4/locales';
-import { it } from 'zod/v4/locales';
-import { describe } from 'node:test';
 
 const mockItems: WardrobeItem[] = [
   {
@@ -24,6 +12,7 @@ const mockItems: WardrobeItem[] = [
     brand: 'Hugo Boss',
     color: 'Navy',
     formality_score: 9,
+    season: ['All'],
     image_url: 'https://example.com/blazer.jpg',
     active: true,
     created_at: '2024-01-01T00:00:00Z',
@@ -46,6 +35,7 @@ const mockItems: WardrobeItem[] = [
     brand: 'Brooks Brothers',
     color: 'White',
     formality_score: 8,
+    season: ['All'],
     image_url: 'https://example.com/shirt.jpg',
     active: true,
     created_at: '2024-01-01T00:00:00Z',

@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import { UserPreferences, UserPreferencesSchema } from '@/lib/schemas';
 import { useAuth } from './use-auth';
-import { useMemo } from 'react';
+
 
 // Create a singleton Supabase client to prevent recreation
 const supabase = createClient();
@@ -76,23 +76,23 @@ async function updateUserPreferences(
 
 // Hook to fetch user preferences
 export function useUserPreferences() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
-  // Memoize the user ID to prevent query key changes
-  const userId = useMemo(() => user?.id, [user?.id]);
+  // Stable user ID to prevent query key changes
+  const userId = user?.id;
 
   return useQuery({
     queryKey: userPreferencesKeys.byUser(userId || ''),
     queryFn: () => fetchUserPreferences(userId!),
-    enabled: !!userId,
-    staleTime: 10 * 60 * 1000, // 10 minutes - longer to prevent frequent refetches
+    enabled: !!userId && !authLoading,
+    staleTime: 15 * 60 * 1000, // 15 minutes - prevent frequent refetches
     gcTime: 60 * 60 * 1000, // 1 hour - keep in cache longer
-    retry: 1, // Retry once
+    retry: 1, // Retry once only
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
     refetchInterval: false,
-    structuralSharing: true, // Enable structural sharing to prevent unnecessary re-renders
+    structuralSharing: false, // Disable to prevent deep comparison issues
   });
 }
 
@@ -141,10 +141,14 @@ export function useUpdateUserPreferences() {
       }
     },
     onSuccess: (data) => {
-      // Update the cache with the actual server response
+      // Update the cache with the actual server response without triggering refetch
       if (user?.id) {
         queryClient.setQueryData(userPreferencesKeys.byUser(user.id), data);
       }
+    },
+    onSettled: () => {
+      // Don't invalidate queries to prevent refetch loops
+      // The optimistic update and onSuccess should handle cache updates
     },
   });
 }
@@ -157,10 +161,13 @@ export function useResetUserPreferences() {
   return useMutation({
     mutationFn: () => updateUserPreferences(user!.id, defaultPreferences),
     onSuccess: (data) => {
-      // Update cache directly instead of invalidating
+      // Update cache directly instead of invalidating to prevent refetch
       if (user?.id) {
         queryClient.setQueryData(userPreferencesKeys.byUser(user.id), data);
       }
+    },
+    onSettled: () => {
+      // Don't invalidate to prevent unnecessary refetches
     },
   });
 }

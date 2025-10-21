@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { WeatherWidget } from '../weather-widget';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { User } from '@supabase/supabase-js';
 
 // Mock the hooks
 vi.mock('@/lib/hooks', () => ({
@@ -15,6 +16,15 @@ import { useAuth, useShowWeather, useWeather } from '@/lib/hooks';
 const mockUseAuth = vi.mocked(useAuth);
 const mockUseShowWeather = vi.mocked(useShowWeather);
 const mockUseWeather = vi.mocked(useWeather);
+
+const mockUser: User = {
+  id: '123',
+  email: 'test@example.com',
+  app_metadata: {},
+  user_metadata: {},
+  aud: 'authenticated',
+  created_at: '2024-01-01T00:00:00Z',
+};
 
 const TestWrapper = ({ children }: { children: React.ReactNode }) => {
   const queryClient = new QueryClient({
@@ -37,7 +47,12 @@ describe('WeatherWidget Integration', () => {
   });
 
   it('should not render when user is not authenticated', () => {
-    mockUseAuth.mockReturnValue({ user: null, loading: false });
+    mockUseAuth.mockReturnValue({ 
+      user: null, 
+      loading: false, 
+      isAuthenticated: false, 
+      userId: null 
+    });
     mockUseShowWeather.mockReturnValue(false);
     mockUseWeather.mockReturnValue({
       current: null,
@@ -58,8 +73,10 @@ describe('WeatherWidget Integration', () => {
 
   it('should not render when weather is disabled in preferences', () => {
     mockUseAuth.mockReturnValue({ 
-      user: { id: '123', email: 'test@example.com' }, 
-      loading: false 
+      user: mockUser, 
+      loading: false,
+      isAuthenticated: true,
+      userId: '123'
     });
     mockUseShowWeather.mockReturnValue(false); // Weather disabled
     mockUseWeather.mockReturnValue({
@@ -81,8 +98,10 @@ describe('WeatherWidget Integration', () => {
 
   it('should show loading state for authenticated users', () => {
     mockUseAuth.mockReturnValue({ 
-      user: { id: '123', email: 'test@example.com' }, 
-      loading: false 
+      user: mockUser, 
+      loading: false,
+      isAuthenticated: true,
+      userId: '123'
     });
     mockUseShowWeather.mockReturnValue(true);
     mockUseWeather.mockReturnValue({
@@ -104,8 +123,10 @@ describe('WeatherWidget Integration', () => {
 
   it('should show weather data for authenticated users', () => {
     mockUseAuth.mockReturnValue({ 
-      user: { id: '123', email: 'test@example.com' }, 
-      loading: false 
+      user: mockUser, 
+      loading: false,
+      isAuthenticated: true,
+      userId: '123'
     });
     mockUseShowWeather.mockReturnValue(true);
     mockUseWeather.mockReturnValue({
@@ -134,8 +155,10 @@ describe('WeatherWidget Integration', () => {
     const mockRetry = vi.fn();
     
     mockUseAuth.mockReturnValue({ 
-      user: { id: '123', email: 'test@example.com' }, 
-      loading: false 
+      user: mockUser, 
+      loading: false,
+      isAuthenticated: true,
+      userId: '123'
     });
     mockUseShowWeather.mockReturnValue(true);
     mockUseWeather.mockReturnValue({
@@ -161,8 +184,10 @@ describe('WeatherWidget Integration', () => {
 
   it('should apply custom className', () => {
     mockUseAuth.mockReturnValue({ 
-      user: { id: '123', email: 'test@example.com' }, 
-      loading: false 
+      user: mockUser, 
+      loading: false,
+      isAuthenticated: true,
+      userId: '123'
     });
     mockUseShowWeather.mockReturnValue(true);
     mockUseWeather.mockReturnValue({

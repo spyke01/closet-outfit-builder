@@ -5,7 +5,7 @@ import { useUpdateUserPreferences, useUserPreferences } from '@/lib/hooks/use-us
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Monitor, Moon, Sun } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 const themes = [
   {
@@ -39,21 +39,22 @@ export function ThemeSettings() {
     setMounted(true);
   }, []);
 
-  const handleThemeChange = async (newTheme: 'light' | 'dark' | 'system') => {
+  // Memoize the theme change handler to prevent re-renders
+  const handleThemeChange = useCallback(async (newTheme: 'light' | 'dark' | 'system') => {
     // Update next-themes immediately for instant UI feedback
     setTheme(newTheme);
     
-    // Update database preference
-    try {
-      await updatePreferences.mutateAsync({ theme: newTheme });
-    } catch (error) {
-      console.error('Failed to update theme preference:', error);
-      // Revert theme on error
-      if (preferences?.theme) {
-        setTheme(preferences.theme);
+    // Update database preference (fire and forget to prevent blocking)
+    updatePreferences.mutate({ theme: newTheme }, {
+      onError: (error) => {
+        console.error('Failed to update theme preference:', error);
+        // Revert theme on error
+        if (preferences?.theme) {
+          setTheme(preferences.theme);
+        }
       }
-    }
-  };
+    });
+  }, [setTheme, updatePreferences, preferences?.theme]);
 
   if (!mounted || isLoading) {
     return (
