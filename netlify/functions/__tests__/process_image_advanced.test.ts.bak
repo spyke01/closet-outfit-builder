@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { handler } from '../process-image-advanced';
+import { handler } from '../process_image_advanced';
 import type { HandlerEvent, HandlerContext, HandlerResponse } from '@netlify/functions';
 
 // Helper to cast response properly

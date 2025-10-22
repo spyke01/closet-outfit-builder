@@ -54,6 +54,8 @@ export function LoginForm({
 
     const redirectUrl = `${window.location.origin}/auth/callback?next=/wardrobe`;
     console.log('OAuth redirect URL:', redirectUrl);
+    console.log('Current origin:', window.location.origin);
+    console.log('Current href:', window.location.href);
 
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({

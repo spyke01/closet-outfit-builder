@@ -22,6 +22,8 @@ async function seedNewUser(accessToken: string) {
   }
 }
 
+export const dynamic = 'force-static';
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const token_hash = searchParams.get("token_hash");

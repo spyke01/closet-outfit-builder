@@ -26,6 +26,8 @@ function validateFileType(buffer: Uint8Array, expectedType: string): boolean {
   return magicBytes.every((byte, index) => buffer[index] === byte);
 }
 
+export const dynamic = 'force-static';
+
 export async function POST(request: NextRequest) {
   try {
     // Initialize Supabase client

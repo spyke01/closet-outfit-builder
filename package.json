@@ -10,7 +10,10 @@
     "dev": "next dev --turbopack",
     "dev:netlify": "netlify dev",
     "build": "next build",
-    "build:static": "next build",
+    "build:static": "npm run build:static-config && next build",
+    "build:export": "node scripts/build-static-export.js",
+    "build:static-config": "node scripts/configure-static-build.js",
+    "build:restore": "node scripts/restore-dynamic-config.js",
     "start": "next start",
     "generate:outfits": "node scripts/generate-outfits.js",
     "lint": "eslint .",
@@ -34,7 +37,9 @@
     "audit:validate": "node scripts/validate-audit-implementation.js",
     "weather:check": "node scripts/check-weather-deployment.js",
     "weather:validate": "node scripts/validate-weather-production.js",
-    "weather:env": "node scripts/validate-weather-environment.js"
+    "weather:env": "node scripts/validate-weather-environment.js",
+    "deploy:netlify": "node scripts/deploy-netlify.js",
+    "check:auth": "node scripts/check-auth-urls.js"
   },
   "dependencies": {
     "@netlify/functions": "^5.0.0",

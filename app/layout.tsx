@@ -5,9 +5,11 @@ import { QueryProvider } from "@/lib/providers/query-provider";
 import { MonitoringProvider } from "@/lib/providers/monitoring-provider";
 import "./globals.css";
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
+const defaultUrl = process.env.NETLIFY_URL
+  ? `https://${process.env.NETLIFY_URL}`
+  : process.env.NETLIFY_URL
+    ? `https://${process.env.NETLIFY_URL}`
+    : "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),

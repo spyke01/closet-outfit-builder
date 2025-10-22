@@ -1,5 +1,6 @@
 [build]
   command = "npm run build"
+  publish = ".next"
 
 # Use Netlify's Next.js plugin
 [[plugins]]
@@ -8,7 +9,7 @@
 [dev]
   command = "npm run dev"
   port = 8888
-  publish = "out"
+  publish = ".next"
 
 [functions]
   directory = "netlify/functions"
@@ -108,7 +109,4 @@
     Cache-Control = "public, max-age=0, must-revalidate"
 
 # Function-specific configuration with optimizations
-[functions.weather]
-  included_files = ["netlify/functions/weather.ts"]
-  # Optimize function performance
-  node_bundler = "esbuild"
+# Removed specific function config to avoid naming issues

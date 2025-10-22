@@ -130,6 +130,8 @@ async function secureGetHandler(request: SecureRequest): Promise<NextResponse> {
   }
 }
 
+export const dynamic = 'force-static';
+
 // Apply security middleware with configuration
 export const POST = withSecurity({
   ...SecurityConfigs.authenticated,

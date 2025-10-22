@@ -9,7 +9,10 @@ import https from 'https';
 import http from 'http';
 
 // Configuration
-const SITE_URL = process.env.SITE_URL || 'http://localhost:3000';
+const SITE_URL = process.env.SITE_URL || 
+  (process.env.NETLIFY_URL ? `https://${process.env.NETLIFY_URL}` : 
+   process.env.NETLIFY_URL ? `https://${process.env.NETLIFY_URL}` : 
+   'http://localhost:3000');
 const TIMEOUT = 10000; // 10 seconds
 
 // Colors for console output

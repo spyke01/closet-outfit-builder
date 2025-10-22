@@ -8,8 +8,8 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['lucide-react', '@tanstack/react-query'],
   },
 
-  // Use standalone for Netlify deployment
-  output: 'standalone',
+  // Remove static export to enable API routes for Netlify Functions
+  // output: 'export',
 
   // Server external packages (moved from experimental.serverComponentsExternalPackages)
   serverExternalPackages: ['@supabase/supabase-js'],
@@ -20,12 +20,12 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
 
-  // Static export enabled above
+  // Enable trailing slash for better compatibility
   trailingSlash: true,
 
-  // Disable image optimization for static export
+  // Configure images for Netlify deployment
   images: {
-    unoptimized: true,
+    unoptimized: false,
     remotePatterns: [
       {
         protocol: 'https',

@@ -76,6 +76,8 @@ function checkRateLimit(ip: string): boolean {
   return true;
 }
 
+export const dynamic = 'force-static';
+
 export async function POST(request: NextRequest) {
   try {
     // Rate limiting
