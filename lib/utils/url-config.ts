@@ -4,16 +4,18 @@
 
 /**
  * Get the base URL for the application
- * Priority: NETLIFY_URL > NETLIFY_URL > localhost
+ * Priority: URL > DEPLOY_PRIME_URL > localhost
  */
 export function getBaseUrl(): string {
   // Server-side environment variables
   if (typeof window === 'undefined') {
-    if (process.env.NETLIFY_URL) {
-      return `https://${process.env.NETLIFY_URL}`;
+    // Check for Netlify production deployment
+    if (process.env.URL) {
+      return process.env.URL;
     }
-    if (process.env.NETLIFY_URL) {
-      return `https://${process.env.NETLIFY_URL}`;
+    // Check for Netlify deploy preview
+    if (process.env.DEPLOY_PRIME_URL) {
+      return process.env.DEPLOY_PRIME_URL;
     }
     return 'http://localhost:3000';
   }
@@ -49,7 +51,8 @@ export function logUrlConfig(): void {
     });
   } else {
     console.log('🌐 Server URL Configuration:', {
-      'NETLIFY_URL': process.env.NETLIFY_URL,
+      'URL': process.env.URL,
+      'DEPLOY_PRIME_URL': process.env.DEPLOY_PRIME_URL,
       'NODE_ENV': process.env.NODE_ENV,
       'baseUrl': getBaseUrl(),
     });

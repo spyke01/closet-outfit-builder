@@ -22,7 +22,7 @@ async function seedNewUser(accessToken: string) {
   }
 }
 
-export const dynamic = 'force-static';
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { getAuthCallbackUrl, logUrlConfig } from "@/lib/utils/url-config";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -52,10 +53,11 @@ export function LoginForm({
     setIsLoading(true);
     setError(null);
 
-    const redirectUrl = `${window.location.origin}/auth/callback?next=/wardrobe`;
+    // Log URL configuration for debugging
+    logUrlConfig();
+
+    const redirectUrl = getAuthCallbackUrl('/wardrobe');
     console.log('OAuth redirect URL:', redirectUrl);
-    console.log('Current origin:', window.location.origin);
-    console.log('Current href:', window.location.href);
 
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -64,9 +66,9 @@ export function LoginForm({
           redirectTo: redirectUrl,
         },
       });
-      
+
       console.log('OAuth response:', { data, error });
-      
+
       if (error) throw error;
     } catch (error: unknown) {
       console.error('OAuth error:', error);
