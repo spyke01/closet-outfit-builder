@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['lucide-react', '@tanstack/react-query'],
   },
 
-  // Disable static generation to prevent server-side execution issues
+  // Use standalone for Netlify deployment
   output: 'standalone',
 
   // Server external packages (moved from experimental.serverComponentsExternalPackages)
@@ -20,8 +20,7 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
 
-  // Remove static export for now to enable server features
-  // output: 'export',
+  // Static export enabled above
   trailingSlash: true,
 
   // Disable image optimization for static export

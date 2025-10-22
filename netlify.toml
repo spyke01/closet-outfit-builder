@@ -1,6 +1,9 @@
 [build]
-  publish = "out"
   command = "npm run build"
+
+# Use Netlify's Next.js plugin
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
 
 [dev]
   command = "npm run dev"
