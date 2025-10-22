@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { ThemeSync } from "@/components/theme-sync";
 import { TopBarWrapper } from "@/components/top-bar-wrapper";
 
 export default async function WardrobeLayout({
@@ -20,7 +19,6 @@ export default async function WardrobeLayout({
 
   return (
     <>
-      <ThemeSync />
       <main className="min-h-screen flex flex-col">
         <TopBarWrapper user={userData.user} />
         <div className="flex-1 w-full">

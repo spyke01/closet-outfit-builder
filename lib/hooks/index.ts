@@ -36,7 +36,6 @@ export {
   useUpdateUserPreferences,
   useResetUserPreferences,
   usePreference,
-  useUpdatePreference,
 } from './use-user-preferences';
 
 // Weather preference hooks
