@@ -9,7 +9,14 @@ const config: Config = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  theme: {
+    extend: {
+      fontFamily: {
+        'sans': ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        'serif': ['var(--font-playfair-display)', 'serif'],
+        'display': ['var(--font-playfair-display)', 'serif'],
+      },
+    },
+  },
   plugins: [],
 }
-
-export default config

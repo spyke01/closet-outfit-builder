@@ -28,8 +28,8 @@ export function SimpleThemeToggle() {
         newTheme = 'dark';
         break;
       case 'dark':
-        newTheme = 'system';
-        break;
+        // newTheme = 'system';
+        // break;
       default:
         newTheme = 'light';
         break;

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Geist, Playfair_Display, Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { QueryProvider } from "@/lib/providers/query-provider";
 import { MonitoringProvider } from "@/lib/providers/monitoring-provider";
@@ -13,8 +13,8 @@ const defaultUrl = process.env.NETLIFY_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "What to Wear",
-  description: "Intelligent outfit composition for the modern wardrobe",
+  title: "What to Wear – Your Personal AI Wardrobe Stylist",
+  description: "Upload your wardrobe and let AI create perfect outfits for work, travel, or everyday life. Free and private.",
   manifest: "/manifest.json",
   icons: {
     icon: [
@@ -52,6 +52,18 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
+const playfairDisplay = Playfair_Display({
+  variable: "--font-playfair-display",
+  display: "swap",
+  subsets: ["latin"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  display: "swap",
+  subsets: ["latin"],
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -59,7 +71,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.className} antialiased`}>
+      <body className={`${inter.variable} ${playfairDisplay.variable} ${geistSans.variable} font-sans antialiased`}>
         <MonitoringProvider>
           <QueryProvider>
             <ThemeProvider
