@@ -1,10 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { handleCorsPreflightRequest, createCorsResponse } from '../_shared/cors.ts'
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+
 
 interface DefaultCategory {
   name: string;
@@ -130,8 +128,10 @@ const outfitData: DefaultOutfit[] = [
 ];
 
 serve(async (req) => {
+  const origin = req.headers.get('Origin');
+  
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return handleCorsPreflightRequest(req);
   }
 
   try {
@@ -145,9 +145,10 @@ serve(async (req) => {
     const { data: { user } } = await supabaseClient.auth.getUser(token)
 
     if (!user) {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 401, headers: { 'Content-Type': 'application/json' } },
+        origin
       )
     }
 
@@ -159,9 +160,10 @@ serve(async (req) => {
       .limit(1)
 
     if (existingCategories && existingCategories.length > 0) {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({ message: 'User already seeded', skipped: true }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+        origin
       )
     }
 
@@ -273,7 +275,7 @@ serve(async (req) => {
       throw new Error(`Failed to create outfit items: ${outfitItemsError.message}`)
     }
 
-    return new Response(
+    return createCorsResponse(
       JSON.stringify({
         message: 'User seeded successfully',
         categories: categories.length,
@@ -281,14 +283,16 @@ serve(async (req) => {
         outfits: outfits.length,
         outfit_items: outfitItemsToInsert.length,
       }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 200, headers: { 'Content-Type': 'application/json' } },
+      origin
     )
 
   } catch (error) {
     console.error('Seed user error:', error)
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
+    return createCorsResponse(
+        JSON.stringify({ error: error.message }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } },
+        origin
+      )
   }
 })

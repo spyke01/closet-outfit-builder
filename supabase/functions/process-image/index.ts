@@ -56,24 +56,23 @@ function getFileExtension(mimeType: string): string {
 
 serve(async (req: Request): Promise<Response> => {
   // CORS headers
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  };
+  ;
 
+  const origin = req.headers.get('Origin');
+  
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return handleCorsPreflightRequest(req);
   }
 
   if (req.method !== 'POST') {
-    return new Response(
+    return createCorsResponse(
       JSON.stringify({ success: false, error: 'Method not allowed' }),
       { 
         status: 405, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
+        headers: { 'Content-Type': 'application/json' }
+      },
+      origin
     );
   }
 
@@ -86,12 +85,13 @@ serve(async (req: Request): Promise<Response> => {
     // Get user from JWT
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({ success: false, error: 'Authorization header required' }),
         { 
           status: 401, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
+          headers: { 'Content-Type': 'application/json' }
+        },
+        origin
       );
     }
 
@@ -100,12 +100,13 @@ serve(async (req: Request): Promise<Response> => {
     );
 
     if (authError || !user) {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({ success: false, error: 'Invalid authentication' }),
         { 
           status: 401, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
+          headers: { 'Content-Type': 'application/json' }
+        },
+        origin
       );
     }
 
@@ -114,42 +115,45 @@ serve(async (req: Request): Promise<Response> => {
     const imageFile = formData.get('image') as File;
 
     if (!imageFile) {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({ success: false, error: 'No image file provided' }),
         { 
           status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
+          headers: { 'Content-Type': 'application/json' }
+        },
+        origin
       );
     }
 
     // Validate file size (5MB limit)
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (imageFile.size > maxSize) {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({ 
           success: false, 
           error: 'File size exceeds maximum allowed size (5MB)' 
         }),
         { 
           status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
+          headers: { 'Content-Type': 'application/json' }
+        },
+        origin
       );
     }
 
     // Validate MIME type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(imageFile.type)) {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({ 
           success: false, 
           error: 'File type not supported. Allowed types: JPEG, PNG, WebP' 
         }),
         { 
           status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
+          headers: { 'Content-Type': 'application/json' }
+        },
+        origin
       );
     }
 
@@ -158,15 +162,16 @@ serve(async (req: Request): Promise<Response> => {
     const fileTypeFromMime = imageFile.type.split('/')[1];
     
     if (!validateFileType(imageBuffer, fileTypeFromMime)) {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({ 
           success: false, 
           error: 'File content does not match declared MIME type' 
         }),
         { 
           status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
+          headers: { 'Content-Type': 'application/json' }
+        },
+        origin
       );
     }
 
@@ -203,12 +208,10 @@ serve(async (req: Request): Promise<Response> => {
         message: 'Image processed successfully with background removal'
       };
 
-      return new Response(
+      return createCorsResponse(
         JSON.stringify(result),
-        { 
-          status: 200, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+        origin
       );
 
     } catch (backgroundRemovalError) {
@@ -238,12 +241,10 @@ serve(async (req: Request): Promise<Response> => {
         message: 'Image uploaded successfully but background removal failed'
       };
 
-      return new Response(
+      return createCorsResponse(
         JSON.stringify(result),
-        { 
-          status: 200, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+        origin
       );
     }
 
@@ -256,12 +257,10 @@ serve(async (req: Request): Promise<Response> => {
       message: 'Failed to process image'
     };
 
-    return new Response(
-      JSON.stringify(result),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
-    );
+    return createCorsResponse(
+        JSON.stringify(result),
+        { status: 500, headers: { 'Content-Type': 'application/json' } },
+        origin
+      );
   }
 });

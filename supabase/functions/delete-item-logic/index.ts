@@ -1,10 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+import { handleCorsPreflightRequest, createCorsResponse } from '../_shared/cors.ts'
 
 interface OutfitDependency {
   outfit_id: string;
@@ -24,8 +20,10 @@ interface DeleteAnalysis {
 }
 
 serve(async (req) => {
+  const origin = req.headers.get('Origin');
+  
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return handleCorsPreflightRequest(req);
   }
 
   try {
@@ -39,18 +37,20 @@ serve(async (req) => {
     const { data: { user } } = await supabaseClient.auth.getUser(token)
 
     if (!user) {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 401, headers: { 'Content-Type': 'application/json' } },
+        origin
       )
     }
 
     const { item_id, action = 'analyze', force_delete = false } = await req.json()
 
     if (!item_id) {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({ error: 'item_id is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } },
+        origin
       )
     }
 
@@ -63,9 +63,10 @@ serve(async (req) => {
       .single()
 
     if (itemError || !item) {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({ error: 'Item not found or does not belong to user' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 404, headers: { 'Content-Type': 'application/json' } },
+        origin
       )
     }
 
@@ -154,7 +155,7 @@ serve(async (req) => {
 
     // If this is just an analysis, return the results
     if (action === 'analyze') {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({
           item: {
             id: item.id,
@@ -163,19 +164,21 @@ serve(async (req) => {
           analysis,
           action: 'analyze'
         }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+        origin
       )
     }
 
     // If this is a delete action, proceed with deletion
     if (action === 'delete') {
       if (!analysis.can_delete && !force_delete) {
-        return new Response(
+        return createCorsResponse(
           JSON.stringify({
             error: 'Cannot delete item due to dependencies. Use force_delete=true to override.',
             analysis
           }),
-          { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          { status: 409, headers: { 'Content-Type': 'application/json' } },
+          origin
         )
       }
 
@@ -232,7 +235,7 @@ serve(async (req) => {
 
         deletionResults.item_deleted = true
 
-        return new Response(
+        return createCorsResponse(
           JSON.stringify({
             message: 'Item deleted successfully',
             item: {
@@ -243,33 +246,37 @@ serve(async (req) => {
             analysis,
             action: 'delete'
           }),
-          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          { status: 200, headers: { 'Content-Type': 'application/json' } },
+          origin
         )
 
       } catch (deleteError) {
         deletionResults.errors.push(deleteError.message)
         
-        return new Response(
+        return createCorsResponse(
           JSON.stringify({
             error: 'Deletion failed',
             deletion_results: deletionResults,
             analysis
           }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          { status: 500, headers: { 'Content-Type': 'application/json' } },
+          origin
         )
       }
     }
 
-    return new Response(
+    return createCorsResponse(
       JSON.stringify({ error: 'Invalid action. Use "analyze" or "delete"' }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 400, headers: { 'Content-Type': 'application/json' } },
+      origin
     )
 
   } catch (error) {
     console.error('Delete item logic error:', error)
-    return new Response(
+    return createCorsResponse(
       JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } },
+      origin
     )
   }
 })

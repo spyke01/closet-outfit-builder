@@ -1,10 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+import { handleCorsPreflightRequest, createCorsResponse } from '../_shared/cors.ts'
 
 interface OutfitItem {
   id: string;
@@ -178,8 +174,10 @@ function calculateOutfitScore(selection: OutfitSelection, targetSeason: string =
 }
 
 serve(async (req) => {
+  const origin = req.headers.get('Origin');
+  
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return handleCorsPreflightRequest(req);
   }
 
   try {
@@ -193,18 +191,20 @@ serve(async (req) => {
     const { data: { user } } = await supabaseClient.auth.getUser(token)
 
     if (!user) {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 401, headers: { 'Content-Type': 'application/json' } },
+        origin
       )
     }
 
     const { item_ids, tuck_style, target_season } = await req.json()
 
     if (!item_ids || !Array.isArray(item_ids)) {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({ error: 'item_ids array is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } },
+        origin
       )
     }
 
@@ -229,9 +229,10 @@ serve(async (req) => {
     }
 
     if (!items || items.length === 0) {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({ error: 'No valid items found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 404, headers: { 'Content-Type': 'application/json' } },
+        origin
       )
     }
 
@@ -267,20 +268,22 @@ serve(async (req) => {
 
     const scoreBreakdown = calculateOutfitScore(selection, target_season || 'All')
 
-    return new Response(
+    return createCorsResponse(
       JSON.stringify({
         score: scoreBreakdown.total,
         breakdown: scoreBreakdown,
         selection,
       }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 200, headers: { 'Content-Type': 'application/json' } },
+      origin
     )
 
   } catch (error) {
     console.error('Score outfit error:', error)
-    return new Response(
+    return createCorsResponse(
       JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } },
+      origin
     )
   }
 })

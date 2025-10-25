@@ -27,6 +27,9 @@ yarn-error.log*
 # Next.js
 .next
 
+# Supabase
+/supabase/.temp
+
 # dependencies
 node_modules
 .pnp

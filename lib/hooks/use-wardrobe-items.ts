@@ -244,7 +244,11 @@ export function useDeleteWardrobeItem() {
     mutationFn: async (id: string): Promise<void> => {
       // Call the delete-item-logic Edge Function to handle outfit dependencies
       const { error } = await supabase.functions.invoke('delete-item-logic', {
-        body: { item_id: id }
+        body: { 
+          item_id: id,
+          action: 'delete',
+          force_delete: true // Allow deletion even if it orphans outfits
+        }
       });
 
       if (error) {

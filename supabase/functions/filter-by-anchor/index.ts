@@ -1,10 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { handleCorsPreflightRequest, createCorsResponse } from '../_shared/cors.ts'
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+
 
 interface WardrobeItem {
   id: string;
@@ -174,8 +172,10 @@ function calculateCompatibility(anchorItem: WardrobeItem, candidateItem: Wardrob
 }
 
 serve(async (req) => {
+  const origin = req.headers.get('Origin');
+  
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return handleCorsPreflightRequest(req);
   }
 
   try {
@@ -189,9 +189,10 @@ serve(async (req) => {
     const { data: { user } } = await supabaseClient.auth.getUser(token)
 
     if (!user) {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 401, headers: { 'Content-Type': 'application/json' } },
+        origin
       )
     }
 
@@ -204,9 +205,10 @@ serve(async (req) => {
     } = await req.json()
 
     if (!anchor_item_id) {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({ error: 'anchor_item_id is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } },
+        origin
       )
     }
 
@@ -228,9 +230,10 @@ serve(async (req) => {
       .single()
 
     if (anchorError || !anchorItems) {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({ error: 'Anchor item not found or does not belong to user' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 404, headers: { 'Content-Type': 'application/json' } },
+        origin
       )
     }
 
@@ -272,14 +275,15 @@ serve(async (req) => {
     }
 
     if (!candidateItems || candidateItems.length === 0) {
-      return new Response(
+      return createCorsResponse(
         JSON.stringify({
           anchor_item: anchorItem,
           compatible_items: [],
           total_candidates: 0,
           min_compatibility_score,
         }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+        origin
       )
     }
 
@@ -308,7 +312,7 @@ serve(async (req) => {
       .sort((a, b) => b.compatibility_score - a.compatibility_score)
       .slice(0, limit)
 
-    return new Response(
+    return createCorsResponse(
       JSON.stringify({
         anchor_item: anchorItem,
         compatible_items: compatibilityScores,
@@ -317,14 +321,16 @@ serve(async (req) => {
         min_compatibility_score,
         target_season,
       }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 200, headers: { 'Content-Type': 'application/json' } },
+      origin
     )
 
   } catch (error) {
     console.error('Filter by anchor error:', error)
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
+    return createCorsResponse(
+        JSON.stringify({ error: error.message }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } },
+        origin
+      )
   }
 })
