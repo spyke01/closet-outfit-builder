@@ -274,121 +274,88 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
           </Alert>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Outfit Display */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shirt className="h-5 w-5" />
-                Outfit Items
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <OutfitCard
-                outfit={selection as any}
-                variant="detailed"
-                showScore={true}
-                score={outfit.score || 0}
-                enableFlip={true}
-                defaultFlipped={false}
-                outfitItems={outfit.items || []}
-              />
-            </CardContent>
-          </Card>
+        {/* Outfit Details */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shirt className="h-5 w-5" />
+              Outfit Details
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {isEditing ? (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    Outfit Name
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.name || ''}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
+                    className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                    placeholder="e.g., Business Casual"
+                  />
+                </div>
 
-          {/* Outfit Details */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Outfit Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {isEditing ? (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                      Outfit Name
-                    </label>
-                    <input
-                      type="text"
-                      value={editForm.name || ''}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
-                      className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
-                      placeholder="e.g., Business Casual"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                      Tuck Style
-                    </label>
-                    <div className="flex gap-2">
-                      <Button
-                        type="button"
-                        variant={editForm.tuck_style === 'Tucked' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setEditForm(prev => ({ ...prev, tuck_style: 'Tucked' }))}
-                      >
-                        Tucked
-                      </Button>
-                      <Button
-                        type="button"
-                        variant={editForm.tuck_style === 'Untucked' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setEditForm(prev => ({ ...prev, tuck_style: 'Untucked' }))}
-                      >
-                        Untucked
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Tuck Style
+                  </label>
+                  <div className="flex gap-2">
                     <Button
                       type="button"
-                      variant={editForm.loved ? 'default' : 'outline'}
+                      variant={editForm.tuck_style === 'Tucked' ? 'default' : 'outline'}
                       size="sm"
-                      onClick={() => setEditForm(prev => ({ ...prev, loved: !prev.loved }))}
-                      className="flex items-center gap-2"
+                      onClick={() => setEditForm(prev => ({ ...prev, tuck_style: 'Tucked' }))}
                     >
-                      <Heart className={`h-4 w-4 ${editForm.loved ? 'fill-current' : ''}`} />
-                      {editForm.loved ? 'Loved' : 'Add to Favorites'}
+                      Tucked
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={editForm.tuck_style === 'Untucked' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setEditForm(prev => ({ ...prev, tuck_style: 'Untucked' }))}
+                    >
+                      Untucked
                     </Button>
                   </div>
-                </>
-              ) : (
-                <>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Tuck Style</p>
-                      <p className="text-slate-900 dark:text-slate-100">{outfit.tuck_style || 'Untucked'}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Source</p>
-                      <p className="text-slate-900 dark:text-slate-100 capitalize">{outfit.source}</p>
-                    </div>
-                  </div>
+                </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Created</p>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-slate-400" />
-                        <p className="text-slate-900 dark:text-slate-100">
-                          {new Date(outfit.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Items</p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant={editForm.loved ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setEditForm(prev => ({ ...prev, loved: !prev.loved }))}
+                    className="flex items-center gap-2"
+                  >
+                    <Heart className={`h-4 w-4 ${editForm.loved ? 'fill-current' : ''}`} />
+                    {editForm.loved ? 'Loved' : 'Add to Favorites'}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Created</p>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-slate-400" />
                       <p className="text-slate-900 dark:text-slate-100">
-                        {outfit.items?.length || 0} item{outfit.items?.length !== 1 ? 's' : ''}
+                        {new Date(outfit.created_at).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Tuck Style</p>
+                    <p className="text-slate-900 dark:text-slate-100">{outfit.tuck_style || 'Untucked'}</p>
+                  </div>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Items List - Flat Layout */}
         <Card>
