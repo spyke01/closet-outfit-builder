@@ -22,14 +22,14 @@ export function SimpleThemeToggle() {
     const currentTheme = theme || 'system';
     let newTheme: 'light' | 'dark' | 'system';
     
-    // Cycle through themes: light -> dark -> system -> light
+    // Cycle through themes: light -> dark -> light
     switch (currentTheme) {
       case 'light':
         newTheme = 'dark';
         break;
       case 'dark':
-        // newTheme = 'system';
-        // break;
+        newTheme = 'light';
+        break;
       default:
         newTheme = 'light';
         break;

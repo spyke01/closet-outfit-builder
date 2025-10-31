@@ -8,7 +8,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@netlify/functions": "^2.4.0"
+    "@netlify/functions": "^5.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.0.0",
