@@ -39,7 +39,10 @@
     "weather:validate": "node scripts/validate-weather-production.js",
     "weather:env": "node scripts/validate-weather-environment.js",
     "deploy:netlify": "node scripts/deploy-netlify.js",
-    "check:auth": "node scripts/check-auth-urls.js"
+    "check:auth": "node scripts/check-auth-urls.js",
+    "debug:production": "node scripts/debug-production.js",
+    "check:supabase": "node scripts/check-supabase-connection.js",
+    "verify:env": "node scripts/verify-production-env.js"
   },
   "dependencies": {
     "@netlify/functions": "^5.0.0",
@@ -68,6 +71,7 @@
   "devDependencies": {
     "@axe-core/react": "^4.10.2",
     "@eslint/eslintrc": "^3",
+    "@netlify/plugin-nextjs": "^5.8.1",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/postcss": "^4.1.13",
     "@testing-library/jest-dom": "^6.9.1",
@@ -87,8 +91,7 @@
     "globals": "^15.9.0",
     "jest-axe": "^10.0.0",
     "jsdom": "^27.0.0",
-    "netlify-cli": "^23.8.1",
-    "@netlify/plugin-nextjs": "^5.8.1",
+    "netlify-cli": "^23.12.3",
     "postcss": "^8.4.35",
     "tailwindcss": "^4.1.13",
     "tailwindcss-animate": "^1.0.7",
