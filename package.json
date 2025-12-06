@@ -91,6 +91,7 @@
     "globals": "^15.9.0",
     "jest-axe": "^10.0.0",
     "jsdom": "^27.0.0",
+    "jws": "^3.2.3",
     "netlify-cli": "^23.12.3",
     "postcss": "^8.4.35",
     "tailwindcss": "^4.1.13",

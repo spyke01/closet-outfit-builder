@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "npm run verify:env && npm run build"
   publish = ".next"
 
 # Use Netlify's Next.js plugin
@@ -66,8 +66,8 @@
     X-XSS-Protection = "1; mode=block"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "geolocation=(self), camera=(), microphone=(), payment=()"
-    # Content Security Policy for enhanced security
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: *.supabase.co; font-src 'self'; connect-src 'self' https://api.openweathermap.org https://maps.googleapis.com *.supabase.co wss://*.supabase.co; frame-ancestors 'none';"
+    # Content Security Policy for enhanced security - Updated for Supabase compatibility
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: *.supabase.co; font-src 'self'; connect-src 'self' https://api.openweathermap.org https://maps.googleapis.com https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none';"
 
 # Cache static assets with optimized headers
 [[headers]]
