@@ -67,7 +67,7 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "geolocation=(self), camera=(), microphone=(), payment=()"
     # Content Security Policy for enhanced security - Updated for Supabase compatibility
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: *.supabase.co; font-src 'self'; connect-src 'self' https://api.openweathermap.org https://maps.googleapis.com https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none';"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: *.supabase.co; font-src 'self' data:; connect-src 'self' https://api.openweathermap.org https://maps.googleapis.com https://*.supabase.co wss://*.supabase.co https://ahjwzpyammiqelloazvn.supabase.co; frame-ancestors 'none'; object-src 'none';"
 
 # Cache static assets with optimized headers
 [[headers]]

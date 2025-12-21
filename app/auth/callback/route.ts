@@ -1,80 +1,157 @@
-import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { getBaseUrl } from '@/lib/utils/url-config'
-
-async function seedNewUser(accessToken: string) {
-  try {
-    const supabase = await createClient()
-    const { data, error } = await supabase.functions.invoke('seed-user', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
-    
-    if (error) {
-      console.error('Failed to seed user data:', error)
-    } else {
-      console.log('User seeded successfully:', data)
-    }
-  } catch (error) {
-    console.error('Error seeding user:', error)
-  }
-}
+import { createServerClient } from "@supabase/ssr"
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const code = searchParams.get('code')
-  const error = searchParams.get('error')
-  const error_description = searchParams.get('error_description')
-  // if "next" is in param, use it as the redirect URL
-  const next = searchParams.get('next') ?? '/wardrobe'
-
-  // Use our URL configuration utility instead of request origin
-  const baseUrl = getBaseUrl()
+  console.log('=== OAuth Callback Start ===')
   
-  console.log('OAuth callback received:', { 
-    code: !!code, 
-    error, 
-    error_description,
-    baseUrl,
-    requestUrl: request.url 
-  })
+  try {
+    const { searchParams, origin } = new URL(request.url)
+    const code = searchParams.get('code')
+    const error = searchParams.get('error')
+    const error_description = searchParams.get('error_description')
+    const next = searchParams.get('next') ?? '/wardrobe'
 
-  // Handle OAuth errors
-  if (error) {
-    console.error('OAuth error:', error, error_description)
-    return NextResponse.redirect(`${baseUrl}/auth/auth-code-error?error=${encodeURIComponent(error_description || error)}`)
-  }
+    console.log('Request details:', {
+      code: !!code,
+      error,
+      error_description,
+      origin,
+      next,
+      url: request.url
+    })
 
-  if (code) {
-    const supabase = await createClient()
+    // Check environment variables
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
     
-    try {
-      const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
-      
-      if (exchangeError) {
-        console.error('Code exchange error:', exchangeError)
-        return NextResponse.redirect(`${baseUrl}/auth/auth-code-error?error=${encodeURIComponent(exchangeError.message)}`)
-      }
+    console.log('Environment check:', {
+      hasSupabaseUrl: !!supabaseUrl,
+      hasSupabaseKey: !!supabaseKey,
+      nodeEnv: process.env.NODE_ENV
+    })
 
-      if (data.session) {
-        console.log('OAuth success, redirecting to:', next)
-        
-        // Seed the new user with default data
-        await seedNewUser(data.session.access_token)
-        
-        // Always use our base URL configuration for consistent redirects
-        return NextResponse.redirect(`${baseUrl}${next}`)
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('Missing Supabase environment variables')
+      return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent('Configuration error')}`)
+    }
+
+    // Handle OAuth errors from provider
+    if (error) {
+      console.error('OAuth provider error:', error, error_description)
+      return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent(error_description || error)}`)
+    }
+
+    // Handle missing code
+    if (!code) {
+      console.error('No authorization code received')
+      return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent('No authorization code received')}`)
+    }
+
+    console.log('Creating Supabase client with cookie handling...')
+    
+    // Create response object first so we can set cookies
+    const redirectUrl = `${origin}${next}`
+    const response = NextResponse.redirect(redirectUrl)
+    
+    // Create Supabase client with proper cookie handling
+    const supabase = createServerClient(
+      supabaseUrl,
+      supabaseKey,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll(cookiesToSet) {
+            // Set cookies on the response object with proper Supabase format
+            cookiesToSet.forEach(({ name, value, options }) => {
+              response.cookies.set(name, value, {
+                ...options,
+                httpOnly: false, // Allow client-side access for Supabase
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+                path: '/',
+              });
+            });
+          },
+        },
+      },
+    );
+    
+    console.log('Attempting code exchange...')
+    
+    // Exchange code for session
+    const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+    
+    if (exchangeError) {
+      console.error('Code exchange error:', {
+        message: exchangeError.message,
+        status: exchangeError.status,
+        name: exchangeError.name
+      })
+      
+      // Handle specific PKCE errors
+      if (exchangeError.message?.includes('code verifier') || 
+          exchangeError.message?.includes('invalid request')) {
+        console.error('PKCE verification failed')
+        return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent('Authentication session expired. Please try signing in again.')}`)
       }
-    } catch (err) {
-      console.error('Unexpected error in OAuth callback:', err)
-      return NextResponse.redirect(`${baseUrl}/auth/auth-code-error?error=${encodeURIComponent('Unexpected error occurred')}`)
+      
+      return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent(exchangeError.message || 'Authentication failed')}`)
+    }
+
+    if (!data?.session) {
+      console.error('No session returned from code exchange')
+      return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent('No session created. Please try again.')}`)
+    }
+
+    console.log('OAuth success:', {
+      userId: data.user?.id,
+      email: data.user?.email,
+      provider: data.user?.app_metadata?.provider
+    })
+    
+    // Seed new user data (non-blocking)
+    try {
+      const { error: seedError } = await supabase.functions.invoke('seed-user', {
+        headers: {
+          Authorization: `Bearer ${data.session.access_token}`,
+        },
+      })
+      
+      if (seedError) {
+        console.error('Failed to seed user data:', seedError)
+      } else {
+        console.log('User seeded successfully')
+      }
+    } catch (seedError) {
+      console.error('Error seeding user (non-blocking):', seedError)
+    }
+    
+    console.log('Redirecting to:', redirectUrl)
+    console.log('=== OAuth Callback Success ===')
+    
+    return response
+    
+  } catch (globalError) {
+    console.error('=== Global error in OAuth callback ===')
+    console.error('Error details:', {
+      message: globalError instanceof Error ? globalError.message : 'Unknown error',
+      stack: globalError instanceof Error ? globalError.stack : undefined,
+      name: globalError instanceof Error ? globalError.name : undefined
+    })
+    
+    // Fallback URL construction
+    try {
+      const url = new URL(request.url)
+      const baseUrl = url.origin
+      return NextResponse.redirect(`${baseUrl}/auth/auth-code-error?error=${encodeURIComponent('Internal server error. Please try again.')}`)
+    } catch (urlError) {
+      console.error('Failed to construct fallback URL:', urlError)
+      // Last resort - return a basic error response
+      return new NextResponse('Internal Server Error', { status: 500 })
     }
   }
-
-  // No code parameter - this shouldn't happen in a proper OAuth flow
-  console.error('No code parameter in OAuth callback')
-  return NextResponse.redirect(`${baseUrl}/auth/auth-code-error?error=${encodeURIComponent('No authorization code received')}`)
 }

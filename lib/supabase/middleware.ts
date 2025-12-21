@@ -63,8 +63,10 @@ export async function updateSession(request: NextRequest) {
   }
 
   // Redirect authenticated users away from auth pages to wardrobe
+  // BUT allow callback and confirm routes to process first
   if (user && request.nextUrl.pathname.startsWith('/auth') && 
-      !request.nextUrl.pathname.startsWith('/auth/confirm')) {
+      !request.nextUrl.pathname.startsWith('/auth/confirm') &&
+      !request.nextUrl.pathname.startsWith('/auth/callback')) {
     const url = request.nextUrl.clone();
     url.pathname = "/wardrobe";
     return NextResponse.redirect(url);

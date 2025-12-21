@@ -64,12 +64,21 @@ export function LoginForm({
         provider: 'google',
         options: {
           redirectTo: redirectUrl,
+          // Add PKCE flow configuration for better security
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+          // Ensure we skip session refresh during OAuth flow
+          skipBrowserRedirect: false,
         },
       });
 
       console.log('OAuth response:', { data, error });
 
       if (error) throw error;
+      
+      // Don't set loading to false here - let the redirect happen
     } catch (error: unknown) {
       console.error('OAuth error:', error);
       setError(error instanceof Error ? error.message : "An error occurred");
