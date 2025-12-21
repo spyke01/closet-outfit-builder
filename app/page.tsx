@@ -9,7 +9,6 @@ import { FeatureHighlights } from "@/components/homepage/feature-highlights";
 import { HowItWorks } from "@/components/homepage/how-it-works";
 import { AppDemo } from "@/components/homepage/app-demo";
 import { Testimonials } from "@/components/homepage/testimonials";
-import { PricingSection } from "@/components/homepage/pricing-section";
 import { FinalCTA } from "@/components/homepage/final-cta";
 
 export default function Home() {
@@ -49,9 +48,6 @@ export default function Home() {
       <HowItWorks />
       <AppDemo />
       <Testimonials />
-      <div id="pricing">
-        <PricingSection />
-      </div>
       <FinalCTA />
     </main>
   );

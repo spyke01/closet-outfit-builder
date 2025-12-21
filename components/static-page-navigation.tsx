@@ -7,7 +7,7 @@ import { Logo } from "@/components/logo";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
-export function Navigation() {
+export function StaticPageNavigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -21,7 +21,7 @@ export function Navigation() {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <Link href="#how-it-works" className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">
+            <Link href="/how-it-works" className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">
               How it works
             </Link>
             <Link href="/pricing" className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">
@@ -65,7 +65,7 @@ export function Navigation() {
         {isMenuOpen && (
           <div className="md:hidden border-t border-slate-200 dark:border-slate-700 py-4 space-y-4">
             <Link 
-              href="#how-it-works" 
+              href="/how-it-works" 
               className="block text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
