@@ -1,194 +1,112 @@
-import { createClient } from '../supabase/client';
+/**
+ * Image optimization utilities for wardrobe items
+ * Simplified version without caching to avoid cache API errors
+ */
 
-// Image optimization utilities for Supabase Storage CDN
+export interface ImageOptimizationOptions {
+  width?: number;
+  height?: number;
+  quality?: number;
+  format?: 'webp' | 'jpeg' | 'png';
+}
+
 export class ImageOptimizer {
-  private supabase = createClient();
-  private cache = new Map<string, string>();
-  
-  // Generate optimized image URL with CDN parameters
-  generateOptimizedUrl(
-    bucket: string,
-    path: string,
-    options: {
-      width?: number;
-      height?: number;
-      quality?: number;
-      format?: 'webp' | 'avif' | 'jpeg' | 'png';
-      resize?: 'cover' | 'contain' | 'fill';
-    } = {}
+  /**
+   * Get optimized image URL
+   */
+  getOptimizedUrl(
+    originalUrl: string,
+    options: ImageOptimizationOptions = {}
   ): string {
-    const cacheKey = `${bucket}/${path}/${JSON.stringify(options)}`;
-    
-    // Return cached URL if available
-    if (this.cache.has(cacheKey)) {
-      return this.cache.get(cacheKey)!;
+    const {
+      width = 400,
+      height = 400,
+      quality = 80,
+      format = 'webp'
+    } = options;
+
+    // For Supabase storage URLs, use transform parameters
+    if (originalUrl.includes('supabase.co/storage')) {
+      const url = new URL(originalUrl);
+      url.searchParams.set('width', width.toString());
+      url.searchParams.set('height', height.toString());
+      url.searchParams.set('quality', quality.toString());
+      url.searchParams.set('format', format);
+      return url.toString();
     }
-    
-    // Get base public URL
-    const { data } = this.supabase.storage.from(bucket).getPublicUrl(path);
-    let optimizedUrl = data.publicUrl;
-    
-    // Add optimization parameters
-    const params = new URLSearchParams();
-    
-    if (options.width) params.set('width', options.width.toString());
-    if (options.height) params.set('height', options.height.toString());
-    if (options.quality) params.set('quality', options.quality.toString());
-    if (options.format) params.set('format', options.format);
-    if (options.resize) params.set('resize', options.resize);
-    
-    if (params.toString()) {
-      optimizedUrl += `?${params.toString()}`;
-    }
-    
-    // Cache the result
-    this.cache.set(cacheKey, optimizedUrl);
-    
-    return optimizedUrl;
+
+    // For other URLs, return as-is (could add other CDN support here)
+    return originalUrl;
   }
-  
-  // Generate responsive image URLs for different breakpoints
-  generateResponsiveUrls(
-    bucket: string,
-    path: string,
-    options: {
-      quality?: number;
-      format?: 'webp' | 'avif' | 'jpeg' | 'png';
-      breakpoints?: number[];
-    } = {}
-  ): Array<{ width: number; url: string }> {
-    const defaultBreakpoints = [320, 640, 768, 1024, 1280, 1920];
-    const breakpoints = options.breakpoints || defaultBreakpoints;
-    const format = options.format || 'webp';
-    const quality = options.quality || 80;
-    
-    return breakpoints.map(width => ({
-      width,
-      url: this.generateOptimizedUrl(bucket, path, {
-        width,
-        quality,
-        format,
-        resize: 'cover',
-      }),
-    }));
+
+  /**
+   * Get responsive image URLs for different screen sizes
+   */
+  getResponsiveUrls(originalUrl: string): {
+    small: string;
+    medium: string;
+    large: string;
+  } {
+    return {
+      small: this.getOptimizedUrl(originalUrl, { width: 200, height: 200 }),
+      medium: this.getOptimizedUrl(originalUrl, { width: 400, height: 400 }),
+      large: this.getOptimizedUrl(originalUrl, { width: 800, height: 800 }),
+    };
   }
-  
-  // Preload critical images
-  preloadImage(url: string, priority: 'high' | 'low' = 'low'): void {
-    if (typeof window === 'undefined') return;
-    
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'image';
-    link.href = url;
-    link.fetchPriority = priority;
-    
-    document.head.appendChild(link);
+
+  /**
+   * Get optimized URL for thumbnail
+   */
+  getThumbnailUrl(originalUrl: string): string {
+    return this.getOptimizedUrl(originalUrl, {
+      width: 150,
+      height: 150,
+      quality: 70,
+    });
   }
-  
-  // Lazy load images with intersection observer
-  lazyLoadImage(
-    img: HTMLImageElement,
-    src: string,
-    options: {
-      rootMargin?: string;
-      threshold?: number;
-    } = {}
-  ): void {
-    if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
-      img.src = src;
-      return;
-    }
-    
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const target = entry.target as HTMLImageElement;
-            target.src = src;
-            target.classList.remove('lazy');
-            observer.unobserve(target);
-          }
-        });
-      },
-      {
-        rootMargin: options.rootMargin || '50px',
-        threshold: options.threshold || 0.1,
-      }
-    );
-    
-    observer.observe(img);
+
+  /**
+   * Get optimized URL for card display
+   */
+  getCardUrl(originalUrl: string): string {
+    return this.getOptimizedUrl(originalUrl, {
+      width: 300,
+      height: 300,
+      quality: 80,
+    });
   }
-  
-  // Clear image URL cache
-  clearCache(): void {
-    this.cache.clear();
+
+  /**
+   * Get optimized URL for full display
+   */
+  getFullUrl(originalUrl: string): string {
+    return this.getOptimizedUrl(originalUrl, {
+      width: 600,
+      height: 600,
+      quality: 85,
+    });
   }
-  
-  // Get cache size for monitoring
-  getCacheSize(): number {
-    return this.cache.size;
+
+  /**
+   * Preload critical images (simplified without caching)
+   */
+  preloadImage(url: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve();
+      img.onerror = reject;
+      img.src = url;
+    });
+  }
+
+  /**
+   * Batch preload multiple images
+   */
+  async preloadImages(urls: string[]): Promise<void> {
+    const promises = urls.map(url => this.preloadImage(url));
+    await Promise.allSettled(promises);
   }
 }
 
-// Singleton instance
+// Export singleton instance
 export const imageOptimizer = new ImageOptimizer();
-
-// Utility functions for common use cases
-export const optimizeWardrobeItemImage = (
-  imagePath: string,
-  size: 'thumbnail' | 'medium' | 'large' = 'medium'
-) => {
-  const sizeMap = {
-    thumbnail: { width: 150, height: 150 },
-    medium: { width: 400, height: 400 },
-    large: { width: 800, height: 800 },
-  };
-  
-  return imageOptimizer.generateOptimizedUrl('wardrobe-images', imagePath, {
-    ...sizeMap[size],
-    quality: 85,
-    format: 'webp',
-    resize: 'cover',
-  });
-};
-
-export const generateOutfitImageSrcSet = (imagePath: string) => {
-  const responsiveUrls = imageOptimizer.generateResponsiveUrls('wardrobe-images', imagePath, {
-    quality: 80,
-    format: 'webp',
-  });
-  
-  return responsiveUrls
-    .map(({ width, url }) => `${url} ${width}w`)
-    .join(', ');
-};
-
-// Performance monitoring
-export const imagePerformanceMonitor = {
-  loadTimes: new Map<string, number>(),
-  
-  startLoad(url: string): void {
-    this.loadTimes.set(url, performance.now());
-  },
-  
-  endLoad(url: string): number {
-    const startTime = this.loadTimes.get(url);
-    if (!startTime) return 0;
-    
-    const loadTime = performance.now() - startTime;
-    this.loadTimes.delete(url);
-    
-    // Log slow loading images
-    if (loadTime > 2000) {
-      console.warn(`Slow image load: ${url} took ${loadTime.toFixed(2)}ms`);
-    }
-    
-    return loadTime;
-  },
-  
-  getAverageLoadTime(): number {
-    const times = Array.from(this.loadTimes.values());
-    return times.length > 0 ? times.reduce((a, b) => a + b, 0) / times.length : 0;
-  },
-};
