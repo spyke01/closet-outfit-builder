@@ -412,6 +412,35 @@ supabase functions deploy function-name
 supabase functions serve
 ```
 
+### Wardrobe Data Sync Script
+
+For developers who need to add new wardrobe items and outfits programmatically, use the Wardrobe Sync Script:
+
+```bash
+# Sync new items to admin user only (default, safest)
+node scripts/sync-wardrobe.js
+
+# Sync new items to all existing users
+node scripts/sync-wardrobe.js --all-users
+
+# Test sync without making database changes
+node scripts/sync-wardrobe.js --dry-run --verbose
+```
+
+**Key Features:**
+- Secure authentication using Supabase service role key
+- Validates data structure and image file existence
+- Prevents duplicate items and outfits
+- Supports admin-only or all-users distribution
+- Comprehensive error handling and progress reporting
+
+**Requirements:**
+- `SUPABASE_SERVICE_ROLE_KEY` environment variable
+- Image files in `public/images/wardrobe/` directory
+- Wardrobe and outfit data defined in the script (uses seed-user source)
+
+For detailed usage instructions, see [scripts/README.md](scripts/README.md).
+
 ### Authentication Development
 
 #### Testing Authentication Flows
@@ -438,9 +467,10 @@ supabase functions serve
 
 #### Manual Image Processing (if needed)
 1. Use ChatGPT or another tool to generate wardrobe item images
-2. Upload through the web interface for automatic processing
-3. Alternative: Use [Remove.bg](https://www.remove.bg/) for manual background removal
+2. Split the grid image using [PineTools](https://pinetools.com/split-image)
+3. Use [Remove.bg](https://www.remove.bg/) for manual background removal
 4. Use [TinyPNG](https://tinypng.com/) to compress images before upload
+5. Upload through the web interface for automatic processing
 
 ### Weather Service Integration
 

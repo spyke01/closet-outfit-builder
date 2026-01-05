@@ -22,6 +22,7 @@ export interface WardrobeItem {
   season?: string[];
   image_url?: string;
   active: boolean;
+  external_id?: string; // Original ID from seed data for duplicate detection
   created_at: string;
   updated_at: string;
   // Joined fields
@@ -37,6 +38,7 @@ export interface Outfit {
   weight: number;
   loved: boolean;
   source: 'curated' | 'generated';
+  external_id?: string; // Original ID from seed data for duplicate detection
   created_at: string;
   updated_at: string;
   // Joined fields
