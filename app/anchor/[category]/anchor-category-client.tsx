@@ -73,7 +73,8 @@ export function AnchorCategoryPageClient({ categoryName }: AnchorCategoryPageCli
     return filtered;
   }, [items, category, searchTerm, sortBy]);
 
-  const handleItemSelect = (item: WardrobeItem) => {
+  const handleItemSelect = (item: WardrobeItem | null) => {
+    if (!item) return; // Handle null case
     // Navigate to the filtered outfit building interface
     window.location.href = `/anchor/${encodeURIComponent(categoryName)}/${item.id}`;
   };

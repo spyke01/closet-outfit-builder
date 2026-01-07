@@ -1,17 +1,14 @@
 'use client';
 
 import React, { useState, useMemo, useCallback, startTransition, useDeferredValue } from 'react';
-import { Search, Tag, Plus, Upload } from 'lucide-react';
+import { Search, Tag, Plus } from 'lucide-react';
 import { z } from 'zod';
-import { produce } from 'immer';
 import { useImmerState } from '@/lib/utils/immer-state';
 import { safeValidate, validateFileUpload } from '@/lib/utils/validation';
 import { 
-  WardrobeItemSchema, 
-  CategorySchema,
-  FileValidationSchema
+  WardrobeItemSchema
 } from '@/lib/schemas';
-import { type WardrobeItem, type Category } from '@/lib/types/database';
+import { type WardrobeItem } from '@/lib/types/database';
 
 import { ImageUpload } from './image-upload';
 
@@ -35,8 +32,8 @@ const capsuleTags: CapsuleTagType[] = ['Refined', 'Adventurer', 'Crossover', 'Sh
 interface ItemsGridProps {
   category: string;
   items: WardrobeItem[];
-  selectedItem?: WardrobeItem;
-  onItemSelect: (item: WardrobeItem) => void;
+  selectedItem?: WardrobeItem | null;
+  onItemSelect: (item: WardrobeItem | null) => void; // Allow null for deselection
   onItemAdd?: (item: Omit<WardrobeItem, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => Promise<void>;
   showBrand?: boolean;
   enableImageUpload?: boolean;
@@ -135,10 +132,13 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
 
   // Optimized item selection handler
   const handleItemSelect = useCallback((item: WardrobeItem) => {
-    startTransition(() => {
-      onItemSelect(item);
-    });
-  }, [onItemSelect]);
+    // Check if this item is already selected - if so, deselect it
+    if (selectedItem && selectedItem.id === item.id) {
+      onItemSelect(null); // Deselect
+    } else {
+      onItemSelect(item); // Select new item
+    }
+  }, [onItemSelect, selectedItem]);
 
   // Format item name helper
   const formatItemName = useCallback((item: WardrobeItem): string => {
@@ -148,7 +148,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
     return item.name;
   }, [showBrand]);
 
-  // Handle image upload
+  // Handle image upload (currently unused but kept for future functionality)
   const handleImageUpload = useCallback(async (file: File): Promise<string> => {
     updateState(draft => {
       draft.isUploading = true;
@@ -257,7 +257,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
                 </div>
               )}
             </div>
-            
+
             {onItemAdd && (
               <button
                 onClick={() => updateState(draft => { draft.showAddForm = !draft.showAddForm; })}
@@ -308,7 +308,6 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
                       ? 'bg-slate-800 dark:bg-slate-600 text-white shadow-sm'
                       : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 hover:shadow-sm'
                   } ${isFiltering ? 'opacity-75' : 'opacity-100'}`}
-                  disabled={isFiltering}
                 >
                   {tag}
                 </button>
@@ -327,27 +326,22 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
           )}
         </div>
 
-        {/* Responsive grid - 2 cols on mobile, up to 6 on larger screens */}
-        <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 transition-opacity duration-200 ${
+        {/* Responsive grid - 2 cols on mobile, 3 on small, 4 on medium and up */}
+        <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 transition-opacity duration-200 ${
           isFiltering ? 'opacity-75' : 'opacity-100'
         }`}>
           {filteredItems.map(item => (
-            <div
+            <button
               key={item.id}
-              onClick={() => handleItemSelect(item)}
-              className={`p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer touch-manipulation ${
+              type="button"
+              onClick={() => {
+                handleItemSelect(item);
+              }}
+              className={`p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer touch-manipulation w-full text-left ${
                 validatedSelectedItem?.id === item.id
                   ? 'border-slate-800 dark:border-slate-400 bg-slate-50 dark:bg-slate-700 shadow-sm'
-                  : 'border-stone-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-md active:scale-95'
-              } ${isFiltering ? 'pointer-events-none' : ''}`}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handleItemSelect(item);
-                }
-              }}
+                  : 'border-stone-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-md'
+              }`}
               aria-label={`Select ${formatItemName(item)} for outfit building`}
             >
               {/* Fixed height image container */}
@@ -392,7 +386,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
                   </div>
                 )}
               </div>
-            </div>
+            </button>
           ))}
         </div>
 

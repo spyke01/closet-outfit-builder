@@ -82,6 +82,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
     const items = [
       { key: 'jacket', label: 'Jacket', item: validatedOutfit.jacket },
       { key: 'shirt', label: 'Shirt', item: validatedOutfit.shirt },
+      { key: 'undershirt', label: 'Undershirt', item: validatedOutfit.undershirt },
       { key: 'pants', label: 'Pants', item: validatedOutfit.pants },
       { key: 'shoes', label: 'Shoes', item: validatedOutfit.shoes },
       { key: 'belt', label: 'Belt', item: validatedOutfit.belt },
@@ -91,7 +92,13 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
     if (items.length === 0) {
       return (
         <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-          No items selected
+          <div className="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-lg mx-auto mb-3 flex items-center justify-center">
+            <div className="w-8 h-8 bg-slate-200 dark:bg-slate-600 rounded-md" />
+          </div>
+          <p className="text-sm">No items selected</p>
+          <p className="text-xs mt-1 opacity-75">
+            Choose items from categories to build your outfit
+          </p>
         </div>
       );
     }
@@ -99,9 +106,9 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
     return (
       <div className="space-y-3">
         {items.map(({ key, label, item }) => (
-          <div key={key} className="flex items-center gap-3">
+          <div key={key} className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
             {/* Item image or placeholder */}
-            <div className="w-12 h-12 bg-slate-100 dark:bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="w-14 h-14 bg-slate-100 dark:bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
               {item?.image_url ? (
                 <img
                   src={item.image_url}
@@ -116,8 +123,13 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
             {/* Item details */}
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">
-                {formatItemName(item)}
+                {item?.name || 'Unknown Item'}
               </p>
+              {item?.brand && (
+                <p className="text-xs text-slate-600 dark:text-slate-400 truncate">
+                  {item.brand}
+                </p>
+              )}
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 {label}
               </p>

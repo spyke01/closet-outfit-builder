@@ -38,6 +38,7 @@ interface OutfitSelection {
 
 export function CreateOutfitPageClient() {
   const router = useRouter();
+  
   const [selection, setSelection] = useState<OutfitSelection>({
     tuck_style: 'Untucked'
   });
@@ -69,6 +70,11 @@ export function CreateOutfitPageClient() {
       .map(([, item]) => (item as WardrobeItem).id);
   }, [selection]);
 
+  // Check if outfit meets minimum requirements (shirt + pants)
+  const hasMinimumOutfit = useMemo(() => {
+    return (selection.shirt || selection.undershirt) && selection.pants;
+  }, [selection.shirt, selection.undershirt, selection.pants]);
+
   const { data: scoreData } = useScoreOutfit(selectedItemIds);
   const { data: isDuplicate } = useCheckOutfitDuplicate(selectedItemIds);
 
@@ -94,17 +100,23 @@ export function CreateOutfitPageClient() {
     setSelectedCategory(categoryId);
   };
 
-  const handleItemSelect = (item: WardrobeItem) => {
-    const category = categories.find(c => c.id === item.category_id);
+  const handleItemSelect = (item: WardrobeItem | null) => {
+    const category = categories.find(c => c.id === selectedCategory);
     if (category) {
       // Map category names to OutfitSelection property names
       const categoryMap: Record<string, keyof OutfitSelection> = {
+        'Jacket': 'jacket',
+        'Jacket/Overshirt': 'jacket',
         'Jackets': 'jacket',
+        'Shirt': 'shirt',
         'Shirts': 'shirt',
+        'Undershirt': 'undershirt',
         'Undershirts': 'undershirt',
         'Pants': 'pants',
         'Shoes': 'shoes',
+        'Belt': 'belt',
         'Belts': 'belt',
+        'Watch': 'watch',
         'Watches': 'watch'
       };
       
@@ -112,7 +124,7 @@ export function CreateOutfitPageClient() {
       if (propertyName && propertyName !== 'tuck_style' && propertyName !== 'score') {
         setSelection(prev => ({
           ...prev,
-          [propertyName]: item
+          [propertyName]: item // item can be null for deselection
         }));
       }
     }
@@ -128,7 +140,7 @@ export function CreateOutfitPageClient() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (selectedItemIds.length === 0) {
+    if (!hasMinimumOutfit) {
       return;
     }
 
@@ -152,8 +164,14 @@ export function CreateOutfitPageClient() {
     router.push('/outfits');
   };
 
-  const isFormValid = selectedItemIds.length > 0;
+  const isFormValid = hasMinimumOutfit;
   const currentScore = scoreData?.score || 0;
+
+  // Update selection with current score for real-time updates
+  const selectionWithScore = useMemo(() => ({
+    ...selection,
+    score: currentScore
+  }), [selection, currentScore]);
 
   if (categoriesLoading || itemsLoading) {
     return (
@@ -268,7 +286,7 @@ export function CreateOutfitPageClient() {
                         type="button"
                         variant={tuckStyle === 'Tucked' ? 'default' : 'outline'}
                         size="sm"
-                        onClick={() => setTuckStyle('Tucked')}
+                        onClick={() => handleTuckStyleChange('Tucked')}
                       >
                         Tucked
                       </Button>
@@ -276,7 +294,7 @@ export function CreateOutfitPageClient() {
                         type="button"
                         variant={tuckStyle === 'Untucked' ? 'default' : 'outline'}
                         size="sm"
-                        onClick={() => setTuckStyle('Untucked')}
+                        onClick={() => handleTuckStyleChange('Untucked')}
                       >
                         Untucked
                       </Button>
@@ -311,12 +329,27 @@ export function CreateOutfitPageClient() {
                         </span>
                       </div>
                     </div>
+                    {!hasMinimumOutfit && (
+                      <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                        Add a shirt and pants to enable saving
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Empty state guidance */}
+                {selectedItemIds.length === 0 && (
+                  <div className="p-4 text-center text-slate-500 dark:text-slate-400">
+                    <Shirt className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">
+                      Select items from categories below to start building your outfit
+                    </p>
                   </div>
                 )}
 
                 {/* Selected Items Display */}
                 <OutfitDisplay
-                  selection={{ ...selection, tuck_style: tuckStyle }}
+                  selection={selectionWithScore}
                   onRandomize={() => {}}
                 />
               </CardContent>

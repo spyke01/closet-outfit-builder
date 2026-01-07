@@ -81,8 +81,13 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
   // Check if outfit is complete
   const hasCompleteOutfit = useMemo(() => {
     return (validatedSelection.shirt || validatedSelection.undershirt) && 
-           validatedSelection.pants && 
-           validatedSelection.shoes;
+           validatedSelection.pants;
+  }, [validatedSelection]);
+
+  // Check if any items are selected
+  const hasAnyItems = useMemo(() => {
+    return Object.entries(validatedSelection)
+      .some(([key, value]) => key !== 'tuck_style' && key !== 'score' && value !== null && value !== undefined);
   }, [validatedSelection]);
 
   // Calculate outfit score and breakdown
@@ -281,7 +286,7 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
 
   // Main content component
   const OutfitContent = () => {
-    if (!hasCompleteOutfit) {
+    if (!hasAnyItems) {
       return (
         <div className="flex-1 flex items-center justify-center p-4 sm:p-6">
           <div className="text-center max-w-md w-full">
@@ -334,7 +339,7 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
             <OutfitCard
               outfit={validatedSelection as any}
               variant="detailed"
-              showScore={true}
+              showScore={hasAnyItems}
               score={outfitScore}
               scoreBreakdown={scoreBreakdown}
               enableFlip={true}
@@ -342,6 +347,15 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
               onFlipChange={handleMockupViewChange}
             />
           </div>
+
+          {/* Validation messages */}
+          {hasAnyItems && !hasCompleteOutfit && (
+            <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+              <p className="text-amber-800 dark:text-amber-200 text-sm">
+                Add a shirt and pants to complete your outfit and enable saving.
+              </p>
+            </div>
+          )}
 
           {/* Action buttons */}
           <div className="mt-6 sm:mt-8 space-y-3">
