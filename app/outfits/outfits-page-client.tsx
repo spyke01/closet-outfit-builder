@@ -32,6 +32,8 @@ export function OutfitsPageClient() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBy, setFilterBy] = useState<'all' | 'loved' | 'curated' | 'generated'>('all');
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'score' | 'name'>('newest');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [outfitToDelete, setOutfitToDelete] = useState<Outfit | null>(null);
 
   // Fetch data
   const { data: outfits = [], isLoading, error } = useOutfits();
@@ -80,13 +82,20 @@ export function OutfitsPageClient() {
     window.location.href = `/outfits/${outfit.id}`;
   };
 
-  const handleDeleteOutfit = async (outfitId: string) => {
-    if (confirm('Are you sure you want to delete this outfit?')) {
-      try {
-        await deleteOutfitMutation.mutateAsync(outfitId);
-      } catch (error) {
-        console.error('Failed to delete outfit:', error);
-      }
+  const handleDeleteOutfit = async (outfit: Outfit) => {
+    setOutfitToDelete(outfit);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!outfitToDelete) return;
+
+    try {
+      await deleteOutfitMutation.mutateAsync(outfitToDelete.id);
+      setShowDeleteConfirm(false);
+      setOutfitToDelete(null);
+    } catch (error) {
+      console.error('Failed to delete outfit:', error);
     }
   };
 
@@ -312,7 +321,7 @@ export function OutfitsPageClient() {
                     />
                     
                     {/* Overlay with outfit info */}
-                    <div className="absolute top-2 left-2 right-2 flex items-start justify-between">
+                    <div className="absolute top-2 left-2 right-2 flex items-start justify-between z-10">
                       <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg px-2 py-1">
                         <h3 className="font-medium text-slate-800 dark:text-slate-200 text-sm truncate max-w-32">
                           {outfit.name || 'Untitled Outfit'}
@@ -320,7 +329,7 @@ export function OutfitsPageClient() {
                       </div>
                       
                       <div className="flex items-center gap-1">
-                        {outfit.score && (
+                        {typeof outfit.score === 'number' && (
                           <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg p-1">
                             <ScoreCircle
                               score={outfit.score}
@@ -333,7 +342,7 @@ export function OutfitsPageClient() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDeleteOutfit(outfit.id);
+                            handleDeleteOutfit(outfit);
                           }}
                           className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg p-1 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                         >
@@ -378,6 +387,44 @@ export function OutfitsPageClient() {
             outfits={filteredAndSortedOutfits}
             onOutfitSelect={handleOutfitSelect}
           />
+        )}
+
+        {/* Delete Confirmation Dialog */}
+        {showDeleteConfirm && outfitToDelete && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-md mx-4">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-red-600">
+                  <AlertCircle className="h-5 w-5" />
+                  Delete Outfit
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-600 dark:text-slate-400 mb-4">
+                  Are you sure you want to delete &quot;{outfitToDelete.name || 'this outfit'}&quot;? This action cannot be undone.
+                </p>
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowDeleteConfirm(false);
+                      setOutfitToDelete(null);
+                    }}
+                    disabled={deleteOutfitMutation.isPending}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={confirmDelete}
+                    disabled={deleteOutfitMutation.isPending}
+                  >
+                    {deleteOutfitMutation.isPending ? 'Deleting...' : 'Delete'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         )}
       </div>
     </div>
