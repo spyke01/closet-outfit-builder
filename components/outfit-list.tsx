@@ -61,7 +61,7 @@ export const OutfitList: React.FC<OutfitListProps> = ({
               <h4 className="font-medium text-slate-800 dark:text-slate-200 truncate">
                 {outfit.name || 'Untitled Outfit'}
               </h4>
-              {outfit.score && (
+              {typeof outfit.score === 'number' && (
                 <ScoreCircle
                   score={outfit.score}
                   size="sm"

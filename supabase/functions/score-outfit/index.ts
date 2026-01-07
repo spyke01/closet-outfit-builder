@@ -183,26 +183,43 @@ serve(async (req) => {
   try {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     )
 
-    const authHeader = req.headers.get('Authorization')!
-    const token = authHeader.replace('Bearer ', '')
-    const { data: { user } } = await supabaseClient.auth.getUser(token)
-
-    if (!user) {
-      return createCorsResponse(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { 'Content-Type': 'application/json' } },
-        origin
-      )
+    // Check if we have an Authorization header (for user auth) or use service role
+    const authHeader = req.headers.get('Authorization')
+    let userId: string | null = null
+    
+    if (authHeader) {
+      const token = authHeader.replace('Bearer ', '')
+      const { data: { user } } = await supabaseClient.auth.getUser(token)
+      
+      if (!user) {
+        return createCorsResponse(
+          JSON.stringify({ error: 'Unauthorized' }),
+          { status: 401, headers: { 'Content-Type': 'application/json' } },
+          origin
+        )
+      }
+      userId = user.id
     }
 
-    const { item_ids, tuck_style, target_season } = await req.json()
+    const { item_ids, tuck_style, target_season, user_id } = await req.json()
 
     if (!item_ids || !Array.isArray(item_ids)) {
       return createCorsResponse(
         JSON.stringify({ error: 'item_ids array is required' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } },
+        origin
+      )
+    }
+
+    // Use provided user_id (for service role calls) or authenticated user_id
+    const targetUserId = user_id || userId
+    
+    if (!targetUserId) {
+      return createCorsResponse(
+        JSON.stringify({ error: 'User ID is required' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } },
         origin
       )
@@ -221,7 +238,7 @@ serve(async (req) => {
         categories!inner(name)
       `)
       .in('id', item_ids)
-      .eq('user_id', user.id)
+      .eq('user_id', targetUserId)
       .eq('active', true)
 
     if (itemsError) {

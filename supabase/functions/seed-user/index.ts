@@ -22,6 +22,7 @@ interface DefaultWardrobeItem {
 
 interface DefaultOutfit {
   id: string;
+  name: string;
   items: string[];
   tuck?: string;
   weight?: number;
@@ -126,17 +127,17 @@ const wardrobeData: DefaultWardrobeItem[] = [
 
 // Outfit data from src/data/outfits.json (first 10 outfits for seeding)
 const outfitData: DefaultOutfit[] = [
-  {"id":"o-001","items":["mac-coat-navy","polo-navy-ribbed","chinos-white","loafers-dark-brown-suede","belt-braided","rolex-panda"],"tuck":"Tucked","weight":2,"loved":true},
-  {"id":"o-002","items":["mac-coat-navy","ocbd-blue","chinos-light-grey","loafers-dark-brown","belt-clean-brown","omega-300m"],"tuck":"Tucked","weight":2,"loved":true},
-  {"id":"o-003","items":["shacket-beige","polo-grey-knit","chinos-khaki","loafers-light-tan","belt-braided","panerai-luminor"],"tuck":"Tucked"},
-  {"id":"o-004","items":["sweater-camel-crewneck","ocbd-blue","trousers-charcoal","loafers-dark-brown","belt-reversible","rolex-panda"],"tuck":"Tucked"},
-  {"id":"o-005","items":["ocbd-white-linen","chinos-white","loafers-light-tan","rolex-panda"],"tuck":"Untucked","loved":true},
-  {"id":"o-006","items":["moto-jacket","tee-cream","denim-dark","boots-brown-apache","belt-rugged","omega-nttd"],"tuck":"Tucked"},
-  {"id":"o-007","items":["ocbd-white-navy-linen-striped","jeans-medium","sneakers-killshots","belt-braided","omega-300m"],"tuck":"Tucked"},
-  {"id":"o-008","items":["moto-jacket","tee-white","chinos-olive","boots-brown-apache","belt-rugged","panerai-luminor"],"tuck":"Tucked"},
-  {"id":"o-009","items":["moto-jacket","henley-grey-knit","chinos-black","boots-brown-apache","belt-rugged","omega-nttd"],"tuck":"Untucked"},
-  {"id":"o-010","items":["shacket-olive","tee-white","chinos-navy","sneakers-killshots","belt-braided","rolex-panda"],"tuck":"Tucked"},
-  {"id":"o-011","items":["ocbd-white","chinos-khaki","sneakers-killshots","belt-clean-brown","omega-300m"],"tuck":"Tucked"}
+  {"id":"o-001","name":"Outfit 001","items":["mac-coat-navy","polo-navy-ribbed","chinos-white","loafers-dark-brown-suede","belt-braided","rolex-panda"],"tuck":"Tucked","weight":2,"loved":true},
+  {"id":"o-002","name":"Outfit 002","items":["mac-coat-navy","ocbd-blue","chinos-light-grey","loafers-dark-brown","belt-clean-brown","omega-300m"],"tuck":"Tucked","weight":2,"loved":true},
+  {"id":"o-003","name":"Outfit 003","items":["shacket-beige","polo-grey-knit","chinos-khaki","loafers-light-tan","belt-braided","panerai-luminor"],"tuck":"Tucked"},
+  {"id":"o-004","name":"Outfit 004","items":["sweater-camel-crewneck","ocbd-blue","trousers-charcoal","loafers-dark-brown","belt-reversible","rolex-panda"],"tuck":"Tucked"},
+  {"id":"o-005","name":"Outfit 005","items":["ocbd-white-linen","chinos-white","loafers-light-tan","rolex-panda"],"tuck":"Untucked","loved":true},
+  {"id":"o-006","name":"Outfit 006","items":["moto-jacket","tee-cream","denim-dark","boots-brown-apache","belt-rugged","omega-nttd"],"tuck":"Tucked"},
+  {"id":"o-007","name":"Outfit 007","items":["ocbd-white-navy-linen-striped","jeans-medium","sneakers-killshots","belt-braided","omega-300m"],"tuck":"Tucked"},
+  {"id":"o-008","name":"Outfit 008","items":["moto-jacket","tee-white","chinos-olive","boots-brown-apache","belt-rugged","panerai-luminor"],"tuck":"Tucked"},
+  {"id":"o-009","name":"Outfit 009","items":["moto-jacket","henley-grey-knit","chinos-black","boots-brown-apache","belt-rugged","omega-nttd"],"tuck":"Untucked"},
+  {"id":"o-010","name":"Outfit 010","items":["shacket-olive","tee-white","chinos-navy","sneakers-killshots","belt-braided","rolex-panda"],"tuck":"Tucked"},
+  {"id":"o-011","name":"Outfit 011","items":["ocbd-white","chinos-khaki","sneakers-killshots","belt-clean-brown","omega-300m"],"tuck":"Tucked"}
 ];
 
 serve(async (req) => {
@@ -238,15 +239,15 @@ serve(async (req) => {
       itemIdMap.set(originalId, item.id)
     })
 
-    // Insert sample outfits
+    // Insert sample outfits without scores first
     const outfitsToInsert = outfitData.map(outfit => ({
       user_id: user.id,
-      name: `Outfit ${outfit.id.replace('o-', '')}`,
+      name: outfit.name,
       tuck_style: outfit.tuck || 'Untucked',
       weight: outfit.weight || 1,
       loved: outfit.loved || false,
       source: 'curated' as const,
-      score: 85, // Default good score for curated outfits
+      score: 0, // Will be updated after scoring
     }))
 
     const { data: outfits, error: outfitsError } = await supabaseClient
@@ -285,6 +286,49 @@ serve(async (req) => {
 
     if (outfitItemsError) {
       throw new Error(`Failed to create outfit items: ${outfitItemsError.message}`)
+    }
+
+    // Now calculate and update scores for each outfit
+    for (let i = 0; i < outfits.length; i++) {
+      const outfit = outfits[i]
+      const outfitData_item = outfitData[i]
+      
+      // Get the database item IDs for this outfit
+      const dbItemIds = outfitData_item.items
+        .map(originalId => itemIdMap.get(originalId))
+        .filter(id => id !== undefined) as string[]
+
+      if (dbItemIds.length > 0) {
+        let score = 0
+        try {
+          const { data: scoreData, error: scoreError } = await supabaseClient.functions.invoke('score-outfit', {
+            body: { 
+              item_ids: dbItemIds,
+              user_id: user.id 
+            }
+          })
+          
+          if (scoreError) {
+            console.warn(`Scoring Edge Function error for outfit ${outfit.id}: ${scoreError.message}`)
+            score = Math.min(dbItemIds.length * 15, 100) // Fallback scoring
+          } else if (scoreData?.score !== undefined) {
+            score = scoreData.score
+            console.log(`Calculated score for outfit ${outfit.id}: ${score}`)
+          } else {
+            console.warn(`No score returned for outfit ${outfit.id}, using fallback`)
+            score = Math.min(dbItemIds.length * 15, 100) // Fallback scoring
+          }
+        } catch (error) {
+          console.warn(`Scoring failed for outfit ${outfit.id}, using fallback:`, error)
+          score = Math.min(dbItemIds.length * 15, 100) // Fallback scoring
+        }
+
+        // Update the outfit with the calculated score
+        await supabaseClient
+          .from('outfits')
+          .update({ score })
+          .eq('id', outfit.id)
+      }
     }
 
     return createCorsResponse(

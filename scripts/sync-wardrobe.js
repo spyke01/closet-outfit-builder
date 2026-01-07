@@ -1397,14 +1397,40 @@ class DatabaseSync {
             continue;
           }
 
+          // Calculate the actual outfit score
+          let score = 0;
+          try {
+            const { data: scoreData, error: scoreError } = await this.supabase.functions.invoke('score-outfit', {
+              body: { 
+                item_ids: dbItemIds,
+                user_id: userId 
+              }
+            });
+            
+            if (scoreError) {
+              this.logger.warn(`Scoring Edge Function error for outfit ${outfit.id}: ${scoreError.message}`);
+              score = Math.min(dbItemIds.length * 15, 100); // Fallback scoring
+            } else if (scoreData?.score !== undefined) {
+              score = scoreData.score;
+              this.logger.debug(`Calculated score for outfit ${outfit.id}: ${score}`);
+            } else {
+              this.logger.warn(`No score returned for outfit ${outfit.id}, using fallback`);
+              score = Math.min(dbItemIds.length * 15, 100); // Fallback scoring
+            }
+          } catch (error) {
+            this.logger.warn(`Scoring failed for outfit ${outfit.id}, using fallback: ${error.message}`);
+            score = Math.min(dbItemIds.length * 15, 100); // Fallback scoring
+          }
+
           // Create the outfit record
           const outfitData = {
             user_id: userId,
-            name: outfit.name || null,
+            name: outfit.name || `Outfit ${outfit.id.replace('o-', '')}`,
             tuck_style: outfit.tuck === 'Tucked' ? 'Tucked' : outfit.tuck === 'Untucked' ? 'Untucked' : null,
             weight: outfit.weight || 1,
             loved: outfit.loved || false,
             source: 'curated',
+            score: score,
             external_id: outfit.id // Store the original ID from outfitData for duplicate checking
           };
 

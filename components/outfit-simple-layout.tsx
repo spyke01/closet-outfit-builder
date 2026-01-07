@@ -190,7 +190,7 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
             style={itemStyle}
             className="transition-all duration-300 hover:scale-105"
           >
-            <div className="w-full h-full relative group">
+            <div className="w-full h-full relative">
               {item.image_url ? (
                 <img
                   src={item.image_url}
@@ -204,12 +204,6 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
                   </div>
                 </div>
               )}
-              
-              {/* Hover tooltip */}
-              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
-                {item.name}
-                {item.brand && ` • ${item.brand}`}
-              </div>
             </div>
           </div>
         );
