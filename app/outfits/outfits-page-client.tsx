@@ -4,8 +4,8 @@ import React, { useState, useMemo } from 'react';
 import { useOutfits, useDeleteOutfit } from '@/lib/hooks/use-outfits';
 import { OutfitCard } from '@/components/outfit-card';
 import { OutfitList } from '@/components/outfit-list';
-import { OutfitVisualLayout } from '@/components/outfit-visual-layout';
 import { OutfitSimpleLayout } from '@/components/outfit-simple-layout';
+import { OutfitGridLayout } from '@/components/outfit-grid-layout';
 import { ScoreCircle } from '@/components/score-circle';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,6 +28,7 @@ import { convertOutfitToSelection, canGenerateScoreBreakdown } from '@/lib/utils
 
 export function OutfitsPageClient() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [layoutType, setLayoutType] = useState<'grid' | 'visual'>('grid');
   const [showFilters, setShowFilters] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBy, setFilterBy] = useState<'all' | 'loved' | 'curated' | 'generated'>('all');
@@ -166,6 +167,30 @@ export function OutfitsPageClient() {
                 <List size={16} />
               </Button>
             </div>
+            
+            {/* Layout Type Toggle (only show in grid mode) */}
+            {viewMode === 'grid' && (
+              <div className="flex border border-stone-300 dark:border-slate-600 rounded-lg">
+                <Button
+                  variant={layoutType === 'grid' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setLayoutType('grid')}
+                  className="rounded-r-none text-xs px-2"
+                  title="Organized Grid"
+                >
+                  Grid
+                </Button>
+                <Button
+                  variant={layoutType === 'visual' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setLayoutType('visual')}
+                  className="rounded-l-none text-xs px-2"
+                  title="Original Visual"
+                >
+                  Visual
+                </Button>
+              </div>
+            )}
             
             <Link href="/outfits/create">
               <Button className="flex items-center gap-2">
@@ -311,49 +336,57 @@ export function OutfitsPageClient() {
                 className="cursor-pointer hover:shadow-md transition-all duration-200 overflow-hidden"
                 onClick={() => handleOutfitSelect(outfit)}
               >
+                {/* Card Header */}
                 <CardContent className="p-0">
-                  {/* Visual Layout */}
-                  <div className="relative h-48">
-                    <OutfitSimpleLayout
-                      items={outfit.items || []}
-                      size="small"
-                      className="w-full h-full"
-                    />
-                    
-                    {/* Overlay with outfit info */}
-                    <div className="absolute top-2 left-2 right-2 flex items-start justify-between z-10">
-                      <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg px-2 py-1">
-                        <h3 className="font-medium text-slate-800 dark:text-slate-200 text-sm truncate max-w-32">
-                          {outfit.name || 'Untitled Outfit'}
-                        </h3>
-                      </div>
+                  <div className="p-3 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-medium text-slate-800 dark:text-slate-200 text-sm truncate flex-1 mr-2">
+                        {outfit.name || 'Untitled Outfit'}
+                      </h3>
                       
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-2 flex-shrink-0">
                         {typeof outfit.score === 'number' && (
-                          <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg p-1">
-                            <ScoreCircle
-                              score={outfit.score}
-                              size="sm"
-                              showLabel={false}
-                              outfit={canGenerateScoreBreakdown(outfit) ? convertOutfitToSelection(outfit) || undefined : undefined}
-                            />
-                          </div>
+                          <ScoreCircle
+                            score={outfit.score}
+                            size="sm"
+                            showLabel={false}
+                            outfit={canGenerateScoreBreakdown(outfit) ? convertOutfitToSelection(outfit) || undefined : undefined}
+                            className="scale-75 -m-2"
+                          />
                         )}
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDeleteOutfit(outfit);
                           }}
-                          className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg p-1 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                          className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={18} />
                         </button>
                       </div>
                     </div>
                   </div>
                   
+                  {/* Visual Layout */}
+                  <div className="relative h-80">
+                    {layoutType === 'grid' && (
+                      <OutfitGridLayout
+                        items={outfit.items || []}
+                        size="medium"
+                        className="w-full h-full"
+                      />
+                    )}
+                    {layoutType === 'visual' && (
+                      <OutfitSimpleLayout
+                        items={outfit.items || []}
+                        size="medium"
+                        className="w-full h-full"
+                      />
+                    )}
+                  </div>
+                  
                   {/* Bottom info */}
-                  <div className="p-3">
+                  <div className="p-3 bg-slate-50 dark:bg-slate-900">
                     <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                       <div className="flex items-center gap-2">
                         <span>{outfit.source === 'curated' ? 'Curated' : 'Generated'}</span>

@@ -2,9 +2,8 @@
 
 import React, { useState } from 'react';
 import { useOutfit, useUpdateOutfit, useDeleteOutfit } from '@/lib/hooks/use-outfits';
-import { OutfitDisplay } from '@/components/outfit-display';
-import { OutfitCard } from '@/components/outfit-card';
 import { OutfitFlatLayout } from '@/components/outfit-flat-layout';
+import { convertOutfitToSelection } from '@/lib/utils/outfit-conversion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -134,19 +133,10 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
     }
   };
 
-  // Convert outfit items to selection format for OutfitDisplay
+  // Convert outfit items to selection format for display components
   const selection = React.useMemo(() => {
-    if (!outfit?.items) return { tuck_style: outfit?.tuck_style || 'Untucked' };
-    
-    const sel: { [key: string]: any } = {
-      tuck_style: outfit.tuck_style || 'Untucked'
-    };
-    outfit.items.forEach(item => {
-      if (item.category?.name) {
-        sel[item.category.name] = item;
-      }
-    });
-    return sel;
+    if (!outfit) return null;
+    return convertOutfitToSelection(outfit);
   }, [outfit]);
 
   if (outfitLoading) {

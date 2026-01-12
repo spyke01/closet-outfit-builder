@@ -108,6 +108,7 @@ export interface UpdateCategoryInput extends Partial<CreateCategoryInput> {
 // Outfit selection type for real-time outfit building
 export interface OutfitSelection {
   jacket?: WardrobeItem;
+  overshirt?: WardrobeItem;
   shirt?: WardrobeItem;
   undershirt?: WardrobeItem;
   pants?: WardrobeItem;

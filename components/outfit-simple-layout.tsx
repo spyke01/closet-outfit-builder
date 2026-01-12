@@ -34,8 +34,10 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
       if (item.category?.name) {
         const categoryKey = item.category.name.toLowerCase();
         // Map category names to standard keys
-        if (categoryKey.includes('jacket') || categoryKey.includes('overshirt')) {
+        if (categoryKey.includes('jacket')) {
           categorized.jacket = item;
+        } else if (categoryKey.includes('overshirt')) {
+          categorized.overshirt = item;
         } else if (categoryKey === 'shirt') {
           categorized.shirt = item;
         } else if (categoryKey === 'undershirt') {
@@ -76,7 +78,7 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
   // Flat lay positioning for placeholders
   const getFlatLayPosition = (category: string, index: number): React.CSSProperties => {
     const positions: Record<string, React.CSSProperties> = {
-      // Top left - jacket/overshirt
+      // Top left - jacket
       jacket: {
         position: 'absolute',
         top: '15%',
@@ -85,6 +87,17 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
         height: '30%',
         transform: 'rotate(-8deg)',
         zIndex: 1
+      },
+      
+      // Top center-left - overshirt
+      overshirt: {
+        position: 'absolute',
+        top: '18%',
+        left: '22%',
+        width: '23%',
+        height: '28%',
+        transform: 'rotate(-5deg)',
+        zIndex: 2
       },
       
       // Top right - shirt

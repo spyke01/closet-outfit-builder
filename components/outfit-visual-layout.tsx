@@ -29,8 +29,10 @@ export const OutfitVisualLayout: React.FC<OutfitVisualLayoutProps> = ({
       if (item.category?.name) {
         const categoryKey = item.category.name.toLowerCase();
         // Map category names to standard keys - be more flexible with matching
-        if (categoryKey.includes('jacket') || categoryKey.includes('overshirt') || categoryKey.includes('blazer')) {
+        if (categoryKey.includes('jacket') || categoryKey.includes('blazer')) {
           categorized.jacket = item;
+        } else if (categoryKey.includes('overshirt')) {
+          categorized.overshirt = item;
         } else if (categoryKey.includes('shirt') && !categoryKey.includes('under')) {
           categorized.shirt = item;
         } else if (categoryKey.includes('undershirt') || categoryKey.includes('under')) {
@@ -76,7 +78,7 @@ export const OutfitVisualLayout: React.FC<OutfitVisualLayoutProps> = ({
   // Flat lay positioning - optimized for the layout shown in the image
   const getFlatLayPosition = (category: string, index: number): React.CSSProperties => {
     const positions: Record<string, React.CSSProperties> = {
-      // Top left - jacket/overshirt
+      // Top left - jacket
       jacket: {
         position: 'absolute',
         top: '8%',
@@ -85,6 +87,17 @@ export const OutfitVisualLayout: React.FC<OutfitVisualLayoutProps> = ({
         height: '45%',
         transform: 'rotate(-12deg)',
         zIndex: 1
+      },
+      
+      // Top center-left - overshirt (layered over jacket area)
+      overshirt: {
+        position: 'absolute',
+        top: '12%',
+        left: '15%',
+        width: '32%',
+        height: '40%',
+        transform: 'rotate(-8deg)',
+        zIndex: 2
       },
       
       // Top right - shirt

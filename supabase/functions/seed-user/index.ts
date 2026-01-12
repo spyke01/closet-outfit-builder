@@ -42,13 +42,14 @@ function mapSeason(capsuleTags: string[] = []): string[] {
 }
 
 const defaultCategories: DefaultCategory[] = [
-  { name: 'Jacket/Overshirt', is_anchor_item: true, display_order: 1 },
-  { name: 'Shirt', is_anchor_item: true, display_order: 2 },
-  { name: 'Pants', is_anchor_item: true, display_order: 3 },
-  { name: 'Shoes', is_anchor_item: true, display_order: 4 },
-  { name: 'Belt', is_anchor_item: false, display_order: 5 },
-  { name: 'Watch', is_anchor_item: false, display_order: 6 },
-  { name: 'Undershirt', is_anchor_item: false, display_order: 7 },
+  { name: 'Jacket', is_anchor_item: true, display_order: 1 },
+  { name: 'Overshirt', is_anchor_item: true, display_order: 2 },
+  { name: 'Shirt', is_anchor_item: true, display_order: 3 },
+  { name: 'Undershirt', is_anchor_item: false, display_order: 4 },
+  { name: 'Pants', is_anchor_item: true, display_order: 5 },
+  { name: 'Shoes', is_anchor_item: true, display_order: 6 },
+  { name: 'Belt', is_anchor_item: false, display_order: 7 },
+  { name: 'Watch', is_anchor_item: false, display_order: 8 },
 ];
 
 // Wardrobe data from src/data/wardrobe.json

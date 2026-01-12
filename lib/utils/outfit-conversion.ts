@@ -40,9 +40,14 @@ export function convertOutfitToSelection(outfit: Outfit): OutfitSelection | null
     // Map to the correct selection field based on category
     switch (categoryName) {
       case 'jacket/overshirt':
-      case 'jacket':
-      case 'overshirt':
+        // Legacy category - could be either, default to jacket
         selection.jacket = selectionItem;
+        break;
+      case 'jacket':
+        selection.jacket = selectionItem;
+        break;
+      case 'overshirt':
+        selection.overshirt = selectionItem;
         break;
       case 'shirt':
         selection.shirt = selectionItem;
@@ -66,6 +71,8 @@ export function convertOutfitToSelection(outfit: Outfit): OutfitSelection | null
         // For unknown categories, try to map to the closest match
         if (categoryName.includes('jacket')) {
           selection.jacket = selectionItem;
+        } else if (categoryName.includes('overshirt')) {
+          selection.overshirt = selectionItem;
         } else if (categoryName.includes('shirt')) {
           selection.shirt = selectionItem;
         } else if (categoryName.includes('pants') || categoryName.includes('trouser')) {

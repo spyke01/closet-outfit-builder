@@ -26,6 +26,7 @@ import Link from 'next/link';
 // Define a local OutfitSelection type that matches our component needs
 interface OutfitSelection {
   jacket?: WardrobeItem;
+  overshirt?: WardrobeItem;
   shirt?: WardrobeItem;
   undershirt?: WardrobeItem;
   pants?: WardrobeItem;
@@ -106,8 +107,9 @@ export function CreateOutfitPageClient() {
       // Map category names to OutfitSelection property names
       const categoryMap: Record<string, keyof OutfitSelection> = {
         'Jacket': 'jacket',
-        'Jacket/Overshirt': 'jacket',
+        'Overshirt': 'overshirt', // Separate slots for Jacket and Overshirt
         'Jackets': 'jacket',
+        'Overshirts': 'overshirt',
         'Shirt': 'shirt',
         'Shirts': 'shirt',
         'Undershirt': 'undershirt',
@@ -394,7 +396,10 @@ export function CreateOutfitPageClient() {
                   if (!category) return undefined;
                   
                   const categoryMap: Record<string, keyof OutfitSelection> = {
+                    'Jacket': 'jacket',
+                    'Overshirt': 'overshirt', // Separate slots for Jacket and Overshirt
                     'Jackets': 'jacket',
+                    'Overshirts': 'overshirt',
                     'Shirts': 'shirt',
                     'Undershirts': 'undershirt',
                     'Pants': 'pants',

@@ -106,6 +106,7 @@ export const FileValidationSchema = z.object({
 // Outfit selection schema for real-time validation
 export const OutfitSelectionSchema = z.object({
   jacket: WardrobeItemSchema.optional(),
+  overshirt: WardrobeItemSchema.optional(),
   shirt: WardrobeItemSchema.optional(),
   undershirt: WardrobeItemSchema.optional(),
   pants: WardrobeItemSchema.optional(),

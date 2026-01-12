@@ -7,11 +7,13 @@ import { safeValidate } from '@/lib/utils/validation';
 import { OutfitSelectionSchema, type OutfitSelection } from '@/lib/schemas';
 import { ScoreCircle, type ScoreBreakdownData } from './score-circle';
 import { OutfitVisualLayout } from './outfit-visual-layout';
+import { OutfitGridLayout } from './outfit-grid-layout';
 import { WardrobeItem } from '@/lib/types/database';
 
 interface OutfitCardProps {
   outfit: OutfitSelection;
   variant?: 'compact' | 'detailed';
+  layoutType?: 'visual' | 'grid';
   showScore?: boolean;
   score?: number;
   scoreBreakdown?: ScoreBreakdownData;
@@ -28,6 +30,7 @@ interface OutfitCardProps {
 export const OutfitCard: React.FC<OutfitCardProps> = ({
   outfit,
   variant = 'compact',
+  layoutType = 'grid',
   showScore = false,
   score = 0,
   scoreBreakdown,
@@ -81,6 +84,7 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
   const renderOutfitItems = () => {
     const items = [
       { key: 'jacket', label: 'Jacket', item: validatedOutfit.jacket },
+      { key: 'overshirt', label: 'Overshirt', item: validatedOutfit.overshirt },
       { key: 'shirt', label: 'Shirt', item: validatedOutfit.shirt },
       { key: 'undershirt', label: 'Undershirt', item: validatedOutfit.undershirt },
       { key: 'pants', label: 'Pants', item: validatedOutfit.pants },
@@ -170,12 +174,23 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
       );
     }
 
+    const layoutSize = variant === 'compact' ? 'small' : 'medium';
+
     return (
       <div className="flex justify-center">
-        <OutfitVisualLayout
-          items={outfitItems}
-          size={variant === 'compact' ? 'small' : 'medium'}
-        />
+        {layoutType === 'grid' && (
+          <OutfitGridLayout
+            items={outfitItems}
+            size={layoutSize}
+            showLabels={variant === 'detailed'}
+          />
+        )}
+        {layoutType === 'visual' && (
+          <OutfitVisualLayout
+            items={outfitItems}
+            size={layoutSize}
+          />
+        )}
       </div>
     );
   };

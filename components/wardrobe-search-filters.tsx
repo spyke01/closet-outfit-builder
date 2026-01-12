@@ -12,11 +12,11 @@ type CapsuleTagType = typeof capsuleTags[number];
 interface WardrobeSearchFiltersProps {
   searchTerm: string;
   selectedTags: Set<string>;
-  selectedCategory: string;
+  selectedCategories: Set<string>;
   categories: Array<{ id: string; name: string }>;
   onSearchChange: (value: string) => void;
   onTagToggle: (tag: string) => void;
-  onCategoryChange: (categoryId: string) => void;
+  onCategoryToggle: (categoryId: string) => void;
   itemCount: number;
   totalCount: number;
 }
@@ -24,11 +24,11 @@ interface WardrobeSearchFiltersProps {
 export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
   searchTerm,
   selectedTags,
-  selectedCategory,
+  selectedCategories,
   categories,
   onSearchChange,
   onTagToggle,
-  onCategoryChange,
+  onCategoryToggle,
   itemCount,
   totalCount,
 }) => {
@@ -109,23 +109,46 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
           )}
         </div>
 
-        {/* Category filter */}
+        {/* Category filters */}
         <div className="flex-1">
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-            Category
+            Categories
           </label>
-          <select
-            value={selectedCategory}
-            onChange={(e) => onCategoryChange(e.target.value)}
-            className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
-          >
-            <option value="all">All Categories</option>
+          <div className="space-y-2">
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="category-all"
+                checked={selectedCategories.size === 0}
+                onChange={() => {
+                  // Clear all selections to show all categories
+                  categories.forEach(category => {
+                    if (selectedCategories.has(category.id)) {
+                      onCategoryToggle(category.id);
+                    }
+                  });
+                }}
+                className="h-4 w-4 text-slate-600 focus:ring-slate-500 border-slate-300 dark:border-slate-600 rounded"
+              />
+              <label htmlFor="category-all" className="ml-2 text-sm text-slate-700 dark:text-slate-300">
+                All Categories
+              </label>
+            </div>
             {categories.map(category => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
+              <div key={category.id} className="flex items-center">
+                <input
+                  type="checkbox"
+                  id={`category-${category.id}`}
+                  checked={selectedCategories.has(category.id)}
+                  onChange={() => onCategoryToggle(category.id)}
+                  className="h-4 w-4 text-slate-600 focus:ring-slate-500 border-slate-300 dark:border-slate-600 rounded"
+                />
+                <label htmlFor={`category-${category.id}`} className="ml-2 text-sm text-slate-700 dark:text-slate-300">
+                  {category.name}
+                </label>
+              </div>
             ))}
-          </select>
+          </div>
         </div>
 
         {/* Filter tags */}
@@ -153,7 +176,7 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
       {/* Results count */}
       <div className="text-sm text-slate-600 dark:text-slate-400">
         {itemCount} item{itemCount !== 1 ? 's' : ''} found
-        {(searchTerm || selectedTags.size > 0 || selectedCategory !== 'all') && (
+        {(searchTerm || selectedTags.size > 0 || selectedCategories.size > 0) && (
           <span className="ml-2 text-xs">
             ({totalCount} total)
           </span>

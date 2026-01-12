@@ -146,7 +146,7 @@ describe('OutfitVisualLayout', () => {
     const itemsWithDifferentCategories: WardrobeItem[] = [
       {
         ...mockItems[0],
-        category: { ...mockItems[0].category!, name: 'Jacket/Overshirt' }
+        category: { ...mockItems[0].category!, name: 'Jacket' }
       },
       {
         ...mockItems[1],

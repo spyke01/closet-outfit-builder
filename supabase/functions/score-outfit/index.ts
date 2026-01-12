@@ -14,6 +14,7 @@ interface OutfitItem {
 
 interface OutfitSelection {
   jacket?: OutfitItem;
+  overshirt?: OutfitItem;
   shirt?: OutfitItem;
   pants?: OutfitItem;
   shoes?: OutfitItem;
@@ -270,7 +271,7 @@ serve(async (req) => {
       
       if (categoryName.includes('jacket') || categoryName.includes('overshirt')) {
         selection.jacket = outfitItem
-      } else if (categoryName.includes('shirt')) {
+      } else if (categoryName.includes('shirt') && !categoryName.includes('overshirt')) {
         selection.shirt = outfitItem
       } else if (categoryName.includes('pants')) {
         selection.pants = outfitItem

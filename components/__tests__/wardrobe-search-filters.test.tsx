@@ -11,20 +11,22 @@ vi.mock('next/link', () => ({
 }));
 
 const mockCategories = [
-  { id: 'cat1', name: 'Shirts' },
-  { id: 'cat2', name: 'Pants' },
-  { id: 'cat3', name: 'Shoes' },
+  { id: 'cat1', name: 'Jacket' },
+  { id: 'cat2', name: 'Overshirt' },
+  { id: 'cat3', name: 'Shirt' },
+  { id: 'cat4', name: 'Pants' },
+  { id: 'cat5', name: 'Shoes' },
 ];
 
 describe('WardrobeSearchFilters', () => {
   const mockProps = {
     searchTerm: '',
     selectedTags: new Set<string>(),
-    selectedCategory: 'all',
+    selectedCategories: new Set<string>(),
     categories: mockCategories,
     onSearchChange: vi.fn(),
     onTagToggle: vi.fn(),
-    onCategoryChange: vi.fn(),
+    onCategoryToggle: vi.fn(),
     itemCount: 10,
     totalCount: 15,
   };
@@ -37,7 +39,7 @@ describe('WardrobeSearchFilters', () => {
     render(<WardrobeSearchFilters {...mockProps} />);
     
     expect(screen.getByText('My Wardrobe')).toBeInTheDocument();
-    expect(screen.getByText('15 items across 3 categories')).toBeInTheDocument();
+    expect(screen.getByText('15 items across 5 categories')).toBeInTheDocument();
     expect(screen.getByText('10 items found')).toBeInTheDocument();
   });
 
@@ -77,33 +79,33 @@ describe('WardrobeSearchFilters', () => {
     });
   });
 
-  it('calls onCategoryChange when category is selected', () => {
+  it('calls onCategoryToggle when category is selected', () => {
     render(<WardrobeSearchFilters {...mockProps} />);
     
     // Open filters
     const filtersButton = screen.getByText('Filters');
     fireEvent.click(filtersButton);
     
-    const categorySelect = screen.getByDisplayValue('All Categories');
-    fireEvent.change(categorySelect, { target: { value: 'cat1' } });
+    const jacketCheckbox = screen.getByLabelText('Jacket');
+    fireEvent.click(jacketCheckbox);
     
-    expect(mockProps.onCategoryChange).toHaveBeenCalledWith('cat1');
+    expect(mockProps.onCategoryToggle).toHaveBeenCalledWith('cat1');
   });
 
-  it('renders all category options', () => {
+  it('renders all category options as checkboxes', () => {
     render(<WardrobeSearchFilters {...mockProps} />);
     
     // Open filters
     const filtersButton = screen.getByText('Filters');
     fireEvent.click(filtersButton);
     
-    const categorySelect = screen.getByDisplayValue('All Categories');
-    
-    // Check that all categories are present as options
-    expect(screen.getByText('All Categories')).toBeInTheDocument();
-    expect(screen.getByText('Shirts')).toBeInTheDocument();
-    expect(screen.getByText('Pants')).toBeInTheDocument();
-    expect(screen.getByText('Shoes')).toBeInTheDocument();
+    // Check that all categories are present as checkboxes
+    expect(screen.getByLabelText('All Categories')).toBeInTheDocument();
+    expect(screen.getByLabelText('Jacket')).toBeInTheDocument();
+    expect(screen.getByLabelText('Overshirt')).toBeInTheDocument();
+    expect(screen.getByLabelText('Shirt')).toBeInTheDocument();
+    expect(screen.getByLabelText('Pants')).toBeInTheDocument();
+    expect(screen.getByLabelText('Shoes')).toBeInTheDocument();
   });
 
   it('calls onTagToggle when tag is clicked', async () => {
@@ -201,11 +203,13 @@ describe('WardrobeSearchFilters', () => {
     expect(screen.getByText('1 item found')).toBeInTheDocument();
   });
 
-  it('shows selected category in dropdown', () => {
+  it('shows selected categories as checked', () => {
+    const selectedCategories = new Set(['cat1', 'cat3']);
+    
     render(
       <WardrobeSearchFilters 
         {...mockProps} 
-        selectedCategory="cat1"
+        selectedCategories={selectedCategories}
       />
     );
     
@@ -213,7 +217,158 @@ describe('WardrobeSearchFilters', () => {
     const filtersButton = screen.getByText('Filters');
     fireEvent.click(filtersButton);
     
-    const categorySelect = screen.getByDisplayValue('Shirts');
-    expect(categorySelect).toBeInTheDocument();
+    const jacketCheckbox = screen.getByLabelText('Jacket') as HTMLInputElement;
+    const shirtCheckbox = screen.getByLabelText('Shirt') as HTMLInputElement;
+    const overshirtCheckbox = screen.getByLabelText('Overshirt') as HTMLInputElement;
+    
+    expect(jacketCheckbox.checked).toBe(true);
+    expect(shirtCheckbox.checked).toBe(true);
+    expect(overshirtCheckbox.checked).toBe(false);
+  });
+
+  it('handles Jacket category selection correctly', () => {
+    render(<WardrobeSearchFilters {...mockProps} />);
+    
+    // Open filters
+    const filtersButton = screen.getByText('Filters');
+    fireEvent.click(filtersButton);
+    
+    const jacketCheckbox = screen.getByLabelText('Jacket');
+    fireEvent.click(jacketCheckbox);
+    
+    expect(mockProps.onCategoryToggle).toHaveBeenCalledWith('cat1');
+  });
+
+  it('handles Overshirt category selection correctly', () => {
+    render(<WardrobeSearchFilters {...mockProps} />);
+    
+    // Open filters
+    const filtersButton = screen.getByText('Filters');
+    fireEvent.click(filtersButton);
+    
+    const overshirtCheckbox = screen.getByLabelText('Overshirt');
+    fireEvent.click(overshirtCheckbox);
+    
+    expect(mockProps.onCategoryToggle).toHaveBeenCalledWith('cat2');
+  });
+
+  it('shows Jacket category as selected', () => {
+    const selectedCategories = new Set(['cat1']);
+    
+    render(
+      <WardrobeSearchFilters 
+        {...mockProps} 
+        selectedCategories={selectedCategories}
+      />
+    );
+    
+    // Open filters
+    const filtersButton = screen.getByText('Filters');
+    fireEvent.click(filtersButton);
+    
+    const jacketCheckbox = screen.getByLabelText('Jacket') as HTMLInputElement;
+    expect(jacketCheckbox.checked).toBe(true);
+  });
+
+  it('shows Overshirt category as selected', () => {
+    const selectedCategories = new Set(['cat2']);
+    
+    render(
+      <WardrobeSearchFilters 
+        {...mockProps} 
+        selectedCategories={selectedCategories}
+      />
+    );
+    
+    // Open filters
+    const filtersButton = screen.getByText('Filters');
+    fireEvent.click(filtersButton);
+    
+    const overshirtCheckbox = screen.getByLabelText('Overshirt') as HTMLInputElement;
+    expect(overshirtCheckbox.checked).toBe(true);
+  });
+
+  it('displays correct category names as checkboxes', () => {
+    render(<WardrobeSearchFilters {...mockProps} />);
+    
+    // Open filters
+    const filtersButton = screen.getByText('Filters');
+    fireEvent.click(filtersButton);
+    
+    // Verify that both new categories are available as checkboxes
+    expect(screen.getByLabelText('Jacket')).toBeInTheDocument();
+    expect(screen.getByLabelText('Overshirt')).toBeInTheDocument();
+    
+    // Verify that old combined category is not present
+    expect(screen.queryByLabelText('Jacket/Overshirt')).not.toBeInTheDocument();
+  });
+
+  it('handles multiple category selection', () => {
+    render(<WardrobeSearchFilters {...mockProps} />);
+    
+    // Open filters
+    const filtersButton = screen.getByText('Filters');
+    fireEvent.click(filtersButton);
+    
+    // Select multiple categories
+    const jacketCheckbox = screen.getByLabelText('Jacket');
+    const overshirtCheckbox = screen.getByLabelText('Overshirt');
+    
+    fireEvent.click(jacketCheckbox);
+    fireEvent.click(overshirtCheckbox);
+    
+    expect(mockProps.onCategoryToggle).toHaveBeenCalledWith('cat1');
+    expect(mockProps.onCategoryToggle).toHaveBeenCalledWith('cat2');
+  });
+
+  it('shows "All Categories" as checked when no categories are selected', () => {
+    render(<WardrobeSearchFilters {...mockProps} />);
+    
+    // Open filters
+    const filtersButton = screen.getByText('Filters');
+    fireEvent.click(filtersButton);
+    
+    const allCategoriesCheckbox = screen.getByLabelText('All Categories') as HTMLInputElement;
+    expect(allCategoriesCheckbox.checked).toBe(true);
+  });
+
+  it('shows "All Categories" as unchecked when categories are selected', () => {
+    const selectedCategories = new Set(['cat1']);
+    
+    render(
+      <WardrobeSearchFilters 
+        {...mockProps} 
+        selectedCategories={selectedCategories}
+      />
+    );
+    
+    // Open filters
+    const filtersButton = screen.getByText('Filters');
+    fireEvent.click(filtersButton);
+    
+    const allCategoriesCheckbox = screen.getByLabelText('All Categories') as HTMLInputElement;
+    expect(allCategoriesCheckbox.checked).toBe(false);
+  });
+
+  it('clears all category selections when "All Categories" is clicked', () => {
+    const selectedCategories = new Set(['cat1', 'cat2']);
+    
+    render(
+      <WardrobeSearchFilters 
+        {...mockProps} 
+        selectedCategories={selectedCategories}
+      />
+    );
+    
+    // Open filters
+    const filtersButton = screen.getByText('Filters');
+    fireEvent.click(filtersButton);
+    
+    const allCategoriesCheckbox = screen.getByLabelText('All Categories');
+    fireEvent.click(allCategoriesCheckbox);
+    
+    // Should call onCategoryToggle for each selected category to clear them
+    expect(mockProps.onCategoryToggle).toHaveBeenCalledWith('cat1');
+    expect(mockProps.onCategoryToggle).toHaveBeenCalledWith('cat2');
   });
 });

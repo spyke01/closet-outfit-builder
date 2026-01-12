@@ -922,12 +922,13 @@ class DatabaseSync {
       // Default categories that should exist for all users
       const defaultCategories = [
         { name: 'Jacket', is_anchor_item: true, display_order: 1 },
-        { name: 'Shirt', is_anchor_item: false, display_order: 2 },
-        { name: 'Undershirt', is_anchor_item: false, display_order: 3 },
-        { name: 'Pants', is_anchor_item: true, display_order: 4 },
-        { name: 'Shoes', is_anchor_item: true, display_order: 5 },
-        { name: 'Belt', is_anchor_item: false, display_order: 6 },
-        { name: 'Watch', is_anchor_item: false, display_order: 7 }
+        { name: 'Overshirt', is_anchor_item: true, display_order: 2 },
+        { name: 'Shirt', is_anchor_item: true, display_order: 3 },
+        { name: 'Undershirt', is_anchor_item: false, display_order: 4 },
+        { name: 'Pants', is_anchor_item: true, display_order: 5 },
+        { name: 'Shoes', is_anchor_item: true, display_order: 6 },
+        { name: 'Belt', is_anchor_item: false, display_order: 7 },
+        { name: 'Watch', is_anchor_item: false, display_order: 8 }
       ];
 
       const existingCategoryNames = new Set(existingCategories?.map(cat => cat.name.toLowerCase()) || []);

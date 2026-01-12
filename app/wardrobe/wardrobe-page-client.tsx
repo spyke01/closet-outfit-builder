@@ -10,7 +10,7 @@ import { Grid, List } from 'lucide-react';
 import { WardrobeItem } from '@/lib/types/database';
 
 export function WardrobePageClient() {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
@@ -20,7 +20,7 @@ export function WardrobePageClient() {
   const { data: items = [], isLoading: itemsLoading, error: itemsError } = useWardrobeItems();
   const createItemMutation = useCreateWardrobeItem();
 
-  // Filter items by search term, tags, and category
+  // Filter items by search term, tags, and categories
   const filteredItems = useMemo(() => {
     let filtered = items;
 
@@ -39,13 +39,13 @@ export function WardrobePageClient() {
       );
     }
 
-    // Filter by category
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(item => item.category_id === selectedCategory);
+    // Filter by categories (if any are selected)
+    if (selectedCategories.size > 0) {
+      filtered = filtered.filter(item => selectedCategories.has(item.category_id));
     }
 
     return filtered;
-  }, [items, searchTerm, selectedTags, selectedCategory]);
+  }, [items, searchTerm, selectedTags, selectedCategories]);
 
   // Group items by category for display
   const itemsByCategory = useMemo(() => {
@@ -87,9 +87,17 @@ export function WardrobePageClient() {
     });
   }, []);
 
-  const handleCategoryChange = useCallback((categoryId: string) => {
+  const handleCategoryToggle = useCallback((categoryId: string) => {
     startTransition(() => {
-      setSelectedCategory(categoryId);
+      setSelectedCategories(prev => {
+        const newCategories = new Set(prev);
+        if (newCategories.has(categoryId)) {
+          newCategories.delete(categoryId);
+        } else {
+          newCategories.add(categoryId);
+        }
+        return newCategories;
+      });
     });
   }, []);
 
@@ -131,11 +139,11 @@ export function WardrobePageClient() {
         <WardrobeSearchFilters
           searchTerm={searchTerm}
           selectedTags={selectedTags}
-          selectedCategory={selectedCategory}
+          selectedCategories={selectedCategories}
           categories={categories}
           onSearchChange={handleSearchChange}
           onTagToggle={handleTagToggle}
-          onCategoryChange={handleCategoryChange}
+          onCategoryToggle={handleCategoryToggle}
           itemCount={filteredItems.length}
           totalCount={items.length}
         />
@@ -165,7 +173,7 @@ export function WardrobePageClient() {
         {/* Content */}
         {viewMode === 'grid' ? (
           // Grid View
-          selectedCategory === 'all' ? (
+          selectedCategories.size === 0 ? (
             // Show all categories with their items
             <div className="space-y-8">
               {categories.map(category => {
@@ -247,68 +255,153 @@ export function WardrobePageClient() {
               })}
             </div>
           ) : (
-            // Show single category in grid
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
-              {filteredItems.map(item => (
-                <div
-                  key={item.id}
-                  onClick={() => handleItemSelect(item)}
-                  className="p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer touch-manipulation border-stone-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-md active:scale-95"
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      handleItemSelect(item);
-                    }
-                  }}
-                  aria-label={`Select ${item.brand ? `${item.brand} ${item.name}` : item.name} for outfit building`}
-                >
-                  {/* Fixed height image container */}
-                  {item.image_url && (
-                    <div className="h-40 sm:h-44 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3 flex items-center justify-center">
-                      <img
-                        src={item.image_url}
-                        alt={item.name}
-                        className="max-w-full max-h-full object-contain"
-                        loading="lazy"
-                      />
-                    </div>
-                  )}
-                  
-                  {/* Item details */}
-                  <div className="space-y-2">
-                    <div className="flex items-start gap-2">
-                      <h3 className="font-medium text-slate-800 dark:text-slate-200 leading-tight text-sm sm:text-base">
-                        {item.brand ? `${item.brand} ${item.name}` : item.name}
-                      </h3>
-                    </div>
-
-                    {item.capsule_tags && item.capsule_tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {item.capsule_tags.slice(0, 3).map(tag => (
-                          <span
-                            key={tag}
-                            className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                        {item.capsule_tags.length > 3 && (
-                          <span className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300">
-                            +{item.capsule_tags.length - 3}
-                          </span>
-                        )}
+            // Show selected categories in grid - group by category if multiple selected
+            selectedCategories.size === 1 ? (
+              // Single category selected - show as flat grid
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+                {filteredItems.map(item => (
+                  <div
+                    key={item.id}
+                    onClick={() => handleItemSelect(item)}
+                    className="p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer touch-manipulation border-stone-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-md active:scale-95"
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleItemSelect(item);
+                      }
+                    }}
+                    aria-label={`Select ${item.brand ? `${item.brand} ${item.name}` : item.name} for outfit building`}
+                  >
+                    {/* Fixed height image container */}
+                    {item.image_url && (
+                      <div className="h-40 sm:h-44 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3 flex items-center justify-center">
+                        <img
+                          src={item.image_url}
+                          alt={item.name}
+                          className="max-w-full max-h-full object-contain"
+                          loading="lazy"
+                        />
                       </div>
                     )}
+                    
+                    {/* Item details */}
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2">
+                        <h3 className="font-medium text-slate-800 dark:text-slate-200 leading-tight text-sm sm:text-base">
+                          {item.brand ? `${item.brand} ${item.name}` : item.name}
+                        </h3>
+                      </div>
+
+                      {item.capsule_tags && item.capsule_tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {item.capsule_tags.slice(0, 3).map(tag => (
+                            <span
+                              key={tag}
+                              className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                          {item.capsule_tags.length > 3 && (
+                            <span className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300">
+                              +{item.capsule_tags.length - 3}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              // Multiple categories selected - show grouped by category
+              <div className="space-y-8">
+                {categories
+                  .filter(category => selectedCategories.has(category.id))
+                  .map(category => {
+                    const categoryItems = itemsByCategory.get(category.id) || [];
+                    
+                    if (categoryItems.length === 0) return null;
+                    
+                    return (
+                      <div key={category.id} className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200">
+                            {category.name}
+                          </h2>
+                          <span className="text-sm text-slate-500 dark:text-slate-400">
+                            {categoryItems.length} item{categoryItems.length !== 1 ? 's' : ''}
+                          </span>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+                          {categoryItems.map(item => (
+                            <div
+                              key={item.id}
+                              onClick={() => handleItemSelect(item)}
+                              className="p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer touch-manipulation border-stone-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-md active:scale-95"
+                              role="button"
+                              tabIndex={0}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  handleItemSelect(item);
+                                }
+                              }}
+                              aria-label={`Select ${item.brand ? `${item.brand} ${item.name}` : item.name} for outfit building`}
+                            >
+                              {/* Fixed height image container */}
+                              {item.image_url && (
+                                <div className="h-40 sm:h-44 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3 flex items-center justify-center">
+                                  <img
+                                    src={item.image_url}
+                                    alt={item.name}
+                                    className="max-w-full max-h-full object-contain"
+                                    loading="lazy"
+                                  />
+                                </div>
+                              )}
+                              
+                              {/* Item details */}
+                              <div className="space-y-2">
+                                <div className="flex items-start gap-2">
+                                  <h3 className="font-medium text-slate-800 dark:text-slate-200 leading-tight text-sm sm:text-base">
+                                    {item.brand ? `${item.brand} ${item.name}` : item.name}
+                                  </h3>
+                                </div>
+
+                                {item.capsule_tags && item.capsule_tags.length > 0 && (
+                                  <div className="flex flex-wrap gap-1">
+                                    {item.capsule_tags.slice(0, 3).map(tag => (
+                                      <span
+                                        key={tag}
+                                        className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300"
+                                      >
+                                        {tag}
+                                      </span>
+                                    ))}
+                                    {item.capsule_tags.length > 3 && (
+                                      <span className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300">
+                                        +{item.capsule_tags.length - 3}
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            )
           )
         ) : (
           // List View
-          selectedCategory === 'all' ? (
+          selectedCategories.size === 0 ? (
             // Show all categories with their items in list view
             <div className="space-y-8">
               {categories.map(category => {
@@ -336,13 +429,43 @@ export function WardrobePageClient() {
                 );
               })}
             </div>
-          ) : (
-            // Show single category in list view
+          ) : selectedCategories.size === 1 ? (
+            // Single category selected - show as flat list
             <ItemsList
               items={filteredItems}
               onItemSelect={handleItemSelect}
               showBrand={true}
             />
+          ) : (
+            // Multiple categories selected - show grouped by category in list view
+            <div className="space-y-8">
+              {categories
+                .filter(category => selectedCategories.has(category.id))
+                .map(category => {
+                  const categoryItems = itemsByCategory.get(category.id) || [];
+                  
+                  if (categoryItems.length === 0) return null;
+                  
+                  return (
+                    <div key={category.id} className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200">
+                          {category.name}
+                        </h2>
+                        <span className="text-sm text-slate-500 dark:text-slate-400">
+                          {categoryItems.length} item{categoryItems.length !== 1 ? 's' : ''}
+                        </span>
+                      </div>
+                      
+                      <ItemsList
+                        items={categoryItems}
+                        onItemSelect={handleItemSelect}
+                        showBrand={true}
+                      />
+                    </div>
+                  );
+                })}
+            </div>
           )
         )}
 
@@ -364,7 +487,7 @@ export function WardrobePageClient() {
               No items found
             </h3>
             <p className="text-slate-600 dark:text-slate-400 mb-4">
-              {searchTerm || selectedTags.size > 0 || selectedCategory !== 'all'
+              {searchTerm || selectedTags.size > 0 || selectedCategories.size > 0
                 ? 'Try adjusting your search criteria or filters.'
                 : 'Start building your wardrobe by adding your first items.'}
             </p>
