@@ -1,4 +1,4 @@
-import { type OutfitSelection } from '@/lib/schemas';
+import { type OutfitSelection } from '@/lib/types/database';
 import { type Outfit, type WardrobeItem } from '@/lib/types/database';
 
 /**
@@ -20,22 +20,8 @@ export function convertOutfitToSelection(outfit: Outfit): OutfitSelection | null
 
     const categoryName = item.category.name.toLowerCase();
     
-    // Convert the WardrobeItem to the format expected by OutfitSelection
-    const selectionItem = {
-      id: item.id,
-      name: item.name,
-      category_id: item.category_id,
-      brand: item.brand || null,
-      color: item.color || null,
-      material: item.material || null,
-      formality_score: item.formality_score || null,
-      capsule_tags: item.capsule_tags || null,
-      season: (item.season as any) || null, // Type assertion to handle the mismatch
-      image_url: item.image_url || null,
-      active: item.active,
-      created_at: item.created_at,
-      updated_at: item.updated_at,
-    };
+    // Use the full WardrobeItem object directly
+    const selectionItem = item;
 
     // Map to the correct selection field based on category
     switch (categoryName) {

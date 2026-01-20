@@ -362,19 +362,34 @@ export function useUpdateOutfit() {
 
       // If items are being updated, check for duplicates and recalculate score
       if (items) {
-        const { data: duplicateCheck } = await supabase.functions.invoke('check-outfit-duplicate', {
-          body: { item_ids: items, exclude_outfit_id: id }
-        });
+        // Try to check for duplicates, but don't fail if Edge Function is unavailable
+        let isDuplicate = false;
+        try {
+          const { data: duplicateCheck } = await supabase.functions.invoke('check-outfit-duplicate', {
+            body: { item_ids: items, exclude_outfit_id: id }
+          });
+          isDuplicate = duplicateCheck?.isDuplicate || false;
+        } catch (error) {
+          console.warn('Duplicate check failed, proceeding anyway:', error);
+        }
 
-        if (duplicateCheck?.isDuplicate) {
+        if (isDuplicate) {
           throw new Error('This outfit combination already exists');
         }
 
-        const { data: scoreData } = await supabase.functions.invoke('score-outfit', {
-          body: { item_ids: items }
-        });
+        // Try to score the outfit, but use fallback if Edge Function is unavailable
+        let score = 0;
+        try {
+          const { data: scoreData } = await supabase.functions.invoke('score-outfit', {
+            body: { item_ids: items }
+          });
+          score = scoreData?.score || 0;
+        } catch (error) {
+          console.warn('Scoring failed, using fallback:', error);
+          score = Math.min(items.length * 15, 100); // Fallback scoring
+        }
 
-        updateData.score = scoreData?.score || 0;
+        updateData.score = score;
       }
 
       // Update the outfit
@@ -394,14 +409,35 @@ export function useUpdateOutfit() {
 
       // If items are being updated, replace outfit items
       if (items) {
-        // Delete existing outfit items
-        await supabase.from('outfit_items').delete().eq('outfit_id', id);
+        // Fetch wardrobe items to get their category IDs
+        const { data: wardrobeItems, error: wardrobeError } = await supabase
+          .from('wardrobe_items')
+          .select('id, category_id')
+          .in('id', items);
 
-        // Create new outfit items
-        const outfitItems = items.map(itemId => ({
+        if (wardrobeError) {
+          throw new Error(`Failed to fetch wardrobe items: ${wardrobeError.message}`);
+        }
+
+        if (!wardrobeItems || wardrobeItems.length !== items.length) {
+          throw new Error('Some wardrobe items do not exist or do not belong to user');
+        }
+
+        // Delete existing outfit items
+        const { error: deleteError } = await supabase
+          .from('outfit_items')
+          .delete()
+          .eq('outfit_id', id);
+
+        if (deleteError) {
+          throw new Error(`Failed to delete existing outfit items: ${deleteError.message}`);
+        }
+
+        // Create new outfit items with proper category IDs
+        const outfitItems = wardrobeItems.map(wardrobeItem => ({
           outfit_id: id,
-          item_id: itemId,
-          category_id: '', // This would need to be resolved from the item
+          item_id: wardrobeItem.id,
+          category_id: wardrobeItem.category_id,
         }));
 
         const { error: itemsError } = await supabase

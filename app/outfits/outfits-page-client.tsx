@@ -350,7 +350,13 @@ export function OutfitsPageClient() {
                             score={outfit.score}
                             size="sm"
                             showLabel={false}
-                            outfit={canGenerateScoreBreakdown(outfit) ? convertOutfitToSelection(outfit) || undefined : undefined}
+                            outfit={canGenerateScoreBreakdown(outfit) ? (() => {
+                              const selection = convertOutfitToSelection(outfit);
+                              return selection ? {
+                                ...selection,
+                                tuck_style: selection.tuck_style || 'Untucked'
+                              } as any : undefined;
+                            })() : undefined}
                             className="scale-75 -m-2"
                           />
                         )}
