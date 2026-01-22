@@ -6,7 +6,22 @@ const nextConfig: NextConfig = {
 
   // Performance optimizations
   experimental: {
-    optimizePackageImports: ['lucide-react', '@tanstack/react-query'],
+    optimizePackageImports: ['lucide-react', '@tanstack/react-query', '@radix-ui/react-*'],
+  },
+
+  // Bundle analysis configuration
+  webpack: (config, { isServer }) => {
+    if (process.env.ANALYZE === 'true' && !isServer) {
+      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+      config.plugins.push(
+        new BundleAnalyzerPlugin({
+          analyzerMode: 'static',
+          openAnalyzer: false,
+          reportFilename: '../bundle-analysis.html',
+        })
+      );
+    }
+    return config;
   },
 
   // Compiler optimizations

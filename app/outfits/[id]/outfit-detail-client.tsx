@@ -71,6 +71,15 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
   const { data: scoreData } = useScoreOutfit(selectedItemIds);
   const { data: isDuplicate } = useCheckOutfitDuplicate(selectedItemIds);
 
+  // Create category lookup map for O(1) performance
+  const categoryMap = useMemo(() => {
+    const map = new Map<string, typeof categories[0]>();
+    categories.forEach(category => {
+      map.set(category.id, category);
+    });
+    return map;
+  }, [categories]);
+
   // Group items by category for edit mode
   const itemsByCategory = useMemo(() => {
     const grouped = new Map<string, WardrobeItem[]>();
@@ -164,7 +173,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
   };
 
   const handleItemSelect = (item: WardrobeItem | null) => {
-    const category = categories.find(c => c.id === selectedCategory);
+    const category = categoryMap.get(selectedCategory);
     if (category) {
       // Map category names to OutfitSelection property names
       const categoryMap: Record<string, keyof OutfitSelection> = {
@@ -552,13 +561,13 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
               {/* Items Grid */}
               {selectedCategory ? (
                 <ItemsGrid
-                  category={categories.find(c => c.id === selectedCategory)?.name || ''}
+                  category={categoryMap.get(selectedCategory)?.name || ''}
                   items={selectedCategoryItems}
                   selectedItem={(() => {
-                    const category = categories.find(c => c.id === selectedCategory);
+                    const category = categoryMap.get(selectedCategory);
                     if (!category) return undefined;
                     
-                    const categoryMap: Record<string, keyof OutfitSelection> = {
+                    const categoryPropertyMap: Record<string, keyof OutfitSelection> = {
                       'Jacket': 'jacket',
                       'Overshirt': 'overshirt',
                       'Jackets': 'jacket',
@@ -575,7 +584,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
                       'Watches': 'watch'
                     };
                     
-                    const propertyName = categoryMap[category.name];
+                    const propertyName = categoryPropertyMap[category.name];
                     return propertyName && propertyName !== 'tuck_style' && propertyName !== 'score' 
                       ? selection[propertyName] as WardrobeItem | undefined
                       : undefined;

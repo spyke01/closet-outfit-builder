@@ -1,7 +1,11 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { Shirt, X, Eye, Star } from 'lucide-react';
+import Image from 'next/image';
+import Shirt from 'lucide-react/dist/esm/icons/shirt';
+import X from 'lucide-react/dist/esm/icons/x';
+import Eye from 'lucide-react/dist/esm/icons/eye';
+import Star from 'lucide-react/dist/esm/icons/star';
 import Link from 'next/link';
 import { WardrobeItem } from '@/lib/types/database';
 import { Button } from '@/components/ui/button';
@@ -100,11 +104,15 @@ export function OutfitFlatLayout({
               <div className="relative mb-3">
                 <div className="aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-700">
                   {item.image_url ? (
-                    <img
-                      src={item.image_url}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                    />
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={item.image_url}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      />
+                    </div>
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <Shirt className="h-8 w-8 text-slate-400" />

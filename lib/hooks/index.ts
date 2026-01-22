@@ -54,3 +54,6 @@ export {
 
 // Authentication hooks
 export { useAuth } from './use-auth';
+
+// Advanced pattern hooks
+export { useLatest } from './use-latest';

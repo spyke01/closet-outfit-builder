@@ -11,7 +11,9 @@ vi.mock('@/lib/hooks', () => ({
   useWeather: vi.fn(),
 }));
 
-import { useAuth, useShowWeather, useWeather } from '@/lib/hooks';
+import { useAuth } from '@/lib/hooks/use-auth';
+import { useShowWeather } from '@/lib/hooks/use-weather-preference';
+import { useWeather } from '@/lib/hooks/use-weather';
 
 const mockUseAuth = vi.mocked(useAuth);
 const mockUseShowWeather = vi.mocked(useShowWeather);

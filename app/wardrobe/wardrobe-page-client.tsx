@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState, useMemo, useCallback, startTransition } from 'react';
+import Image from 'next/image';
 import { useCategories } from '@/lib/hooks/use-categories';
-import { useWardrobeItems, useCreateWardrobeItem } from '@/lib/hooks/use-wardrobe-items';
+import { useWardrobeItems } from '@/lib/hooks/use-wardrobe-items';
 import { ItemsList } from '@/components/items-list';
 import { WardrobeSearchFilters } from '@/components/wardrobe-search-filters';
 import { Button } from '@/components/ui/button';
-import { Grid, List } from 'lucide-react';
+import Grid from 'lucide-react/dist/esm/icons/grid';
+import List from 'lucide-react/dist/esm/icons/list';
 import { WardrobeItem } from '@/lib/types/database';
 
 export function WardrobePageClient() {
@@ -18,7 +20,6 @@ export function WardrobePageClient() {
   // Fetch data using hooks
   const { data: categories = [], isLoading: categoriesLoading, error: categoriesError } = useCategories();
   const { data: items = [], isLoading: itemsLoading, error: itemsError } = useWardrobeItems();
-  const createItemMutation = useCreateWardrobeItem();
 
   // Filter items by search term, tags, and categories
   const filteredItems = useMemo(() => {
@@ -35,7 +36,7 @@ export function WardrobePageClient() {
     // Filter by tags
     if (selectedTags.size > 0) {
       filtered = filtered.filter(item =>
-        item.capsule_tags?.some(tag => selectedTags.has(tag))
+        item.capsule_tags?.some((tag: string) => selectedTags.has(tag))
       );
     }
 
@@ -211,12 +212,14 @@ export function WardrobePageClient() {
                         >
                           {/* Fixed height image container */}
                           {item.image_url && (
-                            <div className="h-40 sm:h-44 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3 flex items-center justify-center">
-                              <img
+                            <div className="h-40 sm:h-44 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3 flex items-center justify-center relative">
+                              <Image
                                 src={item.image_url}
                                 alt={item.name}
-                                className="max-w-full max-h-full object-contain"
+                                fill
+                                className="object-contain p-3"
                                 loading="lazy"
+                                sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
                               />
                             </div>
                           )}
@@ -276,12 +279,14 @@ export function WardrobePageClient() {
                   >
                     {/* Fixed height image container */}
                     {item.image_url && (
-                      <div className="h-40 sm:h-44 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3 flex items-center justify-center">
-                        <img
+                      <div className="h-40 sm:h-44 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3 flex items-center justify-center relative">
+                        <Image
                           src={item.image_url}
                           alt={item.name}
-                          className="max-w-full max-h-full object-contain"
+                          fill
+                          className="object-contain p-3"
                           loading="lazy"
+                          sizes="(max-width: 640px) 100vw, 50vw"
                         />
                       </div>
                     )}
@@ -296,7 +301,7 @@ export function WardrobePageClient() {
 
                       {item.capsule_tags && item.capsule_tags.length > 0 && (
                         <div className="flex flex-wrap gap-1">
-                          {item.capsule_tags.slice(0, 3).map(tag => (
+                          {item.capsule_tags.slice(0, 3).map((tag: string) => (
                             <span
                               key={tag}
                               className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300"
@@ -354,12 +359,14 @@ export function WardrobePageClient() {
                             >
                               {/* Fixed height image container */}
                               {item.image_url && (
-                                <div className="h-40 sm:h-44 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3 flex items-center justify-center">
-                                  <img
+                                <div className="h-40 sm:h-44 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3 flex items-center justify-center relative">
+                                  <Image
                                     src={item.image_url}
                                     alt={item.name}
-                                    className="max-w-full max-h-full object-contain"
+                                    fill
+                                    className="object-contain p-3"
                                     loading="lazy"
+                                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
                                   />
                                 </div>
                               )}

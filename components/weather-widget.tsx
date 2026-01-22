@@ -1,8 +1,14 @@
 'use client';
 
 import React from 'react';
-import { Cloud, Sun, CloudRain, RefreshCw, AlertCircle } from 'lucide-react';
-import { useWeather, useAuth, useShowWeather } from '@/lib/hooks';
+import Cloud from 'lucide-react/dist/esm/icons/cloud';
+import Sun from 'lucide-react/dist/esm/icons/sun';
+import CloudRain from 'lucide-react/dist/esm/icons/cloud-rain';
+import RefreshCw from 'lucide-react/dist/esm/icons/refresh-cw';
+import AlertCircle from 'lucide-react/dist/esm/icons/alert-circle';
+import { useWeather } from '@/lib/hooks/use-weather';
+import { useAuth } from '@/lib/hooks/use-auth';
+import { useShowWeather } from '@/lib/hooks/use-weather-preference';
 
 export const WeatherWidget: React.FC<{ className?: string }> = ({
   className = ""

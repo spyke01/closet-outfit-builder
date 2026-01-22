@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback } from 'react';
+import Image from 'next/image';
 import { WardrobeItem } from '@/lib/types/database';
 
 interface ItemsListProps {
@@ -59,10 +60,12 @@ export const ItemsList: React.FC<ItemsListProps> = ({
           {/* Image */}
           {item.image_url && (
             <div className="w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-lg p-2 flex items-center justify-center flex-shrink-0">
-              <img
+              <Image
                 src={item.image_url}
                 alt={item.name}
-                className="max-w-full max-h-full object-contain"
+                width={48}
+                height={48}
+                className="object-contain"
                 loading="lazy"
               />
             </div>

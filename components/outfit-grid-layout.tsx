@@ -1,8 +1,11 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import Image from 'next/image';
 import { WardrobeItem } from '@/lib/types/database';
-import { Shirt, Watch, Zap } from 'lucide-react';
+import Shirt from 'lucide-react/dist/esm/icons/shirt';
+import Watch from 'lucide-react/dist/esm/icons/watch';
+import Zap from 'lucide-react/dist/esm/icons/zap';
 
 interface OutfitGridLayoutProps {
   items: WardrobeItem[];
@@ -85,12 +88,16 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
         onClick={() => isClickable && onItemClick(item)}
       >
         {item.image_url ? (
-          <img
-            src={item.image_url}
-            alt={item.name}
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
+          <div className="relative w-full h-full">
+            <Image
+              src={item.image_url}
+              alt={item.name}
+              fill
+              className="object-cover"
+              loading="lazy"
+              sizes="125px"
+            />
+          </div>
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-slate-100 dark:bg-slate-700">
             <IconComponent className="w-8 h-8 text-slate-400" />

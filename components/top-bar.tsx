@@ -1,7 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Settings, Shirt, Grid3X3 } from 'lucide-react';
+import Settings from 'lucide-react/dist/esm/icons/settings';
+import Shirt from 'lucide-react/dist/esm/icons/shirt';
+import Grid3X3 from 'lucide-react/dist/esm/icons/grid-3x3';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from './ui/button';

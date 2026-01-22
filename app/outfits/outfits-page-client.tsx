@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useOutfits, useDeleteOutfit } from '@/lib/hooks/use-outfits';
-import { OutfitCard } from '@/components/outfit-card';
 import { OutfitList } from '@/components/outfit-list';
 import { OutfitSimpleLayout } from '@/components/outfit-simple-layout';
 import { OutfitGridLayout } from '@/components/outfit-grid-layout';
@@ -17,7 +16,6 @@ import {
   List, 
   Search,
   Heart,
-  Star,
   AlertCircle,
   Shirt,
   Trash2
@@ -42,7 +40,7 @@ export function OutfitsPageClient() {
 
   // Filter and sort outfits
   const filteredAndSortedOutfits = useMemo(() => {
-    let filtered = outfits.filter(outfit => {
+    const filtered = outfits.filter(outfit => {
       // Search filter
       const matchesSearch = !searchTerm || 
         outfit.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||

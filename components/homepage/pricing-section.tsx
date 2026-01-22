@@ -1,6 +1,8 @@
 'use client';
 
-import { Check, Sparkles, Crown } from "lucide-react";
+import Check from 'lucide-react/dist/esm/icons/check';
+import Sparkles from 'lucide-react/dist/esm/icons/sparkles';
+import Crown from 'lucide-react/dist/esm/icons/crown';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 

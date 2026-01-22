@@ -1,6 +1,8 @@
 'use client';
 
-import { Upload, Sparkles, Heart } from "lucide-react";
+import Upload from 'lucide-react/dist/esm/icons/upload';
+import Sparkles from 'lucide-react/dist/esm/icons/sparkles';
+import Heart from 'lucide-react/dist/esm/icons/heart';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useCategories } from '@/lib/hooks/use-categories';
 import { useCreateWardrobeItem } from '@/lib/hooks/use-wardrobe-items';
 import { ImageUpload } from '@/components/image-upload';
@@ -14,8 +15,7 @@ import {
   CheckCircle,
   Tag,
   Palette,
-  Shirt,
-  Plus
+  Shirt
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { type CreateWardrobeItemForm } from '@/lib/schemas';
@@ -204,11 +204,13 @@ export function AddItemPageClient() {
             <CardContent>
               <div className="space-y-4">
                 {formData.image_url && (
-                  <div className="relative">
-                    <img
+                  <div className="relative w-full max-w-sm mx-auto aspect-square">
+                    <Image
                       src={formData.image_url}
                       alt={formData.name || 'Item'}
-                      className="w-full max-w-sm mx-auto rounded-lg shadow-md"
+                      fill
+                      className="rounded-lg shadow-md object-cover"
+                      sizes="(max-width: 768px) 100vw, 384px"
                     />
                   </div>
                 )}

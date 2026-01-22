@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Lock, Loader2 } from 'lucide-react';
+import ChevronDown from 'lucide-react/dist/esm/icons/chevron-down';
+import Lock from 'lucide-react/dist/esm/icons/lock';
+import Loader2 from 'lucide-react/dist/esm/icons/loader-2';
 
 import { safeValidate } from '@/lib/utils/validation';
 import { WardrobeItemSchema, type WardrobeItem } from '@/lib/schemas';

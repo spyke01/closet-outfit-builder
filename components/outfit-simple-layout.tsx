@@ -1,8 +1,11 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { WardrobeItem } from '@/lib/types/database';
-import { Shirt, Watch, Zap } from 'lucide-react';
+import Shirt from 'lucide-react/dist/esm/icons/shirt';
+import Watch from 'lucide-react/dist/esm/icons/watch';
+import Zap from 'lucide-react/dist/esm/icons/zap';
 
 interface OutfitSimpleLayoutProps {
   items: WardrobeItem[];
@@ -205,11 +208,15 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
           >
             <div className="w-full h-full relative">
               {item.image_url ? (
-                <img
-                  src={item.image_url}
-                  alt={item.name}
-                  className="w-full h-full object-contain filter drop-shadow-sm"
-                />
+                <div className="relative w-full h-full">
+                  <Image
+                    src={item.image_url}
+                    alt={item.name}
+                    fill
+                    className="object-contain filter drop-shadow-sm"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                </div>
               ) : (
                 <div className="w-full h-full bg-slate-200 dark:bg-slate-600 rounded-lg flex items-center justify-center border-2 border-slate-300 dark:border-slate-500 shadow-sm">
                   <div className="text-slate-500 dark:text-slate-400">

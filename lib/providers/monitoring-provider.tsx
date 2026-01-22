@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { initializeMonitoring } from '@/lib/monitoring';
 
 interface MonitoringProviderProps {
   children: React.ReactNode;
@@ -9,9 +8,18 @@ interface MonitoringProviderProps {
 
 export function MonitoringProvider({ children }: MonitoringProviderProps) {
   React.useEffect(() => {
-    // Initialize monitoring on client-side only
+    // Defer monitoring initialization until after hydration
     if (typeof window !== 'undefined') {
-      initializeMonitoring();
+      // Use setTimeout to defer until after initial render
+      setTimeout(async () => {
+        try {
+          // Dynamic import for monitoring to reduce initial bundle size
+          const { initializeMonitoring } = await import('@/lib/monitoring');
+          initializeMonitoring();
+        } catch (error) {
+          console.warn('Failed to initialize monitoring:', error);
+        }
+      }, 1000); // Defer by 1 second to prioritize critical rendering
     }
   }, []);
 

@@ -1,18 +1,21 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
-import { Shirt, RefreshCw, Loader2, Heart, Save } from 'lucide-react';
+import React, { useCallback, useMemo, memo } from 'react';
+import Shirt from 'lucide-react/dist/esm/icons/shirt';
+import RefreshCw from 'lucide-react/dist/esm/icons/refresh-cw';
+import Loader2 from 'lucide-react/dist/esm/icons/loader-2';
+import Save from 'lucide-react/dist/esm/icons/save';
 import { z } from 'zod';
-import { produce } from 'immer';
 import { useImmerState } from '@/lib/utils/immer-state';
 import { safeValidate } from '@/lib/utils/validation';
+import { useLatest } from '@/lib/hooks/use-latest';
 import { 
   OutfitSelectionSchema, 
   OutfitSchema
 } from '@/lib/schemas';
 import { type OutfitSelection, type Outfit } from '@/lib/types/database';
 import { OutfitCard } from './outfit-card';
-import { ScoreCircle, type ScoreBreakdownData } from './score-circle';
+import { type ScoreBreakdownData } from './score-circle';
 
 // Outfit display state schema
 const OutfitDisplayStateSchema = z.object({
@@ -24,91 +27,30 @@ const OutfitDisplayStateSchema = z.object({
 
 type OutfitDisplayState = z.infer<typeof OutfitDisplayStateSchema>;
 
-interface OutfitDisplayProps {
+// Memoized score calculator component for performance
+const OutfitScoreCalculator = memo<{
   selection: OutfitSelection;
-  onRandomize: () => void;
-  // Enhanced error handling props
-  onError?: (error: Error) => void;
-  onRetry?: () => void;
-  onShowAlternatives?: () => void;
-  onTryDifferentAnchor?: () => void;
-  // Enhanced functionality props
-  enableErrorBoundary?: boolean;
-  // Mockup view state props
-  isInMockupView?: boolean;
-  onMockupViewChange?: (isInMockupView: boolean) => void;
-  // Database integration props
-  userId?: string;
-  onSaveOutfit?: (outfit: Omit<Outfit, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => Promise<void>;
-  isGenerating?: boolean;
-  generationError?: Error | null;
-}
-
-export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({ 
-  selection, 
-  onRandomize,
-  onError,
-  onRetry,
-  onShowAlternatives,
-  onTryDifferentAnchor,
-  enableErrorBoundary = false,
-  isInMockupView = false,
-  onMockupViewChange,
-  userId,
-  onSaveOutfit,
-  isGenerating = false,
-  generationError = null
-}) => {
-  // Immer-based state management
-  const [state, updateState] = useImmerState<OutfitDisplayState>({
-    isTransitioning: false,
-    isSaving: false,
-    saveError: null,
-    isInMockupView: isInMockupView,
-  });
-
-  // Validate selection with Zod
-  const validatedSelection = useMemo(() => {
-    const validation = safeValidate(OutfitSelectionSchema, selection);
-    if (!validation.success) {
-      console.warn('Invalid selection:', validation.error);
-      return {} as OutfitSelection;
-    }
-    
-    return validation.data;
-  }, [selection]);
-
-  // Check if outfit is complete
-  const hasCompleteOutfit = useMemo(() => {
-    return (validatedSelection.shirt || validatedSelection.undershirt) && 
-           validatedSelection.pants;
-  }, [validatedSelection]);
-
-  // Check if any items are selected
-  const hasAnyItems = useMemo(() => {
-    return Object.entries(validatedSelection)
-      .some(([key, value]) => key !== 'tuck_style' && key !== 'score' && value !== null && value !== undefined);
-  }, [validatedSelection]);
-
-  // Calculate outfit score and breakdown
+  hasCompleteOutfit: boolean;
+  onScoreCalculated: (score: number, breakdown?: ScoreBreakdownData) => void;
+}>(({ selection, hasCompleteOutfit, onScoreCalculated }) => {
   const { outfitScore, scoreBreakdown } = useMemo(() => {
     if (!hasCompleteOutfit) return { outfitScore: 0, scoreBreakdown: undefined };
     
     // Basic scoring logic - can be enhanced with actual scoring algorithm
-    const items = Object.entries(validatedSelection)
+    const items = Object.entries(selection)
       .filter(([key, value]) => value && key !== 'tuck_style' && key !== 'loved')
       .map(([key, item]) => ({ key, item: item as any }));
     
     let score = items.length * 15; // Base score per item
     
     // Bonus for complete outfit
-    if (validatedSelection.shirt && validatedSelection.pants && validatedSelection.shoes) {
+    if (selection.shirt && selection.pants && selection.shoes) {
       score += 25;
     }
     
     // Bonus for accessories
-    if (validatedSelection.belt) score += 10;
-    if (validatedSelection.watch) score += 10;
+    if (selection.belt) score += 10;
+    if (selection.watch) score += 10;
     
     // Formality matching bonus
     const formalityScores = items
@@ -154,7 +96,98 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
     };
     
     return { outfitScore: finalScore, scoreBreakdown: breakdown };
-  }, [validatedSelection, hasCompleteOutfit]);
+  }, [selection, hasCompleteOutfit]);
+
+  // Notify parent of score changes
+  React.useEffect(() => {
+    onScoreCalculated(outfitScore, scoreBreakdown);
+  }, [outfitScore, scoreBreakdown, onScoreCalculated]);
+
+  return null; // This component only calculates, doesn't render
+});
+
+OutfitScoreCalculator.displayName = 'OutfitScoreCalculator';
+
+interface OutfitDisplayProps {
+  selection: OutfitSelection;
+  onRandomize: () => void;
+  // Enhanced error handling props
+  onError?: (error: Error) => void;
+  onRetry?: () => void;
+  onShowAlternatives?: () => void;
+  onTryDifferentAnchor?: () => void;
+  // Enhanced functionality props
+  enableErrorBoundary?: boolean;
+  // Mockup view state props
+  isInMockupView?: boolean;
+  onMockupViewChange?: (isInMockupView: boolean) => void;
+  // Database integration props
+  userId?: string;
+  onSaveOutfit?: (outfit: Omit<Outfit, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  isGenerating?: boolean;
+  generationError?: Error | null;
+}
+
+export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({ 
+  selection, 
+  onRandomize,
+  onError,
+  onRetry,
+  onShowAlternatives,
+  onTryDifferentAnchor,
+  enableErrorBoundary = false,
+  isInMockupView = false,
+  onMockupViewChange,
+  userId,
+  onSaveOutfit,
+  isGenerating = false,
+  generationError = null
+}) => {
+  // Immer-based state management
+  const [state, updateState] = useImmerState<OutfitDisplayState>({
+    isTransitioning: false,
+    isSaving: false,
+    saveError: null,
+    isInMockupView: isInMockupView,
+  });
+
+  // State for calculated scores
+  const [outfitScore, setOutfitScore] = React.useState(0);
+  const [scoreBreakdown, setScoreBreakdown] = React.useState<ScoreBreakdownData | undefined>();
+
+  // Use useLatest for stable callback refs
+  const latestOnError = useLatest(onError);
+  const latestOnShowAlternatives = useLatest(onShowAlternatives);
+  const latestOnTryDifferentAnchor = useLatest(onTryDifferentAnchor);
+
+  // Validate selection with Zod
+  const validatedSelection = useMemo(() => {
+    const validation = safeValidate(OutfitSelectionSchema, selection);
+    if (!validation.success) {
+      console.warn('Invalid selection:', validation.error);
+      return {} as OutfitSelection;
+    }
+    
+    return validation.data as OutfitSelection;
+  }, [selection]);
+
+  // Check if outfit is complete
+  const hasCompleteOutfit = useMemo(() => {
+    return Boolean((validatedSelection.shirt || validatedSelection.undershirt) && 
+                   validatedSelection.pants);
+  }, [validatedSelection]);
+
+  // Check if any items are selected
+  const hasAnyItems = useMemo(() => {
+    return Object.entries(validatedSelection)
+      .some(([key, value]) => key !== 'tuck_style' && key !== 'score' && value !== null && value !== undefined);
+  }, [validatedSelection]);
+
+  // Callback for score calculation
+  const handleScoreCalculated = useCallback((score: number, breakdown?: ScoreBreakdownData) => {
+    setOutfitScore(score);
+    setScoreBreakdown(breakdown);
+  }, []);
 
   // Enhanced randomize handler with error recovery
   const handleRandomize = useCallback(() => {
@@ -183,15 +216,15 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
       });
       
       // Enhanced error handling
-      if (onError) {
-        onError(error as Error);
+      if (latestOnError.current) {
+        latestOnError.current(error as Error);
       }
       
       // Emit custom events for error recovery
-      if (onShowAlternatives) {
+      if (latestOnShowAlternatives.current) {
         window.dispatchEvent(new CustomEvent('showOutfitAlternatives'));
       }
-      if (onTryDifferentAnchor) {
+      if (latestOnTryDifferentAnchor.current) {
         window.dispatchEvent(new CustomEvent('tryDifferentAnchor'));
       }
     }
@@ -251,8 +284,8 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
         draft.saveError = errorMessage;
       });
       
-      if (onError) {
-        onError(error as Error);
+      if (latestOnError.current) {
+        latestOnError.current(error as Error);
       }
     }
   }, [onSaveOutfit, hasCompleteOutfit, userId, outfitScore, validatedSelection, updateState, onError]);
@@ -271,8 +304,8 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
   // Enhanced error handling functions
   const handleError = useCallback((error: Error, feature: string) => {
     console.error(`Outfit display error in ${feature}:`, error);
-    onError?.(error);
-  }, [onError]);
+    latestOnError.current?.(error);
+  }, [latestOnError]);
 
   const handleRetry = useCallback((feature: string) => {
     console.log(`Retrying ${feature} feature`);
@@ -327,6 +360,13 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
     return (
       <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
         <div className="max-w-2xl mx-auto">
+          {/* Score calculator component */}
+          <OutfitScoreCalculator
+            selection={validatedSelection}
+            hasCompleteOutfit={hasCompleteOutfit}
+            onScoreCalculated={handleScoreCalculated}
+          />
+          
           <div className="relative">
             {(isGenerating || state.isTransitioning) && (
               <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl">

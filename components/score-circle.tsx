@@ -172,7 +172,7 @@ export const ScoreCircle: React.FC<ScoreCircleProps> = ({
     // Add resize listener to reposition tooltip
     if (showTooltip) {
       window.addEventListener('resize', updatePosition);
-      window.addEventListener('scroll', updatePosition);
+      window.addEventListener('scroll', updatePosition, { passive: true });
       
       return () => {
         window.removeEventListener('resize', updatePosition);

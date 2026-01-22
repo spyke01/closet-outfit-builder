@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { RotateCcw, Heart } from 'lucide-react';
+import RotateCcw from 'lucide-react/dist/esm/icons/rotate-ccw';
+import Heart from 'lucide-react/dist/esm/icons/heart';
+import Image from 'next/image';
 
 import { safeValidate } from '@/lib/utils/validation';
 import { OutfitSelectionSchema, type OutfitSelection } from '@/lib/schemas';
@@ -114,10 +116,13 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
             {/* Item image or placeholder */}
             <div className="w-14 h-14 bg-slate-100 dark:bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
               {item?.image_url ? (
-                <img
+                <Image
                   src={item.image_url}
                   alt={item.name}
-                  className="w-full h-full object-cover rounded-lg"
+                  width={56}
+                  height={56}
+                  className="object-cover rounded-lg"
+                  loading="lazy"
                 />
               ) : (
                 <div className="w-8 h-8 bg-slate-200 dark:bg-slate-600 rounded-md" />

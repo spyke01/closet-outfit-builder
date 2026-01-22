@@ -1,17 +1,15 @@
 'use client';
 
-import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { useCallback, useMemo, useEffect, useRef } from 'react';
 import { z } from 'zod';
 import { produce } from 'immer';
 import { useImmerState } from '@/lib/utils/immer-state';
-import { safeValidate, formatZodError } from '@/lib/utils/validation';
+import { safeValidate } from '@/lib/utils/validation';
 import { 
   OutfitSelectionSchema, 
-  WardrobeItemSchema, 
-  CategorySchema,
+  WardrobeItemSchema,
   type OutfitSelection,
-  type WardrobeItem,
-  type Category
+  type WardrobeItem
 } from '@/lib/schemas';
 import { CategoryDropdown } from './category-dropdown';
 import { OutfitList } from './outfit-list';

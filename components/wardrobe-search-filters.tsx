@@ -1,7 +1,10 @@
 'use client';
 
 import React, { useState, useCallback, startTransition, useDeferredValue } from 'react';
-import { Search, Tag, Plus, Filter } from 'lucide-react';
+import Search from 'lucide-react/dist/esm/icons/search';
+import Tag from 'lucide-react/dist/esm/icons/tag';
+import Plus from 'lucide-react/dist/esm/icons/plus';
+import Filter from 'lucide-react/dist/esm/icons/filter';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
@@ -111,14 +114,14 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
 
         {/* Category filters */}
         <div className="flex-1">
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+          <label htmlFor="category-all" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
             Categories
           </label>
           <div className="space-y-2">
             <div className="flex items-center">
               <input
-                type="checkbox"
                 id="category-all"
+                type="checkbox"
                 checked={selectedCategories.size === 0}
                 onChange={() => {
                   // Clear all selections to show all categories

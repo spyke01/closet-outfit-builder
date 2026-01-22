@@ -2,7 +2,9 @@
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { z } from 'zod';
-import { AlertTriangle, LogIn, RefreshCw } from 'lucide-react';
+import AlertTriangle from 'lucide-react/dist/esm/icons/alert-triangle';
+import LogIn from 'lucide-react/dist/esm/icons/log-in';
+import RefreshCw from 'lucide-react/dist/esm/icons/refresh-cw';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 

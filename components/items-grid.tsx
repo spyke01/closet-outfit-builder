@@ -1,7 +1,11 @@
 'use client';
 
 import React, { useState, useMemo, useCallback, startTransition, useDeferredValue } from 'react';
-import { Search, Tag, Plus } from 'lucide-react';
+import Search from 'lucide-react/dist/esm/icons/search';
+import Tag from 'lucide-react/dist/esm/icons/tag';
+import Plus from 'lucide-react/dist/esm/icons/plus';
+import Shirt from 'lucide-react/dist/esm/icons/shirt';
+import Image from 'next/image';
 import { z } from 'zod';
 import { useImmerState } from '@/lib/utils/immer-state';
 import { safeValidate, validateFileUpload } from '@/lib/utils/validation';
@@ -11,6 +15,11 @@ import {
 import { type WardrobeItem } from '@/lib/types/database';
 
 import { ImageUpload } from './image-upload';
+
+// Hoist static JSX elements outside component for performance
+const EMPTY_STATE_ICON = <Shirt size={48} className="text-slate-300 mx-auto mb-4" />;
+const SEARCH_ICON = <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-500" />;
+const TAG_ICON = <Tag size={16} className="text-slate-500 dark:text-slate-400 flex-shrink-0" />;
 
 // Items grid state schema
 const ItemsGridStateSchema = z.object({
@@ -286,7 +295,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
           <div className="space-y-3 sm:space-y-4">
             {/* Search bar - full width on mobile */}
             <div className="relative w-full">
-              <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+              {SEARCH_ICON}
               <input
                 type="text"
                 placeholder="Search items..."
@@ -298,7 +307,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
 
             {/* Filter tags - wrap on mobile */}
             <div className="flex flex-wrap items-center gap-2">
-              <Tag size={16} className="text-slate-500 dark:text-slate-400 flex-shrink-0" />
+              {TAG_ICON}
               {capsuleTags.map(tag => (
                 <button
                   key={tag}
@@ -329,7 +338,12 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
         {/* Responsive grid - 2 cols on mobile, 3 on small, 4 on medium and up */}
         <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 transition-opacity duration-200 ${
           isFiltering ? 'opacity-75' : 'opacity-100'
-        }`}>
+        }`}
+        style={{
+          // Use content-visibility for performance with long lists
+          contentVisibility: filteredItems.length > 20 ? 'auto' : 'visible',
+          containIntrinsicSize: filteredItems.length > 20 ? '200px' : 'none'
+        }}>
           {filteredItems.map(item => (
             <button
               key={item.id}
@@ -346,12 +360,14 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
             >
               {/* Fixed height image container */}
               {item.image_url && (
-                <div className="h-40 sm:h-44 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3 flex items-center justify-center">
-                  <img
+                <div className="h-40 sm:h-44 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3 flex items-center justify-center relative">
+                  <Image
                     src={item.image_url}
                     alt={item.name}
-                    className="max-w-full max-h-full object-contain"
+                    fill
+                    className="object-contain"
                     loading="lazy"
+                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
                   />
                 </div>
               )}

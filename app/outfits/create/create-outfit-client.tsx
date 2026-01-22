@@ -91,6 +91,11 @@ export function CreateOutfitPageClient() {
     return grouped;
   }, [items, categories]);
 
+  // Create category map for O(1) lookups
+  const categoryMap = useMemo(() => {
+    return new Map(categories.map(cat => [cat.id, cat]));
+  }, [categories]);
+
   // Get items for selected category
   const selectedCategoryItems = useMemo(() => {
     if (!selectedCategory) return [];
@@ -102,7 +107,7 @@ export function CreateOutfitPageClient() {
   };
 
   const handleItemSelect = (item: WardrobeItem | null) => {
-    const category = categories.find(c => c.id === selectedCategory);
+    const category = categoryMap.get(selectedCategory);
     if (category) {
       // Map category names to OutfitSelection property names
       const categoryMap: Record<string, keyof OutfitSelection> = {
@@ -389,13 +394,13 @@ export function CreateOutfitPageClient() {
             {/* Items Grid */}
             {selectedCategory ? (
               <ItemsGrid
-                category={categories.find(c => c.id === selectedCategory)?.name || ''}
+                category={categoryMap.get(selectedCategory)?.name || ''}
                 items={selectedCategoryItems}
                 selectedItem={(() => {
-                  const category = categories.find(c => c.id === selectedCategory);
+                  const category = categoryMap.get(selectedCategory);
                   if (!category) return undefined;
                   
-                  const categoryMap: Record<string, keyof OutfitSelection> = {
+                  const categoryPropertyMap: Record<string, keyof OutfitSelection> = {
                     'Jacket': 'jacket',
                     'Overshirt': 'overshirt', // Separate slots for Jacket and Overshirt
                     'Jackets': 'jacket',
@@ -408,7 +413,7 @@ export function CreateOutfitPageClient() {
                     'Watches': 'watch'
                   };
                   
-                  const propertyName = categoryMap[category.name];
+                  const propertyName = categoryPropertyMap[category.name];
                   return propertyName && propertyName !== 'tuck_style' && propertyName !== 'score' 
                     ? selection[propertyName] as WardrobeItem | undefined
                     : undefined;

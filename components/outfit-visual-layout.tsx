@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { WardrobeItem } from '@/lib/types/database';
 
 interface OutfitVisualLayoutProps {
@@ -243,14 +244,18 @@ export const OutfitVisualLayout: React.FC<OutfitVisualLayoutProps> = ({
             className="transition-all duration-300 hover:scale-105 drop-shadow-md hover:drop-shadow-lg"
           >
             <div className="w-full h-full relative group">
-              <img
-                src={item.image_url!}
-                alt={item.name}
-                className="w-full h-full object-contain filter drop-shadow-sm"
-                style={{
-                  filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.1))'
-                }}
-              />
+              <div className="relative w-full h-full">
+                <Image
+                  src={item.image_url!}
+                  alt={item.name}
+                  fill
+                  className="object-contain filter drop-shadow-sm"
+                  style={{
+                    filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.1))'
+                  }}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+              </div>
               
               {/* Hover tooltip */}
               <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">

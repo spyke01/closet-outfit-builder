@@ -59,10 +59,15 @@ export function AnchorOutfitBuilderClient({ categoryName, anchorItemId }: Anchor
   // Score the current outfit
   const { data: scoreData } = useScoreOutfit(selectedItemIds);
 
+  // Create category map for O(1) lookups
+  const categoryMap = useMemo(() => {
+    return new Map(categories.map(cat => [cat.id, cat]));
+  }, [categories]);
+
   // Initialize selection with anchor item
   React.useEffect(() => {
-    if (anchorItem && categories.length > 0) {
-      const category = categories.find(cat => cat.id === anchorItem.category_id);
+    if (anchorItem && categoryMap.size > 0) {
+      const category = categoryMap.get(anchorItem.category_id);
       if (category) {
         setSelection(prev => ({
           ...prev,
@@ -70,7 +75,7 @@ export function AnchorOutfitBuilderClient({ categoryName, anchorItemId }: Anchor
         }));
       }
     }
-  }, [anchorItem, categories]);
+  }, [anchorItem, categoryMap]);
 
   // Filter items by category, excluding the anchor item's category
   const itemsByCategory = useMemo(() => {

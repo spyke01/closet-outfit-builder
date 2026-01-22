@@ -1,4 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
+import { cache } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { queryKeys } from '@/lib/query-client';
 import type { 
@@ -13,56 +16,61 @@ import {
 
 import { useAuth } from './use-auth';
 
+// Cached data fetching functions for server-side deduplication
+const getWardrobeItems = cache(async (userId: string) => {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('wardrobe_items')
+    .select(`
+      *,
+      category:categories(*)
+    `)
+    .eq('user_id', userId)
+    .eq('active', true)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    throw new Error(`Failed to fetch wardrobe items: ${error.message}`);
+  }
+
+  return data || [];
+});
+
+const getWardrobeItem = cache(async (id: string) => {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('wardrobe_items')
+    .select(`
+      *,
+      category:categories(*)
+    `)
+    .eq('id', id)
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to fetch wardrobe item: ${error.message}`);
+  }
+
+  return data;
+});
+
 // Fetch all wardrobe items for the current user
 export function useWardrobeItems() {
-  const supabase = createClient();
   const { userId, isAuthenticated } = useAuth();
   
   return useQuery({
     queryKey: queryKeys.wardrobe.items(userId || 'anonymous'),
     enabled: isAuthenticated && !!userId,
-    queryFn: async (): Promise<WardrobeItem[]> => {
-      const { data, error } = await supabase
-        .from('wardrobe_items')
-        .select(`
-          *,
-          category:categories(*)
-        `)
-        .eq('active', true)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        throw new Error(`Failed to fetch wardrobe items: ${error.message}`);
-      }
-
-      return data || [];
-    },
+    queryFn: () => getWardrobeItems(userId!),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
 
 // Fetch a single wardrobe item by ID
 export function useWardrobeItem(id: string) {
-  const supabase = createClient();
-  
   return useQuery({
     queryKey: queryKeys.wardrobe.item(id),
-    queryFn: async (): Promise<WardrobeItem> => {
-      const { data, error } = await supabase
-        .from('wardrobe_items')
-        .select(`
-          *,
-          category:categories(*)
-        `)
-        .eq('id', id)
-        .single();
-
-      if (error) {
-        throw new Error(`Failed to fetch wardrobe item: ${error.message}`);
-      }
-
-      return data;
-    },
+    queryFn: () => getWardrobeItem(id),
     enabled: !!id,
   });
 }

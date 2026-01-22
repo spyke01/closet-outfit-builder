@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import Image from 'next/image';
 import { useWardrobeItem, useUpdateWardrobeItem, useDeleteWardrobeItem } from '@/lib/hooks/use-wardrobe-items';
 import { useCategories } from '@/lib/hooks/use-categories';
 import { ImageUpload } from '@/components/image-upload';
@@ -37,6 +38,17 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
   const { data: item, isLoading: itemLoading, error: itemError } = useWardrobeItem(itemId);
   const { data: categories = [] } = useCategories();
   
+  // Create category lookup map for O(1) performance
+  const categoryMap = useMemo(() => {
+    const map = new Map<string, typeof categories[0]>();
+    categories.forEach(category => {
+      map.set(category.id, category);
+    });
+    return map;
+  }, [categories]);
+
+  const category = item ? categoryMap.get(item.category_id) : undefined;
+
   // Mutations
   const updateItemMutation = useUpdateWardrobeItem();
   const deleteItemMutation = useDeleteWardrobeItem();
@@ -171,7 +183,6 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
     );
   }
 
-  const category = categories.find(c => c.id === item.category_id);
   const availableTags = ['Refined', 'Adventurer', 'Crossover', 'Shorts'];
   const availableSeasons = ['All', 'Spring', 'Summer', 'Fall', 'Winter'];
 
@@ -263,11 +274,13 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
               {isEditing ? (
                 <div className="space-y-4">
                   {editForm.image_url && (
-                    <div className="relative">
-                      <img
+                    <div className="relative w-full max-w-sm mx-auto aspect-square">
+                      <Image
                         src={editForm.image_url}
                         alt={editForm.name || 'Item'}
-                        className="w-full max-w-sm mx-auto rounded-lg shadow-md"
+                        fill
+                        className="rounded-lg shadow-md object-cover"
+                        sizes="(max-width: 768px) 100vw, 384px"
                       />
                     </div>
                   )}
@@ -279,11 +292,15 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
               ) : (
                 <div className="text-center">
                   {item.image_url ? (
-                    <img
-                      src={item.image_url}
-                      alt={item.name}
-                      className="w-full max-w-sm mx-auto rounded-lg shadow-md"
-                    />
+                    <div className="relative w-full max-w-sm mx-auto aspect-square">
+                      <Image
+                        src={item.image_url}
+                        alt={item.name}
+                        fill
+                        className="rounded-lg shadow-md object-cover"
+                        sizes="(max-width: 768px) 100vw, 384px"
+                      />
+                    </div>
                   ) : (
                     <div className="w-full max-w-sm mx-auto h-64 bg-stone-100 dark:bg-slate-700 rounded-lg flex items-center justify-center">
                       <div className="text-center">
@@ -451,7 +468,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
               ) : (
                 <div className="flex flex-wrap gap-2">
                   {item.capsule_tags && item.capsule_tags.length > 0 ? (
-                    item.capsule_tags.map(tag => (
+                    item.capsule_tags.map((tag: string) => (
                       <Badge key={tag} variant="secondary">
                         {tag}
                       </Badge>
@@ -489,7 +506,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
               ) : (
                 <div className="flex flex-wrap gap-2">
                   {item.season && item.season.length > 0 ? (
-                    item.season.map(season => (
+                    item.season.map((season: string) => (
                       <Badge key={season} variant="outline">
                         {season}
                       </Badge>

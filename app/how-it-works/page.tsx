@@ -1,7 +1,9 @@
 'use client';
 
 import Link from "next/link";
-import { Upload, Sparkles, Heart } from "lucide-react";
+import Upload from 'lucide-react/dist/esm/icons/upload';
+import Sparkles from 'lucide-react/dist/esm/icons/sparkles';
+import Heart from 'lucide-react/dist/esm/icons/heart';
 import { Button } from "@/components/ui/button";
 import { StaticPageNavigation } from "@/components/static-page-navigation";
 import { StaticPageFooter } from "@/components/static-page-footer";

@@ -2,7 +2,9 @@
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { z } from 'zod';
-import { AlertTriangle, RefreshCw, Info } from 'lucide-react';
+import AlertTriangle from 'lucide-react/dist/esm/icons/alert-triangle';
+import RefreshCw from 'lucide-react/dist/esm/icons/refresh-cw';
+import Info from 'lucide-react/dist/esm/icons/info';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { formatZodError, getFieldErrors } from '@/lib/utils/validation';

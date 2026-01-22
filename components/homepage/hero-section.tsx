@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles } from "lucide-react";
+import ArrowRight from 'lucide-react/dist/esm/icons/arrow-right';
+import Sparkles from 'lucide-react/dist/esm/icons/sparkles';
 
 export function HeroSection() {
   const scrollToDemo = () => {

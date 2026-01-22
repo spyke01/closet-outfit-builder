@@ -30,8 +30,14 @@ export const dynamic = 'force-static';
 
 export async function POST(request: NextRequest) {
   try {
+    // Start operations in parallel to avoid waterfalls
+    const [supabasePromise, formDataPromise] = [
+      createClient(),
+      request.formData()
+    ];
+
     // Initialize Supabase client
-    const supabase = await createClient();
+    const supabase = await supabasePromise;
     
     // Check authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -43,8 +49,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse form data
-    const formData = await request.formData();
+    // Parse form data (await the promise we started earlier)
+    const formData = await formDataPromise;
     const imageFile = formData.get('image') as File;
     const removeBackground = formData.get('removeBackground') === 'true';
     const quality = parseFloat(formData.get('quality') as string) || 0.9;

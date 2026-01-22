@@ -4,7 +4,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { SimpleThemeToggle } from "@/components/simple-theme-toggle";
 import { Logo } from "@/components/logo";
-import { Menu, X } from "lucide-react";
+import Menu from 'lucide-react/dist/esm/icons/menu';
+import X from 'lucide-react/dist/esm/icons/x';
 import { useState } from "react";
 
 export function StaticPageNavigation() {
