@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { useWardrobeItem, useUpdateWardrobeItem, useDeleteWardrobeItem } from '@/lib/hooks/use-wardrobe-items';
 import { useCategories } from '@/lib/hooks/use-categories';
-import { ImageUpload } from '@/components/image-upload';
+import { ImageUploadWithErrorBoundary as ImageUpload } from '@/components/dynamic/image-upload-dynamic';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

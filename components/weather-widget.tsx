@@ -1,24 +1,28 @@
 'use client';
 
 import React from 'react';
-import Cloud from 'lucide-react/dist/esm/icons/cloud';
-import Sun from 'lucide-react/dist/esm/icons/sun';
-import CloudRain from 'lucide-react/dist/esm/icons/cloud-rain';
-import RefreshCw from 'lucide-react/dist/esm/icons/refresh-cw';
-import AlertCircle from 'lucide-react/dist/esm/icons/alert-circle';
-import { useWeather } from '@/lib/hooks/use-weather';
+import { Cloud, Sun, CloudRain, RefreshCw, AlertCircle } from 'lucide-react';
+
+
+
+
+
+import { useConditionalWeather, preloadWeatherModule } from '@/lib/hooks/use-conditional-weather';
 import { useAuth } from '@/lib/hooks/use-auth';
-import { useShowWeather } from '@/lib/hooks/use-weather-preference';
 
 export const WeatherWidget: React.FC<{ className?: string }> = ({
   className = ""
 }) => {
   const { user } = useAuth();
-  const showWeather = useShowWeather(!!user);
-  const { current, loading, error, retry, usingFallback } = useWeather(showWeather);
+  const { current, loading, error, retry, usingFallback, weatherEnabled } = useConditionalWeather(!!user);
 
-  // Don't render if user is not authenticated or weather is disabled
-  if (!showWeather) {
+  // Preload weather module on hover for better UX
+  const handleMouseEnter = () => {
+    preloadWeatherModule();
+  };
+
+  // Don't render if weather is not enabled
+  if (!weatherEnabled) {
     return null;
   }
 
@@ -87,7 +91,10 @@ export const WeatherWidget: React.FC<{ className?: string }> = ({
   }
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div 
+      className={`flex items-center gap-2 ${className}`}
+      onMouseEnter={handleMouseEnter}
+    >
       {getWeatherIcon(current.condition)}
       <span className="text-slate-600 dark:text-slate-300 text-sm font-medium">
         {Math.round(current.temperature)}°

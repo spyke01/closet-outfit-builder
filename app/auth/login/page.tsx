@@ -1,15 +1,17 @@
 import { LoginForm } from "@/components/login-form";
 import { redirect } from "next/navigation";
 
-export default function Page({
+export default async function Page({
   searchParams,
 }: {
-  searchParams: { code?: string; next?: string };
+  searchParams: Promise<{ code?: string; next?: string }>;
 }) {
+  const params = await searchParams;
+  
   // If there's an OAuth code, redirect to the callback route
-  if (searchParams.code) {
-    const callbackUrl = `/auth/callback?code=${searchParams.code}${
-      searchParams.next ? `&next=${encodeURIComponent(searchParams.next)}` : ''
+  if (params.code) {
+    const callbackUrl = `/auth/callback?code=${params.code}${
+      params.next ? `&next=${encodeURIComponent(params.next)}` : ''
     }`;
     redirect(callbackUrl);
   }

@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import ChevronDown from 'lucide-react/dist/esm/icons/chevron-down';
-import Lock from 'lucide-react/dist/esm/icons/lock';
-import Loader2 from 'lucide-react/dist/esm/icons/loader-2';
+import { ChevronDown, Lock, Loader2 } from 'lucide-react';
+import { useComponentPreloading } from '@/lib/hooks/use-intelligent-preloading';
+
+
+
 
 import { safeValidate } from '@/lib/utils/validation';
 import { WardrobeItemSchema, type WardrobeItem } from '@/lib/schemas';
@@ -29,6 +31,12 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Preload image upload component when dropdown is interacted with
+  const { preloadProps } = useComponentPreloading(
+    'imageProcessing',
+    () => import('./image-upload')
+  );
 
   // Validate items with Zod
   const validatedItems = React.useMemo(() => {
@@ -126,6 +134,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
         aria-label={`Select ${category}`}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
+        {...preloadProps}
       >
         <div className="flex-1 min-w-0">
           {buttonContent()}

@@ -6,11 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import Eye from 'lucide-react/dist/esm/icons/eye';
-import EyeOff from 'lucide-react/dist/esm/icons/eye-off';
-import Cloud from 'lucide-react/dist/esm/icons/cloud';
-import CloudOff from 'lucide-react/dist/esm/icons/cloud-off';
-import Shirt from 'lucide-react/dist/esm/icons/shirt';
+import { Eye, EyeOff, Cloud, CloudOff, Shirt } from 'lucide-react';
+
+
+
+
+
 
 export function PreferencesForm() {
   const { data: preferences, isLoading } = useUserPreferences();

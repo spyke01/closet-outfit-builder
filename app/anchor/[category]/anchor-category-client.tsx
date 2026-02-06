@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { useWardrobeItems } from '@/lib/hooks/use-wardrobe-items';
 import { useCategories } from '@/lib/hooks/use-categories';
-import { ItemsGrid } from '@/components/items-grid';
+import { ItemsGridWithErrorBoundary as ItemsGrid } from '@/components/dynamic/items-grid-dynamic';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';

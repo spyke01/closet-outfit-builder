@@ -1,6 +1,8 @@
 'use client';
 
-import Star from 'lucide-react/dist/esm/icons/star';
+import { Star } from 'lucide-react';
+
+
 
 const testimonials = [
   {

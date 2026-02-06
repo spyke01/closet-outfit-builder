@@ -10,14 +10,17 @@ const nextConfig: NextConfig = {
   },
 
   // Bundle analysis configuration
-  webpack: (config, { isServer }) => {
-    if (process.env.ANALYZE === 'true' && !isServer) {
+  webpack: (config, { isServer, dev }) => {
+    if (process.env.ANALYZE === 'true' && !isServer && !dev) {
       const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
       config.plugins.push(
         new BundleAnalyzerPlugin({
           analyzerMode: 'static',
           openAnalyzer: false,
           reportFilename: '../bundle-analysis.html',
+          generateStatsFile: true,
+          statsFilename: '../bundle-stats.json',
+          logLevel: 'info',
         })
       );
     }

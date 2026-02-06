@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useCallback, useMemo, memo } from 'react';
-import Shirt from 'lucide-react/dist/esm/icons/shirt';
-import RefreshCw from 'lucide-react/dist/esm/icons/refresh-cw';
-import Loader2 from 'lucide-react/dist/esm/icons/loader-2';
-import Save from 'lucide-react/dist/esm/icons/save';
+import { Shirt, RefreshCw, Loader2, Save } from 'lucide-react';
+
+
+
+
 import { z } from 'zod';
 import { useImmerState } from '@/lib/utils/immer-state';
 import { safeValidate } from '@/lib/utils/validation';

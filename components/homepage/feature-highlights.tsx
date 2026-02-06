@@ -1,8 +1,10 @@
 'use client';
 
-import Sparkles from 'lucide-react/dist/esm/icons/sparkles';
-import Thermometer from 'lucide-react/dist/esm/icons/thermometer';
-import Layers from 'lucide-react/dist/esm/icons/layers';
+import { Sparkles, Thermometer, Layers } from 'lucide-react';
+
+
+
+
 
 const features = [
   {

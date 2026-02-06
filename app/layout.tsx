@@ -3,6 +3,7 @@ import { Geist, Playfair_Display, Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { QueryProvider } from "@/lib/providers/query-provider";
 import { MonitoringProvider } from "@/lib/providers/monitoring-provider";
+import { PreloadInitializer } from "@/components/preload-initializer";
 import "./globals.css";
 
 const defaultUrl = process.env.NETLIFY_URL
@@ -79,6 +80,7 @@ export default function RootLayout({
               defaultTheme="system"
               enableSystem
             >
+              <PreloadInitializer />
               {children}
             </ThemeProvider>
           </QueryProvider>

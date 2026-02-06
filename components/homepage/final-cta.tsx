@@ -1,10 +1,11 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
-import ArrowRight from 'lucide-react/dist/esm/icons/arrow-right';
-import Github from 'lucide-react/dist/esm/icons/github';
-import Twitter from 'lucide-react/dist/esm/icons/twitter';
-import Instagram from 'lucide-react/dist/esm/icons/instagram';
+import { ArrowRight, Github, Twitter, Instagram } from 'lucide-react';
+
+
+
+
 import Link from "next/link";
 
 export function FinalCTA() {

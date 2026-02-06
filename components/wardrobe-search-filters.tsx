@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useCallback, startTransition, useDeferredValue } from 'react';
-import Search from 'lucide-react/dist/esm/icons/search';
-import Tag from 'lucide-react/dist/esm/icons/tag';
-import Plus from 'lucide-react/dist/esm/icons/plus';
-import Filter from 'lucide-react/dist/esm/icons/filter';
+import { Search, Tag, Plus, Filter } from 'lucide-react';
+
+
+
+
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 

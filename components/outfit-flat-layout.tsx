@@ -2,10 +2,11 @@
 
 import React, { useMemo } from 'react';
 import Image from 'next/image';
-import Shirt from 'lucide-react/dist/esm/icons/shirt';
-import X from 'lucide-react/dist/esm/icons/x';
-import Eye from 'lucide-react/dist/esm/icons/eye';
-import Star from 'lucide-react/dist/esm/icons/star';
+import { Shirt, X, Eye, Star } from 'lucide-react';
+
+
+
+
 import Link from 'next/link';
 import { WardrobeItem } from '@/lib/types/database';
 import { Button } from '@/components/ui/button';

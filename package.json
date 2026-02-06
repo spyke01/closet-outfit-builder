@@ -10,7 +10,9 @@
     "dev": "next dev --turbopack",
     "dev:netlify": "netlify dev",
     "build": "next build",
-    "build:analyze": "ANALYZE=true npm run build",
+    "build:analyze": "ANALYZE=true next build --webpack",
+    "analyze": "ANALYZE=true npm run build && npx serve .next/static -l 3001",
+    "analyze:bundle": "node scripts/analyze-bundle-size.js",
     "build:static": "npm run build:static-config && next build",
     "build:export": "node scripts/build-static-export.js",
     "build:static-config": "node scripts/configure-static-build.js",
@@ -67,6 +69,7 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "tailwind-merge": "^3.3.0",
+    "web-vitals": "^5.1.0",
     "yargs": "^18.0.0",
     "zod": "^4.1.12"
   },

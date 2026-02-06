@@ -1,5 +1,6 @@
 /**
  * Production monitoring and error tracking utilities
+ * Optimized for deferred loading after hydration
  */
 
 import React from 'react';
@@ -29,6 +30,55 @@ interface PerformanceMetrics {
 class ProductionMonitoring {
   private isProduction = process.env.NODE_ENV === 'production';
   private apiEndpoint = '/api/monitoring';
+  private initialized = false;
+
+  /**
+   * Initialize monitoring (called after hydration)
+   */
+  initialize() {
+    if (this.initialized || typeof window === 'undefined') return;
+    
+    this.initialized = true;
+    this.setupGlobalErrorHandlers();
+    this.logPerformanceMetrics();
+    
+    // Track initial page load
+    this.logUserEvent('app_start', {
+      userAgent: navigator.userAgent,
+      viewport: `${window.innerWidth}x${window.innerHeight}`,
+      referrer: document.referrer,
+    });
+  }
+
+  /**
+   * Setup global error handlers (deferred)
+   */
+  private setupGlobalErrorHandlers() {
+    if (typeof window === 'undefined') return;
+
+    const handleError = (event: ErrorEvent) => {
+      this.logError(new Error(event.message), {
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno,
+      });
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      this.logError(new Error(String(event.reason)), {
+        type: 'unhandledRejection',
+      });
+    };
+
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
+    // Cleanup function (though it's rarely needed for global handlers)
+    return () => {
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }
 
   /**
    * Log error to monitoring service
@@ -49,80 +99,98 @@ class ProductionMonitoring {
     };
 
     // Send to monitoring endpoint (non-blocking)
-    this.sendToMonitoring('error', errorReport).catch(console.error);
+    this.sendToMonitoring('error', errorReport).catch(() => {
+      // Silently fail to avoid cascading errors
+    });
   }
 
   /**
-   * Log performance metrics
+   * Log performance metrics (deferred)
    */
   logPerformanceMetrics() {
     if (!this.isProduction || typeof window === 'undefined') return;
 
-    // Use Performance Observer API
+    // Use Performance Observer API if available
     if ('PerformanceObserver' in window) {
       this.observeWebVitals();
     }
 
     // Fallback to Navigation Timing API
-    if (typeof window !== 'undefined') {
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          this.collectNavigationMetrics();
-        }, 0);
-      });
-    }
+    window.addEventListener('load', () => {
+      // Use requestIdleCallback to defer until browser is idle
+      const collectMetrics = () => {
+        this.collectNavigationMetrics();
+      };
+
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(collectMetrics, { timeout: 2000 });
+      } else {
+        setTimeout(collectMetrics, 100);
+      }
+    });
   }
 
   /**
-   * Observe Core Web Vitals
+   * Observe Core Web Vitals (deferred)
    */
   private observeWebVitals() {
-    // Largest Contentful Paint
-    new PerformanceObserver((list) => {
-      const entries = list.getEntries();
-      const lastEntry = entries[entries.length - 1];
-      this.reportMetric('LCP', lastEntry.startTime);
-    }).observe({ entryTypes: ['largest-contentful-paint'] });
+    try {
+      // Largest Contentful Paint
+      new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        const lastEntry = entries[entries.length - 1];
+        this.reportMetric('LCP', lastEntry.startTime);
+      }).observe({ entryTypes: ['largest-contentful-paint'] });
 
-    // First Input Delay
-    new PerformanceObserver((list) => {
-      const entries = list.getEntries();
-      entries.forEach((entry: any) => {
-        this.reportMetric('FID', entry.processingStart - entry.startTime);
-      });
-    }).observe({ entryTypes: ['first-input'] });
+      // First Input Delay
+      new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        entries.forEach((entry: any) => {
+          this.reportMetric('FID', entry.processingStart - entry.startTime);
+        });
+      }).observe({ entryTypes: ['first-input'] });
 
-    // Cumulative Layout Shift
-    new PerformanceObserver((list) => {
-      let cumulativeScore = 0;
-      const entries = list.getEntries();
-      entries.forEach((entry: any) => {
-        if (!entry.hadRecentInput) {
-          cumulativeScore += entry.value;
-        }
-      });
-      this.reportMetric('CLS', cumulativeScore);
-    }).observe({ entryTypes: ['layout-shift'] });
+      // Cumulative Layout Shift
+      new PerformanceObserver((list) => {
+        let cumulativeScore = 0;
+        const entries = list.getEntries();
+        entries.forEach((entry: any) => {
+          if (!entry.hadRecentInput) {
+            cumulativeScore += entry.value;
+          }
+        });
+        this.reportMetric('CLS', cumulativeScore);
+      }).observe({ entryTypes: ['layout-shift'] });
+    } catch (error) {
+      // Silently fail if Performance Observer is not supported
+      console.warn('Performance Observer not supported:', error);
+    }
   }
 
   /**
    * Collect navigation timing metrics
    */
   private collectNavigationMetrics() {
-    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-    
-    if (navigation) {
-      const metrics: PerformanceMetrics = {
-        pageLoadTime: navigation.loadEventEnd - navigation.fetchStart,
-        firstContentfulPaint: this.getMetricValue('first-contentful-paint'),
-        largestContentfulPaint: this.getMetricValue('largest-contentful-paint'),
-        cumulativeLayoutShift: 0, // Will be updated by observer
-        firstInputDelay: 0, // Will be updated by observer
-        url: typeof window !== 'undefined' ? window.location.href : 'server',
-        timestamp: new Date().toISOString(),
-      };
+    try {
+      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+      
+      if (navigation) {
+        const metrics: PerformanceMetrics = {
+          pageLoadTime: navigation.loadEventEnd - navigation.fetchStart,
+          firstContentfulPaint: this.getMetricValue('first-contentful-paint'),
+          largestContentfulPaint: this.getMetricValue('largest-contentful-paint'),
+          cumulativeLayoutShift: 0, // Will be updated by observer
+          firstInputDelay: 0, // Will be updated by observer
+          url: typeof window !== 'undefined' ? window.location.href : 'server',
+          timestamp: new Date().toISOString(),
+        };
 
-      this.sendToMonitoring('performance', metrics).catch(console.error);
+        this.sendToMonitoring('performance', metrics).catch(() => {
+          // Silently fail
+        });
+      }
+    } catch (error) {
+      // Silently fail if navigation timing is not supported
     }
   }
 
@@ -130,8 +198,12 @@ class ProductionMonitoring {
    * Get performance metric value by name
    */
   private getMetricValue(metricName: string): number {
-    const entries = performance.getEntriesByName(metricName);
-    return entries.length > 0 ? entries[0].startTime : 0;
+    try {
+      const entries = performance.getEntriesByName(metricName);
+      return entries.length > 0 ? entries[0].startTime : 0;
+    } catch {
+      return 0;
+    }
   }
 
   /**
@@ -143,68 +215,91 @@ class ProductionMonitoring {
       value,
       url: typeof window !== 'undefined' ? window.location.href : 'server',
       timestamp: new Date().toISOString(),
-    }).catch(console.error);
+    }).catch(() => {
+      // Silently fail
+    });
   }
 
   /**
-   * Send data to monitoring endpoint
+   * Send data to monitoring endpoint (non-blocking)
    */
   private async sendToMonitoring(type: string, data: any) {
     try {
+      // Use fetch with no-cors for fire-and-forget
       await fetch(this.apiEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ type, data }),
+        keepalive: true, // Ensure request completes even if page unloads
       });
     } catch (error) {
       // Silently fail in production to avoid cascading errors
       if (!this.isProduction) {
-        console.error('Failed to send monitoring data:', error);
+        console.warn('Failed to send monitoring data:', error);
       }
     }
   }
 
   /**
-   * Log user interaction events
+   * Log user interaction events (deferred)
    */
   logUserEvent(eventName: string, properties?: Record<string, any>) {
     if (!this.isProduction) return;
 
-    this.sendToMonitoring('event', {
-      name: eventName,
-      properties,
-      url: typeof window !== 'undefined' ? window.location.href : 'server',
-      timestamp: new Date().toISOString(),
-    }).catch(console.error);
+    // Use requestIdleCallback to defer non-critical tracking
+    const logEvent = () => {
+      this.sendToMonitoring('event', {
+        name: eventName,
+        properties,
+        url: typeof window !== 'undefined' ? window.location.href : 'server',
+        timestamp: new Date().toISOString(),
+      }).catch(() => {
+        // Silently fail
+      });
+    };
+
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      window.requestIdleCallback(logEvent, { timeout: 1000 });
+    } else {
+      setTimeout(logEvent, 0);
+    }
   }
 
   /**
-   * Log API call metrics
+   * Log API call metrics (deferred)
    */
   logApiCall(endpoint: string, method: string, duration: number, status: number) {
     if (!this.isProduction) return;
 
-    this.sendToMonitoring('api', {
-      endpoint,
-      method,
-      duration,
-      status,
-      timestamp: new Date().toISOString(),
-    }).catch(console.error);
+    // Defer API call logging to avoid blocking
+    setTimeout(() => {
+      this.sendToMonitoring('api', {
+        endpoint,
+        method,
+        duration,
+        status,
+        timestamp: new Date().toISOString(),
+      }).catch(() => {
+        // Silently fail
+      });
+    }, 0);
   }
 }
 
 // Global monitoring instance
 export const monitoring = new ProductionMonitoring();
 
-// Error boundary helper
+// Error boundary helper (lightweight, no deferred loading needed)
 export function withErrorBoundary<T extends Record<string, any>>(
   Component: React.ComponentType<T>
 ): React.ComponentType<T> {
   return function ErrorBoundaryWrapper(props: T) {
     React.useEffect(() => {
+      // Only setup if monitoring is initialized
+      if (!monitoring['initialized']) return;
+
       const handleError = (event: ErrorEvent) => {
         monitoring.logError(new Error(event.message), {
           filename: event.filename,
@@ -234,7 +329,7 @@ export function withErrorBoundary<T extends Record<string, any>>(
   };
 }
 
-// Hook for tracking user interactions
+// Hook for tracking user interactions (deferred)
 export function useAnalytics() {
   const trackEvent = React.useCallback((eventName: string, properties?: Record<string, any>) => {
     monitoring.logUserEvent(eventName, properties);
@@ -247,7 +342,7 @@ export function useAnalytics() {
   return { trackEvent, trackPageView };
 }
 
-// Hook for tracking API calls
+// Hook for tracking API calls (deferred)
 export function useApiTracking() {
   const trackApiCall = React.useCallback(
     (endpoint: string, method: string, duration: number, status: number) => {
@@ -259,16 +354,9 @@ export function useApiTracking() {
   return { trackApiCall };
 }
 
-// Initialize monitoring on app start
+// Initialize monitoring (called after hydration)
 export function initializeMonitoring() {
   if (typeof window !== 'undefined') {
-    monitoring.logPerformanceMetrics();
-    
-    // Track initial page load
-    monitoring.logUserEvent('app_start', {
-      userAgent: navigator.userAgent,
-      viewport: `${window.innerWidth}x${window.innerHeight}`,
-      referrer: document.referrer,
-    });
+    monitoring.initialize();
   }
 }

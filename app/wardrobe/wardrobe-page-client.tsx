@@ -5,10 +5,11 @@ import Image from 'next/image';
 import { useCategories } from '@/lib/hooks/use-categories';
 import { useWardrobeItems } from '@/lib/hooks/use-wardrobe-items';
 import { ItemsList } from '@/components/items-list';
-import { WardrobeSearchFilters } from '@/components/wardrobe-search-filters';
+import { WardrobeSearchFiltersWithErrorBoundary as WardrobeSearchFilters } from '@/components/dynamic/wardrobe-search-filters-dynamic';
 import { Button } from '@/components/ui/button';
-import Grid from 'lucide-react/dist/esm/icons/grid';
-import List from 'lucide-react/dist/esm/icons/list';
+import { Grid, List } from 'lucide-react';
+
+
 import { WardrobeItem } from '@/lib/types/database';
 
 export function WardrobePageClient() {

@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useMemo, useCallback, startTransition, useDeferredValue } from 'react';
-import Search from 'lucide-react/dist/esm/icons/search';
-import Tag from 'lucide-react/dist/esm/icons/tag';
-import Plus from 'lucide-react/dist/esm/icons/plus';
-import Shirt from 'lucide-react/dist/esm/icons/shirt';
+import { Search, Tag, Plus, Shirt } from 'lucide-react';
+
+
+
+
 import Image from 'next/image';
 import { z } from 'zod';
 import { useImmerState } from '@/lib/utils/immer-state';
@@ -14,7 +15,7 @@ import {
 } from '@/lib/schemas';
 import { type WardrobeItem } from '@/lib/types/database';
 
-import { ImageUpload } from './image-upload';
+import { ImageUploadWithErrorBoundary as ImageUpload } from './dynamic/image-upload-dynamic';
 
 // Hoist static JSX elements outside component for performance
 const EMPTY_STATE_ICON = <Shirt size={48} className="text-slate-300 mx-auto mb-4" />;

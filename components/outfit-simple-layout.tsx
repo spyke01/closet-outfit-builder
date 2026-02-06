@@ -3,9 +3,10 @@
 import React from 'react';
 import Image from 'next/image';
 import { WardrobeItem } from '@/lib/types/database';
-import Shirt from 'lucide-react/dist/esm/icons/shirt';
-import Watch from 'lucide-react/dist/esm/icons/watch';
-import Zap from 'lucide-react/dist/esm/icons/zap';
+import { Shirt, Watch, Zap } from 'lucide-react';
+
+
+
 
 interface OutfitSimpleLayoutProps {
   items: WardrobeItem[];

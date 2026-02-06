@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState, useCallback, useRef } from 'react';
-import Upload from 'lucide-react/dist/esm/icons/upload';
-import X from 'lucide-react/dist/esm/icons/x';
-import AlertCircle from 'lucide-react/dist/esm/icons/alert-circle';
-import CheckCircle from 'lucide-react/dist/esm/icons/check-circle';
-import Loader2 from 'lucide-react/dist/esm/icons/loader-2';
+import { Upload, X, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
+
+
+
+
+
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';

@@ -5,8 +5,8 @@ import { useOutfit, useUpdateOutfit, useDeleteOutfit, useScoreOutfit, useCheckOu
 import { useCategories } from '@/lib/hooks/use-categories';
 import { useWardrobeItems } from '@/lib/hooks/use-wardrobe-items';
 import { OutfitFlatLayout } from '@/components/outfit-flat-layout';
-import { ItemsGrid } from '@/components/items-grid';
-import { OutfitDisplay } from '@/components/outfit-display';
+import { ItemsGridWithErrorBoundary as ItemsGrid } from '@/components/dynamic/items-grid-dynamic';
+import { OutfitDisplayWithErrorBoundary as OutfitDisplay } from '@/components/dynamic/outfit-display-dynamic';
 import { convertOutfitToSelection } from '@/lib/utils/outfit-conversion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

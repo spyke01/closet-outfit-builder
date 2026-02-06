@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { useCategories } from '@/lib/hooks/use-categories';
 import { useCreateWardrobeItem } from '@/lib/hooks/use-wardrobe-items';
-import { ImageUpload } from '@/components/image-upload';
+import { ImageUploadWithErrorBoundary as ImageUpload } from '@/components/dynamic/image-upload-dynamic';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';

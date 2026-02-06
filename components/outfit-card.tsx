@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import RotateCcw from 'lucide-react/dist/esm/icons/rotate-ccw';
-import Heart from 'lucide-react/dist/esm/icons/heart';
+import { RotateCcw, Heart } from 'lucide-react';
+
+
 import Image from 'next/image';
 
 import { safeValidate } from '@/lib/utils/validation';

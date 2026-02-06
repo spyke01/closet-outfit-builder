@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
-import Settings from 'lucide-react/dist/esm/icons/settings';
-import Shirt from 'lucide-react/dist/esm/icons/shirt';
-import Grid3X3 from 'lucide-react/dist/esm/icons/grid-3x3';
+import { Settings, Shirt, Grid3X3 } from 'lucide-react';
+
+
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from './ui/button';
@@ -12,6 +13,7 @@ import { WeatherWidget } from './weather-widget';
 import { Logo } from './logo';
 import { z } from 'zod';
 import { safeValidate } from '@/lib/utils/validation';
+import { useNavigationPreloading } from '@/lib/hooks/use-intelligent-preloading';
 
 // Zod schema for user validation
 const UserSchema = z.object({
@@ -38,6 +40,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   onSettingsClick,
 }) => {
   const pathname = usePathname();
+  const { getNavigationProps } = useNavigationPreloading();
 
   // Validate user data with Zod
   const validatedUser = React.useMemo(() => {
@@ -93,6 +96,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                     : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
                   }`}
                 aria-label="View wardrobe"
+                {...getNavigationProps('/wardrobe')}
               >
                 <Shirt size={16} />
                 <span>Wardrobe</span>
@@ -104,6 +108,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                     : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
                   }`}
                 aria-label="View outfits"
+                {...getNavigationProps('/outfits')}
               >
                 <Grid3X3 size={16} />
                 <span>Outfits</span>
@@ -159,6 +164,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                   : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
                 }`}
               aria-label="View wardrobe"
+              {...getNavigationProps('/wardrobe')}
             >
               <Shirt size={16} />
               <span>Wardrobe</span>
@@ -170,6 +176,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                   : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
                 }`}
               aria-label="View outfits"
+              {...getNavigationProps('/outfits')}
             >
               <Grid3X3 size={16} />
               <span>Outfits</span>

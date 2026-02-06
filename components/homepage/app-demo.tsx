@@ -1,8 +1,10 @@
 'use client';
 
-import Sparkles from 'lucide-react/dist/esm/icons/sparkles';
-import Heart from 'lucide-react/dist/esm/icons/heart';
-import Thermometer from 'lucide-react/dist/esm/icons/thermometer';
+import { Sparkles, Heart, Thermometer } from 'lucide-react';
+
+
+
+
 
 export function AppDemo() {
   return (

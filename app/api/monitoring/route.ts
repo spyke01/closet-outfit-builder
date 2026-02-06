@@ -117,10 +117,10 @@ export async function POST(request: NextRequest) {
 
     // In production, you would send this to your monitoring service
     // For now, we'll log to console and could extend to send to services like:
-    // - Sentry for error tracking
-    // - DataDog for performance monitoring
-    // - Google Analytics for user events
-    // - Custom logging service
+    // - Sentry for error tracking (deferred loading)
+    // - DataDog for performance monitoring (deferred loading)
+    // - Google Analytics for user events (deferred loading)
+    // - Custom logging service (deferred loading)
 
     if (process.env.NODE_ENV === 'production') {
       // Log structured data for production monitoring
@@ -132,8 +132,10 @@ export async function POST(request: NextRequest) {
         userAgent: request.headers.get('user-agent'),
       }));
 
-      // Example: Send to external monitoring service
-      // await sendToMonitoringService(type, validatedData);
+      // Send to external monitoring services (deferred, non-blocking)
+      sendToMonitoringService(type, validatedData).catch(() => {
+        // Silently fail to avoid breaking the API
+      });
     } else {
       // Development logging
       console.log(`[MONITORING] ${type}:`, validatedData);
@@ -167,23 +169,82 @@ export async function GET() {
   });
 }
 
-// Example function to send to external monitoring services
+// Example function to send to external monitoring services (deferred)
 async function sendToMonitoringService(type: string, data: any) {
-  // Example: Send errors to Sentry
-  if (type === 'error' && process.env.SENTRY_DSN) {
-    // Sentry.captureException(new Error(data.message), { extra: data });
-  }
+  // Only run in production to avoid unnecessary processing
+  if (process.env.NODE_ENV !== 'production') return;
 
-  // Example: Send performance metrics to DataDog
-  if (type === 'performance' && process.env.DATADOG_API_KEY) {
-    // await datadogClient.increment('app.performance.page_load', 1, {
-    //   url: data.url,
-    //   load_time: data.pageLoadTime,
-    // });
-  }
+  try {
+    // Example: Send errors to Sentry (deferred loading)
+    if (type === 'error' && process.env.SENTRY_DSN) {
+      // Dynamically import Sentry to avoid blocking initial load
+      try {
+        // Use Function constructor to avoid static analysis
+        const importSentry = new Function('return import("@sentry/nextjs")');
+        const sentryModule = await importSentry().catch(() => null);
+        
+        if (sentryModule) {
+          sentryModule.captureException(new Error(data.message), { 
+            extra: data,
+            tags: {
+              source: 'monitoring-api'
+            }
+          });
+        }
+      } catch (error) {
+        console.warn('Sentry not available for error tracking');
+      }
+    }
 
-  // Example: Send user events to Google Analytics
-  if (type === 'event' && process.env.GOOGLE_ANALYTICS_ID) {
-    // await gtag('event', data.name, data.properties);
+    // Example: Send performance metrics to DataDog (deferred loading)
+    if (type === 'performance' && process.env.DATADOG_API_KEY) {
+      // Dynamically import DataDog client
+      // const { StatsD } = await import('node-statsd');
+      // const client = new StatsD();
+      // client.increment('app.performance.page_load', 1, {
+      //   url: data.url,
+      //   load_time: data.pageLoadTime,
+      // });
+    }
+
+    // Example: Send user events to Google Analytics (deferred loading)
+    if (type === 'event' && process.env.GOOGLE_ANALYTICS_ID) {
+      // Use Measurement Protocol for server-side GA events
+      const measurementId = process.env.GOOGLE_ANALYTICS_ID;
+      const apiSecret = process.env.GA_API_SECRET;
+      
+      if (apiSecret) {
+        await fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurementId}&api_secret=${apiSecret}`, {
+          method: 'POST',
+          body: JSON.stringify({
+            client_id: 'server-side',
+            events: [{
+              name: data.name,
+              parameters: data.properties || {}
+            }]
+          })
+        });
+      }
+    }
+
+    // Example: Send metrics to custom monitoring service (deferred loading)
+    if (process.env.CUSTOM_MONITORING_ENDPOINT) {
+      await fetch(process.env.CUSTOM_MONITORING_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.CUSTOM_MONITORING_TOKEN}`
+        },
+        body: JSON.stringify({
+          type,
+          data,
+          timestamp: new Date().toISOString(),
+          source: 'what-to-wear-app'
+        })
+      });
+    }
+  } catch (error) {
+    // Silently fail to avoid breaking the monitoring endpoint
+    console.warn('Failed to send to external monitoring service:', error);
   }
 }

@@ -4,13 +4,21 @@ import { QueryClient } from '@tanstack/react-query';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
+import { isFeatureEnabled } from '@/lib/utils/feature-flags';
 import { createQueryClient } from '@/lib/query-client';
 
 // Dynamic import for dev tools to avoid loading in production bundle
 const ReactQueryDevtools = dynamic(
-  () => import('@tanstack/react-query-devtools').then(mod => ({ 
-    default: mod.ReactQueryDevtools 
-  })),
+  () => {
+    // Only load if dev tools are enabled
+    if (!isFeatureEnabled('devTools')) {
+      return Promise.resolve({ default: () => null });
+    }
+    
+    return import('@tanstack/react-query-devtools').then(mod => ({ 
+      default: mod.ReactQueryDevtools 
+    }));
+  },
   { ssr: false }
 );
 
@@ -26,8 +34,8 @@ export function QueryProvider({ children }: QueryProviderProps) {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      {/* Only show devtools in development */}
-      {process.env.NODE_ENV === 'development' && (
+      {/* Only show devtools when enabled */}
+      {isFeatureEnabled('devTools') && (
         <ReactQueryDevtools initialIsOpen={false} />
       )}
     </QueryClientProvider>

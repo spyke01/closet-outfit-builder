@@ -2,9 +2,10 @@
 
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
-import Monitor from 'lucide-react/dist/esm/icons/monitor';
-import Moon from 'lucide-react/dist/esm/icons/moon';
-import Sun from 'lucide-react/dist/esm/icons/sun';
+import { Monitor, Moon, Sun } from 'lucide-react';
+
+
+
 import { useEffect, useState } from 'react';
 
 /**
