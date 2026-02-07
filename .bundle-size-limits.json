@@ -1,0 +1,12 @@
+{
+  "totalJs": 512000,
+  "totalCss": 102400,
+  "totalAssets": 1048576,
+  "maxAssetSize": 204800,
+  "description": {
+    "totalJs": "Maximum total JavaScript size (500KB)",
+    "totalCss": "Maximum total CSS size (100KB)",
+    "totalAssets": "Maximum total asset size (1MB)",
+    "maxAssetSize": "Maximum individual asset size (200KB)"
+  }
+}

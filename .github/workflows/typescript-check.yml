@@ -1,0 +1,93 @@
+name: TypeScript Error Monitoring
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run TypeScript error monitoring
+        id: typecheck
+        run: npm run typecheck:monitor
+        continue-on-error: true
+      
+      - name: Upload TypeScript trends
+        uses: actions/upload-artifact@v4
+        with:
+          name: typescript-trends
+          path: |
+            .typescript-trends/
+            docs/typescript-errors.md
+          retention-days: 30
+      
+      - name: Comment PR with TypeScript report
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = 'docs/typescript-errors.md';
+            
+            if (fs.existsSync(reportPath)) {
+              const report = fs.readFileSync(reportPath, 'utf8');
+              
+              // Truncate report if too long for GitHub comment
+              const maxLength = 65000;
+              const truncatedReport = report.length > maxLength 
+                ? report.substring(0, maxLength) + '\n\n... (truncated)'
+                : report;
+              
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+              });
+              
+              const botComment = comments.find(comment => 
+                comment.user.type === 'Bot' && 
+                comment.body.includes('TypeScript Error Monitoring')
+              );
+              
+              const commentBody = `## 📝 TypeScript Error Monitoring\n\n${truncatedReport}`;
+              
+              if (botComment) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: botComment.id,
+                  body: commentBody
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: commentBody
+                });
+              }
+            }
+      
+      - name: Fail if any type errors exist
+        if: steps.typecheck.outcome == 'failure'
+        run: |
+          echo "❌ TypeScript check failed: any type errors detected"
+          exit 1
