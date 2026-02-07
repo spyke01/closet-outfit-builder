@@ -38,7 +38,7 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Add examples of mutation validation with Zod in TanStack Query hooks
     - _Requirements: 5.1-5.4, 6.1-6.4, 12.3_
   
-  - [ ]* 2.3 Write property test for sizing format validation
+  - [ ] 2.3 Write property test for sizing format validation
     - **Property 6: Sizing format support**
     - **Validates: Requirements 5.1, 5.2, 5.3, 5.4**
 
@@ -66,7 +66,7 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Fetch pinned preferences ordered by display_order
     - _Requirements: 2.1, 8.5_
   
-  - [ ]* 3.6 Write property test for data persistence
+  - [ ] 3.6 Write property test for data persistence
     - **Property 14: Data persistence on save**
     - **Validates: Requirements 10.1**
 
@@ -119,11 +119,11 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Preserve size data for recovery
     - _Requirements: 7.5, 10.5_
   
-  - [ ]* 4.7 Write property test for timestamp updates
+  - [x] 4.7 Write property test for timestamp updates
     - **Property 7: Timestamp updates on save**
     - **Validates: Requirements 5.5**
   
-  - [ ]* 4.8 Write property test for category deletion
+  - [x] 4.8 Write property test for category deletion
     - **Property 11: Category deletion removes from all locations**
     - **Validates: Requirements 7.5**
 
@@ -146,16 +146,16 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Preserve full text for tooltips
     - _Requirements: 12.3_
   
-  - [ ]* 5.4 Write property test for unit conversion round-trip
+  - [x] 5.4 Write property test for unit conversion round-trip
     - **Property 21: Unit conversion round-trip**
     - **Validates: Requirements 13.3**
   
-  - [ ]* 5.5 Write unit tests for size format validation
+  - [x] 5.5 Write unit tests for size format validation
     - Test each format type with valid and invalid inputs
     - _Requirements: 5.1-5.4_
 
-- [ ] 6. Build PinnedCard component
-  - [ ] 6.1 Create PinnedCard component with props interface
+- [x] 6. Build PinnedCard component
+  - [x] 6.1 Create PinnedCard component with props interface
     - Accept categoryId, displayMode, preferredBrandId
     - Fetch category data via `useSizeCategory` hook
     - Implement touch target minimum 44x44px
@@ -164,64 +164,64 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Implement passive event listeners for touch interactions
     - _Requirements: 2.1, 9.1_
   
-  - [ ] 6.2 Implement display mode rendering logic
+  - [x] 6.2 Implement display mode rendering logic
     - Standard mode: show primary size only
     - Dual mode: show primary and secondary sizes
     - Preferred brand mode: show brand-specific size
     - _Requirements: 15.2, 15.3, 15.4_
   
-  - [ ] 6.3 Add tap and long-press gesture handlers
+  - [x] 6.3 Add tap and long-press gesture handlers
     - Tap: navigate to category detail view
     - Long-press: show context menu (500ms threshold)
     - _Requirements: 2.2, 2.3, 9.4_
   
-  - [ ] 6.4 Style for mobile-first responsive design
+  - [x] 6.4 Style for mobile-first responsive design
     - Mobile: card width 85vw with horizontal scroll
     - Tablet+: grid layout
     - _Requirements: 1.4, 1.5_
   
-  - [ ]* 6.5 Write property test for pinned card data integrity
+  - [x] 6.5 Write property test for pinned card data integrity
     - **Property 1: Pinned card data integrity**
     - **Validates: Requirements 2.4, 10.2, 10.3**
   
-  - [ ]* 6.6 Write property test for display mode rendering
+  - [x] 6.6 Write property test for display mode rendering
     - **Property 27: Display mode rendering - standard**
     - **Property 28: Display mode rendering - dual**
     - **Property 29: Display mode rendering - preferred brand**
     - **Validates: Requirements 15.2, 15.3, 15.4**
   
-  - [ ]* 6.7 Write unit tests for PinnedCard component
+  - [x] 6.7 Write unit tests for PinnedCard component
     - Test rendering with all required fields
     - Test tap and long-press interactions
     - Test responsive layout at different breakpoints
     - _Requirements: 2.1, 2.2, 2.3_
 
-- [ ] 7. Build PinnedCardsSection component
-  - [ ] 7.1 Create PinnedCardsSection component
+- [x] 7. Build PinnedCardsSection component
+  - [x] 7.1 Create PinnedCardsSection component
     - Accept pinnedIds prop
     - Query category data for each pinned ID
     - Render PinnedCard components
     - _Requirements: 2.1, 2.4_
   
-  - [ ] 7.2 Implement responsive layout
+  - [x] 7.2 Implement responsive layout
     - Mobile: horizontal scroll with snap points
     - Tablet+: grid with drag-and-drop support
     - Add passive event listeners for touch/scroll events
     - Add content-visibility optimization for many cards (10+)
     - _Requirements: 1.4, 1.5_
   
-  - [ ] 7.3 Add empty state for no pinned cards
+  - [x] 7.3 Add empty state for no pinned cards
     - Display message and "Customize" button
     - _Requirements: 12.1_
   
-  - [ ]* 7.4 Write unit tests for PinnedCardsSection
+  - [x] 7.4 Write unit tests for PinnedCardsSection
     - Test rendering with multiple pinned cards
     - Test empty state display
     - Test responsive layout switching
     - _Requirements: 1.4, 1.5, 12.1_
 
-- [ ] 8. Build CategoryGrid component
-  - [ ] 8.1 Create CategoryGrid component
+- [x] 8. Build CategoryGrid component
+  - [x] 8.1 Create CategoryGrid component
     - Accept categories prop
     - Render category tiles in responsive grid
     - Show category name, size count, "varies by brand" indicator
@@ -229,54 +229,54 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Add content-visibility optimization for large grids (50+ categories)
     - _Requirements: 3.1_
   
-  - [ ] 8.2 Implement responsive grid layout
+  - [x] 8.2 Implement responsive grid layout
     - Mobile: 2 columns
     - Tablet: 3 columns
     - Desktop: 4 columns
     - _Requirements: 3.2, 3.3, 3.4_
   
-  - [ ] 8.3 Add "Add category" tile as final tile
+  - [x] 8.3 Add "Add category" tile as final tile
     - Opens AddCategoryForm on tap
     - _Requirements: 3.5_
   
-  - [ ] 8.4 Add empty state for no categories
+  - [x] 8.4 Add empty state for no categories
     - Display guided next actions
     - Large "Add Category" button
     - _Requirements: 1.3, 12.1_
   
-  - [ ]* 8.5 Write property test for category grid item completeness
+  - [x] 8.5 Write property test for category grid item completeness
     - **Property 4: Category grid item completeness**
     - **Validates: Requirements 3.1**
   
-  - [ ]* 8.6 Write unit tests for CategoryGrid
+  - [x] 8.6 Write unit tests for CategoryGrid
     - Test grid rendering at different breakpoints
     - Test empty state display
     - Test "Add category" tile presence
     - _Requirements: 3.2-3.5, 1.3_
 
-- [ ] 9. Build MySizesPage component
-  - [ ] 9.1 Create MySizesPage server component
+- [x] 9. Build MySizesPage component
+  - [x] 9.1 Create MySizesPage server component
     - Fetch initial data server-side
     - Render PinnedCardsSection and CategoryGrid
     - _Requirements: 1.1_
   
-  - [ ] 9.2 Implement page layout structure
+  - [x] 9.2 Implement page layout structure
     - Pinned cards at top
     - Category grid below
     - Proper spacing and padding
     - _Requirements: 1.1_
   
-  - [ ] 9.3 Add page load performance optimization
+  - [x] 9.3 Add page load performance optimization
     - Prefetch critical data
     - Implement loading states
     - _Requirements: 1.2_
   
-  - [ ]* 9.4 Write unit tests for MySizesPage
+  - [x] 9.4 Write unit tests for MySizesPage
     - Test page structure (pinned cards above grid)
     - Test data fetching and rendering
     - _Requirements: 1.1_
 
-- [ ] 9.5 Separate server and client components (HIGH)
+- [x] 9.5 Separate server and client components (HIGH)
   - Create MySizesClient component for client-side logic
   - Update MySizesPage to be pure server component
   - Implement parallel data fetching with Promise.all()
@@ -285,7 +285,7 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
   - _Requirements: 1.1, 1.2_
   - _Priority: HIGH - Improves initial load performance by 30-50%_
 
-- [ ] 10. Checkpoint - Ensure all tests pass
+- [x] 10. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 11. Build StandardSizeSection component
@@ -307,7 +307,7 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Show loading and error states
     - _Requirements: 5.5, 10.1_
   
-  - [ ]* 11.4 Write unit tests for StandardSizeSection
+  - [ ] 11.4 Write unit tests for StandardSizeSection
     - Test display of all fields
     - Test edit button interaction
     - Test form validation
@@ -328,11 +328,11 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Display message and "Add brand size" button
     - _Requirements: 12.2_
   
-  - [ ]* 12.4 Write property test for brand size entry completeness
+  - [ ] 12.4 Write property test for brand size entry completeness
     - **Property 5: Brand size entry completeness**
     - **Validates: Requirements 4.3**
   
-  - [ ]* 12.5 Write unit tests for BrandSizesSection
+  - [ ] 12.5 Write unit tests for BrandSizesSection
     - Test list rendering
     - Test empty state
     - Test pagination for large lists
@@ -367,15 +367,15 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Update brand name dropdown after saving new brand
     - _Requirements: 14.4, 14.5_
   
-  - [ ]* 13.5 Write property test for brand size validation
+  - [ ] 13.5 Write property test for brand size validation
     - **Property 8: Brand size validation**
     - **Validates: Requirements 6.1, 6.2, 6.4**
   
-  - [ ]* 13.6 Write property test for brand name persistence
+  - [ ] 13.6 Write property test for brand name persistence
     - **Property 25: New brand name persistence**
     - **Validates: Requirements 14.4**
   
-  - [ ]* 13.7 Write unit tests for BrandSizeForm
+  - [ ] 13.7 Write unit tests for BrandSizeForm
     - Test form rendering
     - Test validation errors
     - Test brand dropdown search
@@ -405,15 +405,15 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Store numeric values with units
     - _Requirements: 13.2, 13.5_
   
-  - [ ]* 14.5 Write property test for category-specific measurement fields
+  - [ ] 14.5 Write property test for category-specific measurement fields
     - **Property 19: Category-specific measurement fields**
     - **Validates: Requirements 13.1, 13.4**
   
-  - [ ]* 14.6 Write property test for measurement storage
+  - [ ] 14.6 Write property test for measurement storage
     - **Property 20: Measurement storage with units**
     - **Validates: Requirements 13.2**
   
-  - [ ]* 14.7 Write unit tests for MeasurementGuideSection
+  - [ ] 14.7 Write unit tests for MeasurementGuideSection
     - Test field rendering for different categories
     - Test unit toggle and conversion
     - Test numeric validation
@@ -435,7 +435,7 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Close button for modal/panel
     - _Requirements: 2.2_
   
-  - [ ]* 15.4 Write unit tests for CategoryDetailView
+  - [ ] 15.4 Write unit tests for CategoryDetailView
     - Test three-section layout
     - Test responsive presentation
     - Test navigation actions
@@ -468,11 +468,11 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Optionally create pinned preference if "Pin to top" checked
     - _Requirements: 7.4_
   
-  - [ ]* 16.4 Write property test for category creation
+  - [ ] 16.4 Write property test for category creation
     - **Property 10: Category creation adds to grid**
     - **Validates: Requirements 7.4**
   
-  - [ ]* 16.5 Write unit tests for AddCategoryForm
+  - [ ] 16.5 Write unit tests for AddCategoryForm
     - Test form rendering
     - Test validation
     - Test responsive presentation
@@ -502,15 +502,15 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Persist new order and display modes
     - _Requirements: 8.5, 15.5_
   
-  - [ ]* 17.5 Write property test for pinned card reordering
+  - [ ] 17.5 Write property test for pinned card reordering
     - **Property 12: Pinned card reordering persistence**
     - **Validates: Requirements 8.5**
   
-  - [ ]* 17.6 Write property test for display mode updates
+  - [ ] 17.6 Write property test for display mode updates
     - **Property 30: Display mode update immediacy**
     - **Validates: Requirements 15.5**
   
-  - [ ]* 17.7 Write unit tests for CustomizePinnedCardsView
+  - [ ] 17.7 Write unit tests for CustomizePinnedCardsView
     - Test pin/unpin toggles
     - Test drag-and-drop reordering
     - Test display mode selection
@@ -546,15 +546,15 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Fix any contrast issues
     - _Requirements: 11.1_
   
-  - [ ]* 19.5 Write property test for touch target sizes
+  - [ ] 19.5 Write property test for touch target sizes
     - **Property 13: Touch target minimum size**
     - **Validates: Requirements 9.1, 11.5**
   
-  - [ ]* 19.6 Write property test for ARIA attributes
+  - [ ] 19.6 Write property test for ARIA attributes
     - **Property 17: ARIA attributes presence**
     - **Validates: Requirements 11.3**
   
-  - [ ]* 19.7 Write accessibility tests
+  - [ ] 19.7 Write accessibility tests
     - Test keyboard navigation flows
     - Test screen reader compatibility
     - Test color contrast with axe-core
@@ -577,7 +577,7 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Provide "Keep my changes", "Use server version", "View both" options
     - _Requirements: 12.5_
   
-  - [ ]* 20.4 Write unit tests for offline functionality
+  - [ ] 20.4 Write unit tests for offline functionality
     - Test cached data access when offline
     - Test mutation queueing
     - Test conflict resolution UI
@@ -600,7 +600,7 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - No pinned cards: "Customize" prompt
     - _Requirements: 1.3, 12.1, 12.2_
   
-  - [ ]* 21.4 Write unit tests for error handling
+  - [ ] 21.4 Write unit tests for error handling
     - Test validation error display
     - Test database error messages
     - Test empty state rendering
@@ -619,11 +619,11 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Use in PinnedCard displays
     - _Requirements: 12.3_
   
-  - [ ]* 22.3 Write property test for text truncation
+  - [ ] 22.3 Write property test for text truncation
     - **Property 18: Text truncation with full text access**
     - **Validates: Requirements 12.3**
   
-  - [ ]* 22.4 Write unit tests for TextTruncate
+  - [ ] 22.4 Write unit tests for TextTruncate
     - Test truncation with long strings
     - Test tooltip display
     - _Requirements: 12.3_
@@ -643,7 +643,7 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Back button → return to main page
     - _Requirements: 2.2_
   
-  - [ ]* 23.4 Write integration tests for navigation
+  - [ ] 23.4 Write integration tests for navigation
     - Test navigation from main page to detail view
     - Test back navigation
     - _Requirements: 2.2_
@@ -663,7 +663,7 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Use Next.js Image component for category icons
     - _Requirements: 1.2_
   
-  - [ ]* 24.4 Write performance tests
+  - [ ] 24.4 Write performance tests
     - Test page load time < 2 seconds
     - Test category detail view opens < 500ms
     - _Requirements: 1.2_
