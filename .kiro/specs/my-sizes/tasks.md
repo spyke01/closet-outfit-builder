@@ -127,21 +127,21 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - **Property 11: Category deletion removes from all locations**
     - **Validates: Requirements 7.5**
 
-- [ ] 5. Create utility functions
-  - [ ] 5.1 Implement unit conversion functions
+- [x] 5. Create utility functions
+  - [x] 5.1 Implement unit conversion functions
     - `convertUnit(value, fromUnit, toUnit)` for imperial/metric conversion
     - `formatMeasurement(value, unit)` for display
     - Add hydration mismatch prevention for localStorage access
     - Add synchronous script for initial unit preference if needed
     - _Requirements: 13.3_
   
-  - [ ] 5.2 Implement size format validation
+  - [x] 5.2 Implement size format validation
     - Validate letter sizes (XS, S, M, L, XL, etc.)
     - Validate numeric sizes
     - Validate waist/inseam pattern (e.g., "32x34")
     - _Requirements: 5.1-5.4_
   
-  - [ ] 5.3 Implement text truncation utility
+  - [x] 5.3 Implement text truncation utility
     - Truncate long text with ellipsis
     - Preserve full text for tooltips
     - _Requirements: 12.3_
