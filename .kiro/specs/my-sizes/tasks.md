@@ -88,33 +88,33 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
   - _Requirements: 10.1_
   - _Priority: HIGH - Eliminates duplicate auth/user queries_
 
-- [ ] 4. Implement mutation hooks for data updates
-  - [ ] 4.1 Create `useCreateCategory` mutation
+- [x] 4. Implement mutation hooks for data updates
+  - [x] 4.1 Create `useCreateCategory` mutation
     - Add new category to database
     - Invalidate categories query cache
     - Implement optimistic updates
     - _Requirements: 7.1, 7.4_
   
-  - [ ] 4.2 Create `useUpdateStandardSize` mutation
+  - [x] 4.2 Create `useUpdateStandardSize` mutation
     - Update standard size for a category
     - Update timestamp automatically
     - Invalidate category and pinned preferences caches
     - _Requirements: 5.5, 10.3_
   
-  - [ ] 4.3 Create `useCreateBrandSize` mutation
+  - [x] 4.3 Create `useCreateBrandSize` mutation
     - Add brand size to category
     - Validate required fields
     - _Requirements: 6.1, 6.5_
   
-  - [ ] 4.4 Create `useUpdateMeasurements` mutation
+  - [x] 4.4 Create `useUpdateMeasurements` mutation
     - Save measurements with units
     - _Requirements: 13.2, 13.5_
   
-  - [ ] 4.5 Create `useUpdatePinnedPreferences` mutation
+  - [x] 4.5 Create `useUpdatePinnedPreferences` mutation
     - Update pinned card order and display modes
     - _Requirements: 8.5, 15.5_
   
-  - [ ] 4.6 Create `useDeleteCategory` mutation
+  - [x] 4.6 Create `useDeleteCategory` mutation
     - Remove category and associated pin references
     - Preserve size data for recovery
     - _Requirements: 7.5, 10.5_

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { cache } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from './use-auth';
@@ -9,6 +9,20 @@ import type {
   CategoryMeasurements,
   PinnedPreference
 } from '@/lib/types/sizes';
+import type {
+  SizeCategoryInput,
+  StandardSizeInput,
+  BrandSizeInput,
+  CategoryMeasurementsInput,
+  PinnedPreferenceInput
+} from '@/lib/schemas/sizes';
+import {
+  sizeCategoryInputSchema,
+  standardSizeInputSchema,
+  brandSizeInputSchema,
+  categoryMeasurementsInputSchema,
+  pinnedPreferenceInputSchema
+} from '@/lib/schemas/sizes';
 
 // Query keys for size management
 export const sizeKeys = {
@@ -236,5 +250,643 @@ export function usePinnedPreferences(options?: { initialData?: PinnedPreference[
     queryFn: () => getPinnedPreferences(userId!),
     staleTime: 5 * 60 * 1000, // 5 minutes
     initialData: options?.initialData,
+  });
+}
+
+// ============================================================================
+// MUTATION HOOKS
+// ============================================================================
+
+/**
+ * Hook to create a new size category
+ * 
+ * Features:
+ * - Validates input with Zod schema
+ * - Adds new category to database
+ * - Invalidates categories query cache
+ * - Implements optimistic updates for instant UI feedback
+ * - Automatically includes user_id from auth context
+ * 
+ * @returns TanStack Query mutation result
+ * 
+ * Requirements: 7.1, 7.4
+ * 
+ * @example
+ * ```typescript
+ * function AddCategoryForm() {
+ *   const createCategory = useCreateCategory();
+ *   
+ *   const handleSubmit = (data: SizeCategoryInput) => {
+ *     createCategory.mutate(data, {
+ *       onSuccess: (category) => {
+ *         console.log('Category created:', category);
+ *       },
+ *       onError: (error) => {
+ *         console.error('Failed to create category:', error);
+ *       }
+ *     });
+ *   };
+ *   
+ *   return <form onSubmit={handleSubmit}>...</form>;
+ * }
+ * ```
+ */
+export function useCreateCategory() {
+  const queryClient = useQueryClient();
+  const { userId } = useAuth();
+  const supabase = createClient();
+
+  return useMutation({
+    mutationFn: async (data: SizeCategoryInput) => {
+      if (!userId) {
+        throw new Error('User must be authenticated to create a category');
+      }
+
+      // Validate input with Zod
+      const validated = sizeCategoryInputSchema.parse(data);
+
+      // Insert into database
+      const { data: category, error } = await supabase
+        .from('size_categories')
+        .insert({
+          ...validated,
+          user_id: userId,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        throw new Error(`Failed to create category: ${error.message}`);
+      }
+
+      return category as SizeCategory;
+    },
+    onMutate: async (newCategory) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: sizeKeys.categories(userId!) });
+
+      // Snapshot previous value
+      const previousCategories = queryClient.getQueryData<SizeCategory[]>(
+        sizeKeys.categories(userId!)
+      );
+
+      // Optimistically update cache
+      if (previousCategories) {
+        queryClient.setQueryData<SizeCategory[]>(
+          sizeKeys.categories(userId!),
+          (old) => [
+            ...(old || []),
+            {
+              ...newCategory,
+              id: 'temp-id', // Temporary ID for optimistic update
+              user_id: userId!,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            } as SizeCategory,
+          ]
+        );
+      }
+
+      return { previousCategories };
+    },
+    onError: (err, newCategory, context) => {
+      // Rollback on error
+      if (context?.previousCategories) {
+        queryClient.setQueryData(
+          sizeKeys.categories(userId!),
+          context.previousCategories
+        );
+      }
+    },
+    onSettled: () => {
+      // Refetch to ensure consistency
+      queryClient.invalidateQueries({ queryKey: sizeKeys.categories(userId!) });
+    },
+  });
+}
+
+/**
+ * Hook to update standard size for a category
+ * 
+ * Features:
+ * - Validates input with Zod schema
+ * - Updates standard size in database
+ * - Automatically updates timestamp
+ * - Invalidates category and pinned preferences caches
+ * - Implements optimistic updates
+ * 
+ * @returns TanStack Query mutation result
+ * 
+ * Requirements: 5.5, 10.3
+ * 
+ * @example
+ * ```typescript
+ * function StandardSizeForm({ categoryId }: { categoryId: string }) {
+ *   const updateSize = useUpdateStandardSize();
+ *   
+ *   const handleSubmit = (data: StandardSizeInput) => {
+ *     updateSize.mutate(data, {
+ *       onSuccess: () => {
+ *         console.log('Size updated successfully');
+ *       }
+ *     });
+ *   };
+ *   
+ *   return <form onSubmit={handleSubmit}>...</form>;
+ * }
+ * ```
+ */
+export function useUpdateStandardSize() {
+  const queryClient = useQueryClient();
+  const { userId } = useAuth();
+  const supabase = createClient();
+
+  return useMutation({
+    mutationFn: async (data: StandardSizeInput) => {
+      if (!userId) {
+        throw new Error('User must be authenticated to update standard size');
+      }
+
+      // Validate input with Zod
+      const validated = standardSizeInputSchema.parse(data);
+
+      // Check if standard size exists for this category
+      const { data: existing } = await supabase
+        .from('standard_sizes')
+        .select('id')
+        .eq('category_id', validated.category_id)
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      let result: StandardSize;
+
+      if (existing) {
+        // Update existing standard size
+        const { data: updated, error } = await supabase
+          .from('standard_sizes')
+          .update({
+            ...validated,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', existing.id)
+          .select()
+          .single();
+
+        if (error) {
+          throw new Error(`Failed to update standard size: ${error.message}`);
+        }
+
+        result = updated as StandardSize;
+      } else {
+        // Create new standard size
+        const { data: created, error } = await supabase
+          .from('standard_sizes')
+          .insert({
+            ...validated,
+            user_id: userId,
+          })
+          .select()
+          .single();
+
+        if (error) {
+          throw new Error(`Failed to create standard size: ${error.message}`);
+        }
+
+        result = created as StandardSize;
+      }
+
+      return result;
+    },
+    onSuccess: (data) => {
+      // Invalidate category cache (includes standard size)
+      queryClient.invalidateQueries({ 
+        queryKey: sizeKeys.category(data.category_id) 
+      });
+      
+      // Invalidate pinned preferences (they display standard size)
+      queryClient.invalidateQueries({ 
+        queryKey: sizeKeys.pinned(userId!) 
+      });
+    },
+  });
+}
+
+/**
+ * Hook to create a new brand size
+ * 
+ * Features:
+ * - Validates input with Zod schema (requires brand_name and size)
+ * - Adds brand size to database
+ * - Invalidates brand sizes query cache
+ * - Implements optimistic updates
+ * 
+ * @returns TanStack Query mutation result
+ * 
+ * Requirements: 6.1, 6.5
+ * 
+ * @example
+ * ```typescript
+ * function BrandSizeForm({ categoryId }: { categoryId: string }) {
+ *   const createBrandSize = useCreateBrandSize();
+ *   
+ *   const handleSubmit = (data: BrandSizeInput) => {
+ *     createBrandSize.mutate(data, {
+ *       onSuccess: () => {
+ *         console.log('Brand size added successfully');
+ *       }
+ *     });
+ *   };
+ *   
+ *   return <form onSubmit={handleSubmit}>...</form>;
+ * }
+ * ```
+ */
+export function useCreateBrandSize() {
+  const queryClient = useQueryClient();
+  const { userId } = useAuth();
+  const supabase = createClient();
+
+  return useMutation({
+    mutationFn: async (data: BrandSizeInput) => {
+      if (!userId) {
+        throw new Error('User must be authenticated to create a brand size');
+      }
+
+      // Validate input with Zod (ensures brand_name and size are present)
+      const validated = brandSizeInputSchema.parse(data);
+
+      // Insert into database
+      const { data: brandSize, error } = await supabase
+        .from('brand_sizes')
+        .insert({
+          ...validated,
+          user_id: userId,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        throw new Error(`Failed to create brand size: ${error.message}`);
+      }
+
+      return brandSize as BrandSize;
+    },
+    onMutate: async (newBrandSize) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ 
+        queryKey: sizeKeys.brandSizes(newBrandSize.category_id) 
+      });
+
+      // Snapshot previous value
+      const previousBrandSizes = queryClient.getQueryData<BrandSize[]>(
+        sizeKeys.brandSizes(newBrandSize.category_id)
+      );
+
+      // Optimistically update cache
+      if (previousBrandSizes) {
+        queryClient.setQueryData<BrandSize[]>(
+          sizeKeys.brandSizes(newBrandSize.category_id),
+          (old) => [
+            ...(old || []),
+            {
+              ...newBrandSize,
+              id: 'temp-id', // Temporary ID for optimistic update
+              user_id: userId!,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            } as BrandSize,
+          ]
+        );
+      }
+
+      return { previousBrandSizes, categoryId: newBrandSize.category_id };
+    },
+    onError: (err, newBrandSize, context) => {
+      // Rollback on error
+      if (context?.previousBrandSizes) {
+        queryClient.setQueryData(
+          sizeKeys.brandSizes(context.categoryId),
+          context.previousBrandSizes
+        );
+      }
+    },
+    onSettled: (data) => {
+      // Refetch to ensure consistency
+      if (data) {
+        queryClient.invalidateQueries({ 
+          queryKey: sizeKeys.brandSizes(data.category_id) 
+        });
+      }
+    },
+  });
+}
+
+/**
+ * Hook to update measurements for a category
+ * 
+ * Features:
+ * - Validates input with Zod schema
+ * - Saves measurements with units (imperial/metric)
+ * - Creates or updates measurements record
+ * - Invalidates measurements query cache
+ * 
+ * @returns TanStack Query mutation result
+ * 
+ * Requirements: 13.2, 13.5
+ * 
+ * @example
+ * ```typescript
+ * function MeasurementGuideForm({ categoryId }: { categoryId: string }) {
+ *   const updateMeasurements = useUpdateMeasurements();
+ *   
+ *   const handleSubmit = (data: CategoryMeasurementsInput) => {
+ *     updateMeasurements.mutate(data, {
+ *       onSuccess: () => {
+ *         console.log('Measurements saved successfully');
+ *       }
+ *     });
+ *   };
+ *   
+ *   return <form onSubmit={handleSubmit}>...</form>;
+ * }
+ * ```
+ */
+export function useUpdateMeasurements() {
+  const queryClient = useQueryClient();
+  const { userId } = useAuth();
+  const supabase = createClient();
+
+  return useMutation({
+    mutationFn: async (data: CategoryMeasurementsInput) => {
+      if (!userId) {
+        throw new Error('User must be authenticated to update measurements');
+      }
+
+      // Validate input with Zod
+      const validated = categoryMeasurementsInputSchema.parse(data);
+
+      // Check if measurements exist for this category
+      const { data: existing } = await supabase
+        .from('category_measurements')
+        .select('id')
+        .eq('category_id', validated.category_id)
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      let result: CategoryMeasurements;
+
+      if (existing) {
+        // Update existing measurements
+        const { data: updated, error } = await supabase
+          .from('category_measurements')
+          .update({
+            ...validated,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', existing.id)
+          .select()
+          .single();
+
+        if (error) {
+          throw new Error(`Failed to update measurements: ${error.message}`);
+        }
+
+        result = updated as CategoryMeasurements;
+      } else {
+        // Create new measurements
+        const { data: created, error } = await supabase
+          .from('category_measurements')
+          .insert({
+            ...validated,
+            user_id: userId,
+          })
+          .select()
+          .single();
+
+        if (error) {
+          throw new Error(`Failed to create measurements: ${error.message}`);
+        }
+
+        result = created as CategoryMeasurements;
+      }
+
+      return result;
+    },
+    onSuccess: (data) => {
+      // Invalidate measurements cache
+      queryClient.invalidateQueries({ 
+        queryKey: sizeKeys.measurements(data.category_id) 
+      });
+    },
+  });
+}
+
+/**
+ * Hook to update pinned preferences
+ * 
+ * Features:
+ * - Updates pinned card order and display modes
+ * - Supports bulk updates for reordering
+ * - Invalidates pinned preferences cache
+ * - Validates input with Zod schema
+ * 
+ * @returns TanStack Query mutation result
+ * 
+ * Requirements: 8.5, 15.5
+ * 
+ * @example
+ * ```typescript
+ * function CustomizePinnedCardsView() {
+ *   const updatePinned = useUpdatePinnedPreferences();
+ *   
+ *   const handleReorder = (preferences: PinnedPreferenceInput[]) => {
+ *     updatePinned.mutate(preferences, {
+ *       onSuccess: () => {
+ *         console.log('Pinned preferences updated');
+ *       }
+ *     });
+ *   };
+ *   
+ *   return <div>...</div>;
+ * }
+ * ```
+ */
+export function useUpdatePinnedPreferences() {
+  const queryClient = useQueryClient();
+  const { userId } = useAuth();
+  const supabase = createClient();
+
+  return useMutation({
+    mutationFn: async (preferences: PinnedPreferenceInput[]) => {
+      if (!userId) {
+        throw new Error('User must be authenticated to update pinned preferences');
+      }
+
+      // Validate all preferences with Zod
+      const validated = preferences.map(pref => 
+        pinnedPreferenceInputSchema.parse(pref)
+      );
+
+      // Delete all existing pinned preferences for this user
+      const { error: deleteError } = await supabase
+        .from('pinned_preferences')
+        .delete()
+        .eq('user_id', userId);
+
+      if (deleteError) {
+        throw new Error(`Failed to clear pinned preferences: ${deleteError.message}`);
+      }
+
+      // Insert new preferences
+      if (validated.length > 0) {
+        const { data: created, error: insertError } = await supabase
+          .from('pinned_preferences')
+          .insert(
+            validated.map(pref => ({
+              ...pref,
+              user_id: userId,
+            }))
+          )
+          .select();
+
+        if (insertError) {
+          throw new Error(`Failed to update pinned preferences: ${insertError.message}`);
+        }
+
+        return created as PinnedPreference[];
+      }
+
+      return [] as PinnedPreference[];
+    },
+    onSuccess: () => {
+      // Invalidate pinned preferences cache
+      queryClient.invalidateQueries({ 
+        queryKey: sizeKeys.pinned(userId!) 
+      });
+    },
+  });
+}
+
+/**
+ * Hook to delete a category
+ * 
+ * Features:
+ * - Removes category from database
+ * - Removes associated pin references
+ * - Preserves size data for recovery (soft delete pattern)
+ * - Invalidates categories and pinned preferences caches
+ * - Implements optimistic updates
+ * 
+ * @returns TanStack Query mutation result
+ * 
+ * Requirements: 7.5, 10.5
+ * 
+ * @example
+ * ```typescript
+ * function CategoryActions({ categoryId }: { categoryId: string }) {
+ *   const deleteCategory = useDeleteCategory();
+ *   
+ *   const handleDelete = () => {
+ *     if (confirm('Are you sure you want to delete this category?')) {
+ *       deleteCategory.mutate(categoryId, {
+ *         onSuccess: () => {
+ *           console.log('Category deleted successfully');
+ *         }
+ *       });
+ *     }
+ *   };
+ *   
+ *   return <button onClick={handleDelete}>Delete</button>;
+ * }
+ * ```
+ */
+export function useDeleteCategory() {
+  const queryClient = useQueryClient();
+  const { userId } = useAuth();
+  const supabase = createClient();
+
+  return useMutation({
+    mutationFn: async (categoryId: string) => {
+      if (!userId) {
+        throw new Error('User must be authenticated to delete a category');
+      }
+
+      // First, remove any pinned preferences for this category
+      const { error: unpinError } = await supabase
+        .from('pinned_preferences')
+        .delete()
+        .eq('category_id', categoryId)
+        .eq('user_id', userId);
+
+      if (unpinError) {
+        throw new Error(`Failed to unpin category: ${unpinError.message}`);
+      }
+
+      // Delete the category
+      // Note: Size data (standard_sizes, brand_sizes, measurements) is preserved
+      // due to foreign key constraints with ON DELETE CASCADE or SET NULL
+      const { error: deleteError } = await supabase
+        .from('size_categories')
+        .delete()
+        .eq('id', categoryId)
+        .eq('user_id', userId);
+
+      if (deleteError) {
+        throw new Error(`Failed to delete category: ${deleteError.message}`);
+      }
+
+      return categoryId;
+    },
+    onMutate: async (categoryId) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: sizeKeys.categories(userId!) });
+      await queryClient.cancelQueries({ queryKey: sizeKeys.pinned(userId!) });
+
+      // Snapshot previous values
+      const previousCategories = queryClient.getQueryData<SizeCategory[]>(
+        sizeKeys.categories(userId!)
+      );
+      const previousPinned = queryClient.getQueryData<PinnedPreference[]>(
+        sizeKeys.pinned(userId!)
+      );
+
+      // Optimistically update categories cache
+      if (previousCategories) {
+        queryClient.setQueryData<SizeCategory[]>(
+          sizeKeys.categories(userId!),
+          (old) => old?.filter(cat => cat.id !== categoryId) || []
+        );
+      }
+
+      // Optimistically update pinned preferences cache
+      if (previousPinned) {
+        queryClient.setQueryData<PinnedPreference[]>(
+          sizeKeys.pinned(userId!),
+          (old) => old?.filter(pref => pref.category_id !== categoryId) || []
+        );
+      }
+
+      return { previousCategories, previousPinned };
+    },
+    onError: (err, categoryId, context) => {
+      // Rollback on error
+      if (context?.previousCategories) {
+        queryClient.setQueryData(
+          sizeKeys.categories(userId!),
+          context.previousCategories
+        );
+      }
+      if (context?.previousPinned) {
+        queryClient.setQueryData(
+          sizeKeys.pinned(userId!),
+          context.previousPinned
+        );
+      }
+    },
+    onSettled: () => {
+      // Refetch to ensure consistency
+      queryClient.invalidateQueries({ queryKey: sizeKeys.categories(userId!) });
+      queryClient.invalidateQueries({ queryKey: sizeKeys.pinned(userId!) });
+    },
   });
 }

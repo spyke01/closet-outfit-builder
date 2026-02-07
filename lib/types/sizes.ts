@@ -119,6 +119,16 @@ export interface CategoryGridItem {
 }
 
 /**
+ * Type aliases for compatibility with schemas
+ * These match the Zod schema inferred types
+ */
+export type SizeCategory = SizeCategoryRow;
+export type StandardSize = StandardSizeRow;
+export type BrandSize = BrandSizeRow;
+export type CategoryMeasurements = CategoryMeasurementsRow;
+export type PinnedPreference = PinnedPreferenceRow;
+
+/**
  * Form input types (omit auto-generated fields)
  */
 export type SizeCategoryInput = Omit<SizeCategoryRow, 'id' | 'user_id' | 'created_at' | 'updated_at'>;
