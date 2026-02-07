@@ -6,7 +6,20 @@ const nextConfig: NextConfig = {
 
   // Performance optimizations
   experimental: {
-    optimizePackageImports: ['lucide-react', '@tanstack/react-query', '@radix-ui/react-*'],
+    optimizePackageImports: [
+      'lucide-react',
+      '@tanstack/react-query',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-label',
+      '@radix-ui/react-switch',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-checkbox',
+      '@radix-ui/react-select',
+      '@radix-ui/react-tooltip',
+      '@radix-ui/react-popover',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-progress',
+    ],
   },
 
   // Bundle analysis configuration

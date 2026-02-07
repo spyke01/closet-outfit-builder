@@ -15,6 +15,7 @@
     "analyze:bundle": "node scripts/analyze-bundle-size.js",
     "analyze:ci": "node scripts/bundle-analysis-ci.js",
     "analyze:trends": "node scripts/bundle-analysis-ci.js",
+    "check:bundle": "node scripts/check-bundle-size.js",
     "typecheck": "tsc --noEmit",
     "typecheck:monitor": "node scripts/typescript-error-monitor.js",
     "typecheck:watch": "tsc --noEmit --watch",
