@@ -76,6 +76,8 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
             size="sm"
             onClick={() => setShowFilters(!showFilters)}
             className="flex items-center gap-2"
+            aria-label={showFilters ? 'Hide filters' : 'Show filters'}
+            aria-expanded={showFilters}
           >
             <Filter size={16} />
             Filters
@@ -95,19 +97,25 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
       <div className="space-y-4">
         {/* Search bar */}
         <div className="relative w-full">
+          <label htmlFor="wardrobe-search" className="sr-only">Search items</label>
           <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-500" />
           <input
-            type="text"
+            id="wardrobe-search"
+            type="search"
+            name="search"
+            autoComplete="off"
+            spellCheck={false}
             placeholder="Search items across all categories..."
             value={searchTerm}
             onChange={(e) => handleSearchChange(e.target.value)}
             className="w-full pl-10 pr-4 py-3 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent min-h-[44px] bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 transition-colors"
+            aria-label="Search items across all categories"
           />
           {searchTerm && (
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
               <div className="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
                 <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full animate-pulse"></div>
-                Filtering...
+                Filtering…
               </div>
             </div>
           )}
@@ -163,12 +171,20 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
             <button
               key={tag}
               onClick={() => toggleTag(tag)}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 min-h-[44px] flex-shrink-0 ${
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  toggleTag(tag);
+                }
+              }}
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition-[background-color,color,box-shadow] duration-200 min-h-[44px] flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${
                 selectedTags.has(tag)
                   ? 'bg-slate-800 dark:bg-slate-600 text-white shadow-sm'
                   : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 hover:shadow-sm'
               } ${isFiltering ? 'opacity-75' : 'opacity-100'}`}
               disabled={isFiltering}
+              aria-label={`Filter by ${tag}`}
+              aria-pressed={selectedTags.has(tag)}
             >
               {tag}
             </button>

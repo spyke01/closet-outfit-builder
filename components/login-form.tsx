@@ -30,16 +30,20 @@ export function LoginForm({
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
     setIsLoading(true);
     setError(null);
 
     try {
+      const supabase = createClient();
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+      
+      // Early return on error - don't navigate
       if (error) throw error;
+      
+      // Only navigate on success
       router.push("/wardrobe");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
@@ -49,7 +53,6 @@ export function LoginForm({
   };
 
   const handleGoogleLogin = async () => {
-    const supabase = createClient();
     setIsLoading(true);
     setError(null);
 
@@ -60,6 +63,7 @@ export function LoginForm({
     console.log('OAuth redirect URL:', redirectUrl);
 
     try {
+      const supabase = createClient();
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -76,6 +80,7 @@ export function LoginForm({
 
       console.log('OAuth response:', { data, error });
 
+      // Early return on error
       if (error) throw error;
       
       // Don't set loading to false here - let the redirect happen
@@ -104,10 +109,16 @@ export function LoginForm({
                 <Input
                   id="email"
                   type="email"
+                  name="email"
+                  autoComplete="email"
+                  inputMode="email"
+                  spellCheck={false}
                   placeholder="m@example.com"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  aria-invalid={error ? "true" : "false"}
+                  aria-describedby={error ? "email-error" : undefined}
                 />
               </div>
               <div className="grid gap-2">
@@ -123,14 +134,23 @@ export function LoginForm({
                 <Input
                   id="password"
                   type="password"
+                  name="password"
+                  autoComplete="current-password"
+                  spellCheck={false}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  aria-invalid={error ? "true" : "false"}
+                  aria-describedby={error ? "password-error" : undefined}
                 />
               </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
+              {error && (
+                <div id="email-error" role="alert" aria-live="polite" className="text-sm text-red-500">
+                  {error}
+                </div>
+              )}
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Login"}
+                {isLoading ? "Logging in…" : "Login"}
               </Button>
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -149,7 +169,7 @@ export function LoginForm({
                 onClick={handleGoogleLogin}
                 disabled={isLoading}
               >
-                {isLoading ? "Signing in..." : "Continue with Google"}
+                {isLoading ? "Signing in…" : "Continue with Google"}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">

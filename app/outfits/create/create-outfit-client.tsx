@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useCategories } from '@/lib/hooks/use-categories';
 import { useWardrobeItems } from '@/lib/hooks/use-wardrobe-items';
 import { useCreateOutfit, useScoreOutfit, useCheckOutfitDuplicate } from '@/lib/hooks/use-outfits';
@@ -56,6 +56,24 @@ export function CreateOutfitPageClient() {
     }));
   };
   const [isLoved, setIsLoved] = useState(false);
+
+  // Track if form has unsaved changes
+  const hasUnsavedChanges = useMemo(() => {
+    return selectedItemIds.length > 0 || outfitName.trim() !== '' || isLoved;
+  }, [selectedItemIds.length, outfitName, isLoved]);
+
+  // Warn before navigation with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges && !createOutfitMutation.isSuccess) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges, createOutfitMutation.isSuccess]);
 
   // Fetch data
   const { data: categories = [], isLoading: categoriesLoading } = useCategories();
@@ -272,15 +290,19 @@ export function CreateOutfitPageClient() {
                 {/* Outfit Details */}
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    <label htmlFor="outfit-name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                       Outfit Name (Optional)
                     </label>
                     <input
+                      id="outfit-name"
                       type="text"
+                      name="outfit-name"
+                      autoComplete="off"
                       value={outfitName}
                       onChange={(e) => setOutfitName(e.target.value)}
                       className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
                       placeholder="e.g., Business Casual"
+                      aria-label="Enter outfit name"
                     />
                   </div>
 

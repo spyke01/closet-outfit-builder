@@ -232,12 +232,12 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
   const { generateFallbackWeather } = useWeatherFallback();
 
   const loadWeatherData = useCallback(async (isRetry = false) => {
-    // Don't load if hook is disabled
+    // Early return if hook is disabled
     if (!enabled) {
       return;
     }
 
-    // Don't retry if location permission was explicitly denied
+    // Early return if location permission was explicitly denied and not retrying
     if (locationPermissionDenied && !isRetry) {
       return;
     }
@@ -248,46 +248,49 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
     try {
       const location = await getCurrentLocation();
 
-      if (location.granted) {
-        setLocationPermissionDenied(false);
-        
-        try {
-          const weatherData = await fetchWeatherData(location.latitude, location.longitude);
-          
-          setForecast(weatherData.forecast);
-          setCurrent(weatherData.current);
-          setRetryCount(0); // Reset retry count on success
-          setUsingFallback(false);
-        } catch (weatherError) {
-          // If main weather service fails after multiple retries, try fallback
-          if (retryCount >= 2) {
-            console.log('Main weather service failed, attempting fallback...');
-            try {
-              const fallbackData = await generateFallbackWeather(location.latitude, location.longitude);
-              setForecast(fallbackData.forecast);
-              setCurrent(fallbackData.current);
-              setUsingFallback(true);
-              setError({
-                error: 'Using estimated weather data. Actual weather service is temporarily unavailable.',
-                details: 'Fallback weather data active'
-              });
-              return; // Exit early to avoid throwing the error
-            } catch (fallbackError) {
-              console.error('Fallback weather generation failed:', fallbackError);
-            }
-          }
-          
-          // Re-throw the original error if fallback fails or we haven't reached retry limit
-          throw weatherError;
-        }
-      } else {
-        // Handle location permission denied
+      // Early return if location not granted
+      if (!location.granted) {
         setLocationPermissionDenied(true);
         const locationError: WeatherError = {
           error: 'Location access is required to show weather information. Please enable location permissions in your browser settings.',
           details: location.error
         };
         setError(locationError);
+        setLoading(false);
+        return;
+      }
+
+      setLocationPermissionDenied(false);
+      
+      try {
+        const weatherData = await fetchWeatherData(location.latitude, location.longitude);
+        
+        setForecast(weatherData.forecast);
+        setCurrent(weatherData.current);
+        setRetryCount(0); // Reset retry count on success
+        setUsingFallback(false);
+      } catch (weatherError) {
+        // If main weather service fails after multiple retries, try fallback
+        if (retryCount >= 2) {
+          console.log('Main weather service failed, attempting fallback...');
+          try {
+            const fallbackData = await generateFallbackWeather(location.latitude, location.longitude);
+            setForecast(fallbackData.forecast);
+            setCurrent(fallbackData.current);
+            setUsingFallback(true);
+            setError({
+              error: 'Using estimated weather data. Actual weather service is temporarily unavailable.',
+              details: 'Fallback weather data active'
+            });
+            setLoading(false);
+            return; // Early return after successful fallback
+          } catch (fallbackError) {
+            console.error('Fallback weather generation failed:', fallbackError);
+          }
+        }
+        
+        // Re-throw the original error if fallback fails or we haven't reached retry limit
+        throw weatherError;
       }
     } catch (err) {
       console.error('Weather loading error:', err);
@@ -338,11 +341,11 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
     } finally {
       setLoading(false);
     }
-  }, [locationPermissionDenied, enabled]);
+  }, [locationPermissionDenied, enabled, retryCount, generateFallbackWeather]);
 
   // Retry weather data loading with intelligent backoff
   const retry = useCallback(() => {
-    // Limit retry attempts to prevent spam
+    // Early return if max retries exceeded
     if (retryCount >= 3) {
       setError({
         error: 'Weather service is currently unavailable. Please try again later.',
@@ -351,7 +354,7 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
       return;
     }
 
-    // Don't retry if location permission was denied
+    // Early return if location permission was denied
     if (locationPermissionDenied) {
       setError({
         error: 'Location access is required for weather information. Please enable location permissions and refresh the page.',

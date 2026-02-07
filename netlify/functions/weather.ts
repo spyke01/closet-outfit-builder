@@ -139,7 +139,7 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
   }
 
   try {
-    // Rate limiting
+    // Rate limiting - early return if exceeded
     const clientIP = event.headers['x-forwarded-for'] || event.headers['client-ip'] || 'unknown';
     if (!checkRateLimit(clientIP)) {
       return {
@@ -149,7 +149,7 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
       };
     }
 
-    // Validate query parameters
+    // Validate query parameters - early return if invalid
     const { lat, lon } = event.queryStringParameters || {};
     
     if (!lat || !lon) {
@@ -171,7 +171,7 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
       };
     }
 
-    // Validate coordinate ranges
+    // Validate coordinate ranges - early return if out of range
     if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
       return {
         statusCode: 400,
@@ -180,7 +180,7 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
       };
     }
 
-    // Get API key from environment
+    // Get API key from environment - early return if missing
     const apiKey = process.env.OPENWEATHER_API_KEY;
     
     if (!apiKey) {

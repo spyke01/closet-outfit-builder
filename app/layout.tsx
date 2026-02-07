@@ -3,6 +3,7 @@ import { Geist, Playfair_Display, Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { QueryProvider } from "@/lib/providers/query-provider";
 import { MonitoringProvider } from "@/lib/providers/monitoring-provider";
+import { SWRProvider } from "@/lib/providers/swr-config";
 import { PreloadInitializer } from "@/components/preload-initializer";
 import "./globals.css";
 
@@ -75,14 +76,16 @@ export default function RootLayout({
       <body className={`${inter.variable} ${playfairDisplay.variable} ${geistSans.variable} font-sans antialiased`}>
         <MonitoringProvider>
           <QueryProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-            >
-              <PreloadInitializer />
-              {children}
-            </ThemeProvider>
+            <SWRProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+              >
+                <PreloadInitializer />
+                {children}
+              </ThemeProvider>
+            </SWRProvider>
           </QueryProvider>
         </MonitoringProvider>
       </body>

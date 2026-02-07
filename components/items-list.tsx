@@ -11,7 +11,7 @@ interface ItemsListProps {
   showBrand?: boolean;
 }
 
-export const ItemsList: React.FC<ItemsListProps> = ({
+export const ItemsList = React.memo<ItemsListProps>(({
   items,
   selectedItem,
   onItemSelect,
@@ -42,7 +42,7 @@ export const ItemsList: React.FC<ItemsListProps> = ({
         <div
           key={item.id}
           onClick={() => handleItemSelect(item)}
-          className={`flex items-center gap-4 p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer touch-manipulation ${
+          className={`flex items-center gap-4 p-4 rounded-lg border-2 transition-[border-color,background-color,box-shadow] duration-200 cursor-pointer touch-manipulation ${
             selectedItem?.id === item.id
               ? 'border-slate-800 dark:border-slate-400 bg-slate-50 dark:bg-slate-700 shadow-sm'
               : 'border-stone-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-md'
@@ -62,11 +62,12 @@ export const ItemsList: React.FC<ItemsListProps> = ({
             <div className="w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-lg p-2 flex items-center justify-center flex-shrink-0">
               <Image
                 src={item.image_url}
-                alt={item.name}
+                alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''}`}
                 width={48}
                 height={48}
                 className="object-contain"
                 loading="lazy"
+                quality={80}
               />
             </div>
           )}
@@ -80,13 +81,13 @@ export const ItemsList: React.FC<ItemsListProps> = ({
                 </h3>
                 
                 {item.color && (
-                  <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 truncate">
                     Color: {item.color}
                   </p>
                 )}
                 
                 {item.material && (
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-sm text-slate-600 dark:text-slate-400 truncate">
                     Material: {item.material}
                   </p>
                 )}
@@ -118,4 +119,6 @@ export const ItemsList: React.FC<ItemsListProps> = ({
       ))}
     </div>
   );
-};
+});
+
+ItemsList.displayName = 'ItemsList';

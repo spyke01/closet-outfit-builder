@@ -108,10 +108,12 @@ export function OutfitFlatLayout({
                     <div className="relative w-full h-full">
                       <Image
                         src={item.image_url}
-                        alt={item.name}
+                        alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''} - ${item.category?.name || 'outfit item'}`}
                         fill
                         className="object-cover"
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        loading="lazy"
+                        quality={85}
                       />
                     </div>
                   ) : (
@@ -160,38 +162,38 @@ export function OutfitFlatLayout({
               </div>
 
               {/* Item details */}
-              <div className="space-y-2">
+              <div className="space-y-2 min-w-0">
                 {/* Category label */}
-                <div className="flex items-center justify-between">
-                  <Badge variant="outline" className="text-xs">
+                <div className="flex items-center justify-between gap-2 min-w-0">
+                  <Badge variant="outline" className="text-xs truncate">
                     {item.category?.name || 'Unknown'}
                   </Badge>
                   {outfitScore > 0 && (
-                    <span className="text-xs text-slate-500 dark:text-slate-400">
+                    <span className="text-xs text-slate-500 dark:text-slate-400 flex-shrink-0">
                       {item.scorePercentage}%
                     </span>
                   )}
                 </div>
 
                 {/* Item name */}
-                <h4 className="font-medium text-slate-900 dark:text-slate-100 text-sm leading-tight truncate">
+                <h4 className="font-medium text-slate-900 dark:text-slate-100 text-sm leading-tight line-clamp-2 break-words" title={item.name}>
                   {item.name}
                 </h4>
 
                 {/* Item metadata */}
-                <div className="space-y-1">
+                <div className="space-y-1 min-w-0">
                   {item.brand && (
-                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate" title={item.brand}>
                       {item.brand}
                     </p>
                   )}
                   
-                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 gap-2 min-w-0">
                     {item.color && (
-                      <span className="truncate">{item.color}</span>
+                      <span className="truncate" title={item.color}>{item.color}</span>
                     )}
                     {item.formality_score && (
-                      <span className="flex items-center gap-1">
+                      <span className="flex items-center gap-1 flex-shrink-0">
                         <Star className="h-3 w-3" />
                         {item.formality_score}/10
                       </span>
@@ -204,6 +206,7 @@ export function OutfitFlatLayout({
                   <Link 
                     href={`/wardrobe/items/${item.id}`}
                     className="absolute inset-0 z-10"
+                    aria-label={`View ${item.name} details`}
                   >
                     <span className="sr-only">View {item.name} details</span>
                   </Link>

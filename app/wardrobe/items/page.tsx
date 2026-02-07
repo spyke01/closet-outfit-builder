@@ -1,14 +1,14 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { Suspense } from "react";
+import { AuthBoundary } from "@/components/auth-boundary";
 import { AddItemPageClient } from './add-item-client';
+import { PageContentSkeleton } from "@/components/loading-skeleton";
 
-export default async function WardrobeItemsPage() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-  
-  if (error || !data?.claims) {
-    redirect("/auth/login");
-  }
-
-  return <AddItemPageClient />;
+export default function WardrobeItemsPage() {
+  return (
+    <Suspense fallback={<PageContentSkeleton />}>
+      <AuthBoundary>
+        <AddItemPageClient />
+      </AuthBoundary>
+    </Suspense>
+  );
 }

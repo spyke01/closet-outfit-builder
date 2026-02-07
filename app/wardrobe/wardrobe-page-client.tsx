@@ -216,19 +216,20 @@ export function WardrobePageClient() {
                             <div className="h-40 sm:h-44 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3 flex items-center justify-center relative">
                               <Image
                                 src={item.image_url}
-                                alt={item.name}
+                                alt={`${item.brand ? `${item.brand} ${item.name}` : item.name} - ${category.name}`}
                                 fill
                                 className="object-contain p-3"
                                 loading="lazy"
-                                sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+                                sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+                                quality={85}
                               />
                             </div>
                           )}
                           
                           {/* Item details */}
-                          <div className="space-y-2">
-                            <div className="flex items-start gap-2">
-                              <h3 className="font-medium text-slate-800 dark:text-slate-200 leading-tight text-sm sm:text-base">
+                          <div className="space-y-2 min-w-0">
+                            <div className="flex items-start gap-2 min-w-0">
+                              <h3 className="font-medium text-slate-800 dark:text-slate-200 leading-tight text-sm sm:text-base line-clamp-2 break-words">
                                 {item.brand ? `${item.brand} ${item.name}` : item.name}
                               </h3>
                             </div>
@@ -238,7 +239,7 @@ export function WardrobePageClient() {
                                 {item.capsule_tags.slice(0, 3).map(tag => (
                                   <span
                                     key={tag}
-                                    className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300"
+                                    className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300 truncate"
                                   >
                                     {tag}
                                   </span>

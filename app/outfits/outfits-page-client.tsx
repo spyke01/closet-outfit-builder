@@ -206,30 +206,37 @@ export function OutfitsPageClient() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Search */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label htmlFor="outfit-search" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Search
                   </label>
                   <div className="relative">
                     <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
                     <input
-                      type="text"
+                      id="outfit-search"
+                      type="search"
+                      name="search"
+                      autoComplete="off"
+                      spellCheck={false}
                       placeholder="Search outfits..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="w-full pl-10 pr-4 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                      aria-label="Search outfits by name or item"
                     />
                   </div>
                 </div>
 
                 {/* Filter */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label htmlFor="outfit-filter" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Filter
                   </label>
                   <select
+                    id="outfit-filter"
                     value={filterBy}
                     onChange={(e) => setFilterBy(e.target.value as any)}
                     className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                    aria-label="Filter outfits by type"
                   >
                     <option value="all">All Outfits</option>
                     <option value="loved">Loved</option>
@@ -240,13 +247,15 @@ export function OutfitsPageClient() {
 
                 {/* Sort */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label htmlFor="outfit-sort" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Sort By
                   </label>
                   <select
+                    id="outfit-sort"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as any)}
                     className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                    aria-label="Sort outfits by criteria"
                   >
                     <option value="newest">Newest First</option>
                     <option value="oldest">Oldest First</option>

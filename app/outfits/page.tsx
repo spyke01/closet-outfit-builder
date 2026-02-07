@@ -1,16 +1,16 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { Suspense } from "react";
+import { AuthBoundary } from "@/components/auth-boundary";
 import { OutfitsPageClient } from './outfits-page-client';
+import { OutfitGridSkeleton } from "@/components/loading-skeleton";
 
 export const dynamic = 'force-dynamic';
 
-export default async function OutfitsPage() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-  
-  if (error || !data?.claims) {
-    redirect("/auth/login");
-  }
-
-  return <OutfitsPageClient />;
+export default function OutfitsPage() {
+  return (
+    <Suspense fallback={<OutfitGridSkeleton />}>
+      <AuthBoundary>
+        <OutfitsPageClient />
+      </AuthBoundary>
+    </Suspense>
+  );
 }

@@ -81,8 +81,8 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
         key={item.id}
         className={`
           relative bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700
-          shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden
-          ${isClickable ? 'cursor-pointer hover:scale-105' : ''}
+          shadow-sm hover:shadow-md transition-[box-shadow,transform] duration-200 overflow-hidden
+          ${isClickable ? 'cursor-pointer hover:scale-105 will-change-transform' : ''}
           w-full h-full max-w-[125px] max-h-[125px]
         `}
         style={{ aspectRatio: '1' }}
@@ -92,11 +92,12 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
           <div className="relative w-full h-full">
             <Image
               src={item.image_url}
-              alt={item.name}
+              alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''} - ${item.category?.name || 'outfit item'}`}
               fill
               className="object-cover"
               loading="lazy"
               sizes="125px"
+              quality={80}
             />
           </div>
         ) : (
@@ -106,8 +107,8 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
         )}
         
         {showLabels && (
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
-            <p className="text-white text-xs font-medium truncate">
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 min-w-0">
+            <p className="text-white text-xs font-medium truncate" title={item.name}>
               {item.name}
             </p>
           </div>

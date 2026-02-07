@@ -8,7 +8,7 @@ interface WeightIndicatorProps {
   weight: number;
 }
 
-const WeightIndicator: React.FC<WeightIndicatorProps> = ({ reason, weight }) => {
+const WeightIndicator = React.memo<WeightIndicatorProps>(({ reason, weight }) => {
   const getIndicatorStyle = () => {
     if (weight === 1.0) {
       return 'bg-green-500 text-white';
@@ -40,14 +40,16 @@ const WeightIndicator: React.FC<WeightIndicatorProps> = ({ reason, weight }) => 
       {weight === 1.0 ? '●' : weight >= 0.7 ? '◐' : '○'}
     </span>
   );
-};
+});
+
+WeightIndicator.displayName = 'WeightIndicator';
 
 interface ScoreBreakdownProps {
   breakdown: ScoreBreakdownData;
   showDetails?: boolean;
 }
 
-export const ScoreBreakdown: React.FC<ScoreBreakdownProps> = ({
+export const ScoreBreakdown = React.memo<ScoreBreakdownProps>(({
   breakdown,
   showDetails = false
 }) => {
@@ -146,4 +148,6 @@ export const ScoreBreakdown: React.FC<ScoreBreakdownProps> = ({
       </div>
     </div>
   );
-};
+});
+
+ScoreBreakdown.displayName = 'ScoreBreakdown';

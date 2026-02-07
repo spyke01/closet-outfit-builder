@@ -55,7 +55,14 @@ export const OutfitList: React.FC<OutfitListProps> = ({
           <button
             key={outfit.id}
             onClick={() => handleOutfitSelect(outfit)}
-            className="p-3 border border-stone-200 dark:border-slate-600 rounded-lg hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-sm transition-all text-left bg-white dark:bg-slate-800"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleOutfitSelect(outfit);
+              }
+            }}
+            className="p-3 border border-stone-200 dark:border-slate-600 rounded-lg hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-sm transition-[border-color,box-shadow] text-left bg-white dark:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+            aria-label={`Select outfit: ${outfit.name || 'Untitled Outfit'}`}
           >
             <div className="flex items-center justify-between mb-2">
               <h4 className="font-medium text-slate-800 dark:text-slate-200 truncate">

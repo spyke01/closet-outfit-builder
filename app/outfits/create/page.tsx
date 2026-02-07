@@ -1,14 +1,14 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { Suspense } from "react";
+import { AuthBoundary } from "@/components/auth-boundary";
 import { CreateOutfitPageClient } from './create-outfit-client';
+import { PageContentSkeleton } from "@/components/loading-skeleton";
 
-export default async function CreateOutfitPage() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-  
-  if (error || !data?.claims) {
-    redirect("/auth/login");
-  }
-
-  return <CreateOutfitPageClient />;
+export default function CreateOutfitPage() {
+  return (
+    <Suspense fallback={<PageContentSkeleton />}>
+      <AuthBoundary>
+        <CreateOutfitPageClient />
+      </AuthBoundary>
+    </Suspense>
+  );
 }

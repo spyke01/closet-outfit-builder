@@ -2,6 +2,7 @@
 
 import React, { useCallback, useMemo, memo } from 'react';
 import { Shirt, RefreshCw, Loader2, Save } from 'lucide-react';
+import { SpinningIcon } from '@/components/ui/animated-icon';
 
 
 
@@ -338,7 +339,9 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
             >
               {(isGenerating || state.isTransitioning) ? (
                 <>
-                  <Loader2 size={18} className="animate-spin" />
+                  <SpinningIcon>
+                    <Loader2 size={18} />
+                  </SpinningIcon>
                   Generating...
                 </>
               ) : (
@@ -372,8 +375,10 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
             {(isGenerating || state.isTransitioning) && (
               <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl">
                 <div className="flex flex-col items-center gap-3">
-                  <Loader2 size={32} className="animate-spin text-slate-600 dark:text-slate-300" />
-                  <p className="text-slate-600 dark:text-slate-300 font-medium">Generating new outfit...</p>
+                  <SpinningIcon>
+                    <Loader2 size={32} className="text-slate-600 dark:text-slate-300" />
+                  </SpinningIcon>
+                  <p className="text-slate-600 dark:text-slate-300 font-medium">Generating new outfit…</p>
                 </div>
               </div>
             )}
@@ -409,8 +414,10 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
               >
                 {(isGenerating || state.isTransitioning) ? (
                   <>
-                    <Loader2 size={18} className="animate-spin" />
-                    Generating...
+                    <SpinningIcon>
+                      <Loader2 size={18} />
+                    </SpinningIcon>
+                    Generating…
                   </>
                 ) : (
                   <>
@@ -431,8 +438,10 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
                 >
                   {state.isSaving ? (
                     <>
-                      <Loader2 size={16} className="animate-spin" />
-                      Saving...
+                      <SpinningIcon>
+                        <Loader2 size={16} />
+                      </SpinningIcon>
+                      Saving…
                     </>
                   ) : (
                     <>

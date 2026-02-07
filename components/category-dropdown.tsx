@@ -30,7 +30,9 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
   isLocked = false
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   // Preload image upload component when dropdown is interacted with
   const { preloadProps } = useComponentPreloading(
@@ -67,6 +69,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
+        setFocusedIndex(-1);
       }
     };
 
@@ -74,9 +77,61 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Reset focused index when dropdown opens/closes
+  useEffect(() => {
+    if (!isOpen) {
+      setFocusedIndex(-1);
+    }
+  }, [isOpen]);
+
+  // Focus management for keyboard navigation
+  useEffect(() => {
+    if (isOpen && focusedIndex >= 0 && itemRefs.current[focusedIndex]) {
+      itemRefs.current[focusedIndex]?.focus();
+    }
+  }, [focusedIndex, isOpen]);
+
   const handleSelect = (item: WardrobeItem | null) => {
     onSelect(item);
     setIsOpen(false);
+    setFocusedIndex(-1);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (disabled || isLocked) return;
+
+    switch (e.key) {
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        if (!isOpen) {
+          setIsOpen(true);
+        }
+        break;
+      case 'Escape':
+        if (isOpen) {
+          e.preventDefault();
+          setIsOpen(false);
+          setFocusedIndex(-1);
+        }
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        if (!isOpen) {
+          setIsOpen(true);
+        } else {
+          setFocusedIndex(prev => 
+            prev < validatedItems.length ? prev + 1 : prev
+          );
+        }
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        if (isOpen) {
+          setFocusedIndex(prev => prev > -1 ? prev - 1 : -1);
+        }
+        break;
+    }
   };
 
   const formatItemName = (item: WardrobeItem): string => {
@@ -122,6 +177,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => !disabled && !isLocked && setIsOpen(!isOpen)}
+        onKeyDown={handleKeyDown}
         disabled={disabled || isLoading}
         className={`
           w-full px-3 py-2 text-left border rounded-lg transition-colors min-h-[44px] flex items-center justify-between gap-2
@@ -149,11 +205,24 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
       </button>
 
       {isOpen && !disabled && !isLocked && (
-        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-slate-800 border border-stone-300 dark:border-slate-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+        <div 
+          className="absolute z-50 w-full mt-1 bg-white dark:bg-slate-800 border border-stone-300 dark:border-slate-600 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+          role="listbox"
+          aria-label={`${category} options`}
+        >
           {/* Clear selection option */}
           <button
+            ref={el => itemRefs.current[-1] = el}
             onClick={() => handleSelect(null)}
-            className="w-full px-3 py-2 text-left hover:bg-stone-50 dark:hover:bg-slate-700 transition-colors text-slate-500 dark:text-slate-400 italic"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleSelect(null);
+              }
+            }}
+            className="w-full px-3 py-2 text-left hover:bg-stone-50 dark:hover:bg-slate-700 transition-colors text-slate-500 dark:text-slate-400 italic focus:bg-stone-50 dark:focus:bg-slate-700 focus:outline-none"
+            role="option"
+            aria-selected={!validatedSelectedItem}
           >
             Clear selection
           </button>
@@ -163,14 +232,23 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
               No items available
             </div>
           ) : (
-            validatedItems.map((item) => (
+            validatedItems.map((item, index) => (
               <button
                 key={item.id}
+                ref={el => itemRefs.current[index] = el}
                 onClick={() => handleSelect(item)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleSelect(item);
+                  }
+                }}
                 className={`
-                  w-full px-3 py-2 text-left hover:bg-stone-50 dark:hover:bg-slate-700 transition-colors
+                  w-full px-3 py-2 text-left hover:bg-stone-50 dark:hover:bg-slate-700 transition-colors focus:bg-stone-50 dark:focus:bg-slate-700 focus:outline-none
                   ${validatedSelectedItem?.id === item.id ? 'bg-slate-100 dark:bg-slate-700' : ''}
                 `}
+                role="option"
+                aria-selected={validatedSelectedItem?.id === item.id}
               >
                 <div className="flex items-center gap-2">
                   {item.color && (

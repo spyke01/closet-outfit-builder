@@ -78,15 +78,25 @@ export function ForgotPasswordForm({
                   <Input
                     id="email"
                     type="email"
+                    name="email"
+                    autoComplete="email"
+                    inputMode="email"
+                    spellCheck={false}
                     placeholder="m@example.com"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    aria-invalid={error ? "true" : "false"}
+                    aria-describedby={error ? "email-error" : undefined}
                   />
                 </div>
-                {error && <p className="text-sm text-red-500">{error}</p>}
+                {error && (
+                  <div id="email-error" role="alert" aria-live="polite" className="text-sm text-red-500">
+                    {error}
+                  </div>
+                )}
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Sending..." : "Send reset email"}
+                  {isLoading ? "Sending…" : "Send reset email"}
                 </Button>
               </div>
               <div className="mt-4 text-center text-sm">

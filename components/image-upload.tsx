@@ -271,10 +271,12 @@ export function ImageUpload({
                 <div className="relative inline-block">
                   <Image
                     src={uploadState.previewUrl}
-                    alt="Preview"
+                    alt="Image upload preview"
                     width={300}
                     height={192}
                     className="max-w-xs max-h-48 rounded-lg shadow-md object-contain"
+                    priority
+                    quality={90}
                   />
                   {!uploadState.isUploading && (
                     <Button

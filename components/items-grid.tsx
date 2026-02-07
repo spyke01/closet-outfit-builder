@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useMemo, useCallback, startTransition, useDeferredValue } from 'react';
+import React, { useState, useMemo, useCallback, startTransition, useDeferredValue, useEffect } from 'react';
 import { Search, Tag, Plus, Shirt } from 'lucide-react';
+import { useContentVisibility } from '@/lib/utils/content-visibility';
 
 
 
@@ -117,6 +118,12 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
   const isFiltering = useMemo(() => {
     return state.searchTerm !== deferredSearchTerm || state.selectedTags !== deferredSelectedTags;
   }, [state.searchTerm, deferredSearchTerm, state.selectedTags, deferredSelectedTags]);
+
+  // Content visibility optimization for large lists
+  const contentVisibility = useContentVisibility(filteredItems.length, {
+    threshold: 50,
+    itemHeight: 200, // Approximate height of each grid item
+  });
 
   // Optimized search handler with startTransition
   const handleSearchChange = useCallback((value: string) => {
@@ -263,7 +270,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
               {isFiltering && (
                 <div className="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
                   <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full animate-pulse"></div>
-                  Filtering...
+                  Filtering…
                 </div>
               )}
             </div>
@@ -271,7 +278,14 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
             {onItemAdd && (
               <button
                 onClick={() => updateState(draft => { draft.showAddForm = !draft.showAddForm; })}
-                className="flex items-center gap-2 px-3 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors text-sm"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    updateState(draft => { draft.showAddForm = !draft.showAddForm; });
+                  }
+                }}
+                className="flex items-center gap-2 px-3 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                aria-label="Add new item"
               >
                 <Plus size={16} />
                 Add Item
@@ -296,13 +310,19 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
           <div className="space-y-3 sm:space-y-4">
             {/* Search bar - full width on mobile */}
             <div className="relative w-full">
+              <label htmlFor="items-search" className="sr-only">Search items</label>
               {SEARCH_ICON}
               <input
-                type="text"
+                id="items-search"
+                type="search"
+                name="search"
+                autoComplete="off"
+                spellCheck={false}
                 placeholder="Search items..."
                 value={state.searchTerm}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent min-h-[44px] bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 transition-colors"
+                aria-label="Search items in this category"
               />
             </div>
 
@@ -313,11 +333,19 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
                 <button
                   key={tag}
                   onClick={() => toggleTag(tag)}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 min-h-[44px] flex-shrink-0 ${
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      toggleTag(tag);
+                    }
+                  }}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-[background-color,color,box-shadow] duration-200 min-h-[44px] flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${
                     state.selectedTags.has(tag)
                       ? 'bg-slate-800 dark:bg-slate-600 text-white shadow-sm'
                       : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 hover:shadow-sm'
                   } ${isFiltering ? 'opacity-75' : 'opacity-100'}`}
+                  aria-label={`Filter by ${tag}`}
+                  aria-pressed={state.selectedTags.has(tag)}
                 >
                   {tag}
                 </button>
@@ -340,11 +368,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
         <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 transition-opacity duration-200 ${
           isFiltering ? 'opacity-75' : 'opacity-100'
         }`}
-        style={{
-          // Use content-visibility for performance with long lists
-          contentVisibility: filteredItems.length > 20 ? 'auto' : 'visible',
-          containIntrinsicSize: filteredItems.length > 20 ? '200px' : 'none'
-        }}>
+        style={contentVisibility.styles}>
           {filteredItems.map(item => (
             <button
               key={item.id}
@@ -352,31 +376,39 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
               onClick={() => {
                 handleItemSelect(item);
               }}
-              className={`p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer touch-manipulation w-full text-left ${
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleItemSelect(item);
+                }
+              }}
+              className={`p-3 sm:p-4 rounded-xl border-2 transition-[border-color,background-color,box-shadow,transform] duration-200 cursor-pointer touch-manipulation w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${
                 validatedSelectedItem?.id === item.id
                   ? 'border-slate-800 dark:border-slate-400 bg-slate-50 dark:bg-slate-700 shadow-sm'
                   : 'border-stone-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-md'
               }`}
               aria-label={`Select ${formatItemName(item)} for outfit building`}
+              aria-pressed={validatedSelectedItem?.id === item.id}
             >
               {/* Fixed height image container */}
               {item.image_url && (
                 <div className="h-40 sm:h-44 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3 flex items-center justify-center relative">
                   <Image
                     src={item.image_url}
-                    alt={item.name}
+                    alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''} - ${item.category?.name || 'wardrobe item'}`}
                     fill
                     className="object-contain"
                     loading="lazy"
                     sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+                    quality={85}
                   />
                 </div>
               )}
               
               {/* Item details */}
-              <div className="space-y-2">
-                <div className="flex items-start gap-2">
-                  <h3 className="font-medium text-slate-800 dark:text-slate-200 leading-tight text-sm sm:text-base">
+              <div className="space-y-2 min-w-0">
+                <div className="flex items-start gap-2 min-w-0">
+                  <h3 className="font-medium text-slate-800 dark:text-slate-200 leading-tight text-sm sm:text-base line-clamp-2 break-words">
                     {formatItemName(item)}
                   </h3>
                 </div>
@@ -386,7 +418,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
                     {item.capsule_tags.slice(0, 3).map(tag => (
                       <span
                         key={tag}
-                        className={`px-2 py-1 text-xs rounded-md transition-colors ${
+                        className={`px-2 py-1 text-xs rounded-md transition-colors truncate ${
                           state.selectedTags.has(tag)
                             ? 'bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-200'
                             : 'bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300'
@@ -463,6 +495,26 @@ const AddItemForm: React.FC<AddItemFormProps> = ({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Track if form has unsaved changes
+  const hasUnsavedChanges = useMemo(() => {
+    return formData.name.trim() !== '' || 
+           formData.brand.trim() !== '' || 
+           formData.image_url !== '';
+  }, [formData.name, formData.brand, formData.image_url]);
+
+  // Warn before navigation with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges && !isSubmitting) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges, isSubmitting]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -508,6 +560,8 @@ const AddItemForm: React.FC<AddItemFormProps> = ({
             onChange={(e) => updateFormData(draft => { draft.name = e.target.value; })}
             className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
             required
+            aria-label="Enter item name"
+            aria-required="true"
           />
         </div>
         
@@ -520,7 +574,8 @@ const AddItemForm: React.FC<AddItemFormProps> = ({
             type="text"
             value={formData.brand}
             onChange={(e) => updateFormData(draft => { draft.brand = e.target.value; })}
-            className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:bg-slate-700 text-slate-900 dark:text-slate-100"
+            className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+            aria-label="Enter item brand"
           />
         </div>
       </div>
@@ -535,7 +590,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({
             onError={(error) => console.error('Upload error:', error)}
           />
           {uploadError && (
-            <p className="text-red-600 dark:text-red-400 text-sm mt-1">{uploadError}</p>
+            <p className="text-red-600 dark:text-red-400 text-sm mt-1" role="alert" aria-live="polite">{uploadError}</p>
           )}
         </div>
       )}
@@ -553,7 +608,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({
           disabled={!formData.name.trim() || isSubmitting}
           className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors"
         >
-          {isSubmitting ? 'Adding...' : 'Add Item'}
+          {isSubmitting ? 'Adding…' : 'Add Item'}
         </button>
       </div>
     </form>

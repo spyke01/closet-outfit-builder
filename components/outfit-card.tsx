@@ -30,7 +30,7 @@ interface OutfitCardProps {
   outfitItems?: WardrobeItem[]; // Array of wardrobe items for visual layout
 }
 
-export const OutfitCard: React.FC<OutfitCardProps> = ({
+export const OutfitCard = React.memo<OutfitCardProps>(({
   outfit,
   variant = 'compact',
   layoutType = 'grid',
@@ -119,11 +119,12 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
               {item?.image_url ? (
                 <Image
                   src={item.image_url}
-                  alt={item.name}
+                  alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''}`}
                   width={56}
                   height={56}
                   className="object-cover rounded-lg"
                   loading="lazy"
+                  quality={80}
                 />
               ) : (
                 <div className="w-8 h-8 bg-slate-200 dark:bg-slate-600 rounded-md" />
@@ -140,16 +141,17 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
                   {item.brand}
                 </p>
               )}
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                 {label}
               </p>
               {item?.color && (
-                <div className="flex items-center gap-1 mt-1">
+                <div className="flex items-center gap-1 mt-1 min-w-0">
                   <div 
-                    className="w-2 h-2 rounded-full border border-slate-300 dark:border-slate-600"
+                    className="w-2 h-2 rounded-full border border-slate-300 dark:border-slate-600 flex-shrink-0"
                     style={{ backgroundColor: item.color.toLowerCase() }}
+                    aria-label={`Color: ${item.color}`}
                   />
-                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                  <span className="text-xs text-slate-500 dark:text-slate-400 truncate">
                     {item.color}
                   </span>
                 </div>
@@ -261,4 +263,6 @@ export const OutfitCard: React.FC<OutfitCardProps> = ({
       </div>
     </div>
   );
-};
+});
+
+OutfitCard.displayName = 'OutfitCard';

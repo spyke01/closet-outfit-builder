@@ -1,17 +1,13 @@
-import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { InfoIcon } from 'lucide-react';
-
+import { AuthBoundary } from "@/components/auth-boundary";
+import { FetchDataSteps } from "@/components/tutorial/fetch-data-steps";
+import { ProtectedPageSkeleton } from "@/components/loading-skeleton";
 import { createClient } from "@/lib/supabase/server";
 
-import { FetchDataSteps } from "@/components/tutorial/fetch-data-steps";
-
-export default async function ProtectedPage() {
+async function ProtectedPageContent() {
   const supabase = await createClient();
-
-  const { data, error } = await supabase.auth.getClaims();
-  if (error || !data?.claims) {
-    redirect("/auth/login");
-  }
+  const { data } = await supabase.auth.getClaims();
 
   return (
     <div className="flex-1 w-full flex flex-col gap-12">
@@ -25,7 +21,7 @@ export default async function ProtectedPage() {
       <div className="flex flex-col gap-2 items-start">
         <h2 className="font-bold text-2xl mb-4">Your user details</h2>
         <pre className="text-xs font-mono p-3 rounded border max-h-32 overflow-auto">
-          {JSON.stringify(data.claims, null, 2)}
+          {JSON.stringify(data?.claims, null, 2)}
         </pre>
       </div>
       <div>
@@ -33,5 +29,15 @@ export default async function ProtectedPage() {
         <FetchDataSteps />
       </div>
     </div>
+  );
+}
+
+export default function ProtectedPage() {
+  return (
+    <Suspense fallback={<ProtectedPageSkeleton />}>
+      <AuthBoundary>
+        <ProtectedPageContent />
+      </AuthBoundary>
+    </Suspense>
   );
 }

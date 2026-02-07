@@ -18,4 +18,81 @@
   html {
     scroll-behavior: smooth;
   }
+
+  /* Disable smooth scrolling for users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+/* Motion accessibility: Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Performance: Only animate transform and opacity properties */
+@layer utilities {
+  .animate-safe {
+    animation-duration: 0.3s;
+    animation-timing-function: ease-out;
+  }
+
+  .transition-safe {
+    transition-property: transform, opacity;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out;
+  }
+
+  /* Hardware acceleration for transforms */
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .will-change-opacity {
+    will-change: opacity;
+  }
+
+  /* Ensure animations are interruptible */
+  .animate-spin,
+  .animate-pulse {
+    animation-play-state: running;
+  }
+
+  /* Proper transform-origin for scale animations */
+  .hover\:scale-105:hover {
+    transform-origin: center center;
+  }
+
+  /* SVG hardware acceleration wrapper */
+  .svg-hw-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  /* Typography improvements */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Non-breaking space utility for units */
+  .nbsp {
+    white-space: nowrap;
+  }
+}
+
+
+/* Content visibility optimization for large lists (>50 items) */
+@layer utilities {
+  .content-visibility-auto {
+    content-visibility: auto;
+  }
 }

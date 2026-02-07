@@ -1,0 +1,122 @@
+'use client';
+
+import useSWRMutation from 'swr/mutation';
+import type { SWRMutationConfiguration } from 'swr/mutation';
+
+/**
+ * Custom hook for mutations with optimistic updates
+ * Wraps useSWRMutation with common patterns for the application
+ */
+
+interface MutationOptions<Data, Error, ExtraArg> extends SWRMutationConfiguration<Data, Error, string, ExtraArg> {
+  onSuccess?: (data: Data) => void;
+  onError?: (error: Error) => void;
+}
+
+/**
+ * Generic mutation fetcher for API routes
+ */
+async function mutationFetcher<Data, ExtraArg>(
+  url: string,
+  { arg }: { arg: ExtraArg }
+): Promise<Data> {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(arg),
+  });
+
+  if (!res.ok) {
+    const error = new Error('Mutation failed');
+    (error as any).info = await res.json();
+    (error as any).status = res.status;
+    throw error;
+  }
+
+  return res.json();
+}
+
+/**
+ * Hook for POST mutations with optimistic updates
+ */
+export function usePostMutation<Data = any, Error = any, ExtraArg = any>(
+  key: string,
+  options?: MutationOptions<Data, Error, ExtraArg>
+) {
+  return useSWRMutation<Data, Error, string, ExtraArg>(
+    key,
+    mutationFetcher,
+    {
+      ...options,
+      onSuccess: (data, key, config) => {
+        options?.onSuccess?.(data);
+        options?.onSuccess?.(data, key, config);
+      },
+      onError: (error, key, config) => {
+        options?.onError?.(error);
+        options?.onError?.(error, key, config);
+      },
+    }
+  );
+}
+
+/**
+ * Hook for DELETE mutations
+ */
+export function useDeleteMutation<Data = any, Error = any, ExtraArg = any>(
+  key: string,
+  options?: MutationOptions<Data, Error, ExtraArg>
+) {
+  const deleteFetcher = async (url: string, { arg }: { arg: ExtraArg }): Promise<Data> => {
+    const res = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(arg),
+    });
+
+    if (!res.ok) {
+      const error = new Error('Delete failed');
+      (error as any).info = await res.json();
+      (error as any).status = res.status;
+      throw error;
+    }
+
+    return res.json();
+  };
+
+  return useSWRMutation<Data, Error, string, ExtraArg>(key, deleteFetcher, options);
+}
+
+/**
+ * Hook for PUT/PATCH mutations
+ */
+export function useUpdateMutation<Data = any, Error = any, ExtraArg = any>(
+  key: string,
+  method: 'PUT' | 'PATCH' = 'PUT',
+  options?: MutationOptions<Data, Error, ExtraArg>
+) {
+  const updateFetcher = async (url: string, { arg }: { arg: ExtraArg }): Promise<Data> => {
+    const res = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(arg),
+    });
+
+    if (!res.ok) {
+      const error = new Error('Update failed');
+      (error as any).info = await res.json();
+      (error as any).status = res.status;
+      throw error;
+    }
+
+    return res.json();
+  };
+
+  return useSWRMutation<Data, Error, string, ExtraArg>(key, updateFetcher, options);
+}

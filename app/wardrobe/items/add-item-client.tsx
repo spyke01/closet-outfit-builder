@@ -207,10 +207,12 @@ export function AddItemPageClient() {
                   <div className="relative w-full max-w-sm mx-auto aspect-square">
                     <Image
                       src={formData.image_url}
-                      alt={formData.name || 'Item'}
+                      alt={`${formData.name || 'New item'}${formData.brand ? ` by ${formData.brand}` : ''}`}
                       fill
                       className="rounded-lg shadow-md object-cover"
                       sizes="(max-width: 768px) 100vw, 384px"
+                      priority
+                      quality={90}
                     />
                   </div>
                 )}

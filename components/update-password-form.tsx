@@ -61,15 +61,24 @@ export function UpdatePasswordForm({
                 <Input
                   id="password"
                   type="password"
+                  name="password"
+                  autoComplete="new-password"
+                  spellCheck={false}
                   placeholder="New password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  aria-invalid={error ? "true" : "false"}
+                  aria-describedby={error ? "password-error" : undefined}
                 />
               </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
+              {error && (
+                <div id="password-error" role="alert" aria-live="polite" className="text-sm text-red-500">
+                  {error}
+                </div>
+              )}
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Saving..." : "Save new password"}
+                {isLoading ? "Saving…" : "Save new password"}
               </Button>
             </div>
           </form>

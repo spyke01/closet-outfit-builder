@@ -31,15 +31,13 @@ export const dynamic = 'force-static';
 export async function POST(request: NextRequest) {
   try {
     // Start operations in parallel to avoid waterfalls
-    const [supabasePromise, formDataPromise] = [
-      createClient(),
-      request.formData()
-    ];
+    const supabasePromise = createClient();
+    const formDataPromise = request.formData();
 
     // Initialize Supabase client
     const supabase = await supabasePromise;
     
-    // Check authentication
+    // Check authentication - early return if not authenticated
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
@@ -84,7 +82,7 @@ export async function POST(request: NextRequest) {
       throw validationError;
     }
 
-    // Validate magic bytes
+    // Validate magic bytes - defer arrayBuffer conversion until needed
     const imageBuffer = new Uint8Array(await imageFile.arrayBuffer());
     const fileTypeFromMime = imageFile.type.split('/')[1];
     
@@ -105,7 +103,7 @@ export async function POST(request: NextRequest) {
       quality,
     });
 
-    // Get session for Edge Function call
+    // Get session for Edge Function call - defer until after validation
     const { data: { session } } = await supabase.auth.getSession();
     
     if (!session?.access_token) {

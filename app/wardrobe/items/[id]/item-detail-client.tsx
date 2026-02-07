@@ -277,10 +277,12 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                     <div className="relative w-full max-w-sm mx-auto aspect-square">
                       <Image
                         src={editForm.image_url}
-                        alt={editForm.name || 'Item'}
+                        alt={`${editForm.name || 'Item'}${editForm.brand ? ` by ${editForm.brand}` : ''}`}
                         fill
                         className="rounded-lg shadow-md object-cover"
                         sizes="(max-width: 768px) 100vw, 384px"
+                        priority
+                        quality={90}
                       />
                     </div>
                   )}
@@ -295,10 +297,12 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                     <div className="relative w-full max-w-sm mx-auto aspect-square">
                       <Image
                         src={item.image_url}
-                        alt={item.name}
+                        alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''} - ${category?.name || 'wardrobe item'}`}
                         fill
                         className="rounded-lg shadow-md object-cover"
                         sizes="(max-width: 768px) 100vw, 384px"
+                        loading="lazy"
+                        quality={85}
                       />
                     </div>
                   ) : (

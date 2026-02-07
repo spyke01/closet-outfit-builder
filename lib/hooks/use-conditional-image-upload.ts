@@ -76,6 +76,7 @@ export function useConditionalImageUpload(isAuthenticated: boolean): UseConditio
 
   // Upload image function
   const uploadImage = useCallback(async (file: File, options: ImageUploadOptions = {}) => {
+    // Early return if image processing is not enabled
     if (!imageProcessingEnabled) {
       setUploadState(prev => ({
         ...prev,
@@ -84,6 +85,7 @@ export function useConditionalImageUpload(isAuthenticated: boolean): UseConditio
       return;
     }
 
+    // Early return if module is not loaded
     if (!imageModule) {
       setUploadState(prev => ({
         ...prev,

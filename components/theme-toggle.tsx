@@ -4,9 +4,7 @@ import { useTheme } from 'next-themes';
 import { useUpdateUserPreferences, useUserPreferences } from '@/lib/hooks/use-user-preferences';
 import { Button } from '@/components/ui/button';
 import { Monitor, Moon, Sun } from 'lucide-react';
-
-
-
+import { SpinningIcon } from '@/components/ui/animated-icon';
 import { useEffect, useState } from 'react';
 
 export function ThemeToggle() {
@@ -64,13 +62,27 @@ export function ThemeToggle() {
   const isUpdating = updatePreferences.isPending;
 
   const getIcon = () => {
+    const iconSize = 'w-4 h-4';
+    
     switch (currentTheme) {
       case 'light':
-        return <Sun className={`w-4 h-4 ${isUpdating ? 'animate-spin' : ''}`} />;
+        return (
+          <SpinningIcon isSpinning={isUpdating}>
+            <Sun className={iconSize} />
+          </SpinningIcon>
+        );
       case 'dark':
-        return <Moon className={`w-4 h-4 ${isUpdating ? 'animate-spin' : ''}`} />;
+        return (
+          <SpinningIcon isSpinning={isUpdating}>
+            <Moon className={iconSize} />
+          </SpinningIcon>
+        );
       default:
-        return <Monitor className={`w-4 h-4 ${isUpdating ? 'animate-spin' : ''}`} />;
+        return (
+          <SpinningIcon isSpinning={isUpdating}>
+            <Monitor className={iconSize} />
+          </SpinningIcon>
+        );
     }
   };
 

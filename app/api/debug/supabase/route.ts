@@ -5,7 +5,7 @@ export async function GET() {
   try {
     console.log('🔍 Debug: Testing Supabase connection from server...');
     
-    // Check environment variables
+    // Check environment variables - early return if missing
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
     
@@ -23,11 +23,14 @@ export async function GET() {
     // Create Supabase client
     const supabase = await createClient();
     
-    // Test basic connectivity
-    const { data, error } = await supabase
-      .from('wardrobe_items')
-      .select('count')
-      .limit(1);
+    // Test basic connectivity and auth in parallel
+    const [queryResult, authResult] = await Promise.all([
+      supabase.from('wardrobe_items').select('count').limit(1),
+      supabase.auth.getUser()
+    ]);
+    
+    const { data, error } = queryResult;
+    const { data: { user } } = authResult;
     
     if (error) {
       console.log('❌ Supabase query failed:', error);
@@ -41,9 +44,6 @@ export async function GET() {
         }
       }, { status: 500 });
     }
-
-    // Test auth
-    const { data: { user } } = await supabase.auth.getUser();
     
     return NextResponse.json({
       success: true,
@@ -90,13 +90,21 @@ export async function POST(request: NextRequest) {
         const tables = ['wardrobe_items', 'categories', 'outfits', 'user_preferences'];
         const results: Record<string, { success: boolean; error?: string }> = {};
         
-        for (const table of tables) {
-          try {
-            const { error } = await supabase.from(table).select('id').limit(1);
-            results[table] = error ? { success: false, error: error.message } : { success: true };
-          } catch (err) {
-            results[table] = { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
-          }
+        // Execute table checks in parallel for better performance
+        const tableChecks = await Promise.all(
+          tables.map(async (table) => {
+            try {
+              const { error } = await supabase.from(table).select('id').limit(1);
+              return { table, result: error ? { success: false, error: error.message } : { success: true } };
+            } catch (err) {
+              return { table, result: { success: false, error: err instanceof Error ? err.message : 'Unknown error' } };
+            }
+          })
+        );
+        
+        // Convert array to object
+        for (const { table, result } of tableChecks) {
+          results[table] = result;
         }
         
         return NextResponse.json({

@@ -31,10 +31,10 @@ export function SignUpForm({
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
     setIsLoading(true);
     setError(null);
 
+    // Early return on password mismatch - don't create client
     if (password !== repeatPassword) {
       setError("Passwords do not match");
       setIsLoading(false);
@@ -42,6 +42,7 @@ export function SignUpForm({
     }
 
     try {
+      const supabase = createClient();
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -49,7 +50,11 @@ export function SignUpForm({
           emailRedirectTo: getAuthConfirmUrl(),
         },
       });
+      
+      // Early return on error - don't navigate
       if (error) throw error;
+      
+      // Only navigate on success
       router.push("/auth/sign-up-success");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
@@ -59,7 +64,6 @@ export function SignUpForm({
   };
 
   const handleGoogleSignUp = async () => {
-    const supabase = createClient();
     setIsLoading(true);
     setError(null);
 
@@ -70,6 +74,7 @@ export function SignUpForm({
     console.log('OAuth redirect URL:', redirectUrl);
 
     try {
+      const supabase = createClient();
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -86,6 +91,7 @@ export function SignUpForm({
       
       console.log('OAuth response:', { data, error });
       
+      // Early return on error
       if (error) throw error;
       
       // Don't set loading to false here - let the redirect happen
@@ -112,10 +118,16 @@ export function SignUpForm({
                 <Input
                   id="email"
                   type="email"
+                  name="email"
+                  autoComplete="email"
+                  inputMode="email"
+                  spellCheck={false}
                   placeholder="m@example.com"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  aria-invalid={error ? "true" : "false"}
+                  aria-describedby={error ? "signup-error" : undefined}
                 />
               </div>
               <div className="grid gap-2">
@@ -125,9 +137,14 @@ export function SignUpForm({
                 <Input
                   id="password"
                   type="password"
+                  name="password"
+                  autoComplete="new-password"
+                  spellCheck={false}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  aria-invalid={error ? "true" : "false"}
+                  aria-describedby={error ? "signup-error" : undefined}
                 />
               </div>
               <div className="grid gap-2">
@@ -137,14 +154,23 @@ export function SignUpForm({
                 <Input
                   id="repeat-password"
                   type="password"
+                  name="password-repeat"
+                  autoComplete="new-password"
+                  spellCheck={false}
                   required
                   value={repeatPassword}
                   onChange={(e) => setRepeatPassword(e.target.value)}
+                  aria-invalid={error ? "true" : "false"}
+                  aria-describedby={error ? "signup-error" : undefined}
                 />
               </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
+              {error && (
+                <div id="signup-error" role="alert" aria-live="polite" className="text-sm text-red-500">
+                  {error}
+                </div>
+              )}
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating an account..." : "Sign up"}
+                {isLoading ? "Creating an account…" : "Sign up"}
               </Button>
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -163,7 +189,7 @@ export function SignUpForm({
                 onClick={handleGoogleSignUp}
                 disabled={isLoading}
               >
-                {isLoading ? "Signing up..." : "Continue with Google"}
+                {isLoading ? "Signing up…" : "Continue with Google"}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">

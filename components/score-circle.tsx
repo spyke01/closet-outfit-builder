@@ -36,7 +36,7 @@ interface ScoreCircleProps {
   className?: string;
 }
 
-export const ScoreCircle: React.FC<ScoreCircleProps> = ({
+export const ScoreCircle = React.memo<ScoreCircleProps>(({
   score,
   maxScore = 100,
   size = 'md',
@@ -268,7 +268,7 @@ export const ScoreCircle: React.FC<ScoreCircleProps> = ({
               strokeDasharray={strokeDasharray}
               strokeDashoffset={strokeDashoffset}
               strokeLinecap="round"
-              className={`transition-all duration-500 ease-out ${getStrokeColor(percentage)}`}
+              className={`transition-[stroke-dashoffset,stroke] duration-500 ease-out ${getStrokeColor(percentage)}`}
             />
           </svg>
           {/* Percentage text */}
@@ -334,4 +334,6 @@ export const ScoreCircle: React.FC<ScoreCircleProps> = ({
       )}
     </>
   );
-};
+});
+
+ScoreCircle.displayName = 'ScoreCircle';

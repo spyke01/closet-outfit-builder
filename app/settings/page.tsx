@@ -1,14 +1,14 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { Suspense } from "react";
+import { AuthBoundary } from "@/components/auth-boundary";
 import { SettingsPageClient } from "./settings-page-client";
+import { SettingsSkeleton } from "@/components/loading-skeleton";
 
-export default async function SettingsPage() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-  
-  if (error || !data?.claims) {
-    redirect("/auth/login");
-  }
-
-  return <SettingsPageClient />;
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={<SettingsSkeleton />}>
+      <AuthBoundary>
+        <SettingsPageClient />
+      </AuthBoundary>
+    </Suspense>
+  );
 }

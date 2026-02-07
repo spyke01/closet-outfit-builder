@@ -79,8 +79,13 @@ export const TopBar: React.FC<TopBarProps> = ({
         <div className="flex items-center gap-6">
           <button
             onClick={handleTitleClick}
-            className="hover:opacity-80 transition-opacity focus:outline-none focus:ring-0 focus:border-transparent active:outline-none"
-            style={{ outline: 'none', border: 'none' }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleTitleClick();
+              }
+            }}
+            className="hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 rounded-lg"
             aria-label="Navigate to home"
           >
             <Logo className="h-8 sm:h-10 w-auto" />
@@ -91,11 +96,12 @@ export const TopBar: React.FC<TopBarProps> = ({
             <nav className="hidden sm:flex items-center gap-1">
               <Link
                 href="/wardrobe"
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${currentView === 'wardrobe'
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${currentView === 'wardrobe'
                     ? 'bg-slate-800 dark:bg-slate-700 text-white'
                     : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
                   }`}
                 aria-label="View wardrobe"
+                aria-current={currentView === 'wardrobe' ? 'page' : undefined}
                 {...getNavigationProps('/wardrobe')}
               >
                 <Shirt size={16} />
@@ -103,11 +109,12 @@ export const TopBar: React.FC<TopBarProps> = ({
               </Link>
               <Link
                 href="/outfits"
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${currentView === 'outfits'
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${currentView === 'outfits'
                     ? 'bg-slate-800 dark:bg-slate-700 text-white'
                     : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
                   }`}
                 aria-label="View outfits"
+                aria-current={currentView === 'outfits' ? 'page' : undefined}
                 {...getNavigationProps('/outfits')}
               >
                 <Grid3X3 size={16} />
@@ -131,7 +138,13 @@ export const TopBar: React.FC<TopBarProps> = ({
               {onSettingsClick && (
                 <button
                   onClick={onSettingsClick}
-                  className="flex items-center justify-center w-9 h-9 rounded-lg bg-stone-100 dark:bg-slate-700 hover:bg-stone-200 dark:hover:bg-slate-600 transition-colors"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onSettingsClick();
+                    }
+                  }}
+                  className="flex items-center justify-center w-9 h-9 rounded-lg bg-stone-100 dark:bg-slate-700 hover:bg-stone-200 dark:hover:bg-slate-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
                   aria-label="Open settings"
                 >
                   <Settings size={18} className="text-slate-700 dark:text-slate-300" />
@@ -159,11 +172,12 @@ export const TopBar: React.FC<TopBarProps> = ({
           <nav className="flex items-center justify-center gap-1">
             <Link
               href="/wardrobe"
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${currentView === 'wardrobe'
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${currentView === 'wardrobe'
                   ? 'bg-slate-800 dark:bg-slate-700 text-white'
                   : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
                 }`}
               aria-label="View wardrobe"
+              aria-current={currentView === 'wardrobe' ? 'page' : undefined}
               {...getNavigationProps('/wardrobe')}
             >
               <Shirt size={16} />
@@ -171,11 +185,12 @@ export const TopBar: React.FC<TopBarProps> = ({
             </Link>
             <Link
               href="/outfits"
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${currentView === 'outfits'
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${currentView === 'outfits'
                   ? 'bg-slate-800 dark:bg-slate-700 text-white'
                   : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
                 }`}
               aria-label="View outfits"
+              aria-current={currentView === 'outfits' ? 'page' : undefined}
               {...getNavigationProps('/outfits')}
             >
               <Grid3X3 size={16} />

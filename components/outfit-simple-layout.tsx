@@ -205,17 +205,19 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
           <div
             key={`${item.id}-${category}`}
             style={itemStyle}
-            className="transition-all duration-300 hover:scale-105"
+            className="transition-transform duration-300 hover:scale-105 will-change-transform"
           >
             <div className="w-full h-full relative">
               {item.image_url ? (
                 <div className="relative w-full h-full">
                   <Image
                     src={item.image_url}
-                    alt={item.name}
+                    alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''}`}
                     fill
                     className="object-contain filter drop-shadow-sm"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    sizes="(max-width: 768px) 25vw, (max-width: 1200px) 20vw, 15vw"
+                    loading="lazy"
+                    quality={85}
                   />
                 </div>
               ) : (

@@ -25,7 +25,7 @@ export function NavigationButtons({ backTo, className = '' }: NavigationButtonsP
     >
       <Link 
         href={backTo.href} 
-        className="focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 rounded-lg"
+        className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 rounded-lg"
         {...getNavigationProps(backTo.href)}
       >
         <Button 

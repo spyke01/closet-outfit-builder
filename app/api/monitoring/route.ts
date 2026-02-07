@@ -80,7 +80,7 @@ export const dynamic = 'force-static';
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate limiting
+    // Rate limiting - early return if exceeded
     const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
     if (!checkRateLimit(ip)) {
       return NextResponse.json(

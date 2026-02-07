@@ -241,19 +241,21 @@ export const OutfitVisualLayout: React.FC<OutfitVisualLayoutProps> = ({
           <div
             key={`${item.id}-${category}`}
             style={itemStyle}
-            className="transition-all duration-300 hover:scale-105 drop-shadow-md hover:drop-shadow-lg"
+            className="transition-transform duration-300 hover:scale-105 drop-shadow-md hover:drop-shadow-lg will-change-transform"
           >
             <div className="w-full h-full relative group">
               <div className="relative w-full h-full">
                 <Image
                   src={item.image_url!}
-                  alt={item.name}
+                  alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''}`}
                   fill
                   className="object-contain filter drop-shadow-sm"
                   style={{
                     filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.1))'
                   }}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  sizes="(max-width: 768px) 35vw, (max-width: 1200px) 25vw, 20vw"
+                  loading="lazy"
+                  quality={85}
                 />
               </div>
               

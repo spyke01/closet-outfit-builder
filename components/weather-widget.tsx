@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Cloud, Sun, CloudRain, RefreshCw, AlertCircle } from 'lucide-react';
+import { SpinningIcon } from '@/components/ui/animated-icon';
 
 
 
@@ -55,8 +56,10 @@ export const WeatherWidget: React.FC<{ className?: string }> = ({
   if (loading) {
     return (
       <div className={`flex items-center gap-2 ${className}`}>
-        <RefreshCw size={16} className="animate-spin text-slate-400" />
-        <span className="text-slate-500 dark:text-slate-400 text-xs">Loading weather...</span>
+        <SpinningIcon>
+          <RefreshCw size={16} className="text-slate-400" />
+        </SpinningIcon>
+        <span className="text-slate-500 dark:text-slate-400 text-xs">Loading weather…</span>
       </div>
     );
   }
