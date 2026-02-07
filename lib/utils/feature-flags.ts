@@ -9,6 +9,7 @@ export interface FeatureFlags {
   monitoring: boolean;
   analytics: boolean;
   devTools: boolean;
+  sizeManagement: boolean;
 }
 
 /**
@@ -25,6 +26,7 @@ export function getFeatureFlags(): FeatureFlags {
     monitoring: process.env.NODE_ENV === 'production',
     analytics: process.env.NODE_ENV === 'production',
     devTools: process.env.NODE_ENV === 'development',
+    sizeManagement: true, // My Sizes feature enabled by default
   };
 
   // In browser, check for additional feature flags from localStorage or URL params

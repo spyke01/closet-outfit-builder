@@ -42,27 +42,27 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - **Property 6: Sizing format support**
     - **Validates: Requirements 5.1, 5.2, 5.3, 5.4**
 
-- [ ] 3. Implement TanStack Query hooks for data fetching
-  - [ ] 3.1 Create `useSizeCategories` hook
+- [x] 3. Implement TanStack Query hooks for data fetching
+  - [x] 3.1 Create `useSizeCategories` hook
     - Fetch all categories for current user
     - Implement query key structure
     - Add error handling and loading states
     - _Requirements: 1.1, 3.1, 7.4_
   
-  - [ ] 3.2 Create `useSizeCategory` hook
+  - [x] 3.2 Create `useSizeCategory` hook
     - Fetch single category by ID
     - Include standard size data
     - _Requirements: 2.1, 4.1_
   
-  - [ ] 3.3 Create `useBrandSizes` hook
+  - [x] 3.3 Create `useBrandSizes` hook
     - Fetch brand sizes filtered by category ID
     - _Requirements: 4.3, 6.5_
   
-  - [ ] 3.4 Create `useMeasurements` hook
+  - [x] 3.4 Create `useMeasurements` hook
     - Fetch measurements for a category
     - _Requirements: 13.1, 13.2_
   
-  - [ ] 3.5 Create `usePinnedPreferences` hook
+  - [x] 3.5 Create `usePinnedPreferences` hook
     - Fetch pinned preferences ordered by display_order
     - _Requirements: 2.1, 8.5_
   
@@ -70,7 +70,7 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - **Property 14: Data persistence on save**
     - **Validates: Requirements 10.1**
 
-- [ ] 3.7 Integrate intelligent preloading (HIGH)
+- [x] 3.7 Integrate intelligent preloading (HIGH)
   - Add sizeManagement feature flag to lib/utils/feature-flags.ts
   - Configure route preloading in lib/hooks/use-intelligent-preloading.ts
   - Add preload configuration for category detail view, brand size form, measurement guide
@@ -79,7 +79,7 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
   - _Requirements: 1.2, 9.2_
   - _Priority: HIGH - Improves perceived performance by 2-3×_
 
-- [ ] 3.8 Implement React.cache() for request deduplication (HIGH)
+- [x] 3.8 Implement React.cache() for request deduplication (HIGH)
   - Create lib/supabase/cached-queries.ts
   - Implement getCurrentUser with React.cache()
   - Implement getUserCategories with React.cache()

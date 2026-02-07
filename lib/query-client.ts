@@ -88,6 +88,14 @@ export const queryKeys = {
     preferences: (userId: string) => ['user', 'preferences', userId] as const,
     profile: (userId: string) => ['user', 'profile', userId] as const,
   },
+  sizes: {
+    all: ['sizes'] as const,
+    categories: (userId: string) => ['sizes', 'categories', userId] as const,
+    category: (id: string) => ['sizes', 'category', id] as const,
+    brandSizes: (categoryId: string) => ['sizes', 'brand-sizes', categoryId] as const,
+    measurements: (categoryId: string) => ['sizes', 'measurements', categoryId] as const,
+    pinned: (userId: string) => ['sizes', 'pinned', userId] as const,
+  },
   // Edge function results caching
   edgeFunctions: {
     scoreOutfit: (selection: Record<string, any>) => 

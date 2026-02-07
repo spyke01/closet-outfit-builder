@@ -103,6 +103,29 @@ const ROUTE_PRELOAD_CONFIGS: RoutePreloadConfig[] = [
       },
     ],
   },
+  {
+    route: '/sizes',
+    modules: [
+      {
+        feature: 'sizeManagement',
+        importFn: () => import('../../components/sizes/category-detail-view'),
+        priority: 'high',
+        delay: 0,
+      },
+      {
+        feature: 'sizeManagement',
+        importFn: () => import('../../components/sizes/brand-size-form'),
+        priority: 'medium',
+        delay: 100,
+      },
+      {
+        feature: 'sizeManagement',
+        importFn: () => import('../../components/sizes/measurement-guide-section'),
+        priority: 'low',
+        delay: 200,
+      },
+    ],
+  },
 ];
 
 /**
