@@ -1,0 +1,77 @@
+# Kiro Directory - Git Safety Rules
+
+# CRITICAL: Never commit secrets or credentials
+*.env
+*.env.*
+!*.env.example
+.env.local
+.env.*.local
+
+# API keys and tokens
+**/api-keys.json
+**/credentials.json
+**/secrets.json
+**/tokens.json
+**/*secret*
+**/*credential*
+**/*password*
+**/*token*
+**/*key*.json
+
+# Supabase credentials
+**/supabase-credentials.json
+**/supabase-keys.json
+
+# Database connection strings
+**/database-url.txt
+**/connection-string.txt
+
+# Private configuration
+**/private-config.json
+**/local-config.json
+
+# User-specific data
+**/user-data/
+**/personal/
+
+# Temporary files
+**/.DS_Store
+**/Thumbs.db
+**/*.log
+**/*.tmp
+**/*.temp
+
+# Build artifacts (if any get generated here)
+**/.next/
+**/node_modules/
+**/dist/
+**/build/
+
+# IDE specific files
+**/.vscode/settings.json
+**/.idea/
+
+# Backup files
+**/*.bak
+**/*.backup
+**/*.old
+
+# Notes that might contain sensitive info
+**/NOTES.txt
+**/TODO-private.md
+**/scratch.md
+
+# Allow these important files
+!.gitignore
+!steering/*.md
+!specs/**/requirements.md
+!specs/**/design.md
+!specs/**/tasks.md
+!specs/**/*.md
+
+# Documentation is safe to commit
+!**/*.md
+
+# Configuration templates are safe
+!**/*.example
+!**/*.template
