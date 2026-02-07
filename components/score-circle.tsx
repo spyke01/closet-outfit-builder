@@ -105,71 +105,61 @@ export const ScoreCircle = React.memo<ScoreCircleProps>(({
   }, [breakdown, validatedOutfit, percentage]);
 
   // Update tooltip position when showing
+  // Optimized to batch DOM reads and avoid layout thrashing
   useEffect(() => {
     const updatePosition = () => {
       if (showTooltip && circleRef.current && calculatedBreakdown) {
+        // Batch all DOM reads together
         const rect = circleRef.current.getBoundingClientRect();
-        const tooltipWidth = 320; // Increased width estimate
-        const tooltipHeight = 300; // Estimated height
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
-        const padding = 16; // 16px padding from screen edges
         
-        // Calculate horizontal position
+        // Constants
+        const tooltipWidth = 320;
+        const tooltipHeight = 300;
+        const padding = 16;
+        
+        // Calculate positions (all calculations, no DOM writes)
         let x = rect.left + rect.width / 2;
         
-        // Check if tooltip would overflow on the right
         if (x + tooltipWidth / 2 > viewportWidth - padding) {
           x = viewportWidth - padding - tooltipWidth / 2;
         }
         
-        // Check if tooltip would overflow on the left
         if (x - tooltipWidth / 2 < padding) {
           x = padding + tooltipWidth / 2;
         }
         
-        // Calculate vertical position
-        let y = rect.top - 8; // 8px above the circle
+        let y = rect.top - 8;
         let placement = 'top';
         
-        // Check if tooltip would overflow at the top
         if (y - tooltipHeight < padding) {
-          // Position below the circle instead
           y = rect.bottom + 8;
           placement = 'bottom';
         }
         
-        // Check if tooltip would overflow at the bottom when positioned below
         if (placement === 'bottom' && y + tooltipHeight > viewportHeight - padding) {
-          // Position to the side if there's space
           if (rect.left - tooltipWidth - 8 > padding) {
-            // Position to the left
             x = rect.left - 8;
             y = rect.top + rect.height / 2;
             placement = 'left';
           } else if (rect.right + tooltipWidth + 8 < viewportWidth - padding) {
-            // Position to the right
             x = rect.right + 8;
             y = rect.top + rect.height / 2;
             placement = 'right';
           } else {
-            // Keep it above but adjust y to fit
             y = Math.max(padding + tooltipHeight, rect.top - 8);
             placement = 'top';
           }
         }
         
-        setTooltipPosition({
-          x: x,
-          y: y,
-          placement: placement
-        });
+        // Single state update (batched write)
+        setTooltipPosition({ x, y, placement });
       }
     };
 
     updatePosition();
 
-    // Add resize listener to reposition tooltip
     if (showTooltip) {
       window.addEventListener('resize', updatePosition);
       window.addEventListener('scroll', updatePosition, { passive: true });
