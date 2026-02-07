@@ -57,3 +57,4 @@ export { useAuth } from './use-auth';
 
 // Advanced pattern hooks
 export { useLatest } from './use-latest';
+export { useEventCallback, useStableCallback } from './use-event-callback';
