@@ -1,4 +1,5 @@
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient } from '@tantml:react-query';
+import type { WardrobeItem } from '@/lib/types/database';
 
 export function createQueryClient() {
   return new QueryClient({
@@ -9,9 +10,9 @@ export function createQueryClient() {
         // Longer garbage collection time for better caching
         gcTime: 30 * 60 * 1000, // 30 minutes
         // Retry failed requests with exponential backoff
-        retry: (failureCount, error: any) => {
+        retry: (failureCount, error: Error & { status?: number }) => {
           // Don't retry on 4xx errors (client errors)
-          if (error?.status >= 400 && error?.status < 500) {
+          if (error?.status && error.status >= 400 && error.status < 500) {
             return false;
           }
           // Retry up to 3 times for other errors
@@ -40,7 +41,7 @@ export function createQueryClient() {
       },
       mutations: {
         // Retry mutations once on network errors only
-        retry: (failureCount, error: any) => {
+        retry: (failureCount, error: Error & { name?: string; code?: string }) => {
           // Only retry network errors, not validation errors
           if (error?.name === 'NetworkError' || error?.code === 'NETWORK_ERROR') {
             return failureCount < 1;
@@ -128,11 +129,11 @@ export const cacheUtils = {
     queryClient: QueryClient, 
     userId: string, 
     itemId: string, 
-    updater: (item: any) => any
+    updater: (item: WardrobeItem) => WardrobeItem
   ) => {
     queryClient.setQueryData(
       queryKeys.wardrobe.items(userId),
-      (oldData: any[]) => {
+      (oldData: WardrobeItem[] | undefined) => {
         if (!oldData) return oldData;
         return oldData.map(item => 
           item.id === itemId ? updater(item) : item

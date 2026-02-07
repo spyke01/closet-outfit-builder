@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { executeWithDependencies } from '@/lib/utils/dependency-parallelization';
+import { WardrobeItem, Category, Outfit } from '@/lib/types/database';
 
 export const dynamic = 'force-dynamic';
 
@@ -77,17 +78,17 @@ export async function GET(request: NextRequest) {
       // Level 3: Calculate statistics (depends on items, categories, outfits)
       stats: async ({ items, categories, outfits }) => {
         // Group items by category
-        const itemsByCategory = items.reduce((acc, item) => {
+        const itemsByCategory = items.reduce((acc: Record<string, WardrobeItem[]>, item: WardrobeItem) => {
           const categoryId = item.category_id;
           if (!acc[categoryId]) {
             acc[categoryId] = [];
           }
           acc[categoryId].push(item);
           return acc;
-        }, {} as Record<string, typeof items>);
+        }, {} as Record<string, WardrobeItem[]>);
         
         // Calculate category statistics
-        const categoryStats = categories.map(category => ({
+        const categoryStats = categories.map((category: Category) => ({
           id: category.id,
           name: category.name,
           itemCount: itemsByCategory[category.id]?.length || 0,
@@ -107,9 +108,9 @@ export async function GET(request: NextRequest) {
       // Level 3: Get recent activity (depends on items, outfits)
       recentActivity: async ({ items, outfits }) => {
         const recentItems = items
-          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+          .sort((a: WardrobeItem, b: WardrobeItem) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
           .slice(0, 5)
-          .map(item => ({
+          .map((item: WardrobeItem) => ({
             type: 'item_added' as const,
             id: item.id,
             name: item.name,
@@ -118,7 +119,7 @@ export async function GET(request: NextRequest) {
         
         const recentOutfits = outfits
           .slice(0, 5)
-          .map(outfit => ({
+          .map((outfit: Outfit) => ({
             type: 'outfit_created' as const,
             id: outfit.id,
             name: outfit.name || 'Unnamed Outfit',

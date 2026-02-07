@@ -5,6 +5,16 @@
 
 import React from 'react';
 
+// Performance API type extensions
+interface LayoutShift extends PerformanceEntry {
+  value: number;
+  hadRecentInput: boolean;
+}
+
+interface PerformanceEventTiming extends PerformanceEntry {
+  processingStart: number;
+}
+
 // Error tracking interface
 interface ErrorReport {
   message: string;
@@ -13,7 +23,7 @@ interface ErrorReport {
   userAgent: string;
   timestamp: string;
   userId?: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 }
 
 // Performance metrics interface
@@ -26,6 +36,9 @@ interface PerformanceMetrics {
   url: string;
   timestamp: string;
 }
+
+// Monitoring data type
+type MonitoringData = ErrorReport | PerformanceMetrics | Record<string, unknown>;
 
 class ProductionMonitoring {
   private isProduction = process.env.NODE_ENV === 'production';
@@ -145,8 +158,12 @@ class ProductionMonitoring {
       // First Input Delay
       new PerformanceObserver((list) => {
         const entries = list.getEntries();
-        entries.forEach((entry: any) => {
-          this.reportMetric('FID', entry.processingStart - entry.startTime);
+        entries.forEach((entry) => {
+          // PerformanceEventTiming has processingStart and startTime
+          const eventEntry = entry as PerformanceEventTiming;
+          if ('processingStart' in eventEntry) {
+            this.reportMetric('FID', eventEntry.processingStart - eventEntry.startTime);
+          }
         });
       }).observe({ entryTypes: ['first-input'] });
 
@@ -154,9 +171,11 @@ class ProductionMonitoring {
       new PerformanceObserver((list) => {
         let cumulativeScore = 0;
         const entries = list.getEntries();
-        entries.forEach((entry: any) => {
-          if (!entry.hadRecentInput) {
-            cumulativeScore += entry.value;
+        entries.forEach((entry) => {
+          // Layout shift entries have hadRecentInput and value properties
+          const layoutEntry = entry as LayoutShift;
+          if ('hadRecentInput' in layoutEntry && !layoutEntry.hadRecentInput && 'value' in layoutEntry) {
+            cumulativeScore += layoutEntry.value;
           }
         });
         this.reportMetric('CLS', cumulativeScore);
@@ -223,7 +242,7 @@ class ProductionMonitoring {
   /**
    * Send data to monitoring endpoint (non-blocking)
    */
-  private async sendToMonitoring(type: string, data: any) {
+  private async sendToMonitoring(type: string, data: MonitoringData) {
     try {
       // Use fetch with no-cors for fire-and-forget
       await fetch(this.apiEndpoint, {

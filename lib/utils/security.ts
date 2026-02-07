@@ -148,7 +148,7 @@ export function validateAndSanitizeInput<T>(
 /**
  * Recursively sanitize string values in an object
  */
-function sanitizeObjectStrings(obj: any): any {
+function sanitizeObjectStrings(obj: unknown): unknown {
   if (typeof obj === 'string') {
     return sanitizeHtmlInput(obj);
   }
@@ -158,7 +158,7 @@ function sanitizeObjectStrings(obj: any): any {
   }
   
   if (typeof obj === 'object' && obj !== null) {
-    const sanitized: any = {};
+    const sanitized: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(obj)) {
       sanitized[key] = sanitizeObjectStrings(value);
     }

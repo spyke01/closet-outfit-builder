@@ -20,7 +20,9 @@ export interface AnalyticsHooks {
   trackApiCall: (endpoint: string, method: string, duration: number, status: number) => void;
 }
 
-let monitoringModule: any = null;
+type MonitoringModule = typeof import('@/lib/monitoring');
+
+let monitoringModule: MonitoringModule | null = null;
 let monitoringInstance: MonitoringInstance | null = null;
 let isLoading = false;
 

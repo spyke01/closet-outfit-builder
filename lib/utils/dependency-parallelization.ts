@@ -178,10 +178,10 @@ function extractDependencies(fn: Function): string[] {
  * Build context object with only the required dependencies
  */
 function buildContext<T>(results: Partial<T>, dependencies: string[]): Partial<T> {
-  const context: any = {};
+  const context: Partial<T> = {};
   for (const dep of dependencies) {
     if (dep in results) {
-      context[dep] = results[dep as keyof T];
+      context[dep as keyof T] = results[dep as keyof T];
     }
   }
   return context;

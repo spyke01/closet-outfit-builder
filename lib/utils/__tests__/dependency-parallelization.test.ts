@@ -169,7 +169,7 @@ describe('dependency-parallelization', () => {
         user: async ({ auth }) => ({ id: '1', token: auth.token }),
         posts: async ({ user, auth }) => [{ userId: user.id, token: auth.token }],
         comments: async ({ user, auth }) => [{ userId: user.id, token: auth.token }],
-        likes: async ({ posts }) => posts.map(p => ({ postId: p.userId })),
+        likes: async ({ posts }) => posts.map((p: { userId: string }) => ({ postId: p.userId })),
         summary: async ({ posts, comments, likes }) => ({
           posts: posts.length,
           comments: comments.length,

@@ -68,7 +68,7 @@ export function useKeyboardEvents(
 ) {
   useSWRSubscription(
     `keyboard-events:${eventType}`,
-    (key, { next }: { next: (error?: Error, data?: KeyboardEvent) => void }) => {
+    (key: string, { next }: { next: (error?: Error, data?: KeyboardEvent) => void }) => {
       const handler = (event: KeyboardEvent) => {
         callback(event);
         next(undefined, event);

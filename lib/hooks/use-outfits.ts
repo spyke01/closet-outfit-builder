@@ -45,7 +45,7 @@ export function useOutfits() {
       // Transform the data to flatten the items structure
       const outfits = data?.map(outfit => ({
         ...outfit,
-        items: outfit.outfit_items?.map((oi: any) => oi.wardrobe_items).filter(Boolean) || []
+        items: outfit.outfit_items?.map((oi: { wardrobe_items: WardrobeItem }) => oi.wardrobe_items).filter(Boolean) || []
       })) || [];
 
       return outfits;
@@ -82,7 +82,7 @@ export function useOutfit(id: string) {
       // Transform the data to flatten the items structure
       const outfit = {
         ...data,
-        items: data.outfit_items?.map((oi: any) => oi.wardrobe_items).filter(Boolean) || []
+        items: data.outfit_items?.map((oi: { wardrobe_items: WardrobeItem }) => oi.wardrobe_items).filter(Boolean) || []
       };
 
       return outfit;
@@ -152,7 +152,7 @@ export function useScoreOutfit(itemIds: string[]) {
   
   return useQuery({
     queryKey: ['outfit-score', itemIds.sort().join(',')],
-    queryFn: async (): Promise<{ score: number; breakdown: any }> => {
+    queryFn: async (): Promise<{ score: number; breakdown: Record<string, unknown> }> => {
       if (itemIds.length === 0) return { score: 0, breakdown: {} };
 
       try {
@@ -296,7 +296,7 @@ export function useCreateOutfit() {
 
       return {
         ...completeOutfit,
-        items: completeOutfit.outfit_items?.map((oi: any) => oi.wardrobe_items).filter(Boolean) || []
+        items: completeOutfit.outfit_items?.map((oi: { wardrobe_items: WardrobeItem }) => oi.wardrobe_items).filter(Boolean) || []
       };
     },
     onMutate: async (newOutfit) => {
@@ -472,7 +472,7 @@ export function useUpdateOutfit() {
 
       return {
         ...completeOutfit,
-        items: completeOutfit.outfit_items?.map((oi: any) => oi.wardrobe_items).filter(Boolean) || []
+        items: completeOutfit.outfit_items?.map((oi: { wardrobe_items: WardrobeItem }) => oi.wardrobe_items).filter(Boolean) || []
       };
     },
     onMutate: async (updatedOutfit) => {

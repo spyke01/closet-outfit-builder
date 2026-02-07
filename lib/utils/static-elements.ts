@@ -13,7 +13,7 @@ import React from 'react';
 /**
  * Type guard to check if a value is a valid React element
  */
-export function isReactElement(value: any): value is React.ReactElement {
+export function isReactElement(value: unknown): value is React.ReactElement {
   return (
     value !== null &&
     typeof value === 'object' &&
@@ -83,7 +83,7 @@ export const STATIC_ELEMENT_GUIDELINES = {
    * - Static labels and text
    * - Decorative elements
    */
-  shouldHoist: (element: any): boolean => {
+  shouldHoist: (element: unknown): boolean => {
     // Check if element has no dynamic props
     if (!isReactElement(element)) return false;
     
@@ -101,10 +101,10 @@ export const STATIC_ELEMENT_GUIDELINES = {
    * - Elements with event handlers
    * - Elements with conditional rendering
    */
-  shouldNotHoist: (element: any): boolean => {
+  shouldNotHoist: (element: unknown): boolean => {
     if (!isReactElement(element)) return true;
     
-    const props = element.props || {};
+    const props: Record<string, unknown> = element.props || {};
     
     // Check for dynamic props
     const hasDynamicProps = Object.keys(props).some(key => 

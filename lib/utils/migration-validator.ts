@@ -5,7 +5,7 @@
  * Ensures data integrity and migration completeness
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 export interface ValidationResult {
   isValid: boolean;
@@ -54,7 +54,7 @@ export interface RollbackValidationResult {
  * Migration Validator class for comprehensive validation
  */
 export class MigrationValidator {
-  private supabase: any;
+  private supabase: SupabaseClient;
 
   constructor(supabaseUrl: string, serviceRoleKey: string) {
     this.supabase = createClient(supabaseUrl, serviceRoleKey, {
@@ -133,7 +133,7 @@ export class MigrationValidator {
         return result;
       }
 
-      const categoryMap = new Map((newCategories || []).map((cat: any) => [cat.name, cat]));
+      const categoryMap = new Map((newCategories || []).map((cat: { name: string; id: string }) => [cat.name, cat]));
       
       result.details.hasNewCategories.jacket = categoryMap.has('Jacket');
       result.details.hasNewCategories.overshirt = categoryMap.has('Overshirt');
@@ -250,7 +250,7 @@ export class MigrationValidator {
         throw new Error(`Failed to get users: ${usersError.message}`);
       }
 
-      const uniqueUsers = [...new Set((allUserCategories || []).map((uc: any) => uc.user_id))] as string[];
+      const uniqueUsers = [...new Set((allUserCategories || []).map((uc: { user_id: string }) => uc.user_id))] as string[];
       report.totalUsers = uniqueUsers.length;
 
       // Validate each user
@@ -376,7 +376,7 @@ export class MigrationValidator {
       const { data: outfitItems, error: outfitError } = await this.supabase
         .from('outfit_items')
         .select('outfit_id, item_id')
-        .in('category_id', (newCategoryUsers || []).map((cat: any) => cat.id));
+        .in('category_id', (newCategoryUsers || []).map((cat: { id: string }) => cat.id));
 
       if (outfitError) {
         result.warnings.push(`Could not check outfit references: ${outfitError.message}`);
@@ -465,8 +465,8 @@ export class MigrationValidator {
         result.statistics.totalItems = (items || []).length;
 
         // Check for orphaned items (items with invalid category references)
-        const categoryIds = new Set((categories || []).map((cat: any) => cat.id));
-        const orphanedItems = (items || []).filter((item: any) => !categoryIds.has(item.category_id));
+        const categoryIds = new Set((categories || []).map((cat: { id: string }) => cat.id));
+        const orphanedItems = (items || []).filter((item: { category_id: string }) => !categoryIds.has(item.category_id));
         result.statistics.orphanedItems = orphanedItems.length;
 
         if (orphanedItems.length > 0) {
@@ -494,11 +494,11 @@ export class MigrationValidator {
         result.errors.push(`Failed to fetch outfit items: ${outfitItemsError.message}`);
       } else {
         // Check for orphaned outfit items
-        const itemIds = new Set((items || []).map((item: any) => item.id));
-        const outfitIds = new Set((outfits || []).map((outfit: any) => outfit.id));
-        const categoryIds = new Set((categories || []).map((cat: any) => cat.id));
+        const itemIds = new Set((items || []).map((item: { id: string }) => item.id));
+        const outfitIds = new Set((outfits || []).map((outfit: { id: string }) => outfit.id));
+        const categoryIds = new Set((categories || []).map((cat: { id: string }) => cat.id));
 
-        const orphanedOutfitItems = (outfitItems || []).filter((oi: any) => 
+        const orphanedOutfitItems = (outfitItems || []).filter((oi: { item_id: string; outfit_id: string; category_id: string }) => 
           !itemIds.has(oi.item_id) || 
           !outfitIds.has(oi.outfit_id) || 
           !categoryIds.has(oi.category_id)

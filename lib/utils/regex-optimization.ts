@@ -249,10 +249,10 @@ export function extractAllMatches(
 export function replaceAll(
   str: string,
   pattern: RegExp,
-  replacement: string | ((match: string, ...args: any[]) => string)
+  replacement: string | ((match: string, ...args: unknown[]) => string)
 ): string {
   pattern.lastIndex = 0
-  return str.replace(pattern, replacement as any)
+  return str.replace(pattern, replacement as string & ((substring: string, ...args: unknown[]) => string))
 }
 
 /**

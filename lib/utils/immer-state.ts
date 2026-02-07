@@ -90,15 +90,15 @@ export const immerObjectUtils = {
   /**
    * Merge objects deeply - simplified version
    */
-  merge: <T extends Record<string, any>>(target: any, source: Partial<T>) => {
+  merge: <T extends Record<string, unknown>>(target: Record<string, unknown>, source: Partial<T>) => {
     Object.keys(source).forEach(key => {
-      const sourceValue = source[key];
+      const sourceValue = source[key as keyof T];
       if (sourceValue !== undefined) {
         if (typeof sourceValue === 'object' && sourceValue !== null && !Array.isArray(sourceValue)) {
           if (!target[key] || typeof target[key] !== 'object') {
             target[key] = {};
           }
-          immerObjectUtils.merge(target[key], sourceValue);
+          immerObjectUtils.merge(target[key] as Record<string, unknown>, sourceValue as Record<string, unknown>);
         } else {
           target[key] = sourceValue;
         }
@@ -109,16 +109,16 @@ export const immerObjectUtils = {
   /**
    * Set nested property safely - simplified version
    */
-  setNested: (obj: any, path: string, value: any) => {
+  setNested: (obj: Record<string, unknown>, path: string, value: unknown) => {
     const keys = path.split('.');
-    let current = obj;
+    let current: Record<string, unknown> = obj;
     
     for (let i = 0; i < keys.length - 1; i++) {
       const key = keys[i];
       if (!current[key] || typeof current[key] !== 'object') {
         current[key] = {};
       }
-      current = current[key];
+      current = current[key] as Record<string, unknown>;
     }
     
     current[keys[keys.length - 1]] = value;
@@ -127,16 +127,16 @@ export const immerObjectUtils = {
   /**
    * Delete nested property safely - simplified version
    */
-  deleteNested: (obj: any, path: string) => {
+  deleteNested: (obj: Record<string, unknown>, path: string) => {
     const keys = path.split('.');
-    let current = obj;
+    let current: Record<string, unknown> = obj;
     
     for (let i = 0; i < keys.length - 1; i++) {
       const key = keys[i];
       if (!current[key] || typeof current[key] !== 'object') {
         return; // Path doesn't exist
       }
-      current = current[key];
+      current = current[key] as Record<string, unknown>;
     }
     
     delete current[keys[keys.length - 1]];

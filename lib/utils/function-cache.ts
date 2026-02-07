@@ -367,7 +367,7 @@ export function batchCalls<TArg, TResult>(
   let batch: Array<{
     arg: TArg
     resolve: (value: TResult) => void
-    reject: (error: any) => void
+    reject: (error: Error) => void
   }> = []
   
   let timeoutId: ReturnType<typeof setTimeout> | null = null

@@ -54,10 +54,11 @@ describe('SWR Mutation Hooks', () => {
 
       try {
         await result.current.trigger({ name: '' });
-      } catch (error: any) {
-        expect(error.message).toBe('Mutation failed');
-        expect(error.status).toBe(400);
-        expect(error.info).toEqual(mockError);
+      } catch (error) {
+        const apiError = error as { message: string; status: number; info: unknown };
+        expect(apiError.message).toBe('Mutation failed');
+        expect(apiError.status).toBe(400);
+        expect(apiError.info).toEqual(mockError);
       }
     });
 
@@ -136,9 +137,10 @@ describe('SWR Mutation Hooks', () => {
 
       try {
         await result.current.trigger({ id: '999' });
-      } catch (error: any) {
-        expect(error.message).toBe('Delete failed');
-        expect(error.status).toBe(404);
+      } catch (error) {
+        const apiError = error as { message: string; status: number };
+        expect(apiError.message).toBe('Delete failed');
+        expect(apiError.status).toBe(404);
       }
     });
   });
@@ -194,9 +196,10 @@ describe('SWR Mutation Hooks', () => {
 
       try {
         await result.current.trigger({ id: '1', name: 'Updated' });
-      } catch (error: any) {
-        expect(error.message).toBe('Update failed');
-        expect(error.status).toBe(401);
+      } catch (error) {
+        const apiError = error as { message: string; status: number };
+        expect(apiError.message).toBe('Update failed');
+        expect(apiError.status).toBe(401);
       }
     });
   });

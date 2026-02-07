@@ -223,7 +223,7 @@ export function createStorageCache<T>(ttlMs?: number): StorageCache<T> {
  */
 export function onStorageChange(
   key: string,
-  callback: (newValue: any, oldValue: any) => void
+  callback: (newValue: unknown, oldValue: unknown) => void
 ): () => void {
   if (typeof window === 'undefined') {
     return () => {};

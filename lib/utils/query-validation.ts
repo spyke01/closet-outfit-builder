@@ -42,8 +42,8 @@ export function useValidatedMutation<TData, TError = Error, TVariables = void, T
  */
 export function useOptimisticMutation<TData, TError = Error, TVariables = void, TContext = unknown>(
   options: ValidatedMutationOptions<TData, TError, TVariables, TContext> & {
-    queryKey: any[];
-    optimisticUpdater: (oldData: any, variables: TVariables) => any;
+    queryKey: unknown[];
+    optimisticUpdater: (oldData: unknown, variables: TVariables) => unknown;
     rollbackOnError?: boolean;
   }
 ) {
@@ -60,16 +60,16 @@ export function useOptimisticMutation<TData, TError = Error, TVariables = void, 
       const previousData = queryClient.getQueryData(queryKey);
       
       // Optimistically update with Immer
-      queryClient.setQueryData(queryKey, (oldData: any) => 
-        produce(oldData, (draft: any) => optimisticUpdater(draft, variables))
+      queryClient.setQueryData(queryKey, (oldData: unknown) => 
+        produce(oldData, (draft: unknown) => optimisticUpdater(draft, variables))
       );
       
       // Call original onMutate if provided
-      const context = await mutationOptions.onMutate?.(variables, {} as any);
+      const context = await mutationOptions.onMutate?.(variables, {} as TContext);
       
-      return { previousData, ...context } as any;
+      return { previousData, ...context } as TContext & { previousData: unknown };
     },
-    onError: (error, variables, context: any) => {
+    onError: (error, variables, context: TContext & { previousData?: unknown }) => {
       // Rollback on error if enabled
       if (rollbackOnError && context?.previousData) {
         queryClient.setQueryData(queryKey, context.previousData);
@@ -133,7 +133,7 @@ export function useBatchMutation<TData, TError = Error, TVariables = void>(
 /**
  * Create cache update utilities with Immer
  */
-export function createCacheUpdaters<T>(queryKey: any[]) {
+export function createCacheUpdaters<T>(queryKey: unknown[]) {
   const queryClient = useQueryClient();
   
   return {
@@ -246,8 +246,8 @@ export function useFormMutation<TFormData, TResponse>(
   options: {
     validationSchema: z.ZodSchema<TFormData>;
     mutationFn: (data: TFormData) => Promise<TResponse>;
-    queryKey?: any[];
-    optimisticUpdater?: (oldData: any, formData: TFormData) => any;
+    queryKey?: unknown[];
+    optimisticUpdater?: (oldData: unknown, formData: TFormData) => unknown;
     onSuccess?: (data: TResponse, formData: TFormData) => void;
     onError?: (error: Error, formData: TFormData) => void;
   }

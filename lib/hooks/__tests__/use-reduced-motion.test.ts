@@ -2,8 +2,14 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useReducedMotion, getAnimationClass } from '../use-reduced-motion';
 
+interface MockMediaQueryList {
+  matches: boolean;
+  addEventListener: ReturnType<typeof vi.fn>;
+  removeEventListener: ReturnType<typeof vi.fn>;
+}
+
 describe('useReducedMotion', () => {
-  let matchMediaMock: any;
+  let matchMediaMock: MockMediaQueryList;
   let listeners: Array<(event: MediaQueryListEvent) => void> = [];
 
   beforeEach(() => {
@@ -65,11 +71,13 @@ describe('useReducedMotion', () => {
 });
 
 describe('getAnimationClass', () => {
-  let matchMediaMock: any;
+  let matchMediaMock: MockMediaQueryList;
 
   beforeEach(() => {
     matchMediaMock = {
       matches: false,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
     };
     vi.stubGlobal('matchMedia', vi.fn(() => matchMediaMock));
   });

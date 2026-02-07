@@ -88,7 +88,7 @@ export function runNonBlocking(operation: () => Promise<void>): void {
 /**
  * Logging helper for non-blocking operations
  */
-export function logAsync(message: string, data?: any): void {
+export function logAsync(message: string, data?: unknown): void {
   runNonBlocking(async () => {
     // In production, this would send to logging service
     console.log(message, data);

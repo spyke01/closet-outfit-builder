@@ -498,7 +498,7 @@ export function useOutfitCreation() {
         items: selectedItems,
       };
     },
-    optimisticUpdater: (oldData: any[] | undefined, selection: OutfitSelection) => {
+    optimisticUpdater: (oldData: Outfit[] | undefined, selection: OutfitSelection) => {
       const selectedItems = Object.values(selection)
         .filter(item => item && typeof item === 'object' && 'id' in item) as WardrobeItem[];
 
