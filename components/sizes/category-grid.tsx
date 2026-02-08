@@ -2,7 +2,6 @@
 
 import { useMemo } from 'react';
 import Link from 'next/link';
-import { Plus } from 'lucide-react';
 import type { SizeCategory, StandardSize, BrandSize } from '@/lib/types/sizes';
 import { TextTruncate } from './text-truncate';
 
@@ -10,7 +9,6 @@ export interface CategoryGridProps {
   categories: SizeCategory[];
   standardSizes?: StandardSize[];
   brandSizes?: BrandSize[];
-  onAddCategory?: () => void;
 }
 
 /**
@@ -23,7 +21,6 @@ export interface CategoryGridProps {
  * - Shows category name, size count, and "varies by brand" indicator
  * - Uses Map for O(1) category lookups
  * - Content-visibility optimization for large grids (50+ categories)
- * - "Add category" tile as final tile
  * - Empty state when no categories exist
  * 
  * Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 1.3, 12.1
@@ -32,7 +29,6 @@ export function CategoryGrid({
   categories,
   standardSizes = [],
   brandSizes = [],
-  onAddCategory,
 }: CategoryGridProps) {
   // Calculate size counts and variations for each category
   const categoryData = useMemo(() => {
@@ -78,22 +74,22 @@ export function CategoryGrid({
     return (
       <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
         <div className="mb-6 rounded-full bg-gray-100 p-6 dark:bg-gray-800">
-          <Plus className="h-12 w-12 text-gray-400" aria-hidden="true" />
+          <svg 
+            className="h-12 w-12 text-gray-400" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
         </div>
         <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
           No categories yet
         </h3>
-        <p className="mb-6 max-w-sm text-sm text-gray-600 dark:text-gray-400">
-          Get started by adding your first clothing category to track your sizes
+        <p className="max-w-sm text-sm text-gray-600 dark:text-gray-400">
+          Your size categories will appear here once they are set up
         </p>
-        <button
-          onClick={onAddCategory}
-          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-base font-medium text-white hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:bg-blue-500 dark:hover:bg-blue-600"
-          aria-label="Add new clothing category"
-        >
-          <Plus className="h-5 w-5" aria-hidden="true" />
-          Add Category
-        </button>
       </div>
     );
   }
@@ -143,25 +139,6 @@ export function CategoryGrid({
           </div>
         </Link>
       ))}
-
-      {/* Add category tile */}
-      <button
-        onClick={onAddCategory}
-        className="group relative flex min-h-[120px] flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-4 transition-all hover:border-blue-500 hover:bg-blue-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-gray-600 dark:bg-gray-800/50 dark:hover:border-blue-400 dark:hover:bg-blue-900/20"
-        style={{
-          contentVisibility: categories.length > 50 ? 'auto' : undefined,
-          containIntrinsicSize: categories.length > 50 ? '0 120px' : undefined,
-        }}
-        aria-label="Add new clothing category"
-      >
-        <Plus
-          className="h-8 w-8 text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400"
-          aria-hidden="true"
-        />
-        <span className="text-sm font-medium text-gray-600 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-400">
-          Add Category
-        </span>
-      </button>
     </div>
   );
 }

@@ -849,6 +849,90 @@ export function useUpdatePinnedPreferences() {
 }
 
 /**
+ * Hook to seed system categories for a user
+ * 
+ * Features:
+ * - Calls seed API route to create pre-defined system categories
+ * - Creates 16 categories (8 men's, 8 women's) with measurement guides
+ * - Idempotent - safe to call multiple times without creating duplicates
+ * - Invalidates categories cache after seeding
+ * - Returns loading and error states
+ * 
+ * @returns TanStack Query mutation result
+ * 
+ * Requirements: US-1
+ * 
+ * @example
+ * ```typescript
+ * function SizesPage() {
+ *   const seedCategories = useSeedCategories();
+ *   
+ *   const handleSeed = () => {
+ *     seedCategories.mutate(undefined, {
+ *       onSuccess: (data) => {
+ *         console.log(`Seeded ${data.count} categories`);
+ *       },
+ *       onError: (error) => {
+ *         console.error('Failed to seed categories:', error);
+ *       }
+ *     });
+ *   };
+ *   
+ *   return (
+ *     <button onClick={handleSeed} disabled={seedCategories.isPending}>
+ *       {seedCategories.isPending ? 'Seeding...' : 'Seed Categories'}
+ *     </button>
+ *   );
+ * }
+ * ```
+ */
+export function useSeedCategories() {
+  const queryClient = useQueryClient();
+  const { userId } = useAuth();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (!userId) {
+        throw new Error('User must be authenticated to seed categories');
+      }
+
+      // Call the seed API route
+      const response = await fetch('/api/sizes/seed-categories', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || `Failed to seed categories: ${response.statusText}`
+        );
+      }
+
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to seed categories');
+      }
+
+      return {
+        categories: data.data as SizeCategory[],
+        count: data.count as number,
+        message: data.message as string,
+      };
+    },
+    onSuccess: () => {
+      // Invalidate categories cache to refetch with new seeded categories
+      queryClient.invalidateQueries({ 
+        queryKey: sizeKeys.categories(userId!) 
+      });
+    },
+  });
+}
+
+/**
  * Hook to delete a category
  * 
  * Features:

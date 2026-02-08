@@ -13,6 +13,7 @@ export const dynamic = 'force-dynamic';
  * 
  * Features:
  * - Server-side authentication check
+ * - Auto-seeding of system categories for new users
  * - Parallel data fetching with Promise.all() for optimal performance
  * - Passes initial data to client component for instant rendering
  * - Suspense boundary for loading states
@@ -22,7 +23,7 @@ export const dynamic = 'force-dynamic';
  * - Eliminates client-side auth waterfalls
  * - Parallel fetching reduces total load time by 3×
  * 
- * Requirements: 1.1, 1.2
+ * Requirements: 1.1, 1.2, US-1
  */
 export default async function MySizesPage() {
   const supabase = await createClient();
@@ -34,6 +35,16 @@ export default async function MySizesPage() {
   if (authError || !user) {
     redirect('/auth/login');
   }
+
+  // ✅ Check if user has any categories - if not, they need seeding
+  // Requirements: US-1
+  const { data: existingCategories, error: checkError } = await supabase
+    .from('size_categories')
+    .select('id')
+    .eq('user_id', user.id)
+    .limit(1);
+
+  const needsSeeding = !checkError && (!existingCategories || existingCategories.length === 0);
 
   // ✅ Parallel data fetching with Promise.all() - eliminates waterfalls
   // Requirements: 1.2
@@ -74,6 +85,7 @@ export default async function MySizesPage() {
         initialPinnedPreferences={pinnedPreferences}
         initialStandardSizes={standardSizes}
         initialBrandSizes={brandSizes}
+        needsSeeding={needsSeeding}
       />
     </Suspense>
   );

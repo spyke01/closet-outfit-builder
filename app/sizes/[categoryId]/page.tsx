@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { CategoryDetailClient } from '@/components/sizes/category-detail-client'
+import { getMeasurementGuide } from '@/lib/data/measurement-guides'
 
 /**
  * CategoryDetailPage - Server Component
@@ -12,9 +13,10 @@ import { CategoryDetailClient } from '@/components/sizes/category-detail-client'
  * - Server-side authentication check
  * - Parallel data fetching (category, brand sizes, measurements)
  * - Initial data passed to client component
+ * - Measurement guide data for category
  * - 3× faster load time through waterfall elimination
  * 
- * Requirements: 4.1
+ * Requirements: 4.1, US-2
  * Priority: HIGH - Eliminates waterfalls, reduces load time by 3×
  */
 export default async function CategoryDetailPage({ 
@@ -72,11 +74,15 @@ export default async function CategoryDetailPage({
     standard_sizes: standardSizeResult.data ? [standardSizeResult.data] : []
   }
 
+  // Get measurement guide for this category
+  const measurementGuide = getMeasurementGuide(category.name)
+
   return (
     <CategoryDetailClient
       initialCategory={category}
       initialBrandSizes={brandSizesResult.data || []}
       initialMeasurements={measurementsResult.data}
+      measurementGuide={measurementGuide}
     />
   )
 }

@@ -2,6 +2,33 @@
 
 This document provides guidelines for writing robust tests and efficiently resolving test failures, based on lessons learned from the category split implementation and other testing experiences.
 
+## Test Execution Guidelines
+
+### Avoid Watch Mode in Automated Workflows
+
+**CRITICAL**: When running tests in automated workflows, CI/CD, or agent execution contexts, ALWAYS use `npm run test:run` instead of `npm run test`.
+
+**Problem**: The default `npm run test` command runs Vitest in watch mode, which waits for file changes and displays:
+```
+PASS  Waiting for file changes...
+press h to show help, press q to quit
+```
+
+This causes the process to hang indefinitely, blocking automated workflows and agent execution.
+
+**Solution**: Use the run-once command:
+```bash
+# ✅ CORRECT: Run tests once and exit
+npm run test:run
+
+# ❌ WRONG: Runs in watch mode (hangs)
+npm run test
+```
+
+**When to use each**:
+- `npm run test:run` - CI/CD, automated workflows, agent execution, pre-commit hooks
+- `npm run test` - Local development with file watching
+
 ## Property-Based Testing Guidelines
 
 ### Keep Property Tests Simple and Fast

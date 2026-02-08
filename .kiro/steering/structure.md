@@ -10,6 +10,7 @@ app/                    # Next.js App Router (pages and layouts)
 ├── outfits/           # Outfit collection and detail pages
 ├── anchor/            # Anchor-based outfit browsing
 ├── settings/          # User settings and preferences
+├── sizes/             # My Sizes feature pages
 ├── protected/         # Protected route layouts
 ├── globals.css        # Global styles
 ├── layout.tsx         # Root layout component
@@ -20,10 +21,12 @@ components/             # React components (UI layer)
 ├── ui/                # Reusable UI components (Radix-based)
 ├── error-boundaries/  # Error boundary components
 ├── tutorial/          # Tutorial and onboarding components
+├── sizes/             # My Sizes feature components
 └── *.tsx              # Feature-specific components
 
 lib/                   # Shared utilities and business logic
 ├── hooks/             # Custom React hooks
+├── data/              # Static data and constants
 ├── supabase/          # Supabase client configuration
 ├── providers/         # React context providers
 ├── utils/             # Pure utility functions
@@ -80,6 +83,10 @@ public/                # Static assets
 - **Category**: Wardrobe categories with anchor item flags and user ownership
 - **UserPreferences**: User settings and preferences stored in database
 - **WeatherData**: Weather forecast data with error handling types
+- **SizeCategory**: Clothing size categories with gender classification and measurement guides
+- **StandardSize**: User's primary size for each category
+- **BrandSize**: Brand-specific size overrides with fit scale ratings
+- **MeasurementGuide**: Category-specific measurement instructions and field definitions
 
 ### Data Flow
 
@@ -100,6 +107,8 @@ public/                # Static assets
 - **useCategories**: Category management with user-specific data
 - **useUserPreferences**: User settings with database synchronization
 - **useWardrobeState**: Complex wardrobe state with Immer updates
+- **useSizeCategories**: Size category management with auto-seeding
+- **useSeedCategories**: Automatic seeding of system categories for new users
 - **Business Logic**: Keep complex logic in hooks, not components
 - **Memoization**: Use `useMemo` and `useCallback` for expensive operations
 
@@ -160,3 +169,142 @@ public/                # Static assets
 - **Error Handling Tests**: Error boundaries, validation failures, and network errors
 - **Accessibility Tests**: Keyboard navigation, screen reader compatibility, and WCAG compliance
 - **Security Tests**: Authentication, authorization, and input validation
+
+## My Sizes Database Schema
+
+### Tables
+
+#### size_categories
+Stores clothing category definitions with gender classification and measurement guides.
+
+**Columns:**
+- `id` (UUID, PK): Unique category identifier
+- `user_id` (UUID, FK): References auth.users
+- `name` (TEXT): Category name (e.g., "Dress Shirt", "Jeans")
+- `icon` (TEXT): Lucide icon name
+- `supported_formats` (TEXT[]): Array of sizing formats (letter, numeric, waist-inseam, measurements)
+- `is_system_category` (BOOLEAN): True for pre-seeded categories
+- `gender` (TEXT): Gender classification (men, women, unisex)
+- `measurement_guide` (JSONB): Measurement instructions and field definitions
+- `created_at` (TIMESTAMP): Creation timestamp
+- `updated_at` (TIMESTAMP): Last update timestamp
+
+**Constraints:**
+- Unique constraint on (user_id, name)
+- Check constraint on gender values
+- RLS policies for user data isolation
+
+#### standard_sizes
+Stores user's primary size for each category.
+
+**Columns:**
+- `id` (UUID, PK): Unique size identifier
+- `category_id` (UUID, FK): References size_categories
+- `user_id` (UUID, FK): References auth.users
+- `primary_size` (TEXT): Primary size value
+- `secondary_size` (TEXT, nullable): Optional secondary size
+- `notes` (TEXT, nullable): Free text notes
+- `created_at` (TIMESTAMP): Creation timestamp
+- `updated_at` (TIMESTAMP): Last update timestamp
+
+**Constraints:**
+- Unique constraint on (category_id, user_id)
+- RLS policies for user data isolation
+
+#### brand_sizes
+Stores brand-specific size overrides that differ from standard size.
+
+**Columns:**
+- `id` (UUID, PK): Unique brand size identifier
+- `category_id` (UUID, FK): References size_categories
+- `user_id` (UUID, FK): References auth.users
+- `brand_name` (TEXT): Brand name
+- `item_type` (TEXT, nullable): Optional item type specification
+- `size` (TEXT): Brand-specific size
+- `fit_scale` (INTEGER): Fit rating 1-5 (runs small to runs large)
+- `notes` (TEXT, nullable): Free text notes
+- `created_at` (TIMESTAMP): Creation timestamp
+- `updated_at` (TIMESTAMP): Last update timestamp
+
+**Constraints:**
+- Check constraint on fit_scale (1-5)
+- RLS policies for user data isolation
+
+#### category_measurements
+Stores body measurements for categories.
+
+**Columns:**
+- `id` (UUID, PK): Unique measurement identifier
+- `category_id` (UUID, FK): References size_categories
+- `user_id` (UUID, FK): References auth.users
+- `measurements` (JSONB): Key-value pairs of measurements
+- `unit` (TEXT): Measurement unit (imperial or metric)
+- `created_at` (TIMESTAMP): Creation timestamp
+- `updated_at` (TIMESTAMP): Last update timestamp
+
+**Constraints:**
+- Unique constraint on (category_id, user_id)
+- Check constraint on unit values
+- RLS policies for user data isolation
+
+#### pinned_preferences
+Stores user's pinned category preferences and display settings.
+
+**Columns:**
+- `id` (UUID, PK): Unique preference identifier
+- `user_id` (UUID, FK): References auth.users
+- `category_id` (UUID, FK): References size_categories
+- `display_order` (INTEGER): Ordering for pinned cards
+- `display_mode` (TEXT): Display mode (standard, dual, preferred-brand)
+- `preferred_brand_id` (UUID, FK, nullable): References brand_sizes for preferred-brand mode
+- `created_at` (TIMESTAMP): Creation timestamp
+- `updated_at` (TIMESTAMP): Last update timestamp
+
+**Constraints:**
+- Unique constraint on (user_id, category_id)
+- Check constraint on display_mode values
+- RLS policies for user data isolation
+
+### Database Functions
+
+#### seed_system_categories(p_user_id UUID)
+Creates 16 pre-seeded system categories for a user (8 men's, 8 women's).
+
+**Features:**
+- Idempotent (safe to call multiple times)
+- Uses ON CONFLICT DO NOTHING to prevent duplicates
+- Includes measurement guide data in JSONB format
+- Sets is_system_category = true for all seeded categories
+- SECURITY DEFINER for proper permissions
+
+**Categories Created:**
+- Men's: Dress Shirt, Casual Shirt, Suit Jacket, Pants, Jeans, Shoes, Belt, Coat/Jacket
+- Women's: Dress, Blouse/Top, Pants, Jeans, Shoes, Jacket/Coat, Suit Jacket, Belt
+
+### Measurement Guide Data Structure
+
+Each category's measurement_guide JSONB contains:
+
+```typescript
+{
+  fields: [
+    {
+      name: string,           // Field identifier (e.g., "collar", "chest")
+      label: string,          // Display label
+      description: string,    // Measurement instructions
+      unit?: string,          // Measurement unit (inches, cm)
+      typical_range?: [number, number], // Min/max range
+      options?: string[]      // Predefined options (e.g., ["Short", "Regular", "Long"])
+    }
+  ],
+  size_examples: string[]     // Example sizes for this category
+}
+```
+
+### Row Level Security (RLS)
+
+All My Sizes tables enforce RLS policies:
+- Users can only read their own data
+- Users can only insert/update/delete their own data
+- System categories cannot be deleted by users
+- Complete data isolation between users

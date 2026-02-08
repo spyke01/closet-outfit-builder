@@ -4,24 +4,27 @@
  * CategoryDetailClient Component
  * 
  * Client-side component for category detail view.
- * Composes StandardSizeSection, BrandSizesSection, and MeasurementGuideSection.
+ * Composes MeasurementGuide, StandardSizeSection, BrandSizesSection, and MeasurementGuideSection.
  * 
  * Features:
- * - Three-section layout (Standard Size, Brand Sizes, Measurement Guide)
+ * - Four-section layout (Measurement Guide, Standard Size, Brand Sizes, Body Measurements)
+ * - Category-specific measurement instructions (from Task 3.2)
  * - TanStack Query with server-provided initial data
  * - Responsive presentation (mobile: full-screen, tablet+: modal/panel)
  * - Navigation and close actions
  * - Dynamic imports for heavy components (code splitting)
  * 
- * Requirements: 4.1, 7.2, 7.3, 2.2, 1.2
+ * Requirements: 4.1, 7.2, 7.3, 2.2, 1.2, US-2
  */
 
 import dynamic from 'next/dynamic'
 import { useSizeCategory, useBrandSizes, useMeasurements } from '@/lib/hooks/use-size-categories'
 import { ErrorDisplay } from './error-display'
+import { MeasurementGuide } from './measurement-guide'
 import { ArrowLeft, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import type { SizeCategory, StandardSize, BrandSize, CategoryMeasurements } from '@/lib/types/sizes'
+import type { MeasurementGuide as MeasurementGuideType } from '@/lib/data/measurement-guides'
 
 // ✅ Dynamic imports for code splitting - reduces initial bundle size
 // These components are loaded on-demand when the category detail view is opened
@@ -68,12 +71,14 @@ export interface CategoryDetailClientProps {
   initialCategory: SizeCategory & { standard_sizes?: StandardSize[] }
   initialBrandSizes: BrandSize[]
   initialMeasurements: CategoryMeasurements | null
+  measurementGuide?: MeasurementGuideType
 }
 
 export function CategoryDetailClient({ 
   initialCategory,
   initialBrandSizes,
-  initialMeasurements
+  initialMeasurements,
+  measurementGuide
 }: CategoryDetailClientProps) {
   const router = useRouter()
   
@@ -204,6 +209,14 @@ export function CategoryDetailClient({
           <ErrorDisplay
             error={error}
             onRetry={handleRetry}
+          />
+        )}
+        
+        {/* Measurement Guide - Shows category-specific measurement instructions */}
+        {measurementGuide && (
+          <MeasurementGuide 
+            guide={measurementGuide}
+            defaultExpanded={true}
           />
         )}
         

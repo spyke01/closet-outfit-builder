@@ -8,26 +8,26 @@
  * 
  * Features:
  * - TanStack Query with server-provided initial data
+ * - Auto-seeding of system categories for new users
  * - Responsive layout with mobile-first design
  * - Pinned cards section at top
  * - Category grid below with proper spacing
  * - Empty state guidance when no categories exist
- * - Loading states for data fetching
+ * - Loading states for data fetching and seeding
  * 
  * Performance:
  * - Uses initial data from server to avoid loading states
  * - TanStack Query handles cache invalidation and updates
  * - Optimistic updates for instant UI feedback
  * 
- * Requirements: 1.1, 1.2, 1.3, 1.4, 1.5
+ * Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, US-1
  */
 
-import { useState } from 'react';
-import { useSizeCategories, usePinnedPreferences } from '@/lib/hooks/use-size-categories';
+import { useState, useEffect } from 'react';
+import { useSizeCategories, usePinnedPreferences, useSeedCategories } from '@/lib/hooks/use-size-categories';
 import { PinnedCardsSection } from './pinned-cards-section';
 import { CategoryGrid } from './category-grid';
 import { ErrorDisplay } from './error-display';
-import { AddCategoryModal } from './add-category-modal';
 import { CustomizePinnedCardsView } from './customize-pinned-cards-view';
 import type { SizeCategory, PinnedPreference, StandardSize, BrandSize } from '@/lib/types/sizes';
 
@@ -36,6 +36,7 @@ export interface MySizesClientProps {
   initialPinnedPreferences: PinnedPreference[];
   initialStandardSizes: StandardSize[];
   initialBrandSizes: BrandSize[];
+  needsSeeding: boolean;
 }
 
 /**
@@ -43,21 +44,27 @@ export interface MySizesClientProps {
  * 
  * Renders the My Sizes page with pinned cards and category grid.
  * Receives initial data from server component for optimal performance.
+ * Automatically seeds system categories for new users.
  * 
  * @param initialCategories - Server-fetched categories for instant rendering
  * @param initialPinnedPreferences - Server-fetched pinned preferences
  * @param initialStandardSizes - Server-fetched standard sizes for category metadata
  * @param initialBrandSizes - Server-fetched brand sizes for category metadata
+ * @param needsSeeding - Whether the user needs system categories seeded
  */
 export function MySizesClient({
   initialCategories,
   initialPinnedPreferences,
   initialStandardSizes,
   initialBrandSizes,
+  needsSeeding,
 }: MySizesClientProps) {
-  // State for modals
-  const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
+  // State for customize modal
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
+
+  // ✅ Auto-seed categories for new users
+  // Requirements: US-1
+  const seedCategories = useSeedCategories();
 
   // ✅ TanStack Query with server-provided initial data
   // This eliminates loading states on initial render
@@ -80,25 +87,51 @@ export function MySizesClient({
     initialData: initialPinnedPreferences,
   });
 
-  // Show loading state only if data is being refetched (not on initial load)
-  const isLoading = (categoriesLoading || pinnedLoading) && 
-                    categories.length === 0 && 
-                    pinnedPreferences.length === 0;
+  // ✅ Auto-seed on mount if needed
+  // Requirements: US-1
+  useEffect(() => {
+    if (needsSeeding && !seedCategories.isPending && !seedCategories.isSuccess) {
+      seedCategories.mutate();
+    }
+  }, [needsSeeding, seedCategories]);
+
+  // Show loading state during seeding or data refetch
+  const isLoading = seedCategories.isPending || 
+                    ((categoriesLoading || pinnedLoading) && 
+                     categories.length === 0 && 
+                     pinnedPreferences.length === 0);
 
   // Handle errors with retry capability
-  // Requirements: 10.1, 12.3
-  const hasError = categoriesError || pinnedError;
-  const error = categoriesError || pinnedError;
+  // Requirements: 10.1, 12.3, US-1
+  const hasError = categoriesError || pinnedError || seedCategories.isError;
+  
+  // Create a user-friendly error for seeding failures
+  const error = seedCategories.isError 
+    ? new Error('Failed to set up your size categories. Please try again or contact support if the problem persists.')
+    : (categoriesError || pinnedError);
 
   const handleRetry = () => {
     if (categoriesError) refetchCategories();
     if (pinnedError) refetchPinned();
+    if (seedCategories.isError) seedCategories.mutate();
   };
 
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="animate-pulse space-y-8">
+          {/* Loading message for seeding */}
+          {seedCategories.isPending && (
+            <div className="mb-6 rounded-lg bg-blue-50 dark:bg-blue-900/20 p-4 border border-blue-200 dark:border-blue-800">
+              <div className="flex items-center gap-3">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+                <p className="text-sm text-blue-900 dark:text-blue-100 font-medium">
+                  Setting up your size categories...
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Pinned cards skeleton */}
           <div className="space-y-4">
             <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded" />
@@ -142,7 +175,7 @@ export function MySizesClient({
       </div>
 
       {/* Error display with retry */}
-      {/* Requirements: 10.1, 12.3 */}
+      {/* Requirements: 10.1, 12.3, US-1 */}
       {hasError && (
         <div className="mb-6">
           <ErrorDisplay
@@ -183,21 +216,9 @@ export function MySizesClient({
             categories={categories}
             standardSizes={initialStandardSizes}
             brandSizes={initialBrandSizes}
-            onAddCategory={() => setIsAddCategoryOpen(true)}
           />
         </section>
       </div>
-
-      {/* Add Category Modal */}
-      <AddCategoryModal
-        isOpen={isAddCategoryOpen}
-        onClose={() => setIsAddCategoryOpen(false)}
-        onSave={() => {
-          // Close modal after successful save
-          // The mutation hook in AddCategoryForm will handle cache invalidation
-          setIsAddCategoryOpen(false);
-        }}
-      />
 
       {/* Customize Pinned Cards View */}
       <CustomizePinnedCardsView

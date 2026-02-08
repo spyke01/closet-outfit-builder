@@ -21,6 +21,51 @@ export type DisplayMode = 'standard' | 'dual' | 'preferred-brand';
 export type MeasurementUnit = 'imperial' | 'metric';
 
 /**
+ * Gender type for categories
+ */
+export type Gender = 'men' | 'women' | 'unisex';
+
+/**
+ * Measurement field definition
+ */
+export interface MeasurementField {
+  /** Field identifier (e.g., "collar", "chest", "waist") */
+  name: string;
+  /** Display label for the field */
+  label: string;
+  /** Detailed measurement instructions */
+  description: string;
+  /** Measurement unit (inches or cm) */
+  unit?: 'inches' | 'cm';
+  /** Typical range for this measurement [min, max] */
+  typical_range?: [number, number];
+  /** Predefined options (e.g., ["Short", "Regular", "Long"]) */
+  options?: string[];
+  /** Reference to visual diagram (placeholder for future implementation) */
+  diagram_ref?: string;
+}
+
+/**
+ * Complete measurement guide for a category
+ */
+export interface MeasurementGuide {
+  /** Category name */
+  category_name: string;
+  /** Lucide icon name */
+  icon: string;
+  /** Gender classification */
+  gender: Gender;
+  /** Supported sizing formats */
+  supported_formats: SizingFormat[];
+  /** Array of measurement fields */
+  measurement_fields: MeasurementField[];
+  /** Example sizes for this category */
+  size_examples: string[];
+  /** General tips for this category */
+  tips?: string[];
+}
+
+/**
  * Size category table row
  * Represents a clothing category (e.g., Tops, Bottoms, Footwear)
  */
@@ -31,6 +76,8 @@ export interface SizeCategoryRow {
   icon?: string; // Optional icon identifier
   supported_formats: SizingFormat[]; // Array of supported formats
   is_system_category: boolean; // True for default categories
+  gender?: Gender; // Gender classification (men, women, unisex)
+  measurement_guide?: MeasurementGuide; // JSONB measurement guide data
   created_at: string; // ISO timestamp
   updated_at: string; // ISO timestamp
 }

@@ -105,7 +105,7 @@ export function PinnedCardsSection({
               aria-label="Customize pinned categories"
             >
               <Settings className="h-5 w-5" aria-hidden="true" />
-              Customize
+              Customize Pinned Cards
             </button>
           )}
         </div>
@@ -129,7 +129,7 @@ export function PinnedCardsSection({
             aria-label="Customize pinned categories"
           >
             <Settings className="h-4 w-4" aria-hidden="true" />
-            <span className="hidden sm:inline">Customize</span>
+            <span className="hidden sm:inline">Customize Pinned Cards</span>
           </button>
         )}
       </div>

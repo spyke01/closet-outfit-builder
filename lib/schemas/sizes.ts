@@ -91,6 +91,37 @@ export const displayModeSchema = z.enum([
 export const measurementUnitSchema = z.enum(['imperial', 'metric']);
 
 /**
+ * Gender enum schema
+ */
+export const genderSchema = z.enum(['men', 'women', 'unisex']);
+
+/**
+ * Measurement field schema
+ */
+export const measurementFieldSchema = z.object({
+  name: z.string().min(1, 'Field name is required'),
+  label: z.string().min(1, 'Field label is required'),
+  description: z.string().min(1, 'Field description is required'),
+  unit: z.enum(['inches', 'cm']).optional(),
+  typical_range: z.tuple([z.number(), z.number()]).optional(),
+  options: z.array(z.string()).optional(),
+  diagram_ref: z.string().optional()
+});
+
+/**
+ * Measurement guide schema
+ */
+export const measurementGuideSchema = z.object({
+  category_name: z.string().min(1, 'Category name is required'),
+  icon: z.string().min(1, 'Icon is required'),
+  gender: genderSchema,
+  supported_formats: z.array(sizingFormatSchema).min(1, 'At least one sizing format is required'),
+  measurement_fields: z.array(measurementFieldSchema),
+  size_examples: z.array(z.string()),
+  tips: z.array(z.string()).optional()
+});
+
+/**
  * Size category schema
  * Validates clothing category data
  */
@@ -101,6 +132,8 @@ export const sizeCategorySchema = z.object({
   icon: z.string().optional(),
   supported_formats: z.array(sizingFormatSchema).min(1, 'At least one sizing format is required'),
   is_system_category: z.boolean(),
+  gender: genderSchema.optional(),
+  measurement_guide: measurementGuideSchema.optional(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime()
 });
@@ -283,6 +316,9 @@ export const pinnedPreferenceInputSchema = pinnedPreferenceSchema.omit({
 export type SizingFormat = z.infer<typeof sizingFormatSchema>;
 export type DisplayMode = z.infer<typeof displayModeSchema>;
 export type MeasurementUnit = z.infer<typeof measurementUnitSchema>;
+export type Gender = z.infer<typeof genderSchema>;
+export type MeasurementField = z.infer<typeof measurementFieldSchema>;
+export type MeasurementGuide = z.infer<typeof measurementGuideSchema>;
 export type SizeCategory = z.infer<typeof sizeCategorySchema>;
 export type StandardSize = z.infer<typeof standardSizeSchema>;
 export type BrandSize = z.infer<typeof brandSizeSchema>;

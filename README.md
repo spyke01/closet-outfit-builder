@@ -13,6 +13,7 @@ A Next.js full-stack wardrobe management and outfit generation application that 
 - **Visual Outfit Display**: Flat and visual layout options showing proper layering and item details
 - **Anchor-Based Discovery**: Find outfits that work well with a specific item as the foundation
 - **Weather Integration**: 3-day weather forecast with location-based outfit suggestions (authenticated users only)
+- **My Sizes System**: Pre-seeded clothing size categories with measurement guides for accurate size tracking across brands
 - **Cross-Device Sync**: Access your wardrobe from any device with cloud-based data storage
 - **Mobile-First Design**: Optimized responsive design for all device sizes with touch-friendly interactions
 - **PWA Support**: Progressive Web App with offline capabilities and service worker
@@ -22,6 +23,75 @@ A Next.js full-stack wardrobe management and outfit generation application that 
 Outfit List             |  Visual Mockup
 :-------------------------:|:-------------------------:
 ![](screenshots/all-outfits.png)  |  ![](screenshots/visual-mockup.png)
+
+## My Sizes Feature
+
+The My Sizes feature helps you track your clothing sizes across different categories and brands, making shopping easier and more accurate.
+
+### System Categories
+
+All users automatically receive 16 pre-seeded clothing categories:
+
+**Men's Categories (8):**
+- Dress Shirt (collar/sleeve measurements)
+- Casual Shirt (letter/numeric sizes)
+- Suit Jacket (chest size and length)
+- Pants (waist/inseam)
+- Jeans (waist/inseam)
+- Shoes (US numeric sizes)
+- Belt (waist size)
+- Coat/Jacket (letter/numeric sizes)
+
+**Women's Categories (8):**
+- Dress (numeric/letter sizes with bust/waist/hip measurements)
+- Blouse/Top (letter/numeric sizes)
+- Pants (numeric or waist/inseam)
+- Jeans (numeric or waist/inseam)
+- Shoes (US numeric sizes)
+- Jacket/Coat (letter/numeric sizes)
+- Suit Jacket (numeric sizes)
+- Belt (letter/numeric sizes)
+
+### Measurement Guides
+
+Each category includes detailed measurement guides with:
+- **Step-by-step instructions** on how to measure correctly
+- **Measurement fields** specific to each category (e.g., collar and sleeve for dress shirts)
+- **Typical size ranges** to help validate your measurements
+- **Size examples** showing common formats
+- **Helpful tips** for accurate measuring
+
+### Features
+
+- **Auto-Seeding**: Categories are automatically created when you first access the My Sizes page
+- **Standard Sizes**: Track your primary size for each category
+- **Brand Sizes**: Record brand-specific sizes that differ from your standard size
+- **Fit Scale**: Rate how brands fit (1-5: runs small to runs large)
+- **Pinned Cards**: Pin frequently used categories to the top of your list
+- **Display Modes**: Choose how to display sizes (standard, dual, or preferred brand)
+- **Notes**: Add custom notes for each size entry
+- **Gender-Specific**: Categories are tailored for men's and women's sizing conventions
+
+### How to Use
+
+1. **Navigate to My Sizes** from the main menu
+2. **Categories auto-seed** on first visit (16 categories created automatically)
+3. **Select a category** to view measurement guides and enter your sizes
+4. **Add standard size** - your primary size for that category
+5. **Add brand sizes** - record sizes for specific brands that differ
+6. **Pin important categories** for quick access
+7. **Customize display** - choose how you want sizes shown on pinned cards
+
+### Database Schema
+
+The My Sizes feature uses the following tables:
+- `size_categories` - Category definitions with gender and measurement guides
+- `standard_sizes` - User's primary size for each category
+- `brand_sizes` - Brand-specific size overrides
+- `category_measurements` - Body measurements for categories
+- `pinned_preferences` - User's pinned category settings
+
+All tables use Row Level Security (RLS) to ensure complete data privacy between users.
 
 ## Tech Stack
 
@@ -49,6 +119,7 @@ app/                    # Next.js App Router (pages and layouts)
 ├── outfits/           # Outfit collection and detail pages
 ├── anchor/            # Anchor-based outfit browsing
 ├── settings/          # User settings and preferences
+├── sizes/             # My Sizes feature pages
 ├── protected/         # Protected route layouts
 ├── globals.css        # Global styles
 ├── layout.tsx         # Root layout component
@@ -59,6 +130,12 @@ components/             # React components (UI layer)
 ├── ui/                # Reusable UI components (Radix-based)
 ├── error-boundaries/  # Error boundary components
 ├── tutorial/          # Tutorial and onboarding components
+├── sizes/             # My Sizes feature components
+│   ├── category-grid.tsx        # Category list display
+│   ├── measurement-guide.tsx    # Measurement instructions
+│   ├── pinned-card.tsx          # Pinned category cards
+│   ├── error-display.tsx        # Error handling component
+│   └── my-sizes-client.tsx      # Main sizes client component
 ├── auth-button.tsx    # Authentication button component
 ├── image-upload.tsx   # Custom image upload with background removal
 ├── items-grid.tsx     # Grid display for wardrobe items
@@ -78,7 +155,10 @@ lib/                   # Shared utilities and business logic
 │   ├── use-wardrobe-items.ts # Wardrobe CRUD operations
 │   ├── use-outfits.ts # Outfit management hooks
 │   ├── use-categories.ts # Category management
+│   ├── use-size-categories.ts # Size category hooks
 │   └── use-user-preferences.ts # User settings hooks
+├── data/              # Static data and constants
+│   └── measurement-guides.ts # Measurement guide definitions
 ├── supabase/          # Supabase client configuration
 │   ├── client.ts      # Browser client
 │   ├── server.ts      # Server-side client
@@ -86,7 +166,10 @@ lib/                   # Shared utilities and business logic
 ├── providers/         # React context providers
 ├── utils/             # Pure utility functions
 ├── types/             # TypeScript type definitions
+│   ├── database.ts    # Supabase generated types
+│   └── sizes.ts       # My Sizes type definitions
 ├── schemas/           # Zod validation schemas
+│   └── sizes.ts       # Size validation schemas
 └── test/              # Test setup and utilities
 
 supabase/              # Supabase backend configuration
@@ -96,6 +179,8 @@ supabase/              # Supabase backend configuration
 │   ├── process-image/ # Background removal function
 │   └── ...            # Additional business logic functions
 ├── migrations/        # Database migrations
+│   ├── 20260208_create_seed_function.sql # System categories seed
+│   └── ...            # Other migrations
 └── supabase/          # Supabase CLI configuration
 
 netlify/

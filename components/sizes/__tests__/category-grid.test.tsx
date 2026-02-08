@@ -151,115 +151,26 @@ describe('CategoryGrid', () => {
     expect(screen.getByText('Varies by brand')).toBeInTheDocument();
   });
 
-  it('should render "Add category" tile as final tile', () => {
-    const onAddCategory = vi.fn();
-
-    render(
-      <CategoryGrid
-        categories={mockCategories}
-        onAddCategory={onAddCategory}
-      />
-    );
-
-    const addButton = screen.getByRole('button', { name: /add new clothing category/i });
-    expect(addButton).toBeInTheDocument();
-    expect(screen.getByText('Add Category')).toBeInTheDocument();
-  });
-
-  it('should render "Add category" tile with proper styling', () => {
-    const onAddCategory = vi.fn();
-
-    const { container } = render(
-      <CategoryGrid
-        categories={mockCategories}
-        onAddCategory={onAddCategory}
-      />
-    );
-
-    const addButton = screen.getByRole('button', { name: /add new clothing category/i });
-    
-    // Verify dashed border styling
-    expect(addButton).toHaveClass('border-2', 'border-dashed', 'border-gray-300');
-    
-    // Verify minimum height matches category tiles
-    expect(addButton).toHaveClass('min-h-[120px]');
-    
-    // Verify it has the Plus icon
-    const plusIcon = container.querySelector('button[aria-label="Add new clothing category"] svg');
-    expect(plusIcon).toBeInTheDocument();
-  });
-
-  it('should call onAddCategory when "Add category" tile is clicked', () => {
-    const onAddCategory = vi.fn();
-
-    render(
-      <CategoryGrid
-        categories={mockCategories}
-        onAddCategory={onAddCategory}
-      />
-    );
-
-    const addButton = screen.getByRole('button', { name: /add new clothing category/i });
-    addButton.click();
-
-    expect(onAddCategory).toHaveBeenCalledTimes(1);
-  });
-
-  it('should render "Add category" tile even with many categories', () => {
-    const onAddCategory = vi.fn();
-    const manyCategories: SizeCategory[] = Array.from({ length: 10 }, (_, i) => ({
-      id: `cat-${i}`,
-      user_id: 'user-1',
-      name: `Category ${i}`,
-      supported_formats: ['letter'],
-      is_system_category: false,
-      created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-01T00:00:00Z',
-    }));
-
-    render(
-      <CategoryGrid
-        categories={manyCategories}
-        onAddCategory={onAddCategory}
-      />
-    );
-
-    // Verify "Add category" tile is present
-    const addButton = screen.getByRole('button', { name: /add new clothing category/i });
-    expect(addButton).toBeInTheDocument();
-    
-    // Verify all categories are rendered plus the add button
-    const grid = screen.getByRole('list', { name: /clothing categories/i });
-    const items = grid.querySelectorAll('a[href^="/sizes/"]');
-    expect(items).toHaveLength(10);
-  });
-
   it('should display empty state when no categories exist', () => {
-    const onAddCategory = vi.fn();
-
     render(
       <CategoryGrid
         categories={[]}
-        onAddCategory={onAddCategory}
       />
     );
 
-    // Check empty state content (Requirement 1.3, 12.1)
+    // Check empty state content (Requirement 1.3, 12.1, US-3)
     expect(screen.getByText('No categories yet')).toBeInTheDocument();
-    expect(screen.getByText(/get started by adding your first clothing category/i)).toBeInTheDocument();
+    expect(screen.getByText(/your size categories will appear here once they are set up/i)).toBeInTheDocument();
 
-    // Check large "Add Category" button
-    const addButton = screen.getByRole('button', { name: /add new clothing category/i });
-    expect(addButton).toBeInTheDocument();
+    // No add button should be present (system categories only)
+    const addButton = screen.queryByRole('button', { name: /add new clothing category/i });
+    expect(addButton).not.toBeInTheDocument();
   });
 
   it('should display empty state with proper structure and styling', () => {
-    const onAddCategory = vi.fn();
-
     const { container } = render(
       <CategoryGrid
         categories={[]}
-        onAddCategory={onAddCategory}
       />
     );
 
@@ -274,25 +185,9 @@ describe('CategoryGrid', () => {
     // Verify heading
     expect(screen.getByRole('heading', { name: /no categories yet/i })).toBeInTheDocument();
 
-    // Verify call-to-action button
-    const button = screen.getByRole('button', { name: /add new clothing category/i });
-    expect(button).toHaveClass('bg-blue-600');
-  });
-
-  it('should call onAddCategory when empty state button is clicked', () => {
-    const onAddCategory = vi.fn();
-
-    render(
-      <CategoryGrid
-        categories={[]}
-        onAddCategory={onAddCategory}
-      />
-    );
-
-    const addButton = screen.getByRole('button', { name: /add new clothing category/i });
-    addButton.click();
-
-    expect(onAddCategory).toHaveBeenCalledTimes(1);
+    // No add button should be present (system categories only - US-3)
+    const button = screen.queryByRole('button', { name: /add new clothing category/i });
+    expect(button).not.toBeInTheDocument();
   });
 
   it('should link category tiles to detail view', () => {
@@ -409,12 +304,9 @@ describe('CategoryGrid', () => {
   });
 
   it('should not render grid when categories array is empty', () => {
-    const onAddCategory = vi.fn();
-
     render(
       <CategoryGrid
         categories={[]}
-        onAddCategory={onAddCategory}
       />
     );
 
