@@ -548,14 +548,14 @@ describe('Property 4: Category Grid Item Completeness', () => {
   it('should maintain independent data for multiple categories', () => {
     fc.assert(
       fc.property(
-        fc.array(
+        fc.uniqueArray(
           fc.record({
-            categoryId: fc.string({ minLength: 1, maxLength: 36 }),
+            categoryId: fc.uuid(), // Use UUID for guaranteed uniqueness
             categoryName: fc.string({ minLength: 1, maxLength: 50 }),
             sizeCount: fc.integer({ min: 0, max: 15 }),
             hasVariations: fc.boolean()
           }),
-          { minLength: 2, maxLength: 8 }
+          { minLength: 2, maxLength: 8, selector: (item) => item.categoryId }
         ),
         (categories) => {
           // Create grid items for all categories

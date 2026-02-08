@@ -288,58 +288,58 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
 - [x] 10. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 11. Build StandardSizeSection component
-  - [ ] 11.1 Create StandardSizeSection component
+- [x] 11. Build StandardSizeSection component
+  - [x] 11.1 Create StandardSizeSection component
     - Display primary size, secondary size, notes
     - Show last updated timestamp
     - Add edit button
     - _Requirements: 4.2, 5.5_
   
-  - [ ] 11.2 Create StandardSizeForm component
+  - [x] 11.2 Create StandardSizeForm component
     - Support all sizing formats (letter, numeric, waist/inseam, measurements)
     - Validate input based on category's supported formats
     - Integrate with react-hook-form and zodResolver
     - Add proper ARIA labels and error message associations
     - _Requirements: 5.1-5.4_
   
-  - [ ] 11.3 Integrate form with mutation hook
+  - [x] 11.3 Integrate form with mutation hook
     - Call `useUpdateStandardSize` on save
     - Show loading and error states
     - _Requirements: 5.5, 10.1_
   
-  - [ ] 11.4 Write unit tests for StandardSizeSection
+  - [x] 11.4 Write unit tests for StandardSizeSection
     - Test display of all fields
     - Test edit button interaction
     - Test form validation
     - _Requirements: 4.2, 5.1-5.4_
 
-- [ ] 12. Build BrandSizesSection component
-  - [ ] 12.1 Create BrandSizesSection component
+- [x] 12. Build BrandSizesSection component
+  - [x] 12.1 Create BrandSizesSection component
     - Display list of brand size entries
     - Show brand name, item type, size, fit scale, notes
     - Add "Add brand size" button
     - _Requirements: 4.3, 4.5_
   
-  - [ ] 12.2 Implement scrolling/pagination for large lists
+  - [x] 12.2 Implement scrolling/pagination for large lists
     - Handle > 10 brand sizes gracefully
     - _Requirements: 12.4_
   
-  - [ ] 12.3 Add empty state for no brand sizes
+  - [x] 12.3 Add empty state for no brand sizes
     - Display message and "Add brand size" button
     - _Requirements: 12.2_
   
-  - [ ] 12.4 Write property test for brand size entry completeness
+  - [x] 12.4 Write property test for brand size entry completeness
     - **Property 5: Brand size entry completeness**
     - **Validates: Requirements 4.3**
   
-  - [ ] 12.5 Write unit tests for BrandSizesSection
+  - [x] 12.5 Write unit tests for BrandSizesSection
     - Test list rendering
     - Test empty state
     - Test pagination for large lists
     - _Requirements: 4.3, 12.2, 12.4_
 
-- [ ] 13. Build BrandSizeForm component
-  - [ ] 13.1 Create BrandSizeForm component
+- [x] 13. Build BrandSizeForm component
+  - [x] 13.1 Create BrandSizeForm component
     - Searchable brand name dropdown with free text fallback
     - Optional item type field
     - Size input field
@@ -350,98 +350,98 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
     - Use functional setState for stable callbacks
     - _Requirements: 6.1-6.4, 14.1-14.3_
   
-  - [ ] 13.2 Implement brand name dropdown with search
+  - [x] 13.2 Implement brand name dropdown with search
     - Fetch previously entered brand names
     - Filter in real-time as user types
     - Allow free text entry for new brands
     - _Requirements: 14.1, 14.2, 14.3_
   
-  - [ ] 13.3 Implement form validation
+  - [x] 13.3 Implement form validation
     - Require brand name and size
     - Allow optional item type and notes
     - Validate size format based on category
     - _Requirements: 6.1, 6.2, 6.4_
   
-  - [ ] 13.4 Integrate with mutation hooks
+  - [x] 13.4 Integrate with mutation hooks
     - Call `useCreateBrandSize` on save
     - Update brand name dropdown after saving new brand
     - _Requirements: 14.4, 14.5_
   
-  - [ ] 13.5 Write property test for brand size validation
+  - [x] 13.5 Write property test for brand size validation
     - **Property 8: Brand size validation**
     - **Validates: Requirements 6.1, 6.2, 6.4**
   
-  - [ ] 13.6 Write property test for brand name persistence
+  - [x] 13.6 Write property test for brand name persistence
     - **Property 25: New brand name persistence**
     - **Validates: Requirements 14.4**
   
-  - [ ] 13.7 Write unit tests for BrandSizeForm
+  - [x] 13.7 Write unit tests for BrandSizeForm
     - Test form rendering
     - Test validation errors
     - Test brand dropdown search
     - Test fit scale selector
     - _Requirements: 6.1-6.4, 14.1-14.3_
 
-- [ ] 14. Build MeasurementGuideSection component
-  - [ ] 14.1 Create MeasurementGuideSection component
+- [x] 14. Build MeasurementGuideSection component
+  - [x] 14.1 Create MeasurementGuideSection component
     - Display category-specific measurement fields
     - Show unit toggle (imperial/metric)
     - Numeric input fields with validation
     - _Requirements: 13.1, 13.4_
   
-  - [ ] 14.2 Implement category-specific field mapping
+  - [x] 14.2 Implement category-specific field mapping
     - Tops: chest, waist, hip
     - Bottoms: waist, inseam
     - Footwear: foot length, foot width
     - _Requirements: 13.1, 13.4_
   
-  - [ ] 14.3 Implement unit conversion on toggle
+  - [x] 14.3 Implement unit conversion on toggle
     - Convert all measurements when unit changes
     - Display in selected unit system
     - _Requirements: 13.3_
   
-  - [ ] 14.4 Integrate with mutation hook
+  - [x] 14.4 Integrate with mutation hook
     - Call `useUpdateMeasurements` on save
     - Store numeric values with units
     - _Requirements: 13.2, 13.5_
   
-  - [ ] 14.5 Write property test for category-specific measurement fields
+  - [x] 14.5 Write property test for category-specific measurement fields
     - **Property 19: Category-specific measurement fields**
     - **Validates: Requirements 13.1, 13.4**
   
-  - [ ] 14.6 Write property test for measurement storage
+  - [x] 14.6 Write property test for measurement storage
     - **Property 20: Measurement storage with units**
     - **Validates: Requirements 13.2**
   
-  - [ ] 14.7 Write unit tests for MeasurementGuideSection
+  - [x] 14.7 Write unit tests for MeasurementGuideSection
     - Test field rendering for different categories
     - Test unit toggle and conversion
     - Test numeric validation
     - _Requirements: 13.1-13.4_
 
-- [ ] 15. Build CategoryDetailView component
-  - [ ] 15.1 Create CategoryDetailView component
+- [x] 15. Build CategoryDetailView component
+  - [x] 15.1 Create CategoryDetailView component
     - Compose StandardSizeSection, BrandSizesSection, MeasurementGuideSection
     - Fetch category data via hooks
     - _Requirements: 4.1_
   
-  - [ ] 15.2 Implement responsive presentation
+  - [x] 15.2 Implement responsive presentation
     - Mobile: full-screen view
     - Tablet+: modal or side panel
     - _Requirements: 7.2, 7.3_
   
-  - [ ] 15.3 Add navigation and close actions
+  - [x] 15.3 Add navigation and close actions
     - Back button for mobile
     - Close button for modal/panel
     - _Requirements: 2.2_
   
-  - [ ] 15.4 Write unit tests for CategoryDetailView
+  - [x] 15.4 Write unit tests for CategoryDetailView
     - Test three-section layout
     - Test responsive presentation
     - Test navigation actions
     - _Requirements: 4.1, 7.2, 7.3_
 
-- [ ] 15.5 Implement CategoryDetailClient component (HIGH)
+- [x] 15.5 Implement CategoryDetailClient component (HIGH)
   - Create CategoryDetailClient for client-side logic
   - Update CategoryDetailPage to be pure server component
   - Implement parallel data fetching for category, brand sizes, measurements with Promise.all()
@@ -450,74 +450,74 @@ This implementation plan breaks down the My Sizes feature into discrete coding t
   - _Requirements: 4.1_
   - _Priority: HIGH - Eliminates waterfalls, reduces load time by 3×_
 
-- [ ] 16. Build AddCategoryForm component
-  - [ ] 16.1 Create AddCategoryForm component
+- [x] 16. Build AddCategoryForm component
+  - [x] 16.1 Create AddCategoryForm component
     - Category name input with validation
     - Optional icon selection
     - Multi-select for supported sizing formats
     - "Pin to top" toggle
     - _Requirements: 7.1_
   
-  - [ ] 16.2 Implement responsive presentation
+  - [x] 16.2 Implement responsive presentation
     - Mobile: full-screen modal
     - Tablet+: dialog
     - _Requirements: 7.2, 7.3_
   
-  - [ ] 16.3 Integrate with mutation hook
+  - [x] 16.3 Integrate with mutation hook
     - Call `useCreateCategory` on save
     - Optionally create pinned preference if "Pin to top" checked
     - _Requirements: 7.4_
   
-  - [ ] 16.4 Write property test for category creation
+  - [x] 16.4 Write property test for category creation
     - **Property 10: Category creation adds to grid**
     - **Validates: Requirements 7.4**
   
-  - [ ] 16.5 Write unit tests for AddCategoryForm
+  - [x] 16.5 Write unit tests for AddCategoryForm
     - Test form rendering
     - Test validation
     - Test responsive presentation
     - _Requirements: 7.1-7.3_
 
-- [ ] 17. Build CustomizePinnedCardsView component
-  - [ ] 17.1 Create CustomizePinnedCardsView component
+- [x] 17. Build CustomizePinnedCardsView component
+  - [x] 17.1 Create CustomizePinnedCardsView component
     - List all categories with pin/unpin toggles
     - Drag handles for reordering
     - Display mode dropdown per pinned card
     - _Requirements: 8.4_
   
-  - [ ] 17.2 Implement drag-and-drop reordering
+  - [x] 17.2 Implement drag-and-drop reordering
     - Specify implementation: native HTML5 drag-and-drop API (preferred) or external library
     - If using external library (e.g., react-beautiful-dnd), use dynamic import with ssr: false
     - Update display_order on drop
     - Use functional setState for stable callbacks
     - _Requirements: 8.4, 8.5_
   
-  - [ ] 17.3 Implement responsive presentation
+  - [x] 17.3 Implement responsive presentation
     - Mobile: full-screen view via bottom sheet
     - Tablet+: side drawer
     - _Requirements: 8.2, 8.3_
   
-  - [ ] 17.4 Integrate with mutation hook
+  - [x] 17.4 Integrate with mutation hook
     - Call `useUpdatePinnedPreferences` on save
     - Persist new order and display modes
     - _Requirements: 8.5, 15.5_
   
-  - [ ] 17.5 Write property test for pinned card reordering
+  - [x] 17.5 Write property test for pinned card reordering
     - **Property 12: Pinned card reordering persistence**
     - **Validates: Requirements 8.5**
   
-  - [ ] 17.6 Write property test for display mode updates
+  - [x] 17.6 Write property test for display mode updates
     - **Property 30: Display mode update immediacy**
     - **Validates: Requirements 15.5**
   
-  - [ ] 17.7 Write unit tests for CustomizePinnedCardsView
+  - [-] 17.7 Write unit tests for CustomizePinnedCardsView
     - Test pin/unpin toggles
     - Test drag-and-drop reordering
     - Test display mode selection
     - Test responsive presentation
     - _Requirements: 8.2-8.4_
 
-- [ ] 18. Checkpoint - Ensure all tests pass
+- [x] 18. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 19. Implement accessibility features

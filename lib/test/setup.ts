@@ -74,6 +74,13 @@ Object.defineProperty(global.navigator, 'geolocation', {
 // Mock fetch globally
 global.fetch = vi.fn();
 
+// Mock ResizeObserver (required for Radix UI components)
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+
 // Mock getCurrentUserId function in all hook files
 const mockUserId = 'test-user-id';
 vi.mock('@/lib/hooks/use-wardrobe-items', async () => {

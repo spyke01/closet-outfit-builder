@@ -682,6 +682,87 @@ export function useUpdateMeasurements() {
 }
 
 /**
+ * Hook to create a single pinned preference
+ * 
+ * Features:
+ * - Creates a new pinned preference for a category
+ * - Automatically calculates display_order (max + 1)
+ * - Invalidates pinned preferences cache
+ * - Validates input with Zod schema
+ * 
+ * @returns TanStack Query mutation result
+ * 
+ * Requirements: 7.4, 8.5
+ * 
+ * @example
+ * ```typescript
+ * function AddCategoryForm() {
+ *   const createPinned = useCreatePinnedPreference();
+ *   
+ *   const handleSave = async (categoryId: string) => {
+ *     await createPinned.mutateAsync({
+ *       category_id: categoryId,
+ *       display_mode: 'standard',
+ *       display_order: 0 // Will be auto-calculated
+ *     });
+ *   };
+ * }
+ * ```
+ */
+export function useCreatePinnedPreference() {
+  const queryClient = useQueryClient();
+  const { userId } = useAuth();
+  const supabase = createClient();
+
+  return useMutation({
+    mutationFn: async (data: Omit<PinnedPreferenceInput, 'display_order'> & { display_order?: number }) => {
+      if (!userId) {
+        throw new Error('User must be authenticated to create a pinned preference');
+      }
+
+      // Get current pinned preferences to calculate display_order
+      const { data: existing } = await supabase
+        .from('pinned_preferences')
+        .select('display_order')
+        .eq('user_id', userId)
+        .order('display_order', { ascending: false })
+        .limit(1);
+
+      const maxOrder = existing?.[0]?.display_order ?? -1;
+      const newOrder = data.display_order ?? maxOrder + 1;
+
+      // Validate input with Zod
+      const validated = pinnedPreferenceInputSchema.parse({
+        ...data,
+        display_order: newOrder,
+      });
+
+      // Insert into database
+      const { data: pinnedPreference, error } = await supabase
+        .from('pinned_preferences')
+        .insert({
+          ...validated,
+          user_id: userId,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        throw new Error(`Failed to create pinned preference: ${error.message}`);
+      }
+
+      return pinnedPreference as PinnedPreference;
+    },
+    onSuccess: () => {
+      // Invalidate pinned preferences cache
+      queryClient.invalidateQueries({ 
+        queryKey: sizeKeys.pinned(userId!) 
+      });
+    },
+  });
+}
+
+/**
  * Hook to update pinned preferences
  * 
  * Features:

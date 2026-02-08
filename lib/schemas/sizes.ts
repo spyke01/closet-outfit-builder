@@ -138,6 +138,26 @@ export const sizeValueSchema = z.string()
   );
 
 /**
+ * Optional size value validation - allows empty strings
+ */
+export const optionalSizeValueSchema = z.string()
+  .max(20, 'Size must be 20 characters or less')
+  .refine(
+    (val) => {
+      // Allow empty strings
+      if (val === '') return true;
+      return letterSizeRegex.test(val) || 
+             numericSizeRegex.test(val) || 
+             waistInseamSizeRegex.test(val);
+    },
+    {
+      message: 'Size must be in letter format (S, M, L), numeric format (8, 10), or waist/inseam format (32x34)'
+    }
+  )
+  .optional()
+  .or(z.literal(''));
+
+/**
  * Standard size schema
  * Validates user's standard/primary size for a category
  */
@@ -146,7 +166,7 @@ export const standardSizeSchema = z.object({
   category_id: z.string().uuid(),
   user_id: z.string().uuid(),
   primary_size: sizeValueSchema,
-  secondary_size: sizeValueSchema.optional(),
+  secondary_size: optionalSizeValueSchema,
   notes: z.string().max(500, 'Notes must be 500 characters or less').optional(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime()
@@ -168,7 +188,10 @@ export const brandSizeSchema = z.object({
   id: z.string().uuid(),
   category_id: z.string().uuid(),
   user_id: z.string().uuid(),
-  brand_name: z.string().min(1, 'Brand name is required').max(100, 'Brand name must be 100 characters or less'),
+  brand_name: z.string()
+    .min(1, 'Brand name is required')
+    .max(100, 'Brand name must be 100 characters or less')
+    .refine(val => val.trim().length > 0, { message: 'Brand name cannot be only whitespace' }),
   item_type: z.string().max(100, 'Item type must be 100 characters or less').optional(),
   size: sizeValueSchema,
   fit_scale: fitScaleSchema,
@@ -230,7 +253,12 @@ export const standardSizeInputSchema = standardSizeSchema.omit({
   user_id: true,
   created_at: true,
   updated_at: true
-});
+}).transform((data) => ({
+  ...data,
+  // Convert empty strings to undefined for optional fields
+  secondary_size: data.secondary_size === '' ? undefined : data.secondary_size,
+  notes: data.notes === '' ? undefined : data.notes,
+}));
 
 export const brandSizeInputSchema = brandSizeSchema.omit({
   id: true,
