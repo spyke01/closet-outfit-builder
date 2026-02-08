@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Settings, Shirt, Grid3X3 } from 'lucide-react';
+import { Settings, Shirt, Grid3X3, Ruler } from 'lucide-react';
 
 
 
@@ -68,6 +68,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   const getCurrentView = () => {
     if (pathname?.startsWith('/wardrobe')) return 'wardrobe';
     if (pathname?.startsWith('/outfits')) return 'outfits';
+    if (pathname?.startsWith('/sizes')) return 'sizes';
     return null;
   };
 
@@ -119,6 +120,19 @@ export const TopBar: React.FC<TopBarProps> = ({
               >
                 <Grid3X3 size={16} />
                 <span>Outfits</span>
+              </Link>
+              <Link
+                href="/sizes"
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${currentView === 'sizes'
+                    ? 'bg-slate-800 dark:bg-slate-700 text-white'
+                    : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
+                  }`}
+                aria-label="View my sizes"
+                aria-current={currentView === 'sizes' ? 'page' : undefined}
+                {...getNavigationProps('/sizes')}
+              >
+                <Ruler size={16} />
+                <span>My Sizes</span>
               </Link>
             </nav>
           )}
@@ -195,6 +209,19 @@ export const TopBar: React.FC<TopBarProps> = ({
             >
               <Grid3X3 size={16} />
               <span>Outfits</span>
+            </Link>
+            <Link
+              href="/sizes"
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${currentView === 'sizes'
+                  ? 'bg-slate-800 dark:bg-slate-700 text-white'
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
+                }`}
+              aria-label="View my sizes"
+              aria-current={currentView === 'sizes' ? 'page' : undefined}
+              {...getNavigationProps('/sizes')}
+            >
+              <Ruler size={16} />
+              <span>My Sizes</span>
             </Link>
           </nav>
         </div>

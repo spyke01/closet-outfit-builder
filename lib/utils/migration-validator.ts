@@ -243,8 +243,7 @@ export class MigrationValidator {
       // Get all users who have any category (to find all users in the system)
       const { data: allUserCategories, error: usersError } = await this.supabase
         .from('categories')
-        .select('user_id')
-        .group('user_id');
+        .select('user_id');
 
       if (usersError) {
         throw new Error(`Failed to get users: ${usersError.message}`);

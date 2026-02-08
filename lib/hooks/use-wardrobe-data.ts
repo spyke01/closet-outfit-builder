@@ -18,6 +18,7 @@ import {
   OutfitSelectionSchema,
   type WardrobeItem,
   type Category,
+  type Outfit,
   type OutfitSelection,
   type CreateWardrobeItemForm,
   type UpdateWardrobeItemForm,
@@ -83,7 +84,8 @@ export function useWardrobeData() {
 
       return data;
     },
-    optimisticUpdater: (oldData: WardrobeItem[] | undefined, formData: CreateWardrobeItemForm) => {
+    optimisticUpdater: (oldData: unknown, formData: CreateWardrobeItemForm) => {
+      const items = oldData as WardrobeItem[] | undefined;
       const optimisticItem: WardrobeItem = {
         id: `temp-${Date.now()}`,
         user_id: userId,
@@ -92,7 +94,7 @@ export function useWardrobeData() {
         ...formData,
       };
 
-      return oldData ? [...oldData, optimisticItem] : [optimisticItem];
+      return items ? [...items, optimisticItem] : [optimisticItem];
     },
     onSuccess: (newItem) => {
       // Clear any form errors
@@ -139,10 +141,11 @@ export function useWardrobeData() {
 
       return data;
     },
-    optimisticUpdater: (oldData: WardrobeItem[] | undefined, formData: UpdateWardrobeItemForm) => {
-      if (!oldData) return [];
+    optimisticUpdater: (oldData: unknown, formData: UpdateWardrobeItemForm) => {
+      const items = oldData as WardrobeItem[] | undefined;
+      if (!items) return [];
       
-      return produce(oldData, draft => {
+      return produce(items, draft => {
         const index = draft.findIndex(item => item.id === formData.id);
         if (index !== -1) {
           Object.assign(draft[index], formData, {
@@ -498,7 +501,8 @@ export function useOutfitCreation() {
         items: selectedItems,
       };
     },
-    optimisticUpdater: (oldData: Outfit[] | undefined, selection: OutfitSelection) => {
+    optimisticUpdater: (oldData: unknown, selection: OutfitSelection) => {
+      const outfits = oldData as Outfit[] | undefined;
       const selectedItems = Object.values(selection)
         .filter(item => item && typeof item === 'object' && 'id' in item) as WardrobeItem[];
 
@@ -515,7 +519,7 @@ export function useOutfitCreation() {
         items: selectedItems,
       };
 
-      return oldData ? [optimisticOutfit, ...oldData] : [optimisticOutfit];
+      return outfits ? [optimisticOutfit, ...outfits] : [optimisticOutfit];
     },
     onSuccess: () => {
       updateCreationState(draft => {

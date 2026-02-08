@@ -18,3 +18,6 @@ export type { StandardSizeFormProps } from './standard-size-form';
 
 export { BrandSizesSection } from './brand-sizes-section';
 export type { BrandSizesSectionProps } from './brand-sizes-section';
+
+export { ErrorDisplay } from './error-display';
+export type { ErrorDisplayProps } from './error-display';

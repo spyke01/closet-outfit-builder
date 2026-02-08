@@ -57,6 +57,20 @@ export function CreateOutfitPageClient() {
   };
   const [isLoved, setIsLoved] = useState(false);
 
+  // Fetch data
+  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
+  const { data: items = [], isLoading: itemsLoading } = useWardrobeItems();
+  
+  // Mutations and queries
+  const createOutfitMutation = useCreateOutfit();
+  
+  // Get selected item IDs for scoring and duplicate checking
+  const selectedItemIds = useMemo(() => {
+    return Object.entries(selection)
+      .filter(([key, item]) => key !== 'tuck_style' && key !== 'score' && item !== null && item !== undefined)
+      .map(([, item]) => (item as WardrobeItem).id);
+  }, [selection]);
+
   // Track if form has unsaved changes
   const hasUnsavedChanges = useMemo(() => {
     return selectedItemIds.length > 0 || outfitName.trim() !== '' || isLoved;
@@ -74,20 +88,6 @@ export function CreateOutfitPageClient() {
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [hasUnsavedChanges, createOutfitMutation.isSuccess]);
-
-  // Fetch data
-  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
-  const { data: items = [], isLoading: itemsLoading } = useWardrobeItems();
-  
-  // Mutations and queries
-  const createOutfitMutation = useCreateOutfit();
-  
-  // Get selected item IDs for scoring and duplicate checking
-  const selectedItemIds = useMemo(() => {
-    return Object.entries(selection)
-      .filter(([key, item]) => key !== 'tuck_style' && key !== 'score' && item !== null && item !== undefined)
-      .map(([, item]) => (item as WardrobeItem).id);
-  }, [selection]);
 
   // Check if outfit meets minimum requirements (shirt + pants)
   const hasMinimumOutfit = useMemo(() => {

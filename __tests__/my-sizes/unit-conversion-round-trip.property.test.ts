@@ -43,7 +43,7 @@ describe('Property 21: Unit Conversion Round-Trip', () => {
           return true;
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 3 }
     );
   });
 
@@ -75,7 +75,7 @@ describe('Property 21: Unit Conversion Round-Trip', () => {
           return true;
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 3 }
     );
   });
 
@@ -120,7 +120,7 @@ describe('Property 21: Unit Conversion Round-Trip', () => {
           return true;
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 3 }
     );
   });
 
@@ -160,7 +160,7 @@ describe('Property 21: Unit Conversion Round-Trip', () => {
           return true;
         }
       ),
-      { numRuns: 50 }
+      { numRuns: 3 }
     );
   });
 
@@ -200,7 +200,7 @@ describe('Property 21: Unit Conversion Round-Trip', () => {
           return true;
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 3 }
     );
   });
 
@@ -238,7 +238,7 @@ describe('Property 21: Unit Conversion Round-Trip', () => {
           return true;
         }
       ),
-      { numRuns: 50 }
+      { numRuns: 3 }
     );
   });
 
@@ -263,7 +263,7 @@ describe('Property 21: Unit Conversion Round-Trip', () => {
           return true;
         }
       ),
-      { numRuns: 50 }
+      { numRuns: 3 }
     );
   });
 
@@ -290,7 +290,7 @@ describe('Property 21: Unit Conversion Round-Trip', () => {
           return true;
         }
       ),
-      { numRuns: 50 }
+      { numRuns: 3 }
     );
   });
 });

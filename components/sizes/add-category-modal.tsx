@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import X from 'lucide-react/dist/esm/icons/x';
+import { X } from 'lucide-react';
 import { AddCategoryForm } from './add-category-form';
 
 export interface AddCategoryModalProps {

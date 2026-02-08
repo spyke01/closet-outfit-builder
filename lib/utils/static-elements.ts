@@ -104,7 +104,7 @@ export const STATIC_ELEMENT_GUIDELINES = {
   shouldNotHoist: (element: unknown): boolean => {
     if (!isReactElement(element)) return true;
     
-    const props: Record<string, unknown> = element.props || {};
+    const props = (element.props || {}) as Record<string, unknown>;
     
     // Check for dynamic props
     const hasDynamicProps = Object.keys(props).some(key => 

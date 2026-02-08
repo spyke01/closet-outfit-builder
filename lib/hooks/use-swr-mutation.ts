@@ -50,13 +50,11 @@ export function usePostMutation<Data = any, Error = any, ExtraArg = any>(
     mutationFetcher,
     {
       ...options,
-      onSuccess: (data, key, config) => {
+      onSuccess: (data) => {
         options?.onSuccess?.(data);
-        options?.onSuccess?.(data, key, config);
       },
-      onError: (error, key, config) => {
+      onError: (error) => {
         options?.onError?.(error);
-        options?.onError?.(error, key, config);
       },
     }
   );

@@ -2,12 +2,13 @@
  * Core Web Vitals Tracking
  * 
  * Implements comprehensive performance monitoring using the web-vitals library.
- * Tracks LCP, FID, CLS, FCP, TTFB, and INP metrics.
+ * Tracks LCP, CLS, FCP, TTFB, and INP metrics.
+ * Note: FID has been deprecated in favor of INP (Interaction to Next Paint)
  * 
  * **Validates: Requirements 13.1**
  */
 
-import { onCLS, onFCP, onFID, onINP, onLCP, onTTFB, type Metric } from 'web-vitals'
+import { onCLS, onFCP, onINP, onLCP, onTTFB, type Metric } from 'web-vitals'
 
 export interface WebVitalsMetric {
   id: string
@@ -77,9 +78,6 @@ export function initWebVitals(): void {
     // Track Largest Contentful Paint (LCP)
     onLCP(sendToAnalytics)
 
-    // Track First Input Delay (FID)
-    onFID(sendToAnalytics)
-
     // Track Cumulative Layout Shift (CLS)
     onCLS(sendToAnalytics)
 
@@ -89,7 +87,7 @@ export function initWebVitals(): void {
     // Track Time to First Byte (TTFB)
     onTTFB(sendToAnalytics)
 
-    // Track Interaction to Next Paint (INP)
+    // Track Interaction to Next Paint (INP) - replaces deprecated FID
     onINP(sendToAnalytics)
   } catch (error) {
     console.error('Failed to initialize web vitals tracking:', error)

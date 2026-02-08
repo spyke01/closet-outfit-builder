@@ -11,18 +11,58 @@
  * - TanStack Query with server-provided initial data
  * - Responsive presentation (mobile: full-screen, tablet+: modal/panel)
  * - Navigation and close actions
+ * - Dynamic imports for heavy components (code splitting)
  * 
- * Requirements: 4.1, 7.2, 7.3, 2.2
+ * Requirements: 4.1, 7.2, 7.3, 2.2, 1.2
  */
 
+import dynamic from 'next/dynamic'
 import { useSizeCategory, useBrandSizes, useMeasurements } from '@/lib/hooks/use-size-categories'
-import { StandardSizeSection } from './standard-size-section'
-import { BrandSizesSection } from './brand-sizes-section'
-import { MeasurementGuideSection } from './measurement-guide-section'
-import ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left'
-import X from 'lucide-react/dist/esm/icons/x'
+import { ErrorDisplay } from './error-display'
+import { ArrowLeft, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import type { SizeCategory, StandardSize, BrandSize, CategoryMeasurements } from '@/lib/types/sizes'
+
+// ✅ Dynamic imports for code splitting - reduces initial bundle size
+// These components are loaded on-demand when the category detail view is opened
+const StandardSizeSection = dynamic(
+  () => import('./standard-size-section').then(mod => ({ default: mod.StandardSizeSection })),
+  {
+    loading: () => (
+      <div className="animate-pulse space-y-4">
+        <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+        <div className="h-20 bg-gray-200 rounded"></div>
+      </div>
+    ),
+    ssr: false
+  }
+)
+
+const BrandSizesSection = dynamic(
+  () => import('./brand-sizes-section').then(mod => ({ default: mod.BrandSizesSection })),
+  {
+    loading: () => (
+      <div className="animate-pulse space-y-4">
+        <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+        <div className="h-32 bg-gray-200 rounded"></div>
+      </div>
+    ),
+    ssr: false
+  }
+)
+
+const MeasurementGuideSection = dynamic(
+  () => import('./measurement-guide-section').then(mod => ({ default: mod.MeasurementGuideSection })),
+  {
+    loading: () => (
+      <div className="animate-pulse space-y-4">
+        <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+        <div className="h-40 bg-gray-200 rounded"></div>
+      </div>
+    ),
+    ssr: false
+  }
+)
 
 export interface CategoryDetailClientProps {
   initialCategory: SizeCategory & { standard_sizes?: StandardSize[] }
@@ -38,17 +78,39 @@ export function CategoryDetailClient({
   const router = useRouter()
   
   // TanStack Query with server-provided initial data
-  const { data: category } = useSizeCategory(initialCategory.id, {
+  const { 
+    data: category,
+    error: categoryError,
+    refetch: refetchCategory
+  } = useSizeCategory(initialCategory.id, {
     initialData: initialCategory
   })
   
-  const { data: brandSizes } = useBrandSizes(initialCategory.id, {
+  const { 
+    data: brandSizes,
+    error: brandSizesError,
+    refetch: refetchBrandSizes
+  } = useBrandSizes(initialCategory.id, {
     initialData: initialBrandSizes
   })
   
-  const { data: measurements } = useMeasurements(initialCategory.id, {
+  const { 
+    data: measurements,
+    error: measurementsError,
+    refetch: refetchMeasurements
+  } = useMeasurements(initialCategory.id, {
     initialData: initialMeasurements
   })
+  
+  // Handle errors with retry capability
+  const hasError = categoryError || brandSizesError || measurementsError
+  const error = categoryError || brandSizesError || measurementsError
+  
+  const handleRetry = () => {
+    if (categoryError) refetchCategory()
+    if (brandSizesError) refetchBrandSizes()
+    if (measurementsError) refetchMeasurements()
+  }
   
   /**
    * Handle back navigation
@@ -86,17 +148,17 @@ export function CategoryDetailClient({
   
   return (
     <div 
-      className="min-h-screen bg-gray-50 md:bg-white"
+      className="min-h-screen bg-gray-50 dark:bg-gray-900"
       onKeyDown={handleKeyDown}
     >
       {/* Header with navigation */}
-      <header className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
+      <header className="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
         <div className="container mx-auto px-4 py-4 md:px-6">
           <div className="flex items-center justify-between">
             {/* Mobile: Back button */}
             <button
               onClick={handleBack}
-              className="md:hidden inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+              className="md:hidden inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
               aria-label="Back to sizes"
             >
               <ArrowLeft className="h-5 w-5" aria-hidden="true" />
@@ -104,14 +166,14 @@ export function CategoryDetailClient({
             </button>
             
             {/* Category name */}
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">
               {category.name}
             </h1>
             
             {/* Tablet+: Close button */}
             <button
               onClick={handleClose}
-              className="hidden md:inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+              className="hidden md:inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
               aria-label="Close category details"
             >
               <X className="h-5 w-5" aria-hidden="true" />
@@ -121,7 +183,7 @@ export function CategoryDetailClient({
             {/* Mobile: Close button (icon only) */}
             <button
               onClick={handleClose}
-              className="md:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+              className="md:hidden p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
               aria-label="Close category details"
             >
               <X className="h-5 w-5" aria-hidden="true" />
@@ -137,13 +199,21 @@ export function CategoryDetailClient({
         className="container mx-auto px-4 py-6 md:py-8 space-y-6 md:space-y-8 max-w-4xl"
         aria-label={`${category.name} size details`}
       >
+        {/* Error display with retry */}
+        {hasError && (
+          <ErrorDisplay
+            error={error}
+            onRetry={handleRetry}
+          />
+        )}
+        
         {/* Section 1: Standard Size */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
           <StandardSizeSection category={category} />
         </div>
         
         {/* Section 2: Brand-Specific Sizes */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
           <BrandSizesSection 
             brandSizes={brandSizes || []} 
             categoryId={category.id} 
@@ -151,7 +221,7 @@ export function CategoryDetailClient({
         </div>
         
         {/* Section 3: Measurement Guide */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
           <MeasurementGuideSection
             measurements={measurements}
             category={category}

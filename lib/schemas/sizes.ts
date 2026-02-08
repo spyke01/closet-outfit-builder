@@ -253,12 +253,7 @@ export const standardSizeInputSchema = standardSizeSchema.omit({
   user_id: true,
   created_at: true,
   updated_at: true
-}).transform((data) => ({
-  ...data,
-  // Convert empty strings to undefined for optional fields
-  secondary_size: data.secondary_size === '' ? undefined : data.secondary_size,
-  notes: data.notes === '' ? undefined : data.notes,
-}));
+});
 
 export const brandSizeInputSchema = brandSizeSchema.omit({
   id: true,

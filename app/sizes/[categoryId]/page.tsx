@@ -20,8 +20,11 @@ import { CategoryDetailClient } from '@/components/sizes/category-detail-client'
 export default async function CategoryDetailPage({ 
   params 
 }: { 
-  params: { categoryId: string } 
+  params: Promise<{ categoryId: string }>
 }) {
+  // Await params in Next.js 15+
+  const { categoryId } = await params
+  
   const supabase = await createClient()
   
   // Check authentication
@@ -31,37 +34,49 @@ export default async function CategoryDetailPage({
   }
 
   // ✅ Parallel fetching - eliminates waterfall (3× faster)
-  const [category, brandSizes, measurements] = await Promise.all([
+  const [categoryResult, standardSizeResult, brandSizesResult, measurementsResult] = await Promise.all([
     supabase
       .from('size_categories')
-      .select('*, standard_sizes(*)')
-      .eq('id', params.categoryId)
+      .select('*')
+      .eq('id', categoryId)
       .eq('user_id', user.id)
       .single(),
     supabase
+      .from('standard_sizes')
+      .select('*')
+      .eq('category_id', categoryId)
+      .eq('user_id', user.id)
+      .maybeSingle(),
+    supabase
       .from('brand_sizes')
       .select('*')
-      .eq('category_id', params.categoryId)
+      .eq('category_id', categoryId)
       .eq('user_id', user.id)
       .order('brand_name'),
     supabase
       .from('category_measurements')
       .select('*')
-      .eq('category_id', params.categoryId)
+      .eq('category_id', categoryId)
       .eq('user_id', user.id)
       .maybeSingle()
   ])
 
   // Handle category not found or unauthorized
-  if (category.error || !category.data) {
+  if (categoryResult.error || !categoryResult.data) {
     redirect('/sizes')
+  }
+
+  // Combine category with standard size if it exists
+  const category = {
+    ...categoryResult.data,
+    standard_sizes: standardSizeResult.data ? [standardSizeResult.data] : []
   }
 
   return (
     <CategoryDetailClient
-      initialCategory={category.data}
-      initialBrandSizes={brandSizes.data || []}
-      initialMeasurements={measurements.data}
+      initialCategory={category}
+      initialBrandSizes={brandSizesResult.data || []}
+      initialMeasurements={measurementsResult.data}
     />
   )
 }

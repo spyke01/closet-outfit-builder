@@ -49,10 +49,11 @@ export function useCreateWardrobeItem(userId: string) {
       
       return response.json();
     },
-    optimisticUpdater: (oldData: WardrobeItem[] | undefined, formData: CreateWardrobeItemForm) => {
-      if (!oldData) return [createOptimisticItem(formData)];
+    optimisticUpdater: (oldData: unknown, formData: CreateWardrobeItemForm) => {
+      const items = oldData as WardrobeItem[] | undefined;
+      if (!items) return [createOptimisticItem(formData)];
       
-      return produce(oldData, draft => {
+      return produce(items, draft => {
         draft.push(createOptimisticItem(formData));
       });
     },
@@ -97,10 +98,11 @@ export function useUpdateWardrobeItem(userId: string) {
       
       return response.json();
     },
-    optimisticUpdater: (oldData: WardrobeItem[] | undefined, formData: UpdateWardrobeItemForm) => {
-      if (!oldData) return [];
+    optimisticUpdater: (oldData: unknown, formData: UpdateWardrobeItemForm) => {
+      const items = oldData as WardrobeItem[] | undefined;
+      if (!items) return [];
       
-      return produce(oldData, draft => {
+      return produce(items, draft => {
         const index = draft.findIndex(item => item.id === formData.id);
         if (index !== -1) {
           Object.assign(draft[index], formData);
@@ -140,10 +142,11 @@ export function useDeleteWardrobeItem(userId: string) {
         throw new Error('Failed to delete wardrobe item');
       }
     },
-    optimisticUpdater: (oldData: WardrobeItem[] | undefined, itemId: string) => {
-      if (!oldData) return [];
+    optimisticUpdater: (oldData: unknown, itemId: string) => {
+      const items = oldData as WardrobeItem[] | undefined;
+      if (!items) return [];
       
-      return produce(oldData, draft => {
+      return produce(items, draft => {
         const index = draft.findIndex(item => item.id === itemId);
         if (index !== -1) {
           draft.splice(index, 1);

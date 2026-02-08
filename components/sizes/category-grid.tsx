@@ -2,8 +2,9 @@
 
 import { useMemo } from 'react';
 import Link from 'next/link';
-import Plus from 'lucide-react/dist/esm/icons/plus';
+import { Plus } from 'lucide-react';
 import type { SizeCategory, StandardSize, BrandSize } from '@/lib/types/sizes';
+import { TextTruncate } from './text-truncate';
 
 export interface CategoryGridProps {
   categories: SizeCategory[];
@@ -124,7 +125,7 @@ export function CategoryGrid({
 
           {/* Category name */}
           <h3 className="mb-2 text-base font-semibold text-gray-900 group-hover:text-blue-600 dark:text-gray-100 dark:group-hover:text-blue-400">
-            {category.name}
+            <TextTruncate text={category.name} maxLines={2} />
           </h3>
 
           {/* Size count and variations indicator */}

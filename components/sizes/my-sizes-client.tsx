@@ -22,9 +22,13 @@
  * Requirements: 1.1, 1.2, 1.3, 1.4, 1.5
  */
 
+import { useState } from 'react';
 import { useSizeCategories, usePinnedPreferences } from '@/lib/hooks/use-size-categories';
 import { PinnedCardsSection } from './pinned-cards-section';
 import { CategoryGrid } from './category-grid';
+import { ErrorDisplay } from './error-display';
+import { AddCategoryModal } from './add-category-modal';
+import { CustomizePinnedCardsView } from './customize-pinned-cards-view';
 import type { SizeCategory, PinnedPreference, StandardSize, BrandSize } from '@/lib/types/sizes';
 
 export interface MySizesClientProps {
@@ -51,14 +55,28 @@ export function MySizesClient({
   initialStandardSizes,
   initialBrandSizes,
 }: MySizesClientProps) {
+  // State for modals
+  const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
+  const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
+
   // ✅ TanStack Query with server-provided initial data
   // This eliminates loading states on initial render
   // Requirements: 1.2
-  const { data: categories = [], isLoading: categoriesLoading } = useSizeCategories({
+  const { 
+    data: categories = [], 
+    isLoading: categoriesLoading,
+    error: categoriesError,
+    refetch: refetchCategories
+  } = useSizeCategories({
     initialData: initialCategories,
   });
 
-  const { data: pinnedPreferences = [], isLoading: pinnedLoading } = usePinnedPreferences({
+  const { 
+    data: pinnedPreferences = [], 
+    isLoading: pinnedLoading,
+    error: pinnedError,
+    refetch: refetchPinned
+  } = usePinnedPreferences({
     initialData: initialPinnedPreferences,
   });
 
@@ -66,6 +84,16 @@ export function MySizesClient({
   const isLoading = (categoriesLoading || pinnedLoading) && 
                     categories.length === 0 && 
                     pinnedPreferences.length === 0;
+
+  // Handle errors with retry capability
+  // Requirements: 10.1, 12.3
+  const hasError = categoriesError || pinnedError;
+  const error = categoriesError || pinnedError;
+
+  const handleRetry = () => {
+    if (categoriesError) refetchCategories();
+    if (pinnedError) refetchPinned();
+  };
 
   if (isLoading) {
     return (
@@ -113,6 +141,20 @@ export function MySizesClient({
         </p>
       </div>
 
+      {/* Error display with retry */}
+      {/* Requirements: 10.1, 12.3 */}
+      {hasError && (
+        <div className="mb-6">
+          <ErrorDisplay
+            error={error}
+            onRetry={handleRetry}
+            onDismiss={() => {
+              // Error will be cleared on next successful fetch
+            }}
+          />
+        </div>
+      )}
+
       {/* Main content layout */}
       {/* Requirements: 1.1 - Pinned cards at top, category grid below */}
       <div className="space-y-8">
@@ -121,10 +163,7 @@ export function MySizesClient({
         <section aria-labelledby="pinned-sizes-heading">
           <PinnedCardsSection
             pinnedPreferences={pinnedPreferences}
-            onCustomize={() => {
-              // TODO: Implement customize view in future task
-              console.log('Customize pinned cards');
-            }}
+            onCustomize={() => setIsCustomizeOpen(true)}
           />
         </section>
 
@@ -144,13 +183,27 @@ export function MySizesClient({
             categories={categories}
             standardSizes={initialStandardSizes}
             brandSizes={initialBrandSizes}
-            onAddCategory={() => {
-              // TODO: Implement add category form in future task
-              console.log('Add new category');
-            }}
+            onAddCategory={() => setIsAddCategoryOpen(true)}
           />
         </section>
       </div>
+
+      {/* Add Category Modal */}
+      <AddCategoryModal
+        isOpen={isAddCategoryOpen}
+        onClose={() => setIsAddCategoryOpen(false)}
+        onSave={() => {
+          // Close modal after successful save
+          // The mutation hook in AddCategoryForm will handle cache invalidation
+          setIsAddCategoryOpen(false);
+        }}
+      />
+
+      {/* Customize Pinned Cards View */}
+      <CustomizePinnedCardsView
+        isOpen={isCustomizeOpen}
+        onClose={() => setIsCustomizeOpen(false)}
+      />
     </div>
   );
 }

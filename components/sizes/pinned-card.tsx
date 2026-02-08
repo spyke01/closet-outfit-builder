@@ -21,6 +21,7 @@ import Link from 'next/link';
 import { useSizeCategory, useBrandSizes } from '@/lib/hooks/use-size-categories';
 import type { DisplayMode } from '@/lib/types/sizes';
 import { Clock, MoreVertical } from 'lucide-react';
+import { TextTruncate } from './text-truncate';
 
 /**
  * Format a date as relative time (e.g., "2 hours ago")
@@ -258,8 +259,9 @@ export function PinnedCard({
                   {preferredBrand.size}
                 </span>
                 <div className="text-xs text-gray-500 dark:text-gray-400">
-                  {preferredBrand.brand_name}
-                  {preferredBrand.item_type && ` - ${preferredBrand.item_type}`}
+                  <TextTruncate 
+                    text={`${preferredBrand.brand_name}${preferredBrand.item_type ? ` - ${preferredBrand.item_type}` : ''}`}
+                  />
                 </div>
               </div>
             );
@@ -306,8 +308,8 @@ export function PinnedCard({
       >
         {/* Header with category name and menu button */}
         <div className="flex items-start justify-between mb-3">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {category.name}
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex-1 min-w-0">
+            <TextTruncate text={category.name} />
           </h3>
           
           {onLongPress && (

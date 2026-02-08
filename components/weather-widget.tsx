@@ -14,6 +14,7 @@ import { useAuth } from '@/lib/hooks/use-auth';
 export const WeatherWidget: React.FC<{ className?: string }> = ({
   className = ""
 }) => {
+  // ✅ Call all hooks first (Rules of Hooks)
   const { user } = useAuth();
   const { current, loading, error, retry, usingFallback, weatherEnabled } = useConditionalWeather(!!user);
 
@@ -22,6 +23,7 @@ export const WeatherWidget: React.FC<{ className?: string }> = ({
     preloadWeatherModule();
   };
 
+  // ✅ Early returns after all hooks are called
   // Don't render if weather is not enabled
   if (!weatherEnabled) {
     return null;

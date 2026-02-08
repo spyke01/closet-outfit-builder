@@ -79,7 +79,9 @@ export function memoizeLRU<TArgs extends any[], TResult>(
     // Evict oldest entry if cache is full
     if (cache.size >= maxSize) {
       const firstKey = cache.keys().next().value
-      cache.delete(firstKey)
+      if (firstKey !== undefined) {
+        cache.delete(firstKey)
+      }
     }
     
     cache.set(key, result)
@@ -386,7 +388,7 @@ export function batchCalls<TArg, TResult>(
       })
     } catch (error) {
       currentBatch.forEach(item => {
-        item.reject(error)
+        item.reject(error instanceof Error ? error : new Error(String(error)))
       })
     }
   }

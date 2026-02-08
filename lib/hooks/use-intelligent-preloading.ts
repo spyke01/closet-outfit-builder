@@ -108,7 +108,7 @@ const ROUTE_PRELOAD_CONFIGS: RoutePreloadConfig[] = [
     modules: [
       {
         feature: 'sizeManagement',
-        importFn: () => import('../../components/sizes/category-detail-view'),
+        importFn: () => import('../../components/sizes/category-detail-client'),
         priority: 'high',
         delay: 0,
       },

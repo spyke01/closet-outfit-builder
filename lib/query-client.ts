@@ -1,4 +1,4 @@
-import { QueryClient } from '@tantml:react-query';
+import { QueryClient } from '@tanstack/react-query';
 import type { WardrobeItem } from '@/lib/types/database';
 
 export function createQueryClient() {
@@ -37,7 +37,8 @@ export function createQueryClient() {
           return now - query.state.dataUpdatedAt > staleTime;
         },
         // Network mode for better offline handling
-        networkMode: 'online',
+        // 'offlineFirst' serves cached data when offline and queues mutations
+        networkMode: 'offlineFirst',
       },
       mutations: {
         // Retry mutations once on network errors only
@@ -51,7 +52,8 @@ export function createQueryClient() {
         // Shorter retry delay for mutations
         retryDelay: 1000,
         // Network mode for mutations
-        networkMode: 'online',
+        // 'offlineFirst' queues mutations when offline and syncs when online
+        networkMode: 'offlineFirst',
       },
     },
   });

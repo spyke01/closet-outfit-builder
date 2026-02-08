@@ -46,12 +46,17 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
 
+  // Enable source maps for debugging in production
+  productionBrowserSourceMaps: process.env.DEBUG_BUILD === 'true',
+
   // Enable trailing slash for better compatibility
   trailingSlash: true,
 
   // Configure images for Netlify deployment
   images: {
-    unoptimized: false,
+    // Disable Next.js image optimization for Netlify
+    // Netlify doesn't support Next.js Image Optimization API in production
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',

@@ -13,7 +13,7 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import X from 'lucide-react/dist/esm/icons/x'
+import { X } from 'lucide-react'
 import { standardSizeInputSchema, type StandardSizeInput } from '@/lib/schemas/sizes'
 import type { StandardSize, SizingFormat } from '@/lib/types/sizes'
 import { useUpdateStandardSize } from '@/lib/hooks/use-size-categories'
@@ -77,16 +77,16 @@ export function StandardSizeForm({
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-4 bg-white border border-gray-200 rounded-lg">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">
+        <h3 className="text-lg font-semibold dark:text-gray-100">
           {standardSize ? 'Edit Standard Size' : 'Add Standard Size'}
         </h3>
         <button
           type="button"
           onClick={onCancel}
           aria-label="Close form"
-          className="p-1 text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
+          className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
         >
           <X className="h-5 w-5" aria-hidden="true" />
         </button>
@@ -97,7 +97,7 @@ export function StandardSizeForm({
         <div className="form-field">
           <label 
             htmlFor="primary-size" 
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
           >
             Primary Size <span className="text-red-500" aria-label="required">*</span>
           </label>
@@ -109,17 +109,17 @@ export function StandardSizeForm({
             aria-required="true"
             aria-invalid={!!form.formState.errors.primary_size}
             aria-describedby="primary-size-hint primary-size-error"
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             {...form.register('primary_size')}
           />
-          <p id="primary-size-hint" className="mt-1 text-xs text-gray-500">
+          <p id="primary-size-hint" className="mt-1 text-xs text-gray-500 dark:text-gray-400">
             {getFormatHelperText()}
           </p>
           {form.formState.errors.primary_size && (
             <p 
               id="primary-size-error" 
               role="alert" 
-              className="mt-1 text-sm text-red-600"
+              className="mt-1 text-sm text-red-600 dark:text-red-400"
             >
               {form.formState.errors.primary_size.message}
             </p>
@@ -130,7 +130,7 @@ export function StandardSizeForm({
         <div className="form-field">
           <label 
             htmlFor="secondary-size" 
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
           >
             Secondary Size <span className="text-gray-400 text-xs">(optional)</span>
           </label>
@@ -141,17 +141,17 @@ export function StandardSizeForm({
             placeholder={getSizePlaceholder()}
             aria-invalid={!!form.formState.errors.secondary_size}
             aria-describedby="secondary-size-hint secondary-size-error"
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             {...form.register('secondary_size')}
           />
-          <p id="secondary-size-hint" className="mt-1 text-xs text-gray-500">
+          <p id="secondary-size-hint" className="mt-1 text-xs text-gray-500 dark:text-gray-400">
             Optional alternative size (e.g., for between sizes)
           </p>
           {form.formState.errors.secondary_size && (
             <p 
               id="secondary-size-error" 
               role="alert" 
-              className="mt-1 text-sm text-red-600"
+              className="mt-1 text-sm text-red-600 dark:text-red-400"
             >
               {form.formState.errors.secondary_size.message}
             </p>
@@ -162,7 +162,7 @@ export function StandardSizeForm({
         <div className="form-field">
           <label 
             htmlFor="size-notes" 
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
           >
             Notes <span className="text-gray-400 text-xs">(optional)</span>
           </label>
@@ -172,17 +172,17 @@ export function StandardSizeForm({
             placeholder="Add any notes about fit, preferences, or sizing details..."
             aria-invalid={!!form.formState.errors.notes}
             aria-describedby="size-notes-hint size-notes-error"
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm resize-none"
             {...form.register('notes')}
           />
-          <p id="size-notes-hint" className="mt-1 text-xs text-gray-500">
+          <p id="size-notes-hint" className="mt-1 text-xs text-gray-500 dark:text-gray-400">
             Maximum 500 characters
           </p>
           {form.formState.errors.notes && (
             <p 
               id="size-notes-error" 
               role="alert" 
-              className="mt-1 text-sm text-red-600"
+              className="mt-1 text-sm text-red-600 dark:text-red-400"
             >
               {form.formState.errors.notes.message}
             </p>
@@ -191,12 +191,12 @@ export function StandardSizeForm({
       </div>
 
       {/* Form Actions */}
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
         <button
           type="button"
           onClick={onCancel}
           disabled={updateStandardSize.isPending}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Cancel
         </button>
@@ -213,7 +213,7 @@ export function StandardSizeForm({
       {updateStandardSize.isError && (
         <div 
           role="alert" 
-          className="p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-md"
+          className="p-3 text-sm text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md"
         >
           Failed to save standard size. Please try again.
         </div>

@@ -9,10 +9,10 @@ import type { SWRConfiguration } from 'swr';
  */
 export function useImmutableSWR<Data = any, Error = any>(
   key: string | null,
-  fetcher?: (key: string) => Promise<Data>,
+  fetcher?: ((key: string) => Promise<Data>) | null,
   options?: SWRConfiguration<Data, Error>
 ) {
-  return useSWRImmutable<Data, Error>(key, fetcher, options);
+  return useSWRImmutable<Data, Error>(key, fetcher as any, options);
 }
 
 /**

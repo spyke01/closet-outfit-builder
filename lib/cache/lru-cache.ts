@@ -70,7 +70,7 @@ export const invalidateCache = {
 /**
  * Cached data fetcher with automatic caching
  */
-export async function getCached<T>(
+export async function getCached<T extends {}>(
   cache: LRUCache<string, T>,
   key: string,
   fetcher: () => Promise<T>

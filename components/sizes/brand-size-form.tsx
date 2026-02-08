@@ -19,8 +19,7 @@
 import { useCallback, useEffect, useState, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import X from 'lucide-react/dist/esm/icons/x'
-import Check from 'lucide-react/dist/esm/icons/check'
+import { X, Check } from 'lucide-react'
 import { brandSizeInputSchema, type BrandSizeInput } from '@/lib/schemas/sizes'
 import { useCreateBrandSize, useBrandSizes } from '@/lib/hooks/use-size-categories'
 import type { BrandSize } from '@/lib/types/sizes'
@@ -126,7 +125,7 @@ export function BrandSizeForm({
       <div className="form-field">
         <label 
           htmlFor="brand-name" 
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
         >
           Brand Name <span className="text-red-500" aria-label="required">*</span>
         </label>
@@ -144,14 +143,14 @@ export function BrandSizeForm({
             aria-required="true"
             aria-invalid={!!form.formState.errors.brand_name}
             aria-describedby="brand-name-error brand-name-hint"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="e.g., Nike, Levi's, Gap"
           />
           
           {/* Dropdown with previously entered brand names */}
           {showBrandDropdown && filteredBrandNames.length > 0 && (
             <div 
-              className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
+              className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-auto"
               role="listbox"
               aria-label="Previously entered brand names"
             >
@@ -160,7 +159,7 @@ export function BrandSizeForm({
                   key={brandName}
                   type="button"
                   onClick={() => handleBrandSelect(brandName)}
-                  className="w-full px-3 py-2 text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                  className="w-full px-3 py-2 text-left text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none"
                   role="option"
                   aria-selected={brandNameValue === brandName}
                 >
@@ -171,7 +170,7 @@ export function BrandSizeForm({
           )}
         </div>
         
-        <span id="brand-name-hint" className="block mt-1 text-xs text-gray-500">
+        <span id="brand-name-hint" className="block mt-1 text-xs text-gray-500 dark:text-gray-400">
           Enter the clothing brand name
         </span>
         
@@ -179,7 +178,7 @@ export function BrandSizeForm({
           <span 
             id="brand-name-error" 
             role="alert" 
-            className="block mt-1 text-sm text-red-600"
+            className="block mt-1 text-sm text-red-600 dark:text-red-400"
           >
             {form.formState.errors.brand_name.message}
           </span>
@@ -190,7 +189,7 @@ export function BrandSizeForm({
       <div className="form-field">
         <label 
           htmlFor="item-type" 
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
         >
           Item Type <span className="text-gray-400 text-xs">(optional)</span>
         </label>
@@ -200,10 +199,10 @@ export function BrandSizeForm({
           autoComplete="off"
           {...form.register('item_type')}
           aria-describedby="item-type-hint"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="e.g., Jeans, Dress Shirt, Sneakers"
         />
-        <span id="item-type-hint" className="block mt-1 text-xs text-gray-500">
+        <span id="item-type-hint" className="block mt-1 text-xs text-gray-500 dark:text-gray-400">
           Specify the type of item (e.g., "Jeans", "Dress Shirt")
         </span>
       </div>
@@ -212,7 +211,7 @@ export function BrandSizeForm({
       <div className="form-field">
         <label 
           htmlFor="size-value" 
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
         >
           Size <span className="text-red-500" aria-label="required">*</span>
         </label>
@@ -224,17 +223,17 @@ export function BrandSizeForm({
           aria-required="true"
           aria-invalid={!!form.formState.errors.size}
           aria-describedby="size-error size-format-hint"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="e.g., M, 32, 32x34"
         />
-        <span id="size-format-hint" className="block mt-1 text-xs text-gray-500">
+        <span id="size-format-hint" className="block mt-1 text-xs text-gray-500 dark:text-gray-400">
           Enter size in any supported format
         </span>
         {form.formState.errors.size && (
           <span 
             id="size-error" 
             role="alert" 
-            className="block mt-1 text-sm text-red-600"
+            className="block mt-1 text-sm text-red-600 dark:text-red-400"
           >
             {form.formState.errors.size.message}
           </span>
@@ -243,7 +242,7 @@ export function BrandSizeForm({
       
       {/* Fit Scale Selector */}
       <div className="form-field">
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
           Fit Scale <span className="text-red-500" aria-label="required">*</span>
         </label>
         <div 
@@ -254,7 +253,7 @@ export function BrandSizeForm({
           {FIT_SCALE_OPTIONS.map((option) => (
             <label
               key={option.value}
-              className="flex items-start gap-3 p-3 border border-gray-200 rounded-md hover:border-gray-300 cursor-pointer transition-colors"
+              className="flex items-start gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-md hover:border-gray-300 dark:hover:border-gray-600 cursor-pointer transition-colors bg-white dark:bg-gray-800"
             >
               <input
                 type="radio"
@@ -264,12 +263,12 @@ export function BrandSizeForm({
                 aria-describedby={`fit-scale-${option.value}-description`}
               />
               <div className="flex-1">
-                <div className="text-sm font-medium text-gray-900">
+                <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                   {option.label}
                 </div>
                 <div 
                   id={`fit-scale-${option.value}-description`}
-                  className="text-xs text-gray-500"
+                  className="text-xs text-gray-500 dark:text-gray-400"
                 >
                   {option.description}
                 </div>
@@ -280,7 +279,7 @@ export function BrandSizeForm({
         {form.formState.errors.fit_scale && (
           <span 
             role="alert" 
-            className="block mt-2 text-sm text-red-600"
+            className="block mt-2 text-sm text-red-600 dark:text-red-400"
           >
             {form.formState.errors.fit_scale.message}
           </span>
@@ -291,7 +290,7 @@ export function BrandSizeForm({
       <div className="form-field">
         <label 
           htmlFor="notes" 
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
         >
           Notes <span className="text-gray-400 text-xs">(optional)</span>
         </label>
@@ -300,16 +299,16 @@ export function BrandSizeForm({
           rows={3}
           {...form.register('notes')}
           aria-describedby="notes-hint"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
           placeholder="Add any additional notes about this brand's sizing..."
         />
-        <span id="notes-hint" className="block mt-1 text-xs text-gray-500">
+        <span id="notes-hint" className="block mt-1 text-xs text-gray-500 dark:text-gray-400">
           Optional notes about fit, quality, or sizing quirks
         </span>
         {form.formState.errors.notes && (
           <span 
             role="alert" 
-            className="block mt-1 text-sm text-red-600"
+            className="block mt-1 text-sm text-red-600 dark:text-red-400"
           >
             {form.formState.errors.notes.message}
           </span>
@@ -317,11 +316,11 @@ export function BrandSizeForm({
       </div>
       
       {/* Form Actions */}
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
         <button
           type="button"
           onClick={onCancel}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
           aria-label="Cancel adding brand size"
         >
           <X className="h-4 w-4" aria-hidden="true" />
@@ -342,9 +341,9 @@ export function BrandSizeForm({
       {createBrandSize.isError && (
         <div 
           role="alert" 
-          className="p-3 bg-red-50 border border-red-200 rounded-md"
+          className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md"
         >
-          <p className="text-sm text-red-800">
+          <p className="text-sm text-red-800 dark:text-red-300">
             Failed to save brand size. Please try again.
           </p>
         </div>

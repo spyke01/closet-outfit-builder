@@ -212,7 +212,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
         >
           {/* Clear selection option */}
           <button
-            ref={el => itemRefs.current[-1] = el}
+            ref={el => { itemRefs.current[-1] = el; }}
             onClick={() => handleSelect(null)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
@@ -235,7 +235,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
             validatedItems.map((item, index) => (
               <button
                 key={item.id}
-                ref={el => itemRefs.current[index] = el}
+                ref={el => { itemRefs.current[index] = el; }}
                 onClick={() => handleSelect(item)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {

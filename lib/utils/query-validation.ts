@@ -64,12 +64,10 @@ export function useOptimisticMutation<TData, TError = Error, TVariables = void, 
         produce(oldData, (draft: unknown) => optimisticUpdater(draft, variables))
       );
       
-      // Call original onMutate if provided
-      const context = await mutationOptions.onMutate?.(variables, {} as TContext);
-      
-      return { previousData, ...context } as TContext & { previousData: unknown };
+      // Return context for rollback
+      return { previousData } as TContext & { previousData: unknown };
     },
-    onError: (error, variables, context: TContext & { previousData?: unknown }) => {
+    onError: (error, variables, context) => {
       // Rollback on error if enabled
       if (rollbackOnError && context?.previousData) {
         queryClient.setQueryData(queryKey, context.previousData);
