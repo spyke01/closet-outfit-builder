@@ -389,15 +389,6 @@ export function CreateOutfitPageClient() {
                   </div>
                 )}
 
-                {/* Empty state guidance */}
-                {selectedItemIds.length === 0 && (
-                  <div className="p-4 text-center text-slate-500 dark:text-slate-400">
-                    <Shirt className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">
-                      Select items from categories below to start building your outfit
-                    </p>
-                  </div>
-                )}
 
                 {/* Selected Items Display */}
                 <OutfitDisplay
