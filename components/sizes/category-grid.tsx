@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import Link from 'next/link';
 import type { SizeCategory, StandardSize, BrandSize } from '@/lib/types/sizes';
 import { TextTruncate } from './text-truncate';
+import { CategoryIcon } from './category-icon';
 
 export interface CategoryGridProps {
   categories: SizeCategory[];
@@ -114,8 +115,8 @@ export function CategoryGrid({
         >
           {/* Category icon (if available) */}
           {category.icon && (
-            <div className="mb-2 text-2xl" aria-hidden="true">
-              {category.icon}
+            <div className="mb-2">
+              <CategoryIcon iconName={category.icon} className="h-6 w-6 text-gray-600 dark:text-gray-400" />
             </div>
           )}
 

@@ -43,7 +43,7 @@ BEGIN
     (
       p_user_id,
       'Dress Shirt',
-      'shirt',
+      'Shirt',
       'men',
       ARRAY['numeric', 'measurements']::text[],
       true,
@@ -74,7 +74,7 @@ BEGIN
     (
       p_user_id,
       'Casual Shirt',
-      'shirt',
+      'Shirt',
       'men',
       ARRAY['letter', 'numeric']::text[],
       true,
@@ -98,7 +98,7 @@ BEGIN
     (
       p_user_id,
       'Suit Jacket',
-      'briefcase',
+      'Briefcase',
       'men',
       ARRAY['numeric', 'letter']::text[],
       true,
@@ -128,7 +128,7 @@ BEGIN
     (
       p_user_id,
       'Pants',
-      'ruler',
+      'Ruler',
       'men',
       ARRAY['waist-inseam']::text[],
       true,
@@ -159,7 +159,7 @@ BEGIN
     (
       p_user_id,
       'Jeans',
-      'ruler',
+      'Ruler',
       'men',
       ARRAY['waist-inseam']::text[],
       true,
@@ -190,7 +190,7 @@ BEGIN
     (
       p_user_id,
       'Shoes',
-      'footprints',
+      'Footprints',
       'men',
       ARRAY['numeric']::text[],
       true,
@@ -214,7 +214,7 @@ BEGIN
     (
       p_user_id,
       'Belt',
-      'minus',
+      'Minus',
       'men',
       ARRAY['numeric']::text[],
       true,
@@ -234,11 +234,11 @@ BEGIN
       NOW()
     ),
     
-    -- Coat/Jacket: Letter or numeric sizes
+    -- Jacket: Letter or numeric sizes
     (
       p_user_id,
-      'Coat/Jacket',
-      'coat',
+      'Jacket',
+      'Shirt',
       'men',
       ARRAY['letter', 'numeric']::text[],
       true,
@@ -266,7 +266,7 @@ BEGIN
     (
       p_user_id,
       'Dress',
-      'dress',
+      'Shirt',
       'women',
       ARRAY['numeric', 'letter']::text[],
       true,
@@ -304,7 +304,7 @@ BEGIN
     (
       p_user_id,
       'Blouse/Top',
-      'shirt',
+      'Shirt',
       'women',
       ARRAY['letter', 'numeric']::text[],
       true,
@@ -328,7 +328,7 @@ BEGIN
     (
       p_user_id,
       'Pants',
-      'ruler',
+      'Ruler',
       'women',
       ARRAY['numeric', 'waist-inseam']::text[],
       true,
@@ -359,7 +359,7 @@ BEGIN
     (
       p_user_id,
       'Jeans',
-      'ruler',
+      'Ruler',
       'women',
       ARRAY['numeric', 'waist-inseam']::text[],
       true,
@@ -390,7 +390,7 @@ BEGIN
     (
       p_user_id,
       'Shoes',
-      'footprints',
+      'Footprints',
       'women',
       ARRAY['numeric']::text[],
       true,
@@ -410,11 +410,11 @@ BEGIN
       NOW()
     ),
     
-    -- Jacket/Coat: Letter or numeric sizes
+    -- Jacket: Letter or numeric sizes
     (
       p_user_id,
-      'Jacket/Coat',
-      'coat',
+      'Jacket',
+      'Shirt',
       'women',
       ARRAY['letter', 'numeric']::text[],
       true,
@@ -438,7 +438,7 @@ BEGIN
     (
       p_user_id,
       'Suit Jacket',
-      'briefcase',
+      'Briefcase',
       'women',
       ARRAY['numeric']::text[],
       true,
@@ -462,7 +462,7 @@ BEGIN
     (
       p_user_id,
       'Belt',
-      'minus',
+      'Minus',
       'women',
       ARRAY['letter', 'numeric']::text[],
       true,
