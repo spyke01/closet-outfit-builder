@@ -636,7 +636,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
               </CardHeader>
               <CardContent>
                 <p className="text-slate-600 dark:text-slate-400 mb-4">
-                  Are you sure you want to delete &quot;{outfit.name || 'this outfit'}&quot;? This action cannot be undone.
+                  Are you sure you want to delete &quot;{outfit.name || 'Untitled Outfit'}&quot;? This action cannot be undone.
                 </p>
                 <div className="flex gap-2 justify-end">
                   <Button
