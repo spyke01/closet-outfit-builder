@@ -128,6 +128,8 @@ interface OutfitDisplayProps {
   onSaveOutfit?: (outfit: Omit<Outfit, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => Promise<void>;
   isGenerating?: boolean;
   generationError?: Error | null;
+  // UI control props
+  hideRandomizeButton?: boolean;
 }
 
 export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({ 
@@ -143,7 +145,8 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
   userId,
   onSaveOutfit,
   isGenerating = false,
-  generationError = null
+  generationError = null,
+  hideRandomizeButton = false
 }) => {
   // Immer-based state management
   const [state, updateState] = useImmerState<OutfitDisplayState>({
@@ -397,28 +400,30 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
 
           {/* Action buttons */}
           <div className="mt-6 sm:mt-8 space-y-3">
-            {/* Primary action - Randomize */}
-            <div className="text-center">
-              <button
-                onClick={handleRandomize}
-                disabled={isGenerating || state.isTransitioning}
-                className="flex items-center justify-center gap-2 px-6 sm:px-8 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors mx-auto min-h-[44px] w-full sm:w-auto"
-              >
-                {(isGenerating || state.isTransitioning) ? (
-                  <>
-                    <SpinningIcon>
-                      <Loader2 size={18} />
-                    </SpinningIcon>
-                    Generating…
-                  </>
-                ) : (
-                  <>
-                    <RefreshCw size={18} />
-                    Try Another Combination
-                  </>
-                )}
-              </button>
-            </div>
+            {/* Primary action - Randomize (hidden in edit mode) */}
+            {!hideRandomizeButton && (
+              <div className="text-center">
+                <button
+                  onClick={handleRandomize}
+                  disabled={isGenerating || state.isTransitioning}
+                  className="flex items-center justify-center gap-2 px-6 sm:px-8 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors mx-auto min-h-[44px] w-full sm:w-auto"
+                >
+                  {(isGenerating || state.isTransitioning) ? (
+                    <>
+                      <SpinningIcon>
+                        <Loader2 size={18} />
+                      </SpinningIcon>
+                      Generating…
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw size={18} />
+                      Try Another Combination
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
 
             {/* Secondary actions */}
             {onSaveOutfit && userId && (

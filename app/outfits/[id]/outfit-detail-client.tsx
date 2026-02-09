@@ -268,7 +268,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
 
   if (outfitLoading || (isEditing && (categoriesLoading || itemsLoading))) {
     return (
-      <div className="flex-1 w-full max-w-4xl mx-auto p-6">
+      <div className="flex-1 w-full max-w-7xl mx-auto p-6">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800 mx-auto mb-4"></div>
@@ -283,7 +283,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
 
   if (outfitError || !outfit) {
     return (
-      <div className="flex-1 w-full max-w-4xl mx-auto p-6">
+      <div className="flex-1 w-full max-w-7xl mx-auto p-6">
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
@@ -299,7 +299,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
   }
 
   return (
-    <div className="flex-1 w-full max-w-4xl mx-auto p-6">
+    <div className="flex-1 w-full max-w-7xl mx-auto p-6">
       <div className="flex flex-col gap-6">
         {/* Navigation */}
         <NavigationButtons 
@@ -524,6 +524,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
                     <OutfitDisplay
                       selection={displaySelection}
                       onRandomize={() => {}}
+                      hideRandomizeButton={true}
                     />
                   )}
                 </CardContent>
