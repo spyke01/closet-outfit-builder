@@ -69,7 +69,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
 
   // Score and duplicate checking for edit mode
   const { data: scoreData } = useScoreOutfit(selectedItemIds);
-  const { data: isDuplicate } = useCheckOutfitDuplicate(selectedItemIds);
+  const { data: isDuplicate } = useCheckOutfitDuplicate(selectedItemIds, outfit?.id);
 
   // Create category lookup map for O(1) performance
   const categoryMap = useMemo(() => {

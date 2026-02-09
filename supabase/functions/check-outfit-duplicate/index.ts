@@ -72,7 +72,7 @@ serve(async (req) => {
       )
     }
 
-    const { item_ids, tuck_style, similarity_threshold = 0.8 } = await req.json()
+    const { item_ids, tuck_style, exclude_outfit_id, similarity_threshold = 0.8 } = await req.json()
 
     if (!item_ids || !Array.isArray(item_ids) || item_ids.length === 0) {
       return createCorsResponse(
@@ -129,7 +129,8 @@ serve(async (req) => {
     }
 
     // Get all existing outfits for the user with their items
-    const { data: existingOutfits, error: outfitsError } = await supabaseClient
+    // Exclude the outfit being edited if exclude_outfit_id is provided
+    let query = supabaseClient
       .from('outfits')
       .select(`
         id,
@@ -142,6 +143,13 @@ serve(async (req) => {
         )
       `)
       .eq('user_id', user.id)
+    
+    // Exclude the outfit being edited
+    if (exclude_outfit_id) {
+      query = query.neq('id', exclude_outfit_id)
+    }
+
+    const { data: existingOutfits, error: outfitsError } = await query
 
     if (outfitsError) {
       throw new Error(`Failed to fetch existing outfits: ${outfitsError.message}`)

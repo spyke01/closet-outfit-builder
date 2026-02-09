@@ -115,7 +115,7 @@ export function useOutfitsByAnchor(itemId: string) {
 }
 
 // Check if an outfit combination already exists
-export function useCheckOutfitDuplicate(itemIds: string[]) {
+export function useCheckOutfitDuplicate(itemIds: string[], excludeOutfitId?: string) {
   const supabase = createClient();
   
   return useQuery({
@@ -126,7 +126,10 @@ export function useCheckOutfitDuplicate(itemIds: string[]) {
       try {
         // Call the check-outfit-duplicate Edge Function
         const { data, error } = await supabase.functions.invoke('check-outfit-duplicate', {
-          body: { item_ids: itemIds }
+          body: { 
+            item_ids: itemIds,
+            exclude_outfit_id: excludeOutfitId 
+          }
         });
 
         if (error) {
