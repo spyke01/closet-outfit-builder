@@ -105,7 +105,7 @@ const wardrobeData: DefaultWardrobeItem[] = [
   {"id":"quarterzip-navy","name":"Quarterzip (Navy)","category":"Shirt","capsuleTags":["Refined"],"formalityScore":7,"image":"/images/wardrobe/quarterzip-navy.png","brand":"Polo Ralph Lauren"},
   {"id":"quarterzip-tan","name":"Quarterzip (Tan)","category":"Shirt","capsuleTags":["Refined"],"formalityScore":7,"image":"/images/wardrobe/quarterzip-tan.png","brand":"Polo Ralph Lauren"},
   {"id":"rolex-black","name":"Submariner (Black)","category":"Watch","brand":"Rolex","capsuleTags":["Refined"],"formalityScore":8,"image":"/images/wardrobe/role-submariner-black.png"},
-  {"id":"rolex-cellini-moonphase","name":"Cellini Moonphase","category":"Watch","brand":"Rolex","capsuleTags":["Refined","Shorts"],"formalityScore":8,"image":"/images/wardrobe/rolex-panda.png"},
+  {"id":"rolex-cellini-moonphase","name":"Cellini Moonphase","category":"Watch","brand":"Rolex","capsuleTags":["Refined","Shorts"],"formalityScore":8,"image":"/images/wardrobe/rolex-cellini-moonphase.png"},
   {"id":"rolex-panda","name":"Daytona (Panda)","category":"Watch","brand":"Rolex","capsuleTags":["Refined","Shorts"],"formalityScore":8,"image":"/images/wardrobe/rolex-panda.png"},
   {"id":"shacket-beige","name":"Shacket (Beige)","category":"Overshirt","capsuleTags":["Crossover"],"formalityScore":4,"image":"/images/wardrobe/shacket-cream.png","brand":"Banana Republic"},
   {"id":"shacket-olive","name":"Shacket (Olive)","category":"Overshirt","capsuleTags":["Crossover"],"formalityScore":4,"image":"/images/wardrobe/shacket-olive.png","brand":"Banana Republic"},

@@ -13,7 +13,6 @@ import {
   Save, 
   X, 
   AlertCircle,
-  CheckCircle,
   Shirt,
   Star,
   Heart
@@ -64,11 +63,17 @@ export function CreateOutfitPageClient() {
   // Mutations and queries
   const createOutfitMutation = useCreateOutfit();
   
+  // Reset mutation state on mount to prevent stale success messages
+  useEffect(() => {
+    createOutfitMutation.reset();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  
   // Get selected item IDs for scoring and duplicate checking
   const selectedItemIds = useMemo(() => {
     return Object.entries(selection)
       .filter(([key, item]) => key !== 'tuck_style' && key !== 'score' && item !== null && item !== undefined)
-      .map(([, item]) => (item as WardrobeItem).id);
+      .map(([, item]) => (item as WardrobeItem).id)
+      .filter(id => id && typeof id === 'string'); // Ensure valid IDs
   }, [selection]);
 
   // Track if form has unsaved changes
@@ -79,7 +84,12 @@ export function CreateOutfitPageClient() {
   // Warn before navigation with unsaved changes
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (hasUnsavedChanges && !createOutfitMutation.isSuccess) {
+      // Don't warn if mutation succeeded or is currently saving
+      if (createOutfitMutation.isSuccess || createOutfitMutation.isPending) {
+        return;
+      }
+      
+      if (hasUnsavedChanges) {
         e.preventDefault();
         e.returnValue = '';
       }
@@ -87,7 +97,7 @@ export function CreateOutfitPageClient() {
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [hasUnsavedChanges, createOutfitMutation.isSuccess]);
+  }, [hasUnsavedChanges, createOutfitMutation.isSuccess, createOutfitMutation.isPending]);
 
   // Check if outfit meets minimum requirements (shirt + pants)
   const hasMinimumOutfit = useMemo(() => {
@@ -95,7 +105,10 @@ export function CreateOutfitPageClient() {
   }, [selection.shirt, selection.undershirt, selection.pants]);
 
   const { data: scoreData } = useScoreOutfit(selectedItemIds);
-  const { data: isDuplicate } = useCheckOutfitDuplicate(selectedItemIds);
+  // Disable duplicate check while mutation is pending or successful
+  const { data: isDuplicate, error: duplicateCheckError } = useCheckOutfitDuplicate(
+    createOutfitMutation.isPending || createOutfitMutation.isSuccess ? [] : selectedItemIds
+  );
 
   // Group items by category
   const itemsByCategory = useMemo(() => {
@@ -169,19 +182,27 @@ export function CreateOutfitPageClient() {
       return;
     }
 
-    try {
-      const outfitData = {
-        name: outfitName.trim() || undefined,
-        tuck_style: tuckStyle,
-        loved: isLoved,
-        source: 'curated' as const,
-        items: selectedItemIds,
-      };
+    // Prevent double submission
+    if (createOutfitMutation.isPending) {
+      return;
+    }
 
+    const outfitData = {
+      name: outfitName.trim() || undefined,
+      tuck_style: tuckStyle,
+      loved: isLoved,
+      source: 'curated' as const,
+      items: selectedItemIds,
+    };
+
+    try {
       await createOutfitMutation.mutateAsync(outfitData);
-      router.push('/outfits');
+      // Navigation: Use window.location for reliable redirect after successful save
+      // This avoids Next.js router state issues
+      window.location.href = '/outfits';
     } catch (error) {
       console.error('Failed to create outfit:', error);
+      // Error will be shown by the error alert - don't navigate
     }
   };
 
@@ -250,14 +271,7 @@ export function CreateOutfitPageClient() {
           </div>
         </div>
 
-        {/* Success/Error Messages */}
-        {createOutfitMutation.isSuccess && (
-          <Alert>
-            <CheckCircle className="h-4 w-4" />
-            <AlertDescription>Outfit created successfully!</AlertDescription>
-          </Alert>
-        )}
-
+        {/* Error Messages */}
         {createOutfitMutation.isError && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
@@ -267,11 +281,20 @@ export function CreateOutfitPageClient() {
           </Alert>
         )}
 
-        {isDuplicate && (
+        {isDuplicate && !createOutfitMutation.isSuccess && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               This outfit combination already exists in your collection.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {duplicateCheckError && (
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Unable to check for duplicate outfits. You can still create this outfit.
             </AlertDescription>
           </Alert>
         )}
@@ -397,6 +420,7 @@ export function CreateOutfitPageClient() {
                   {categories.map((category) => (
                     <button
                       key={category.id}
+                      type="button"
                       onClick={() => handleCategorySelect(category.id)}
                       className={`
                         px-4 py-2 rounded-lg border transition-colors text-sm font-medium

@@ -448,7 +448,8 @@ export function useOutfitCreation() {
         throw new Error(`Duplicate check failed: ${duplicateError.message}`);
       }
 
-      if (duplicateCheck?.isDuplicate) {
+      // Fix: Edge function returns is_duplicate (snake_case), not isDuplicate
+      if (duplicateCheck?.is_duplicate) {
         throw new Error('This outfit combination already exists');
       }
 

@@ -46,13 +46,22 @@ serve(async (req) => {
   }
 
   try {
+    const authHeader = req.headers.get('Authorization')!
+    const token = authHeader.replace('Bearer ', '')
+    
+    // Create Supabase client with the user's auth token
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      {
+        global: {
+          headers: {
+            Authorization: authHeader
+          }
+        }
+      }
     )
 
-    const authHeader = req.headers.get('Authorization')!
-    const token = authHeader.replace('Bearer ', '')
     const { data: { user } } = await supabaseClient.auth.getUser(token)
 
     if (!user) {
@@ -76,18 +85,44 @@ serve(async (req) => {
     // Validate that all items belong to the user
     const { data: userItems, error: itemsError } = await supabaseClient
       .from('wardrobe_items')
-      .select('id')
+      .select('id, active')
       .in('id', item_ids)
       .eq('user_id', user.id)
-      .eq('active', true)
 
     if (itemsError) {
       throw new Error(`Failed to validate items: ${itemsError.message}`)
     }
 
-    if (!userItems || userItems.length !== item_ids.length) {
+    if (!userItems || userItems.length === 0) {
       return createCorsResponse(
-        JSON.stringify({ error: 'Some items do not exist or do not belong to user' }),
+        JSON.stringify({ error: 'None of the items exist or belong to user' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } },
+        origin
+      )
+    }
+
+    // Check if all items are active
+    const inactiveItems = userItems.filter(item => !item.active)
+    if (inactiveItems.length > 0) {
+      return createCorsResponse(
+        JSON.stringify({ 
+          error: 'Some items are inactive and cannot be used in outfits',
+          inactive_item_ids: inactiveItems.map(item => item.id)
+        }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } },
+        origin
+      )
+    }
+
+    // Check if all requested items were found
+    if (userItems.length !== item_ids.length) {
+      const foundIds = new Set(userItems.map(item => item.id))
+      const missingIds = item_ids.filter(id => !foundIds.has(id))
+      return createCorsResponse(
+        JSON.stringify({ 
+          error: 'Some items do not exist or do not belong to user',
+          missing_item_ids: missingIds
+        }),
         { status: 400, headers: { 'Content-Type': 'application/json' } },
         origin
       )

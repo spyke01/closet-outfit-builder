@@ -130,19 +130,29 @@ export function useCheckOutfitDuplicate(itemIds: string[]) {
         });
 
         if (error) {
-          console.warn('Edge function failed, using fallback:', error.message);
-          // Fallback: Check manually in the database
-          return false; // For now, assume no duplicates
+          console.warn('Edge function failed:', error.message);
+          // Log additional details if available
+          if (data?.missing_item_ids) {
+            console.warn('Missing item IDs:', data.missing_item_ids);
+          }
+          if (data?.inactive_item_ids) {
+            console.warn('Inactive item IDs:', data.inactive_item_ids);
+          }
+          // Fallback: Don't block the user, just warn
+          return false;
         }
 
-        return data?.isDuplicate || false;
+        // Fix: Edge function returns is_duplicate (snake_case), not isDuplicate
+        return data?.is_duplicate || false;
       } catch (error) {
-        console.warn('Edge function call failed, using fallback:', error);
+        console.warn('Edge function call failed:', error);
         return false; // Fallback to no duplicates
       }
     },
-    enabled: itemIds.length > 0,
+    // Only check for duplicates when we have minimum outfit (shirt + pants)
+    enabled: itemIds.length >= 2,
     staleTime: 2 * 60 * 1000, // 2 minutes - duplicate checks should be relatively fresh
+    retry: 1, // Only retry once to avoid excessive API calls
   });
 }
 
@@ -200,10 +210,16 @@ export function useCreateOutfit() {
       // Try to check for duplicates, but don't fail if Edge Function is unavailable
       let isDuplicate = false;
       try {
-        const { data: duplicateCheck } = await supabase.functions.invoke('check-outfit-duplicate', {
+        const { data: duplicateCheck, error: duplicateError } = await supabase.functions.invoke('check-outfit-duplicate', {
           body: { item_ids: items }
         });
-        isDuplicate = duplicateCheck?.isDuplicate || false;
+        
+        if (duplicateError) {
+          console.warn('Duplicate check error:', duplicateError);
+        } else {
+          // Fix: Edge function returns is_duplicate (snake_case), not isDuplicate
+          isDuplicate = duplicateCheck?.is_duplicate || false;
+        }
       } catch (error) {
         console.warn('Duplicate check failed, proceeding anyway:', error);
       }
@@ -370,7 +386,8 @@ export function useUpdateOutfit() {
           const { data: duplicateCheck } = await supabase.functions.invoke('check-outfit-duplicate', {
             body: { item_ids: items, exclude_outfit_id: id }
           });
-          isDuplicate = duplicateCheck?.isDuplicate || false;
+          // Fix: Edge function returns is_duplicate (snake_case), not isDuplicate
+          isDuplicate = duplicateCheck?.is_duplicate || false;
         } catch (error) {
           console.warn('Duplicate check failed, proceeding anyway:', error);
         }
