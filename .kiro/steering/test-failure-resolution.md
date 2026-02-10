@@ -33,6 +33,25 @@ When a test fails:
 
 ## Failure Classification
 
+### 0. Suite Hang / Worker Crash
+
+**Symptoms**:
+- Test run stalls after a passing test line
+- Unhandled rejection with `Channel closed` / `ERR_IPC_CHANNEL_CLOSED`
+- Random file appears to be "the problem" on each run
+
+**Common Causes**:
+- Leaked timers, intervals, event listeners, or unresolved async tasks
+- Global `window`/`document`/`globalThis` mutation not restored
+- Runtime mismatch (Deno-style imports/tests running in Vitest)
+
+**Fast Resolution**:
+1. Re-run in run-once mode: `npm run test:run`
+2. Isolate file: `npm run test:run -- <path-to-test>`
+3. Add/verify `afterEach` cleanup (`vi.restoreAllMocks`, `vi.useRealTimers`)
+4. Remove Deno-only imports (`https://...`) from Vitest test paths
+5. If still hanging, bisect test files by directory until offending file is isolated
+
 ### 1. Selector Failures
 
 **Symptoms**:
@@ -192,6 +211,20 @@ const createMockCategory = (overrides: Partial<Category> = {}): Category => ({
 const jacketCategory = createMockCategory({ name: 'Jacket' });
 ```
 
+### 5. Framework Warning Floods
+
+**Symptoms**:
+- Repeated warning lines drown out useful failure output
+- Typical example: Next.js image quality misconfiguration warning
+
+**Resolution**:
+- Treat warning floods as failures to fix, not noise to ignore.
+- Align config and test inputs so warnings are not emitted.
+- For `next/image` quality warnings, either:
+  - add the used quality values to `next.config` `images.qualities`, or
+  - update tests/components to use configured values only.
+- Keep one-time known warning filtering in global test setup only when upstream behavior cannot be changed.
+
 ## Fast Debugging Process
 
 ### Step 1: Evaluate Test Value (30 seconds)
@@ -227,6 +260,8 @@ console.log({ expected: expectedData, actual: actualData });
 ### Step 3: Apply Fast Fix or Remove (5 minutes max)
 
 **If you can't fix it in 5 minutes, remove it.**
+
+For suite-level hangs, this rule applies after isolation: remove or rewrite the offending low-value test rather than leaving the suite unstable.
 
 #### Priority 1: Use Stable Selectors
 ```typescript

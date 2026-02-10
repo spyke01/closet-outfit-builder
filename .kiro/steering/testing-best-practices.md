@@ -43,9 +43,34 @@ npm run test
 - `npm run test:run` - CI/CD, automated workflows, agent execution, pre-commit hooks
 - `npm run test` - Local development with file watching
 
-## Writing Lean, Fast Tests
+### Prevent Hangs and Worker Crashes
 
-### Test Business Logic, Not UI Implementation
+Test hangs and `ERR_IPC_CHANNEL_CLOSED` failures usually come from leaked async work or global mutation.
+
+Required guardrails:
+- Clean up all timers, intervals, subscriptions, and pending async tasks after each test.
+- Restore all mocks/spies and any global object mutations (`window`, `document`, `globalThis`) after each test.
+- Do not leave unresolved promises or fire-and-forget async calls in tests.
+- If a test needs browser APIs, prefer local mocks scoped to the test file and reset them in `afterEach`.
+
+```typescript
+afterEach(() => {
+  vi.clearAllMocks();
+  vi.restoreAllMocks();
+  vi.useRealTimers();
+});
+```
+
+### Keep Framework Warnings Out of the Suite
+
+Warnings that repeat across many tests hide real failures and slow triage.
+
+Rules:
+- Fix the root cause instead of suppressing warning output.
+- Keep test-time framework config aligned with production constraints.
+- For Next.js images, if tests use quality values above default, configure `images.qualities` to include those values (for example `75` and `85`) or update tests/components to use allowed values only.
+
+## Writing Lean, Fast Tests
 
 ### Test Business Logic, Not UI Implementation
 

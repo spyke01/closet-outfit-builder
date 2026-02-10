@@ -75,6 +75,30 @@ const complexCategoryArb = fc.record({
 });
 ```
 
+### 3. Async Property Correctness
+
+If the property body is async, use `fc.asyncProperty` and `await fc.assert(...)`.
+
+```typescript
+// ✅ Correct async pattern
+await fc.assert(
+  fc.asyncProperty(validInputArb, async (input) => {
+    const result = await asyncBusinessLogic(input);
+    expect(result).toSatisfyInvariant();
+  }),
+  { numRuns: 3 }
+);
+
+// ❌ Incorrect: async callback inside fc.property
+fc.assert(
+  fc.property(validInputArb, async (input) => {
+    await asyncBusinessLogic(input);
+  })
+);
+```
+
+Never leave unresolved promises in property tests. Fire-and-forget async work can stall worker shutdown and cause suite hangs.
+
 ## Common Property Patterns
 
 ### 1. Invariant Properties
@@ -227,6 +251,15 @@ fc.assert(fc.property(
   }
 ));
 ```
+
+### 4. Avoid Wall-Clock Fragility
+
+Do not use strict timing assertions in property tests. CI variance makes these tests flaky.
+
+Use:
+- broad upper bounds only when needed
+- relative assertions between implementations
+- deterministic invariants over performance micro-benchmarks
 
 ## Error Handling in Property Tests
 
@@ -416,6 +449,14 @@ it('rejects invalid input', () => {
   expect(() => processInput(invalidInput)).toThrow();
 });
 ```
+
+### 4. Invalid Domain Generation
+
+Generating invalid schema data by default causes noisy failures and obscures real regressions.
+
+Rules:
+- Default generators should produce schema-valid values (including UUID format and required fields).
+- Use separate, explicit generators for rejection/error-path properties.
 
 ## Decision Guide: Property Test vs Unit Test
 
