@@ -35,7 +35,7 @@ function getAllowedOrigins(): string[] {
   }
   
   // Add your production domain here if environment variables aren't working
-  origins.push('https://chic-granita-fee33b.netlify.app');
+  origins.push('https://myaioutfit.com');
   
   return origins;
 }
