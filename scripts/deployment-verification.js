@@ -110,7 +110,7 @@ async function testMainApplication() {
       
       // Check for Next.js specific elements
       const hasNextJs = html.includes('_next') || html.includes('__NEXT_DATA__');
-      const hasTitle = html.includes('<title>') || html.includes('What to Wear');
+      const hasTitle = html.includes('<title>') || html.includes('My AI Outfit');
       const hasReact = html.includes('react') || html.includes('div id="__next"');
       
       if (hasTitle) {

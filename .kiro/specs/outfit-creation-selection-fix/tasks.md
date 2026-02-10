@@ -2,7 +2,7 @@
 
 ## Overview
 
-Implementation of comprehensive fixes for the outfit creation page selection functionality in the What to Wear application. The plan addresses broken item selection, improves state management, enhances visual feedback, and ensures reliable outfit persistence while maintaining the existing TypeScript React architecture.
+Implementation of comprehensive fixes for the outfit creation page selection functionality in the My AI Outfit application. The plan addresses broken item selection, improves state management, enhances visual feedback, and ensures reliable outfit persistence while maintaining the existing TypeScript React architecture.
 
 ## Tasks
 

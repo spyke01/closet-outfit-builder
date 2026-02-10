@@ -1,4 +1,4 @@
-# What to Wear
+# My AI Outfit
 
 A Next.js full-stack wardrobe management and outfit generation application that helps users create and discover clothing combinations from their personal wardrobe. The app features multi-user authentication, persistent data storage, custom image upload with background removal, and an intelligent outfit engine that generates combinations based on style compatibility, seasonal appropriateness, and user preferences, enhanced with real-time weather integration for location-based outfit recommendations.
 
@@ -204,7 +204,7 @@ netlify/
 1. **Clone the repository:**
 ```bash
 git clone <repository-url>
-cd what-to-wear
+cd my-ai-outfit
 ```
 
 2. **Install dependencies:**

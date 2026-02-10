@@ -1,6 +1,6 @@
 # Vercel React Best Practices
 
-This document outlines the Vercel React best practices that must be followed for all new code and refactoring work in the What to Wear application. These practices ensure optimal performance, accessibility, and maintainability.
+This document outlines the Vercel React best practices that must be followed for all new code and refactoring work in the My AI Outfit application. These practices ensure optimal performance, accessibility, and maintainability.
 
 ## Bundle Size Optimization
 

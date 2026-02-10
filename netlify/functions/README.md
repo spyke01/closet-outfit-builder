@@ -1,6 +1,6 @@
 # Netlify Functions
 
-This directory contains serverless functions for the What to Wear app that provide secure API proxying for weather services.
+This directory contains serverless functions for the My AI Outfit app that provide secure API proxying for weather services.
 
 ## Functions
 

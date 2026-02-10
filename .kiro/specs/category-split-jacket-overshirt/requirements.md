@@ -2,7 +2,7 @@
 
 ## Introduction
 
-A system enhancement to split the existing "Jacket/Overshirt" category into two separate categories: "Jacket" and "Overshirt" in the What to Wear application. This change improves wardrobe organization by providing more granular categorization of outerwear items, allowing users to better organize their clothing and receive more accurate outfit recommendations. The system must handle the category split across all data structures, UI components, filters, and ensure backward compatibility with existing user data.
+A system enhancement to split the existing "Jacket/Overshirt" category into two separate categories: "Jacket" and "Overshirt" in the My AI Outfit application. This change improves wardrobe organization by providing more granular categorization of outerwear items, allowing users to better organize their clothing and receive more accurate outfit recommendations. The system must handle the category split across all data structures, UI components, filters, and ensure backward compatibility with existing user data.
 
 ## Glossary
 

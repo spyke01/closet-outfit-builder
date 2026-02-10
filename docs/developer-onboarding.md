@@ -1,6 +1,6 @@
 # Developer Onboarding Guide
 
-Welcome to the What to Wear development team! This guide will help you get up to speed with our codebase, development practices, and optimization standards.
+Welcome to the My AI Outfit development team! This guide will help you get up to speed with our codebase, development practices, and optimization standards.
 
 ## Table of Contents
 
@@ -29,7 +29,7 @@ Welcome to the What to Wear development team! This guide will help you get up to
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd what-to-wear
+   cd my-ai-outfit
    ```
 
 2. **Install dependencies**

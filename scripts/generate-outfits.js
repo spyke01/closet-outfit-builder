@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * What to Wear — Outfit Generator (CLI-only)
+ * My AI Outfit — Outfit Generator (CLI-only)
  * ============================================
  * 
  * This script generates outfit combinations from a wardrobe dataset using intelligent

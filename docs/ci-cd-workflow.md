@@ -1,6 +1,6 @@
 # CI/CD Workflow Documentation
 
-This document describes the continuous integration and deployment workflows for the What to Wear application, including automated quality checks, performance monitoring, and deployment processes.
+This document describes the continuous integration and deployment workflows for the My AI Outfit application, including automated quality checks, performance monitoring, and deployment processes.
 
 ## Table of Contents
 

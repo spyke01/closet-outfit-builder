@@ -1,5 +1,5 @@
 {
-  "name": "What to Wear",
+  "name": "My AI Outfit",
   "short_name": "Outfits",
   "description": "Intelligent outfit composition for the modern wardrobe",
   "start_url": "/",
@@ -10,7 +10,7 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/what-to-wear-logo.svg",
+      "src": "/my-ai-outfit-logo.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"

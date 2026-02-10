@@ -2,7 +2,7 @@
 
 ## Introduction
 
-A secure, script-based system for adding new wardrobe items and outfits to the What to Wear application. This system uses the same data source as the seed-user Edge Function to maintain consistency and allows the developer to easily add new clothing items with images to their own account and optionally seed them to all users, while maintaining security and preventing unauthorized access.
+A secure, script-based system for adding new wardrobe items and outfits to the My AI Outfit application. This system uses the same data source as the seed-user Edge Function to maintain consistency and allows the developer to easily add new clothing items with images to their own account and optionally seed them to all users, while maintaining security and preventing unauthorized access.
 
 ## Glossary
 

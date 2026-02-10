@@ -1,6 +1,6 @@
 # Database Migrations
 
-This directory contains SQL migration files for the What to Wear application.
+This directory contains SQL migration files for the My AI Outfit application.
 
 ## Migration Files
 

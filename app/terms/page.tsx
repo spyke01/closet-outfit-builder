@@ -19,7 +19,7 @@ export default function TermsPage() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-4">Acceptance of Terms</h2>
                 <p className="text-slate-700 dark:text-slate-300 mb-4">
-                  By accessing and using What to Wear, you accept and agree to be bound by the terms 
+                  By accessing and using My AI Outfit, you accept and agree to be bound by the terms 
                   and provision of this agreement.
                 </p>
               </section>
@@ -27,7 +27,7 @@ export default function TermsPage() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-4">Use License</h2>
                 <p className="text-slate-700 dark:text-slate-300 mb-4">
-                  Permission is granted to temporarily use What to Wear for personal, non-commercial 
+                  Permission is granted to temporarily use My AI Outfit for personal, non-commercial 
                   transitory viewing only. This is the grant of a license, not a transfer of title.
                 </p>
                 <p className="text-slate-700 dark:text-slate-300 mb-4">Under this license you may not:</p>
@@ -42,7 +42,7 @@ export default function TermsPage() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-4">User Content</h2>
                 <p className="text-slate-700 dark:text-slate-300 mb-4">
-                  You retain ownership of all content you upload to What to Wear. By uploading content, 
+                  You retain ownership of all content you upload to My AI Outfit. By uploading content, 
                   you grant us a license to use, store, and process your content solely for the purpose 
                   of providing our services.
                 </p>
@@ -59,7 +59,7 @@ export default function TermsPage() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-4">Disclaimer</h2>
                 <p className="text-slate-700 dark:text-slate-300 mb-4">
-                  The materials on What to Wear are provided on an 'as is' basis. What to Wear makes 
+                  The materials on My AI Outfit are provided on an 'as is' basis. My AI Outfit makes 
                   no warranties, expressed or implied, and hereby disclaims and negates all other warranties 
                   including without limitation, implied warranties or conditions of merchantability, 
                   fitness for a particular purpose, or non-infringement of intellectual property or 
@@ -70,10 +70,10 @@ export default function TermsPage() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-4">Limitations</h2>
                 <p className="text-slate-700 dark:text-slate-300 mb-4">
-                  In no event shall What to Wear or its suppliers be liable for any damages (including, 
+                  In no event shall My AI Outfit or its suppliers be liable for any damages (including, 
                   without limitation, damages for loss of data or profit, or due to business interruption) 
-                  arising out of the use or inability to use What to Wear, even if What to Wear or a 
-                  What to Wear authorized representative has been notified orally or in writing of the 
+                  arising out of the use or inability to use My AI Outfit, even if My AI Outfit or a 
+                  My AI Outfit authorized representative has been notified orally or in writing of the 
                   possibility of such damage.
                 </p>
               </section>

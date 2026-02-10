@@ -1,7 +1,7 @@
 {
   "name": "netlify-functions",
   "version": "1.0.0",
-  "description": "Netlify Functions for What to Wear app",
+  "description": "Netlify Functions for My AI Outfit app",
   "main": "index.js",
   "scripts": {
     "test": "vitest run",

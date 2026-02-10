@@ -292,7 +292,7 @@ jobs:
       - name: Run dependency check
         uses: dependency-check/Dependency-Check_Action@main
         with:
-          project: 'what-to-wear'
+          project: 'my-ai-outfit'
           path: '.'
           format: 'HTML'
         continue-on-error: true

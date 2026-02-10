@@ -44,28 +44,28 @@ export function FinalCTA() {
                 <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-sm">W</span>
                 </div>
-                <span className="font-display text-xl font-bold text-slate-900 dark:text-slate-100">What to Wear</span>
+                <span className="font-display text-xl font-bold text-slate-900 dark:text-slate-100">My AI Outfit</span>
               </div>
               <p className="text-slate-600 dark:text-slate-400">Built by people who love great style.</p>
             </div>
             
             <div className="flex items-center gap-6">
               <Link 
-                href="https://github.com/yourusername/what-to-wear" 
+                href="https://github.com/yourusername/my-ai-outfit" 
                 className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
                 aria-label="GitHub"
               >
                 <Github className="w-6 h-6" />
               </Link>
               <Link 
-                href="https://twitter.com/whattowearapp" 
+                href="https://twitter.com/myaioutfitapp" 
                 className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
                 aria-label="Twitter"
               >
                 <Twitter className="w-6 h-6" />
               </Link>
               <Link 
-                href="https://instagram.com/whattowearapp" 
+                href="https://instagram.com/myaioutfitapp" 
                 className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
                 aria-label="Instagram"
               >
@@ -82,7 +82,7 @@ export function FinalCTA() {
           </div>
           
           <div className="text-center mt-8 text-sm text-slate-500 dark:text-slate-500">
-            <p>&copy; 2024 What to Wear. All rights reserved.</p>
+            <p>&copy; 2024 My AI Outfit. All rights reserved.</p>
           </div>
         </div>
       </div>

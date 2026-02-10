@@ -4,7 +4,7 @@
  * Keyboard Navigation Testing Script
  * 
  * This script provides a checklist and automated tests for keyboard navigation
- * compliance in the What to Wear application.
+ * compliance in the My AI Outfit application.
  */
 
 console.log('🔍 Keyboard Navigation Testing Checklist');

@@ -4,7 +4,7 @@
  */
 
 const STORAGE_VERSION = 'v1';
-const STORAGE_PREFIX = 'wtw'; // "what-to-wear" prefix
+const STORAGE_PREFIX = 'wtw'; // "my-ai-outfit" prefix
 
 /**
  * Generate a versioned storage key

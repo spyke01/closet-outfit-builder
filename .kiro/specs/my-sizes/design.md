@@ -4,7 +4,7 @@
 
 The My Sizes feature provides a mobile-first interface for storing and recalling clothing size information across categories and brands. The design prioritizes sub-2-second size recall through a pinned card system, supports multiple sizing formats (letter, numeric, waist/inseam, measurements), and maintains data integrity by ensuring pinned cards always reflect underlying category data without duplication.
 
-The system architecture follows the existing What to Wear application patterns: Next.js App Router for pages, Supabase for data persistence with Row Level Security, TanStack Query for server state management, and Zod for validation. All components are mobile-first with responsive breakpoints at 768px (tablet) and 1024px (desktop).
+The system architecture follows the existing My AI Outfit application patterns: Next.js App Router for pages, Supabase for data persistence with Row Level Security, TanStack Query for server state management, and Zod for validation. All components are mobile-first with responsive breakpoints at 768px (tablet) and 1024px (desktop).
 
 ## Architecture
 

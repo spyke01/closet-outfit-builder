@@ -1,6 +1,6 @@
 # Optimization Patterns Guide
 
-This guide documents the optimization patterns implemented in the What to Wear application following Vercel React best practices. Use this as a reference when implementing new features or optimizing existing code.
+This guide documents the optimization patterns implemented in the My AI Outfit application following Vercel React best practices. Use this as a reference when implementing new features or optimizing existing code.
 
 ## Table of Contents
 

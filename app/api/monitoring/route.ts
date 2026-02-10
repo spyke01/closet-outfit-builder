@@ -239,7 +239,7 @@ async function sendToMonitoringService(type: string, data: any) {
           type,
           data,
           timestamp: new Date().toISOString(),
-          source: 'what-to-wear-app'
+          source: 'my-ai-outfit-app'
         })
       });
     }

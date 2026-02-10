@@ -2,7 +2,7 @@
 
 ## Overview
 
-The outfit creation selection fix addresses critical usability issues in the What to Wear application's outfit creation page. Currently, users can view wardrobe items but cannot properly select them to build and save outfits. This design provides a comprehensive solution that ensures intuitive item selection, real-time outfit preview, accurate scoring, and reliable persistence.
+The outfit creation selection fix addresses critical usability issues in the My AI Outfit application's outfit creation page. Currently, users can view wardrobe items but cannot properly select them to build and save outfits. This design provides a comprehensive solution that ensures intuitive item selection, real-time outfit preview, accurate scoring, and reliable persistence.
 
 The solution focuses on fixing the broken selection mechanism while maintaining the existing architecture and improving the user experience through better state management, visual feedback, and error handling.
 

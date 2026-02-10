@@ -134,7 +134,7 @@ export function PricingSection() {
 
         <div className="text-center mt-12">
           <p className="text-slate-600 dark:text-slate-400">
-            Questions? <a href="mailto:hello@whattowear.app" className="text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-medium">Get in touch</a>
+            Questions? <a href="mailto:hello@myaioutfit.app" className="text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-medium">Get in touch</a>
           </p>
         </div>
       </div>

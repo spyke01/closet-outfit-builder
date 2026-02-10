@@ -1,6 +1,6 @@
 # Documentation Overview
 
-This directory contains essential developer documentation for the What to Wear application. All documentation follows our [codebase maintenance guidelines](../.kiro/steering/codebase-maintenance.md).
+This directory contains essential developer documentation for the My AI Outfit application. All documentation follows our [codebase maintenance guidelines](../.kiro/steering/codebase-maintenance.md).
 
 ## Documentation Structure
 

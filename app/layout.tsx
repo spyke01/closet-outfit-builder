@@ -15,12 +15,12 @@ const defaultUrl = process.env.NETLIFY_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "What to Wear – Your Personal AI Wardrobe Stylist",
+  title: "My AI Outfit – Your Personal AI Wardrobe Stylist",
   description: "Upload your wardrobe and let AI create perfect outfits for work, travel, or everyday life. Free and private.",
   manifest: "/manifest.json",
   icons: {
     icon: [
-      { url: "/what-to-wear-logo.svg", type: "image/svg+xml" },
+      { url: "/my-ai-outfit-logo.svg", type: "image/svg+xml" },
       { url: "/android/android-launchericon-192-192.png", sizes: "192x192", type: "image/png" },
       { url: "/android/android-launchericon-512-512.png", sizes: "512x512", type: "image/png" },
     ],
@@ -28,13 +28,13 @@ export const metadata: Metadata = {
       { url: "/ios/180.png", sizes: "180x180", type: "image/png" },
     ],
     other: [
-      { rel: "mask-icon", url: "/what-to-wear-logo.svg", color: "#1e293b" },
+      { rel: "mask-icon", url: "/my-ai-outfit-logo.svg", color: "#1e293b" },
     ],
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "What to Wear",
+    title: "My AI Outfit",
   },
   formatDetection: {
     telephone: false,

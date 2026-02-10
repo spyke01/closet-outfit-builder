@@ -16,7 +16,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configuration
-const PRODUCTION_URL = process.env.PRODUCTION_URL || 'https://what-to-wear.netlify.app';
+const PRODUCTION_URL = process.env.PRODUCTION_URL || 'https://my-ai-outfit.netlify.app';
 
 /**
  * Make HTTP request with timeout

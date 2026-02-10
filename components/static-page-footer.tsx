@@ -52,7 +52,7 @@ export function StaticPageFooter() {
         </div>
         
         <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700 text-center text-slate-600 dark:text-slate-400">
-          <p>&copy; 2024 What to Wear. All rights reserved.</p>
+          <p>&copy; 2024 My AI Outfit. All rights reserved.</p>
         </div>
       </div>
     </footer>

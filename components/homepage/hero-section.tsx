@@ -32,7 +32,7 @@ export function HeroSection() {
             
             <h1 className="font-display text-5xl lg:text-7xl font-bold text-slate-900 dark:text-slate-100 leading-tight mb-6">
               Never wonder{' '}
-              <span className="text-amber-600 dark:text-amber-400">what to wear</span>{' '}
+              <span className="text-amber-600 dark:text-amber-400">My AI Outfit</span>{' '}
               again.
             </h1>
             

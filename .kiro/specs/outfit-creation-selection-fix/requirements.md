@@ -2,7 +2,7 @@
 
 ## Introduction
 
-A comprehensive fix for the outfit creation page selection functionality in the What to Wear application. Users can currently view wardrobe items in each category but cannot properly select items to build and save new outfits. This system ensures users can intuitively select items from different categories, see real-time outfit previews, receive outfit scoring feedback, and successfully save their created outfits to their personal collection.
+A comprehensive fix for the outfit creation page selection functionality in the My AI Outfit application. Users can currently view wardrobe items in each category but cannot properly select items to build and save new outfits. This system ensures users can intuitively select items from different categories, see real-time outfit previews, receive outfit scoring feedback, and successfully save their created outfits to their personal collection.
 
 ## Glossary
 

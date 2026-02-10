@@ -18,7 +18,7 @@ const PRE_COMMIT_HOOK = join(GIT_HOOKS_DIR, 'pre-commit');
 function createPreCommitHook() {
   const hookContent = `#!/bin/sh
 #
-# Pre-commit hook for What to Wear
+# Pre-commit hook for My AI Outfit
 # Runs automated quality and accessibility checks
 #
 

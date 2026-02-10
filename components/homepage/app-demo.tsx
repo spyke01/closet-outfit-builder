@@ -15,7 +15,7 @@ export function AppDemo() {
             Built for your closet. Designed for your life.
           </h2>
           <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
-            See how What to Wear transforms your daily outfit selection with intelligent recommendations.
+            See how My AI Outfit transforms your daily outfit selection with intelligent recommendations.
           </p>
         </div>
 

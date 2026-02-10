@@ -1,6 +1,6 @@
 # Performance Monitoring Setup
 
-This document describes the comprehensive performance monitoring system implemented for the What to Wear application.
+This document describes the comprehensive performance monitoring system implemented for the My AI Outfit application.
 
 ## Overview
 

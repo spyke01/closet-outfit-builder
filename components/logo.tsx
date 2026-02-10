@@ -12,7 +12,7 @@ export const Logo: React.FC<LogoProps> = ({ className = "h-8 sm:h-10 w-auto" }) 
       xmlns="http://www.w3.org/2000/svg" 
       viewBox="0 0 611 212" 
       className={className}
-      aria-label="What to Wear"
+      aria-label="My AI Outfit"
     >
       <path 
         fill="currentColor" 

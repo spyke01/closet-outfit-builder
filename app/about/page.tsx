@@ -12,7 +12,7 @@ export default function AboutPage() {
         <div className="container mx-auto px-6 py-16">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">About What to Wear</h1>
+              <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">About My AI Outfit</h1>
               <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
                 Intelligent outfit composition for the modern wardrobe
               </p>
@@ -22,7 +22,7 @@ export default function AboutPage() {
               <section className="mb-12">
                 <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-4">Our Mission</h2>
                 <p className="text-slate-700 dark:text-slate-300 mb-6">
-                  What to Wear helps fashion-conscious individuals organize their personal wardrobe digitally 
+                  My AI Outfit helps fashion-conscious individuals organize their personal wardrobe digitally 
                   and discover new outfit combinations from their existing clothes. Our intelligent outfit engine 
                   uses compatibility algorithms to suggest combinations based on style, formality, and weather conditions.
                 </p>
