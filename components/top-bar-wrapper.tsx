@@ -18,7 +18,7 @@ export const TopBarWrapper: React.FC<TopBarWrapperProps> = ({ user }) => {
 
   const handleTitleClick = () => {
     if (user) {
-      router.push('/wardrobe');
+      router.push('/today');
     } else {
       router.push('/');
     }

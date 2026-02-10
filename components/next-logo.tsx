@@ -1,4 +1,9 @@
-export function NextLogo() {
+interface NextLogoProps {
+  className?: string;
+  title?: string;
+}
+
+export function NextLogo({ className, title = "My AI Outfit Logo" }: NextLogoProps = {}) {
   return (
     <svg
       viewBox="0 0 640 160"

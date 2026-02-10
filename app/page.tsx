@@ -20,9 +20,9 @@ export default function Home() {
       const supabase = createClient();
       const { data } = await supabase.auth.getUser();
       
-      // Redirect authenticated users to wardrobe
+      // Redirect authenticated users to today page
       if (data?.user) {
-        router.push("/wardrobe");
+        router.push("/today");
         return;
       }
       

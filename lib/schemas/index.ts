@@ -181,3 +181,27 @@ export type UpdateOutfitForm = z.infer<typeof UpdateOutfitFormSchema>;
 export type ApiResponse<T> = z.infer<ReturnType<typeof ApiResponseSchema<T>>>;
 export type SeedUserInput = z.infer<typeof SeedUserInputSchema>;
 export type ScoreOutfitInput = z.infer<typeof ScoreOutfitInputSchema>;
+
+// Re-export generation schemas
+export {
+  WeatherContextSchema,
+  ColorCategorySchema,
+  FormalityBandSchema,
+  CompatibilityScoreSchema,
+  EnrichedItemSchema,
+  GeneratedOutfitSchema,
+  GenerationOptionsSchema,
+  SwapOptionsSchema,
+} from './generation';
+
+// Re-export generation types
+export type {
+  WeatherContext,
+  ColorCategory,
+  FormalityBand,
+  CompatibilityScore,
+  EnrichedItem,
+  GeneratedOutfit,
+  GenerationOptions,
+  SwapOptions,
+} from './generation';

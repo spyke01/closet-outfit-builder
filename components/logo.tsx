@@ -25,24 +25,24 @@ export const Logo: React.FC<LogoProps> = ({
       {/* Use inline styles that React can render correctly */}
       <g
         stroke="currentColor"
-        strokeWidth={2}
+        strokeWidth={3}
         strokeLinecap="round"
         strokeLinejoin="round"
         fill="none"
       >
-        {/* Minimal suit + tie icon */}
-        <g transform="translate(40 36)">
+        {/* Minimal suit + tie icon - scaled up */}
+        <g transform="translate(20 10) scale(1.5)">
           <path d="M8 0 L32 28 L56 0" />
           <path d="M8 0 L8 64" />
           <path d="M56 0 L56 64" />
           <path d="M32 28 L26 48 L32 64 L38 48 Z" />
         </g>
 
-        {/* Wordmark */}
+        {/* Wordmark - scaled up */}
         <text
           x={130}
-          y={95}
-          fontSize={48}
+          y={80}
+          fontSize={64}
           fill="currentColor"
           fontFamily='-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif'
           fontWeight={600}

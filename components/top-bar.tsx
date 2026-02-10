@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Settings, Shirt, Grid3X3, Ruler } from 'lucide-react';
+import { Settings, Shirt, Grid3X3, Ruler, Calendar } from 'lucide-react';
 
 
 
@@ -60,12 +60,13 @@ export const TopBar: React.FC<TopBarProps> = ({
       onTitleClick();
     } else {
       // Default behavior - navigate to home
-      window.location.href = validatedUser ? '/wardrobe' : '/';
+      window.location.href = validatedUser ? '/today' : '/';
     }
   };
 
   // Determine current view based on pathname
   const getCurrentView = () => {
+    if (pathname?.startsWith('/today')) return 'today';
     if (pathname?.startsWith('/wardrobe')) return 'wardrobe';
     if (pathname?.startsWith('/outfits')) return 'outfits';
     if (pathname?.startsWith('/sizes')) return 'sizes';
@@ -95,6 +96,19 @@ export const TopBar: React.FC<TopBarProps> = ({
           {/* Navigation Links - only show when user is authenticated */}
           {validatedUser && (
             <nav className="hidden sm:flex items-center gap-1">
+              <Link
+                href="/today"
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${currentView === 'today'
+                    ? 'bg-slate-800 dark:bg-slate-700 text-white'
+                    : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
+                  }`}
+                aria-label="View today's outfit"
+                aria-current={currentView === 'today' ? 'page' : undefined}
+                {...getNavigationProps('/today')}
+              >
+                <Calendar size={16} />
+                <span>Today</span>
+              </Link>
               <Link
                 href="/wardrobe"
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${currentView === 'wardrobe'
@@ -184,6 +198,19 @@ export const TopBar: React.FC<TopBarProps> = ({
       {validatedUser && (
         <div className="sm:hidden border-t border-stone-200 dark:border-slate-700 px-4 py-2">
           <nav className="flex items-center justify-center gap-1">
+            <Link
+              href="/today"
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${currentView === 'today'
+                  ? 'bg-slate-800 dark:bg-slate-700 text-white'
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
+                }`}
+              aria-label="View today's outfit"
+              aria-current={currentView === 'today' ? 'page' : undefined}
+              {...getNavigationProps('/today')}
+            >
+              <Calendar size={16} />
+              <span>Today</span>
+            </Link>
             <Link
               href="/wardrobe"
               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${currentView === 'wardrobe'
