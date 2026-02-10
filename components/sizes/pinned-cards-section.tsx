@@ -179,7 +179,7 @@ export function PinnedCardsSection({
       </div>
 
       {/* Custom scrollbar styling for webkit browsers */}
-      <style jsx>{`
+      <style>{`
         .pinned-cards-container::-webkit-scrollbar {
           height: 8px;
         }

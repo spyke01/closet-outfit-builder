@@ -36,6 +36,7 @@ describe('Feature Flags', () => {
 
   afterEach(() => {
     vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
     mockLocalStorage.getItem.mockClear();
     mockLocalStorage.setItem.mockClear();
     mockLocalStorage.removeItem.mockClear();
@@ -54,6 +55,7 @@ describe('Feature Flags', () => {
         monitoring: true,
         analytics: true,
         devTools: false,
+        sizeManagement: true,
       });
     });
 
@@ -69,6 +71,7 @@ describe('Feature Flags', () => {
         monitoring: false,
         analytics: false,
         devTools: true,
+        sizeManagement: true,
       });
     });
 
@@ -164,9 +167,8 @@ describe('Feature Flags', () => {
     });
 
     it('should return null in SSR environment', async () => {
-      // Mock SSR environment
-      const originalWindow = global.window;
-      delete (global as any).window;
+      // Mock SSR environment safely
+      vi.stubGlobal('window', undefined);
 
       const importFn = vi.fn();
 
@@ -174,9 +176,6 @@ describe('Feature Flags', () => {
 
       expect(importFn).not.toHaveBeenCalled();
       expect(result).toBe(null);
-
-      // Restore window
-      global.window = originalWindow;
     });
 
     it('should handle import errors gracefully', async () => {
@@ -221,6 +220,7 @@ describe('Feature Flags', () => {
           monitoring: true,
           analytics: false,
           devTools: true,
+          sizeManagement: true,
         })
       );
     });
@@ -243,16 +243,12 @@ describe('Feature Flags', () => {
     });
 
     it('should not run in SSR environment', () => {
-      // Mock SSR environment
-      const originalWindow = global.window;
-      delete (global as any).window;
+      // Mock SSR environment safely
+      vi.stubGlobal('window', undefined);
 
       setFeatureFlags({ weather: false });
 
       expect(mockLocalStorage.setItem).not.toHaveBeenCalled();
-
-      // Restore window
-      global.window = originalWindow;
     });
   });
 

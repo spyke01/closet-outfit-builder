@@ -1,11 +1,10 @@
 'use client';
 
-
-
-
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 import { Upload, Sparkles, Heart } from 'lucide-react';
+import { uploadStepItems, aiMatchingItems, finalOutfitItems } from '@/lib/data/landing-page-images';
 
 const steps = [
   {
@@ -89,8 +88,16 @@ export function HowItWorks() {
                           <p className="text-slate-600 dark:text-slate-400">Drag & drop your photos</p>
                         </div>
                         <div className="grid grid-cols-3 gap-3">
-                          {[1, 2, 3].map((i) => (
-                            <div key={i} className="aspect-square bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl"></div>
+                          {uploadStepItems.map((item, i) => (
+                            <div key={i} className="aspect-square bg-white dark:bg-slate-700 rounded-xl overflow-hidden shadow-sm">
+                              <Image
+                                src={item.src}
+                                alt={item.alt}
+                                width={120}
+                                height={120}
+                                className="w-full h-full object-contain p-2"
+                              />
+                            </div>
                           ))}
                         </div>
                       </div>
@@ -103,10 +110,18 @@ export function HowItWorks() {
                           <Sparkles className="w-6 h-6 text-amber-600 animate-pulse" />
                         </div>
                         <div className="space-y-3">
-                          {[1, 2, 3].map((i) => (
+                          {aiMatchingItems.map((item, i) => (
                             <div key={i} className="flex items-center gap-3">
-                              <div className="w-12 h-12 bg-gradient-to-br from-stone-100 to-stone-200 rounded-lg"></div>
-                              <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                              <div className="w-12 h-12 bg-white dark:bg-slate-700 rounded-lg overflow-hidden shadow-sm">
+                                <Image
+                                  src={item.src}
+                                  alt={item.alt}
+                                  width={48}
+                                  height={48}
+                                  className="w-full h-full object-contain p-1"
+                                />
+                              </div>
+                              <div className="flex-1 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                                 <div 
                                   className="h-full bg-amber-500 rounded-full transition-all duration-1000"
                                   style={{ width: `${80 + i * 5}%` }}
@@ -125,9 +140,15 @@ export function HowItWorks() {
                           <Heart className="w-6 h-6 text-red-500 fill-current" />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                          {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="aspect-square bg-gradient-to-br from-blue-100 to-amber-100 rounded-2xl flex items-center justify-center">
-                              <div className="w-8 h-8 bg-blue-600 rounded-full"></div>
+                          {finalOutfitItems.map((item, i) => (
+                            <div key={i} className="aspect-square bg-white dark:bg-slate-700 rounded-2xl overflow-hidden shadow-sm">
+                              <Image
+                                src={item.src}
+                                alt={item.alt}
+                                width={120}
+                                height={120}
+                                className="w-full h-full object-contain p-3"
+                              />
                             </div>
                           ))}
                         </div>

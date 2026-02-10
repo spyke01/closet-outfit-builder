@@ -3,21 +3,22 @@ import { render, screen } from '@testing-library/react';
 import { WeatherWidget } from '../weather-widget';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { User } from '@supabase/supabase-js';
+import type { ReactNode } from 'react';
 
-// Mock the hooks
-vi.mock('@/lib/hooks', () => ({
+vi.mock('@/lib/hooks/use-auth', () => ({
   useAuth: vi.fn(),
-  useShowWeather: vi.fn(),
-  useWeather: vi.fn(),
+}));
+
+vi.mock('@/lib/hooks/use-conditional-weather', () => ({
+  useConditionalWeather: vi.fn(),
+  preloadWeatherModule: vi.fn(),
 }));
 
 import { useAuth } from '@/lib/hooks/use-auth';
-import { useShowWeather } from '@/lib/hooks/use-weather-preference';
-import { useWeather } from '@/lib/hooks/use-weather';
+import { useConditionalWeather } from '@/lib/hooks/use-conditional-weather';
 
 const mockUseAuth = vi.mocked(useAuth);
-const mockUseShowWeather = vi.mocked(useShowWeather);
-const mockUseWeather = vi.mocked(useWeather);
+const mockUseConditionalWeather = vi.mocked(useConditionalWeather);
 
 const mockUser: User = {
   id: '123',
@@ -28,7 +29,7 @@ const mockUser: User = {
   created_at: '2024-01-01T00:00:00Z',
 };
 
-const TestWrapper = ({ children }: { children: React.ReactNode }) => {
+const TestWrapper = ({ children }: { children: ReactNode }) => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false },
@@ -55,13 +56,14 @@ describe('WeatherWidget Integration', () => {
       isAuthenticated: false, 
       userId: null 
     });
-    mockUseShowWeather.mockReturnValue(false);
-    mockUseWeather.mockReturnValue({
+    mockUseConditionalWeather.mockReturnValue({
       current: null,
       forecast: [],
       loading: false,
       error: null,
       retry: vi.fn(),
+      usingFallback: false,
+      weatherEnabled: false,
     });
 
     const { container } = render(
@@ -80,13 +82,14 @@ describe('WeatherWidget Integration', () => {
       isAuthenticated: true,
       userId: '123'
     });
-    mockUseShowWeather.mockReturnValue(false); // Weather disabled
-    mockUseWeather.mockReturnValue({
+    mockUseConditionalWeather.mockReturnValue({
       current: null,
       forecast: [],
       loading: false,
       error: null,
       retry: vi.fn(),
+      usingFallback: false,
+      weatherEnabled: false,
     });
 
     const { container } = render(
@@ -105,13 +108,14 @@ describe('WeatherWidget Integration', () => {
       isAuthenticated: true,
       userId: '123'
     });
-    mockUseShowWeather.mockReturnValue(true);
-    mockUseWeather.mockReturnValue({
+    mockUseConditionalWeather.mockReturnValue({
       current: null,
       forecast: [],
       loading: true,
       error: null,
       retry: vi.fn(),
+      usingFallback: false,
+      weatherEnabled: true,
     });
 
     render(
@@ -120,7 +124,7 @@ describe('WeatherWidget Integration', () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText('Loading weather...')).toBeInTheDocument();
+    expect(screen.getByText('Loading weather…')).toBeInTheDocument();
   });
 
   it('should show weather data for authenticated users', () => {
@@ -130,8 +134,7 @@ describe('WeatherWidget Integration', () => {
       isAuthenticated: true,
       userId: '123'
     });
-    mockUseShowWeather.mockReturnValue(true);
-    mockUseWeather.mockReturnValue({
+    mockUseConditionalWeather.mockReturnValue({
       current: {
         temperature: 75,
         condition: 'clear sky',
@@ -141,6 +144,8 @@ describe('WeatherWidget Integration', () => {
       loading: false,
       error: null,
       retry: vi.fn(),
+      usingFallback: false,
+      weatherEnabled: true,
     });
 
     render(
@@ -162,8 +167,7 @@ describe('WeatherWidget Integration', () => {
       isAuthenticated: true,
       userId: '123'
     });
-    mockUseShowWeather.mockReturnValue(true);
-    mockUseWeather.mockReturnValue({
+    mockUseConditionalWeather.mockReturnValue({
       current: null,
       forecast: [],
       loading: false,
@@ -172,6 +176,8 @@ describe('WeatherWidget Integration', () => {
         details: 'Network error',
       },
       retry: mockRetry,
+      usingFallback: false,
+      weatherEnabled: true,
     });
 
     render(
@@ -191,8 +197,7 @@ describe('WeatherWidget Integration', () => {
       isAuthenticated: true,
       userId: '123'
     });
-    mockUseShowWeather.mockReturnValue(true);
-    mockUseWeather.mockReturnValue({
+    mockUseConditionalWeather.mockReturnValue({
       current: {
         temperature: 75,
         condition: 'clear sky',
@@ -202,6 +207,8 @@ describe('WeatherWidget Integration', () => {
       loading: false,
       error: null,
       retry: vi.fn(),
+      usingFallback: false,
+      weatherEnabled: true,
     });
 
     const { container } = render(

@@ -30,7 +30,7 @@ vi.mock('../category-grid', () => ({
   ),
 }));
 
-import { useSizeCategories, usePinnedPreferences, useSeedCategories } from '@/lib/hooks/use-size-categories';
+import { useSizeCategories, usePinnedPreferences, useSeedCategories, useUpdatePinnedPreferences } from '@/lib/hooks/use-size-categories';
 
 describe('MySizesClient', () => {
   const mockCategories: SizeCategory[] = [
@@ -116,6 +116,13 @@ describe('MySizesClient', () => {
       isError: false,
       error: null,
       reset: vi.fn(),
+    } as any);
+
+    vi.mocked(useUpdatePinnedPreferences).mockReturnValue({
+      mutateAsync: vi.fn(),
+      isPending: false,
+      isError: false,
+      error: null,
     } as any);
   });
 
@@ -252,7 +259,7 @@ describe('MySizesClient', () => {
       expect(screen.getByRole('button', { name: 'Customize' })).toBeInTheDocument();
     });
 
-    it('should pass all required props to CategoryGrid', () => {
+    it('should pass category data to CategoryGrid', () => {
       render(
         <MySizesClient
           initialCategories={mockCategories}
@@ -266,8 +273,8 @@ describe('MySizesClient', () => {
       const categoryGrid = screen.getByTestId('category-grid');
       expect(categoryGrid).toBeInTheDocument();
 
-      // Check add category button is rendered (verifies onAddCategory prop)
-      expect(screen.getByRole('button', { name: 'Add Category' })).toBeInTheDocument();
+      // Category count from mock confirms data was wired through
+      expect(screen.getByText('Categories: 2')).toBeInTheDocument();
     });
 
     it('should handle empty categories array', () => {
@@ -442,9 +449,7 @@ describe('MySizesClient', () => {
   });
 
   describe('Event Handlers', () => {
-    it('should log to console when customize is clicked', () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-
+    it('should render customize trigger in pinned cards section', () => {
       render(
         <MySizesClient
           initialCategories={mockCategories}
@@ -454,32 +459,7 @@ describe('MySizesClient', () => {
         />
       );
 
-      const customizeButton = screen.getByRole('button', { name: 'Customize' });
-      customizeButton.click();
-
-      expect(consoleSpy).toHaveBeenCalledWith('Customize pinned cards');
-
-      consoleSpy.mockRestore();
-    });
-
-    it('should log to console when add category is clicked', () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-
-      render(
-        <MySizesClient
-          initialCategories={mockCategories}
-          initialPinnedPreferences={mockPinnedPreferences}
-          initialStandardSizes={mockStandardSizes}
-          initialBrandSizes={mockBrandSizes}
-        />
-      );
-
-      const addButton = screen.getByRole('button', { name: 'Add Category' });
-      addButton.click();
-
-      expect(consoleSpy).toHaveBeenCalledWith('Add new category');
-
-      consoleSpy.mockRestore();
+      expect(screen.getByRole('button', { name: 'Customize' })).toBeInTheDocument();
     });
   });
 

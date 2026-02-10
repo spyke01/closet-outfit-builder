@@ -40,7 +40,7 @@ interface ScoreBreakdown {
 
 // Simplified scoring functions based on the Edge Function logic
 function calculateFormalityScore(selection: OutfitSelection): number {
-  const items = [selection.jacket, selection.shirt, selection.pants, selection.shoes, selection.belt, selection.watch]
+  const items = [selection.jacket, selection.overshirt, selection.shirt, selection.pants, selection.shoes, selection.belt, selection.watch]
     .filter(Boolean) as OutfitItem[];
   
   if (items.length === 0) return 0;
@@ -59,7 +59,7 @@ function calculateFormalityScore(selection: OutfitSelection): number {
 }
 
 function calculateColorHarmony(selection: OutfitSelection): number {
-  const items = [selection.jacket, selection.shirt, selection.pants, selection.shoes, selection.belt]
+  const items = [selection.jacket, selection.overshirt, selection.shirt, selection.pants, selection.shoes, selection.belt]
     .filter(Boolean) as OutfitItem[];
   
   if (items.length < 2) return 80;

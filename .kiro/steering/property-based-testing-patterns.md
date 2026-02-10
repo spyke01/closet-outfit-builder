@@ -1,6 +1,22 @@
 # Property-Based Testing Patterns
 
-This document outlines effective patterns for property-based testing based on our experience with the category split implementation and other features.
+This document outlines effective patterns for property-based testing. Property-based tests are a specialized tool - use them sparingly for critical business logic where they provide unique value over traditional unit tests.
+
+## When to Use Property-Based Tests
+
+**Use property-based tests for**:
+- Core business logic with complex input spaces
+- Data transformations that must preserve invariants
+- Algorithms with universal properties (e.g., reversibility, consistency)
+- Critical calculations (scoring, pricing, permissions)
+
+**Don't use property-based tests for**:
+- UI components (too slow, too fragile)
+- Simple functions already covered by unit tests
+- Implementation details
+- Anything that requires extensive mocking
+
+**Rule of thumb**: If you can't describe a universal property in one sentence, use a unit test instead.
 
 ## Core Principles
 
@@ -155,17 +171,22 @@ fc.assert(fc.property(
 
 ## Performance Optimization
 
-### 1. Limit Test Runs
+### 1. Keep numRuns Low
 
-For development and CI efficiency:
+**Critical**: Property tests are expensive. Keep them fast.
 
 ```typescript
-// Development: Fast feedback
+// ✅ Development: Minimal runs for fast feedback
 fc.assert(property, { numRuns: 3 });
 
-// CI: More thorough testing
-fc.assert(property, { numRuns: process.env.CI ? 20 : 5 });
+// ✅ CI: Still keep it reasonable
+fc.assert(property, { numRuns: process.env.CI ? 10 : 3 });
+
+// ❌ Avoid: Too many runs (slow suite)
+fc.assert(property, { numRuns: 100 }); // Only for critical algorithms
 ```
+
+**Target**: Each property test should complete in <100ms.
 
 ### 2. Use Efficient Generators
 
@@ -242,21 +263,21 @@ fc.assert(fc.property(
 
 ### 1. Complement, Don't Replace
 
-Use property tests alongside unit tests:
+**Property tests are supplements, not replacements.** Most functionality should be covered by fast unit tests.
 
 ```typescript
 describe('Category Mapping', () => {
-  // Unit tests for specific cases
-  it('should map Jacket to jacket slot', () => {
+  // ✅ Unit tests for specific cases (primary coverage)
+  it('maps Jacket to jacket slot', () => {
     expect(mapCategory('Jacket')).toBe('jacket');
   });
   
-  it('should map Overshirt to jacket slot', () => {
+  it('maps Overshirt to jacket slot', () => {
     expect(mapCategory('Overshirt')).toBe('jacket');
   });
   
-  // Property test for general behavior
-  it('should always return valid slot for any valid category', () => {
+  // ✅ Property test for edge cases (supplemental coverage)
+  it('always returns valid slot for any category', () => {
     fc.assert(fc.property(
       validCategoryArb,
       (category) => {
@@ -264,24 +285,31 @@ describe('Category Mapping', () => {
         expect(VALID_SLOTS).toContain(slot);
         return true;
       }
-    ));
+    ), { numRuns: 3 });
   });
 });
 ```
 
-### 2. Use Property Tests for Regression Prevention
+### 2. Use Property Tests for Critical Invariants
 
 ```typescript
-// After fixing a bug, add a property test to prevent regression
-it('should handle category split without data loss', () => {
+// ✅ Good use: Testing critical data integrity
+it('migration preserves all items', () => {
   fc.assert(fc.property(
     fc.array(oldFormatItemArb),
     (oldItems) => {
       const newItems = migrateItems(oldItems);
       expect(newItems.length).toBe(oldItems.length);
-      expect(newItems.every(item => item.category !== 'Jacket/Overshirt')).toBe(true);
       return true;
     }
+  ), { numRuns: 5 });
+});
+
+// ❌ Avoid: Testing trivial properties
+it('array length is non-negative', () => {
+  fc.assert(fc.property(
+    fc.array(fc.anything()),
+    (arr) => arr.length >= 0 // Trivial, remove this test
   ));
 });
 ```
@@ -290,16 +318,15 @@ it('should handle category split without data loss', () => {
 
 ### 1. Property Description
 
-Always document what property is being tested:
+Always document the universal property being tested:
 
 ```typescript
 /**
  * Property: Category Independence
- * For any outfit selection, changing one category should not affect other categories
- * **Validates: Requirements 4.2, 4.5, 4.6**
+ * Changing one category should not affect other categories
  */
-it('should maintain category independence', () => {
-  fc.assert(fc.property(/* ... */));
+it('maintains category independence', () => {
+  fc.assert(fc.property(/* ... */), { numRuns: 3 });
 });
 ```
 
@@ -310,12 +337,24 @@ Document complex generators:
 ```typescript
 /**
  * Generates realistic wardrobe items with valid category relationships
- * Ensures formality_score is between 1-10 and category matches item type
+ * Ensures formality_score is between 1-10
  */
 const realisticWardrobeItemArb = fc.record({
   // ...
 });
 ```
+
+## When to Remove Property Tests
+
+Property tests are expensive. Remove them if:
+
+1. **They're slow** (>100ms) without providing unique value
+2. **They duplicate unit test coverage** - if unit tests already cover the behavior
+3. **They test trivial properties** - obvious invariants that can't realistically break
+4. **They require extensive mocking** - indicates testing at wrong level
+5. **They're flaky** - property tests should be deterministic
+
+**Remember**: A few well-chosen property tests are better than many redundant ones.
 
 ## Common Pitfalls to Avoid
 
@@ -354,22 +393,50 @@ const itemArb = wardrobeItemArb.filter(item =>
 const itemArb = wardrobeItemArb;
 ```
 
-### 3. Ignoring Shrinking
-
-When a property test fails, fast-check provides a minimal failing example. Use it:
+### 3. Using Property Tests as a Crutch
 
 ```typescript
-// When test fails with: { name: "A", formality_score: 1 }
-// Don't just increase numRuns, investigate why this minimal case fails
+// ❌ Don't use property tests to avoid writing specific test cases
+it('handles all inputs', () => {
+  fc.assert(fc.property(
+    fc.anything(),
+    (input) => {
+      // Vague assertion that doesn't test anything meaningful
+      expect(processInput(input)).toBeDefined();
+    }
+  ));
+});
+
+// ✅ Write specific unit tests for known cases
+it('handles valid input', () => {
+  expect(processInput(validInput)).toBe(expectedOutput);
+});
+
+it('rejects invalid input', () => {
+  expect(() => processInput(invalidInput)).toThrow();
+});
 ```
+
+## Decision Guide: Property Test vs Unit Test
+
+| Scenario | Use Property Test? | Rationale |
+|----------|-------------------|-----------|
+| Core business logic with complex inputs | ✅ Yes | Catches edge cases unit tests miss |
+| Data transformation preserving invariants | ✅ Yes | Verifies universal properties |
+| Simple CRUD operations | ❌ No | Unit tests are faster and clearer |
+| UI component rendering | ❌ No | Too slow, too fragile |
+| API endpoint behavior | ❌ No | Integration tests are better |
+| Trivial getters/setters | ❌ No | Not worth the overhead |
+| Already covered by unit tests | ❌ No | Redundant coverage |
 
 ## Conclusion
 
-Property-based testing is most effective when:
-1. Testing pure business logic functions
-2. Using simple, realistic generators
-3. Focusing on universal properties rather than specific examples
-4. Complementing (not replacing) traditional unit tests
-5. Keeping tests fast and maintainable
+Property-based testing is a specialized tool for critical business logic:
 
-The goal is to catch edge cases and ensure system properties hold across a wide range of inputs, while maintaining test suite performance and reliability.
+1. **Use sparingly**: Only for complex logic with universal properties
+2. **Keep fast**: numRuns: 3-10, target <100ms per test
+3. **Complement unit tests**: Don't replace them
+4. **Test pure functions**: Avoid UI, mocking, and I/O
+5. **Remove liberally**: Delete slow, redundant, or trivial property tests
+
+**Remember**: Most functionality should be covered by fast unit tests. Property tests are for catching edge cases in critical algorithms where they provide unique value.

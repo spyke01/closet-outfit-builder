@@ -21,13 +21,11 @@ import { StandardSizeSection } from '../standard-size-section'
 describe('Empty States', () => {
   describe('CategoryGrid Empty State', () => {
     it('should display empty state when no categories exist', () => {
-      const onAddCategory = vi.fn()
       render(
         <CategoryGrid
           categories={[]}
           standardSizes={[]}
           brandSizes={[]}
-          onAddCategory={onAddCategory}
         />
       )
       
@@ -35,63 +33,27 @@ describe('Empty States', () => {
     })
 
     it('should display guided next action message', () => {
-      const onAddCategory = vi.fn()
       render(
         <CategoryGrid
           categories={[]}
           standardSizes={[]}
           brandSizes={[]}
-          onAddCategory={onAddCategory}
         />
       )
       
-      expect(screen.getByText(/get started by adding your first clothing category/i)).toBeInTheDocument()
+      expect(screen.getByText(/your size categories will appear here once they are set up/i)).toBeInTheDocument()
     })
 
-    it('should display "Add Category" button in empty state', () => {
-      const onAddCategory = vi.fn()
+    it('should not display "Add Category" button in empty state', () => {
       render(
         <CategoryGrid
           categories={[]}
           standardSizes={[]}
           brandSizes={[]}
-          onAddCategory={onAddCategory}
         />
       )
       
-      expect(screen.getByRole('button', { name: /add new clothing category/i })).toBeInTheDocument()
-    })
-
-    it('should call onAddCategory when button is clicked', () => {
-      const onAddCategory = vi.fn()
-      render(
-        <CategoryGrid
-          categories={[]}
-          standardSizes={[]}
-          brandSizes={[]}
-          onAddCategory={onAddCategory}
-        />
-      )
-      
-      const addButton = screen.getByRole('button', { name: /add new clothing category/i })
-      fireEvent.click(addButton)
-      
-      expect(onAddCategory).toHaveBeenCalledTimes(1)
-    })
-
-    it('should have proper accessibility attributes in empty state', () => {
-      const onAddCategory = vi.fn()
-      render(
-        <CategoryGrid
-          categories={[]}
-          standardSizes={[]}
-          brandSizes={[]}
-          onAddCategory={onAddCategory}
-        />
-      )
-      
-      const addButton = screen.getByRole('button', { name: /add new clothing category/i })
-      expect(addButton).toHaveAttribute('aria-label', 'Add new clothing category')
+      expect(screen.queryByRole('button', { name: /add/i })).not.toBeInTheDocument()
     })
   })
 
@@ -274,13 +236,11 @@ describe('Empty States', () => {
 
   describe('Empty State Accessibility', () => {
     it('should have proper heading hierarchy in empty states', () => {
-      const onAddCategory = vi.fn()
       render(
         <CategoryGrid
           categories={[]}
           standardSizes={[]}
           brandSizes={[]}
-          onAddCategory={onAddCategory}
         />
       )
       
@@ -288,36 +248,17 @@ describe('Empty States', () => {
       expect(heading.tagName).toBe('H3')
     })
 
-    it('should have descriptive button labels', () => {
-      const onAddCategory = vi.fn()
+    it('should expose an accessible heading and description in empty state', () => {
       render(
         <CategoryGrid
           categories={[]}
           standardSizes={[]}
           brandSizes={[]}
-          onAddCategory={onAddCategory}
         />
       )
-      
-      const addButton = screen.getByRole('button', { name: /add new clothing category/i })
-      expect(addButton).toHaveAccessibleName()
-    })
 
-    it('should have visible focus indicators on empty state buttons', () => {
-      const onAddCategory = vi.fn()
-      render(
-        <CategoryGrid
-          categories={[]}
-          standardSizes={[]}
-          brandSizes={[]}
-          onAddCategory={onAddCategory}
-        />
-      )
-      
-      const addButton = screen.getByRole('button', { name: /add new clothing category/i })
-      
-      // Check for focus-visible class in className
-      expect(addButton.className).toContain('focus-visible')
+      expect(screen.getByRole('heading', { name: /no categories yet/i })).toBeInTheDocument()
+      expect(screen.getByText(/your size categories will appear here once they are set up/i)).toBeInTheDocument()
     })
   })
 
@@ -347,13 +288,11 @@ describe('Empty States', () => {
     })
 
     it('should center-align empty state content', () => {
-      const onAddCategory = vi.fn()
       const { container } = render(
         <CategoryGrid
           categories={[]}
           standardSizes={[]}
           brandSizes={[]}
-          onAddCategory={onAddCategory}
         />
       )
       

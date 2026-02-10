@@ -98,10 +98,10 @@ describe('OutfitVisualLayout', () => {
     expect(images).toHaveLength(2); // Only blazer and shirt have images
     
     expect(images[0]).toHaveAttribute('src', 'https://example.com/blazer.jpg');
-    expect(images[0]).toHaveAttribute('alt', 'Navy Blazer');
+    expect(images[0]).toHaveAttribute('alt', 'Navy Blazer by Hugo Boss');
     
     expect(images[1]).toHaveAttribute('src', 'https://example.com/shirt.jpg');
-    expect(images[1]).toHaveAttribute('alt', 'White Dress Shirt');
+    expect(images[1]).toHaveAttribute('alt', 'White Dress Shirt by Brooks Brothers');
   });
 
   it('displays item count badge', () => {

@@ -1,6 +1,8 @@
 'use client';
 
+import Image from 'next/image';
 import { Sparkles, Heart, Thermometer } from 'lucide-react';
+import { appDemoOutfit } from '@/lib/data/landing-page-images';
 
 
 
@@ -38,35 +40,63 @@ export function AppDemo() {
               {/* Outfit grid */}
               <div className="grid grid-cols-4 gap-4">
                 <div className="space-y-2">
-                  <div className="aspect-square bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center relative overflow-hidden">
-                    <div className="absolute inset-2 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl opacity-80"></div>
-                    <span className="relative text-white text-xs font-medium">Blazer</span>
+                  <div className="aspect-square bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                    <Image
+                      src={appDemoOutfit.jacket!.src}
+                      alt={appDemoOutfit.jacket!.alt}
+                      width={150}
+                      height={150}
+                      className="w-full h-full object-contain p-3"
+                      loading="lazy"
+                      quality={85}
+                    />
                   </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 text-center">Navy Blazer</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 text-center">Brown Tweed Blazer</p>
                 </div>
 
                 <div className="space-y-2">
-                  <div className="aspect-square bg-gradient-to-br from-stone-100 to-stone-200 rounded-2xl flex items-center justify-center relative overflow-hidden">
-                    <div className="absolute inset-2 bg-gradient-to-br from-stone-600 to-stone-700 rounded-xl opacity-80"></div>
-                    <span className="relative text-white text-xs font-medium">Shirt</span>
+                  <div className="aspect-square bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                    <Image
+                      src={appDemoOutfit.shirt.src}
+                      alt={appDemoOutfit.shirt.alt}
+                      width={150}
+                      height={150}
+                      className="w-full h-full object-contain p-3"
+                      loading="lazy"
+                      quality={85}
+                    />
                   </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 text-center">White Oxford</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 text-center">Blue Oxford Shirt</p>
                 </div>
 
                 <div className="space-y-2">
-                  <div className="aspect-square bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center relative overflow-hidden">
-                    <div className="absolute inset-2 bg-gradient-to-br from-amber-600 to-amber-700 rounded-xl opacity-80"></div>
-                    <span className="relative text-white text-xs font-medium">Pants</span>
+                  <div className="aspect-square bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                    <Image
+                      src={appDemoOutfit.pants.src}
+                      alt={appDemoOutfit.pants.alt}
+                      width={150}
+                      height={150}
+                      className="w-full h-full object-contain p-3"
+                      loading="lazy"
+                      quality={85}
+                    />
                   </div>
                   <p className="text-xs text-slate-600 dark:text-slate-400 text-center">Khaki Chinos</p>
                 </div>
 
                 <div className="space-y-2">
-                  <div className="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center relative overflow-hidden">
-                    <div className="absolute inset-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl opacity-80"></div>
-                    <span className="relative text-white text-xs font-medium">Shoes</span>
+                  <div className="aspect-square bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                    <Image
+                      src={appDemoOutfit.shoes.src}
+                      alt={appDemoOutfit.shoes.alt}
+                      width={150}
+                      height={150}
+                      className="w-full h-full object-contain p-3"
+                      loading="lazy"
+                      quality={85}
+                    />
                   </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 text-center">Brown Loafers</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 text-center">Tan Suede Loafers</p>
                 </div>
               </div>
 

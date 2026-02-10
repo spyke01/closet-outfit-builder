@@ -13,7 +13,7 @@ export function DeferredMonitoring() {
 
     // Use requestIdleCallback to defer until browser is idle
     const initializeWhenIdle = () => {
-      if ('requestIdleCallback' in window) {
+      if (typeof window.requestIdleCallback === 'function') {
         window.requestIdleCallback(
           async () => {
             await initializeMonitoringLibraries();

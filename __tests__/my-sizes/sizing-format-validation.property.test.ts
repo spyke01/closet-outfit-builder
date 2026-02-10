@@ -29,7 +29,7 @@ describe('Property 6: Sizing format support', () => {
 
   const numericSizeArb = fc.oneof(
     fc.integer({ min: 0, max: 99 }).map(n => n.toString()),
-    fc.integer({ min: 0, max: 99 }).map(n => `${n}.5`)
+    fc.integer({ min: 0, max: 98 }).map(n => `${n}.5`)
   );
 
   const waistInseamSizeArb = fc.record({

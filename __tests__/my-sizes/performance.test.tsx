@@ -34,6 +34,14 @@ const mockUseMeasurements = vi.fn()
 vi.mock('@/lib/hooks/use-size-categories', () => ({
   useSizeCategories: () => mockUseSizeCategories(),
   usePinnedPreferences: () => mockUsePinnedPreferences(),
+  useUpdatePinnedPreferences: () => ({
+    mutate: vi.fn(),
+    mutateAsync: vi.fn(),
+    isPending: false,
+    isError: false,
+    isSuccess: false,
+    error: null,
+  }),
   useSizeCategory: () => mockUseSizeCategory(),
   useBrandSizes: () => mockUseBrandSizes(),
   useMeasurements: () => mockUseMeasurements(),
@@ -188,6 +196,7 @@ describe('My Sizes Performance Tests', () => {
             initialPinnedPreferences={pinnedPreferences}
             initialStandardSizes={standardSizes}
             initialBrandSizes={brandSizes}
+            needsSeeding={false}
           />
         </QueryClientProvider>
       )
@@ -234,6 +243,7 @@ describe('My Sizes Performance Tests', () => {
             initialPinnedPreferences={pinnedPreferences}
             initialStandardSizes={[]}
             initialBrandSizes={[]}
+            needsSeeding={false}
           />
         </QueryClientProvider>
       )

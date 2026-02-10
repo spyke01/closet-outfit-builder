@@ -236,7 +236,7 @@ describe('CategoryGrid', () => {
     const categoriesWithIcons: SizeCategory[] = [
       {
         ...mockCategories[0],
-        icon: '👕',
+        icon: 'Shirt',
       },
     ];
 
@@ -246,7 +246,8 @@ describe('CategoryGrid', () => {
       />
     );
 
-    expect(screen.getByText('👕')).toBeInTheDocument();
+    const tile = screen.getByRole('listitem', { name: /view tops details/i });
+    expect(tile.querySelector('svg')).toBeInTheDocument();
   });
 
   it('should not show "varies by brand" when brand size matches standard size', () => {

@@ -27,8 +27,8 @@
     "generate:outfits": "node scripts/generate-outfits.js",
     "lint": "eslint .",
     "lint:a11y": "eslint . --ext .tsx,.ts --no-eslintrc --config eslint.config.js | grep jsx-a11y || echo 'No accessibility violations found'",
-    "test": "vitest",
-    "test:run": "vitest --run",
+    "test": "vitest --pool=threads",
+    "test:run": "vitest --run --pool=threads --maxWorkers=50%",
     "test:coverage": "vitest --coverage",
     "test:a11y": "./scripts/accessibility-check.sh",
     "test:keyboard": "node scripts/test-keyboard-navigation.js",
@@ -51,7 +51,8 @@
     "check:auth": "node scripts/check-auth-urls.js",
     "debug:production": "node scripts/debug-production.js",
     "check:supabase": "node scripts/check-supabase-connection.js",
-    "verify:env": "node scripts/verify-production-env.js"
+    "verify:env": "node scripts/verify-production-env.js",
+    "test:structure": "rg --files -g !node_modules -g !.netlify -g !coverage | rg \"(^|/)(test|tests)/.*.(test|spec).[jt]sx?$\" && (echo \"Found test files outside __tests__ directories\" && exit 1) || echo \"Test file placement OK\""
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

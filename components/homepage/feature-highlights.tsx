@@ -1,10 +1,8 @@
 'use client';
 
+import Image from 'next/image';
 import { Sparkles, Thermometer, Layers } from 'lucide-react';
-
-
-
-
+import { featureImages } from '@/lib/data/landing-page-images';
 
 const features = [
   {
@@ -13,6 +11,7 @@ const features = [
     description: "Mix and match your actual wardrobe to find the perfect look for any day.",
     gradient: "from-amber-100 to-amber-200",
     iconColor: "text-amber-600",
+    image: featureImages.smartGenerator,
   },
   {
     icon: Thermometer,
@@ -20,6 +19,7 @@ const features = [
     description: "The app knows what's casual, office-ready, or evening-appropriate.",
     gradient: "from-blue-100 to-blue-200",
     iconColor: "text-blue-600",
+    image: featureImages.weatherAware,
   },
   {
     icon: Layers,
@@ -27,6 +27,7 @@ const features = [
     description: "Build refined capsule wardrobes that suit your lifestyle and simplify dressing.",
     gradient: "from-stone-100 to-stone-200",
     iconColor: "text-stone-700",
+    image: featureImages.capsuleWardrobe,
   },
 ];
 
@@ -54,6 +55,19 @@ export function FeatureHighlights() {
               >
                 <div className={`w-20 h-20 bg-gradient-to-br ${feature.gradient} rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
                   <Icon className={`w-10 h-10 ${feature.iconColor}`} />
+                </div>
+                
+                {/* Product image */}
+                <div className="w-32 h-32 mx-auto mb-4 relative">
+                  <Image
+                    src={feature.image.src}
+                    alt={feature.image.alt}
+                    width={128}
+                    height={128}
+                    className="w-full h-full object-contain opacity-80 group-hover:opacity-100 transition-opacity"
+                    loading="lazy"
+                    quality={85}
+                  />
                 </div>
                 
                 <h3 className="font-display text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-4">

@@ -161,7 +161,7 @@ describe('ItemsList', () => {
     const images = screen.getAllByRole('img');
     expect(images).toHaveLength(2);
     expect(images[0]).toHaveAttribute('src', 'https://example.com/shirt.jpg');
-    expect(images[0]).toHaveAttribute('alt', 'Blue Shirt');
+    expect(images[0]).toHaveAttribute('alt', 'Blue Shirt by Brand A');
   });
 
   it('handles items without optional fields gracefully', () => {

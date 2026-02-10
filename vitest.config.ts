@@ -11,6 +11,11 @@ export default defineConfig({
     setupFiles: ['./lib/test/setup.ts'],
     globals: true,
     testTimeout: 10000, // 10 seconds
+    // Use worker threads instead of child-process forks to avoid IPC channel crashes
+    // on large suites with heavy React/JSDOM tests.
+    pool: 'threads',
+    maxWorkers: '50%',
+    minWorkers: 1,
   },
   resolve: {
     alias: {

@@ -172,7 +172,7 @@ describe('WardrobeSearchFilters', () => {
     fireEvent.click(filtersButton);
     
     // Should show filtering indicator
-    expect(screen.getByText('Filtering...')).toBeInTheDocument();
+    expect(screen.getByText('Filtering…')).toBeInTheDocument();
   });
 
   it('shows total count when filters are applied', () => {

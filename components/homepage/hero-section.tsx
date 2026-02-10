@@ -1,8 +1,10 @@
 'use client';
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { heroOutfit } from '@/lib/data/landing-page-images';
 
 
 
@@ -79,17 +81,49 @@ export function HeroSection() {
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="aspect-square bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center">
-                    <div className="text-slate-600 dark:text-slate-400 text-sm font-medium">Shirt</div>
+                  <div className="aspect-square bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                    <Image
+                      src={heroOutfit.shirt.src}
+                      alt={heroOutfit.shirt.alt}
+                      width={200}
+                      height={200}
+                      className="w-full h-full object-contain p-4"
+                      priority
+                      quality={85}
+                    />
                   </div>
-                  <div className="aspect-square bg-gradient-to-br from-stone-100 to-stone-200 rounded-2xl flex items-center justify-center">
-                    <div className="text-slate-600 dark:text-slate-400 text-sm font-medium">Pants</div>
+                  <div className="aspect-square bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                    <Image
+                      src={heroOutfit.pants.src}
+                      alt={heroOutfit.pants.alt}
+                      width={200}
+                      height={200}
+                      className="w-full h-full object-contain p-4"
+                      priority
+                      quality={85}
+                    />
                   </div>
-                  <div className="aspect-square bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center">
-                    <div className="text-slate-600 dark:text-slate-400 text-sm font-medium">Shoes</div>
+                  <div className="aspect-square bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                    <Image
+                      src={heroOutfit.shoes.src}
+                      alt={heroOutfit.shoes.alt}
+                      width={200}
+                      height={200}
+                      className="w-full h-full object-contain p-4"
+                      priority
+                      quality={85}
+                    />
                   </div>
-                  <div className="aspect-square bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl flex items-center justify-center">
-                    <div className="text-slate-600 dark:text-slate-400 text-sm font-medium">Watch</div>
+                  <div className="aspect-square bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                    <Image
+                      src={heroOutfit.accessory!.src}
+                      alt={heroOutfit.accessory!.alt}
+                      width={200}
+                      height={200}
+                      className="w-full h-full object-contain p-4"
+                      priority
+                      quality={85}
+                    />
                   </div>
                 </div>
                 

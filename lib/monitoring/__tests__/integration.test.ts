@@ -7,25 +7,20 @@ import { initializeMonitoring } from '../index'
 import { calculatePerformanceScore } from '../web-vitals'
 
 describe('Monitoring Integration', () => {
-  it('should initialize monitoring without errors', () => {
-    // Mock window object
-    global.window = {} as any
-
+  it('should initialize monitoring without errors in browser-like environment', () => {
     expect(() => {
       initializeMonitoring()
     }).not.toThrow()
   })
 
   it('should handle missing window gracefully', () => {
-    const originalWindow = global.window
-    // @ts-ignore
-    delete global.window
+    // Simulate SSR-only context for this assertion without mutating globals permanently
+    vi.stubGlobal('window', undefined)
 
     expect(() => {
       initializeMonitoring()
     }).not.toThrow()
-
-    global.window = originalWindow
+    vi.unstubAllGlobals()
   })
 
   it('should calculate performance scores correctly', () => {

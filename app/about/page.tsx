@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { StaticPageNavigation } from "@/components/static-page-navigation";
 import { StaticPageFooter } from "@/components/static-page-footer";
@@ -32,18 +33,62 @@ export default function AboutPage() {
                 <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-4">Key Features</h2>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
+                    <div className="w-16 h-16 mb-4 mx-auto">
+                      <Image
+                        src="/images/wardrobe/ocbd-blue.png"
+                        alt="Blue Oxford shirt representing personal wardrobe"
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-contain"
+                        loading="lazy"
+                        quality={85}
+                      />
+                    </div>
                     <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Personal & Secure</h3>
                     <p className="text-slate-700 dark:text-slate-300">Multi-user authentication with complete data privacy and isolation</p>
                   </div>
                   <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
+                    <div className="w-16 h-16 mb-4 mx-auto">
+                      <Image
+                        src="/images/wardrobe/ocbd-white.png"
+                        alt="White Oxford shirt for custom wardrobe upload"
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-contain"
+                        loading="lazy"
+                        quality={85}
+                      />
+                    </div>
                     <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Custom Wardrobe</h3>
                     <p className="text-slate-700 dark:text-slate-300">Upload your own clothing photos with automatic background removal</p>
                   </div>
                   <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
+                    <div className="w-16 h-16 mb-4 mx-auto">
+                      <Image
+                        src="/images/wardrobe/sportcoat-tweed-grey.png"
+                        alt="Grey tweed sport coat for smart recommendations"
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-contain"
+                        loading="lazy"
+                        quality={85}
+                      />
+                    </div>
                     <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Smart Recommendations</h3>
                     <p className="text-slate-700 dark:text-slate-300">AI-powered outfit suggestions based on style compatibility</p>
                   </div>
                   <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
+                    <div className="w-16 h-16 mb-4 mx-auto">
+                      <Image
+                        src="/images/wardrobe/mac-coat-navy.png"
+                        alt="Navy mac coat for weather integration"
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-contain"
+                        loading="lazy"
+                        quality={85}
+                      />
+                    </div>
                     <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Weather Integration</h3>
                     <p className="text-slate-700 dark:text-slate-300">Location-based outfit recommendations considering weather forecasts</p>
                   </div>

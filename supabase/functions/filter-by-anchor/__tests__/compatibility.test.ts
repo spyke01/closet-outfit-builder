@@ -1,4 +1,4 @@
-import { assertEquals, assertExists } from "https://deno.land/std@0.168.0/testing/asserts.ts";
+import { describe, it, expect } from 'vitest';
 
 // Import the compatibility function (we'll need to extract it)
 interface WardrobeItem {
@@ -163,7 +163,8 @@ function calculateCompatibility(anchorItem: WardrobeItem, candidateItem: Wardrob
   };
 }
 
-Deno.test("Jacket anchor compatibility", () => {
+describe('filter-by-anchor compatibility', () => {
+it('Jacket anchor compatibility', () => {
   const jacketAnchor: WardrobeItem = {
     id: "1",
     name: "Navy Blazer",
@@ -183,16 +184,16 @@ Deno.test("Jacket anchor compatibility", () => {
   const result = calculateCompatibility(jacketAnchor, whiteShirt);
   
   // Should have high compatibility
-  assertEquals(result.score >= 80, true, `Expected high compatibility score, got ${result.score}`);
+  expect(result.score).toBeGreaterThanOrEqual(80);
   
   // Should include jacket-shirt pairing reason
   const hasJacketShirtPairing = result.reasons.some(reason => 
     reason.includes('Jacket-shirt pairing')
   );
-  assertEquals(hasJacketShirtPairing, true, "Should include jacket-shirt pairing reason");
+  expect(hasJacketShirtPairing).toBe(true);
 });
 
-Deno.test("Overshirt anchor compatibility", () => {
+it('Overshirt anchor compatibility', () => {
   const overshirtAnchor: WardrobeItem = {
     id: "1",
     name: "Denim Overshirt", 
@@ -212,16 +213,16 @@ Deno.test("Overshirt anchor compatibility", () => {
   const result = calculateCompatibility(overshirtAnchor, casualShirt);
   
   // Should have good compatibility
-  assertEquals(result.score >= 70, true, `Expected good compatibility score, got ${result.score}`);
+  expect(result.score).toBeGreaterThanOrEqual(70);
   
   // Should include jacket-shirt pairing reason (overshirt is treated as jacket)
   const hasJacketShirtPairing = result.reasons.some(reason => 
     reason.includes('Jacket-shirt pairing')
   );
-  assertEquals(hasJacketShirtPairing, true, "Should include jacket-shirt pairing reason for overshirt");
+  expect(hasJacketShirtPairing).toBe(true);
 });
 
-Deno.test("Different category compatibility", () => {
+it('Different category compatibility', () => {
   const jacketAnchor: WardrobeItem = {
     id: "1",
     name: "Navy Blazer",
@@ -239,10 +240,10 @@ Deno.test("Different category compatibility", () => {
   const result = calculateCompatibility(jacketAnchor, overshirtCandidate);
   
   // Should have lower compatibility due to formality mismatch
-  assertEquals(result.score < 60, true, `Expected lower compatibility due to formality mismatch, got ${result.score}`);
+  expect(result.score).toBeLessThan(60);
 });
 
-Deno.test("Same category rejection", () => {
+it('Same category rejection', () => {
   const jacketAnchor: WardrobeItem = {
     id: "1",
     name: "Navy Blazer",
@@ -258,6 +259,7 @@ Deno.test("Same category rejection", () => {
   const result = calculateCompatibility(jacketAnchor, anotherJacket);
   
   // Should reject same category
-  assertEquals(result.score, 0);
-  assertEquals(result.reasons, ['Same category']);
+  expect(result.score).toBe(0);
+  expect(result.reasons).toEqual(['Same category']);
+});
 });

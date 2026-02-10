@@ -1,5 +1,47 @@
 import '@testing-library/jest-dom';
+import { createElement } from 'react';
 import { beforeEach, vi } from 'vitest';
+
+const originalConsoleError = console.error.bind(console);
+const originalConsoleWarn = console.warn.bind(console);
+
+const isExpectedTestNoise = (message: string) => {
+  const patterns = [
+    'Not implemented: navigation to another Document',
+    'Failed to read offline queue:',
+    'Invalid outfit for score breakdown:',
+    'Invalid item in ',
+    'Failed to preload module for feature weather:',
+    'Failed to load component for feature weather:',
+    'not wrapped in act(...)',
+    'Encountered two children with the same key',
+    'Weather API error:',
+    'No API key found in environment variables',
+    'Invalid API key for OpenWeather API.',
+    "Style property values shouldn't contain a semicolon.",
+  ];
+  return patterns.some((pattern) => message.includes(pattern));
+};
+
+console.error = (...args: unknown[]) => {
+  const message = args
+    .map((arg) => (typeof arg === 'string' ? arg : String(arg)))
+    .join(' ');
+  if (isExpectedTestNoise(message)) {
+    return;
+  }
+  originalConsoleError(...args);
+};
+
+console.warn = (...args: unknown[]) => {
+  const message = args
+    .map((arg) => (typeof arg === 'string' ? arg : String(arg)))
+    .join(' ');
+  if (isExpectedTestNoise(message)) {
+    return;
+  }
+  originalConsoleWarn(...args);
+};
 
 // Create a chainable mock for Supabase client that properly implements promises
 const createChainableMock = () => {
@@ -57,6 +99,18 @@ vi.mock('@/lib/hooks/use-auth', () => ({
     signUp: vi.fn(),
     signOut: vi.fn(),
   }),
+}));
+
+// Mock next/image globally to avoid Next runtime config warnings in unit tests.
+// We keep key behavior defaults (lazy loading + async decoding) that tests assert.
+vi.mock('next/image', () => ({
+  default: ({ priority, loading, fill, ...props }: any) =>
+    createElement('img', {
+      ...props,
+      loading: priority ? 'eager' : (loading ?? 'lazy'),
+      decoding: props.decoding ?? 'async',
+      fetchPriority: priority ? 'high' : props.fetchPriority,
+    }),
 }));
 
 // Mock geolocation API

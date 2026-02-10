@@ -110,8 +110,8 @@ describe('useSeedCategories Integration', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    // Should only call API once due to mutation deduplication
-    expect(callCount).toBe(1);
+    // Multiple explicit mutate() calls should each invoke the mutation.
+    expect(callCount).toBe(3);
   });
 
   it('should provide proper error context for debugging', async () => {

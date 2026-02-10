@@ -122,7 +122,7 @@ describe('Property 12: Pinned card reordering persistence', () => {
 
   it('should persist reordered pinned cards with correct display_order', () => {
     fc.assert(
-      fc.property(
+      fc.asyncProperty(
         uniquePinnedPreferencesArb(2, 10).chain(prefs => {
           const prefsArray = Array.isArray(prefs) ? prefs : Array.from(prefs);
           
@@ -160,7 +160,7 @@ describe('Property 12: Pinned card reordering persistence', () => {
 
   it('should maintain category_id to display_order mapping after reordering', () => {
     fc.assert(
-      fc.property(
+      fc.asyncProperty(
         uniquePinnedPreferencesArb(2, 10).chain(prefs => {
           const prefsArray = Array.isArray(prefs) ? prefs : Array.from(prefs);
           
@@ -196,7 +196,7 @@ describe('Property 12: Pinned card reordering persistence', () => {
 
   it('should preserve display_mode and preferred_brand_id during reordering', () => {
     fc.assert(
-      fc.property(
+      fc.asyncProperty(
         uniquePinnedPreferencesArb(2, 10).chain(prefs => {
           const prefsArray = Array.isArray(prefs) ? prefs : Array.from(prefs);
           
@@ -229,7 +229,7 @@ describe('Property 12: Pinned card reordering persistence', () => {
 
   it('should handle moving first item to last position', () => {
     fc.assert(
-      fc.property(
+      fc.asyncProperty(
         uniquePinnedPreferencesArb(3, 10),
         async (prefs) => {
           const originalOrder = Array.isArray(prefs) ? prefs : Array.from(prefs);
@@ -257,7 +257,7 @@ describe('Property 12: Pinned card reordering persistence', () => {
 
   it('should handle moving last item to first position', () => {
     fc.assert(
-      fc.property(
+      fc.asyncProperty(
         uniquePinnedPreferencesArb(3, 10),
         async (prefs) => {
           const originalOrder = Array.isArray(prefs) ? prefs : Array.from(prefs);

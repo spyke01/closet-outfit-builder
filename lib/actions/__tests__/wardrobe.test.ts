@@ -25,6 +25,7 @@ describe('Wardrobe Server Actions', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(auth.verifySession).mockResolvedValue(mockUser);
+    vi.mocked(auth.verifyOwnership).mockResolvedValue(undefined);
   });
 
   describe('createWardrobeItem', () => {
@@ -134,6 +135,7 @@ describe('Wardrobe Server Actions', () => {
     });
 
     it('should reject update for non-owner', async () => {
+      const itemId = '550e8400-e29b-41d4-a716-446655440111';
       const mockSelect = vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
           single: vi.fn().mockResolvedValue({
@@ -155,7 +157,7 @@ describe('Wardrobe Server Actions', () => {
       );
 
       const result = await updateWardrobeItem({
-        id: 'item-123',
+        id: itemId,
         name: 'Updated Jacket',
       });
 
@@ -166,6 +168,7 @@ describe('Wardrobe Server Actions', () => {
 
   describe('deleteWardrobeItem', () => {
     it('should soft delete wardrobe item with ownership verification', async () => {
+      const itemId = '550e8400-e29b-41d4-a716-446655440222';
       const mockSelect = vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
           single: vi.fn().mockResolvedValue({
@@ -193,7 +196,7 @@ describe('Wardrobe Server Actions', () => {
       vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
 
       const result = await deleteWardrobeItem({
-        id: 'item-123',
+        id: itemId,
       });
 
       expect(auth.verifySession).toHaveBeenCalled();

@@ -1,6 +1,35 @@
 # Test Failure Resolution Guide
 
-This document provides systematic approaches to diagnosing and fixing test failures, based on common patterns encountered during development.
+This document provides systematic approaches to diagnosing and fixing test failures quickly. The goal is fast resolution with minimal overhead while maintaining confidence in critical functionality.
+
+## Core Philosophy
+
+**Fix, Refactor, or Remove**: Every failing test should be evaluated against these criteria:
+1. Does it protect core functionality (business logic, security, critical workflows)?
+2. Is the behavior already covered by another test?
+3. Is it asserting unstable details (layout, styling, implementation)?
+4. Can the same risk be covered with a simpler test?
+
+**If the answer trends toward "no," remove it rather than fixing it.**
+
+## Quick Decision Tree
+
+When a test fails:
+1. **Is this testing core functionality?** (business logic, security, data integrity, API contracts)
+   - Yes → Fix the test or code
+   - No → Consider removing the test
+
+2. **Is this already covered elsewhere?**
+   - Yes → Remove the duplicate test
+   - No → Continue evaluation
+
+3. **Is this asserting implementation details?** (exact styling, internal state, private methods)
+   - Yes → Remove or refactor to test behavior
+   - No → Fix appropriately
+
+4. **Is the test brittle or flaky?**
+   - Yes → Can it be simplified? If not, remove it
+   - No → Fix the underlying issue
 
 ## Failure Classification
 
@@ -18,43 +47,48 @@ This document provides systematic approaches to diagnosing and fixing test failu
 // ❌ Problem: Generic selector finds multiple matches
 screen.getByText('Blue Jacket'); // Fails if multiple items have same name
 
-// ✅ Solution 1: Use getAllBy and select specific element
-const jacketElements = screen.getAllByText('Blue Jacket');
-const firstJacket = jacketElements[0];
-
-// ✅ Solution 2: Use more specific selector
+// ✅ Solution 1: Use role-based selectors (preferred)
 screen.getByRole('button', { name: 'Blue Jacket' });
 
-// ✅ Solution 3: Add test IDs for unique identification
+// ✅ Solution 2: Use test IDs for unique identification
 screen.getByTestId(`item-${itemId}`);
+
+// ⚠️ Last resort: Use getAllBy (indicates potential test design issue)
+const jacketElements = screen.getAllByText('Blue Jacket');
+const firstJacket = jacketElements[0];
 ```
 
 #### Element Not Found
 ```typescript
+// First: Verify the test is valuable
+// Is this testing core functionality or just implementation details?
+
 // ❌ Problem: Element rendered conditionally
 screen.getByText('Save Button'); // Fails if button is disabled/hidden
 
-// ✅ Solution 1: Check if element should exist
-const saveButton = screen.queryByText('Save Button');
-if (saveButton) {
-  fireEvent.click(saveButton);
-}
+// ✅ Solution 1: Use semantic, stable selectors
+screen.getByRole('button', { name: /save/i }); // Case-insensitive, flexible
 
-// ✅ Solution 2: Wait for element to appear
+// ✅ Solution 2: Wait for async operations (only when necessary)
 await waitFor(() => {
-  expect(screen.getByText('Save Button')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
 });
 
-// ✅ Solution 3: Use more flexible selectors
-screen.getByRole('button', { name: /save/i }); // Case-insensitive partial match
+// ⚠️ Avoid: Conditional checks that hide real issues
+const saveButton = screen.queryByText('Save Button');
+if (saveButton) {
+  fireEvent.click(saveButton); // This masks problems
+}
 ```
 
 ### 2. Timing Issues
 
 **Symptoms**:
-- Tests pass sometimes, fail other times
+- Tests pass sometimes, fail other times (flaky tests)
 - "Element not found" in async operations
 - "Expected element to be in document"
+
+**Decision**: Flaky tests are expensive. Fix once, or remove.
 
 **Solutions**:
 
@@ -64,24 +98,26 @@ screen.getByRole('button', { name: /save/i }); // Case-insensitive partial match
 fireEvent.click(submitButton);
 expect(screen.getByText('Success')).toBeInTheDocument(); // Fails
 
-// ✅ Solution: Use waitFor
+// ✅ Solution: Use waitFor with deterministic checks
 fireEvent.click(submitButton);
 await waitFor(() => {
   expect(screen.getByText('Success')).toBeInTheDocument();
 });
+
+// ⚠️ Avoid: Arbitrary timeouts
+await new Promise(resolve => setTimeout(resolve, 1000)); // Brittle
 ```
 
 #### State Updates
 ```typescript
-// ❌ Problem: React state not updated yet
-fireEvent.change(input, { target: { value: 'new value' } });
-expect(input.value).toBe('new value'); // May fail
-
-// ✅ Solution: Wait for state update
+// ✅ Wait for state updates with Testing Library utilities
 fireEvent.change(input, { target: { value: 'new value' } });
 await waitFor(() => {
   expect(input).toHaveValue('new value');
 });
+
+// ⚠️ Avoid: Testing React internals
+// Don't test state directly, test observable behavior
 ```
 
 ### 3. Mock Issues
@@ -91,18 +127,13 @@ await waitFor(() => {
 - Unexpected function calls
 - Mock functions not being called
 
+**Decision**: Excessive mocking indicates over-testing implementation. Consider testing at a higher level or removing the test.
+
 **Solutions**:
 
 #### Mock Setup
 ```typescript
-// ❌ Problem: Incomplete mock setup
-vi.mock('@/lib/hooks/use-categories', () => ({
-  useCategories: () => ({
-    data: mockCategories // Missing isLoading, error, etc.
-  })
-}));
-
-// ✅ Solution: Complete mock interface
+// ✅ Complete, realistic mock interfaces
 vi.mock('@/lib/hooks/use-categories', () => ({
   useCategories: () => ({
     data: mockCategories,
@@ -111,14 +142,24 @@ vi.mock('@/lib/hooks/use-categories', () => ({
     refetch: vi.fn()
   })
 }));
+
+// ⚠️ Avoid: Mocking everything
+// If you're mocking 5+ dependencies, reconsider the test design
 ```
 
 #### Mock Data Consistency
 ```typescript
-// ❌ Problem: Inconsistent mock data
-let mockCategories = []; // Empty array causes issues
+// ✅ Provide realistic default data with factory functions
+const createMockCategory = (overrides = {}) => ({
+  id: 'test-id',
+  name: 'Test Category',
+  is_anchor_item: true,
+  display_order: 1,
+  created_at: '2024-01-01T00:00:00Z',
+  updated_at: '2024-01-01T00:00:00Z',
+  ...overrides
+});
 
-// ✅ Solution: Provide realistic default data
 let mockCategories = [
   createMockCategory({ name: 'Jacket' }),
   createMockCategory({ name: 'Shirt' })
@@ -136,8 +177,8 @@ let mockCategories = [
 
 #### Use Factory Functions
 ```typescript
-// ✅ Centralized test data creation
-const createMockCategory = (overrides = {}) => ({
+// ✅ Centralized test data creation with TypeScript types
+const createMockCategory = (overrides: Partial<Category> = {}): Category => ({
   id: 'test-id',
   name: 'Test Category',
   is_anchor_item: true,
@@ -151,237 +192,196 @@ const createMockCategory = (overrides = {}) => ({
 const jacketCategory = createMockCategory({ name: 'Jacket' });
 ```
 
-#### Validate Test Data
-```typescript
-// ✅ Add validation to catch data issues early
-beforeEach(() => {
-  // Validate mock data structure
-  mockCategories.forEach(category => {
-    expect(category).toHaveProperty('id');
-    expect(category).toHaveProperty('name');
-  });
-});
-```
+## Fast Debugging Process
 
-## Systematic Debugging Process
+### Step 1: Evaluate Test Value (30 seconds)
 
-### Step 1: Identify Failure Type
+Ask yourself:
+1. **Does this test protect critical functionality?** (business logic, security, data integrity, API contracts)
+2. **Would a user notice if this broke?**
+3. **Is this testing implementation details?** (styling, internal state, component structure)
 
-1. **Read the error message carefully**
-2. **Check the test output/stack trace**
-3. **Identify which assertion failed**
-4. **Determine if it's a test issue or code issue**
+**If answers are "no," delete the test immediately. Don't waste time fixing low-value tests.**
 
-### Step 2: Quick Diagnosis
+### Step 2: Quick Diagnosis (1-2 minutes)
 
 #### For Selector Issues:
 ```typescript
-// Debug: Print available elements
-screen.debug(); // Shows current DOM
-console.log(screen.getAllByRole('button')); // Shows all buttons
+// Debug: See what's actually rendered
+screen.debug();
+screen.logTestingPlaygroundURL(); // Get better selector suggestions
 ```
 
 #### For Mock Issues:
 ```typescript
-// Debug: Check mock calls
+// Debug: Verify mock behavior
 console.log(mockFunction.mock.calls);
-console.log(mockFunction.mock.results);
 ```
 
 #### For Data Issues:
 ```typescript
-// Debug: Log actual vs expected data
-console.log('Expected:', expectedData);
-console.log('Actual:', actualData);
-console.log('Mock categories:', mockCategories);
+// Debug: Compare expected vs actual
+console.log({ expected: expectedData, actual: actualData });
 ```
 
-### Step 3: Apply Systematic Fixes
+### Step 3: Apply Fast Fix or Remove (5 minutes max)
 
-#### 1. Update Selectors
-- Make selectors more specific
-- Add test IDs if needed
-- Use role-based selectors
+**If you can't fix it in 5 minutes, remove it.**
 
-#### 2. Fix Timing
-- Add waitFor for async operations
-- Ensure proper cleanup between tests
-- Check for race conditions
-
-#### 3. Update Mocks
-- Ensure complete mock interfaces
-- Reset mocks between tests
-- Verify mock data matches expected format
-
-#### 4. Update Test Logic
-- Check if test assumptions are still valid
-- Update test to match new requirements
-- Remove obsolete assertions
-
-## Common Patterns and Solutions
-
-### Pattern 1: Category Name Changes
-
-**Problem**: Tests fail after category names change (e.g., "Jacket/Overshirt" → "Jacket", "Overshirt")
-
-**Solution**:
+#### Priority 1: Use Stable Selectors
 ```typescript
-// ✅ Update test data to match new categories
+// ✅ Semantic, stable selectors
+screen.getByRole('button', { name: /submit/i });
+screen.getByLabelText('Email');
+```
+
+#### Priority 2: Fix Timing
+```typescript
+// ✅ Deterministic async handling
+await waitFor(() => {
+  expect(screen.getByText('Success')).toBeInTheDocument();
+});
+```
+
+#### Priority 3: Simplify or Remove
+- If the test requires complex mocking, consider testing at a higher level
+- If the test is brittle, remove it and add a simpler integration test
+- If the test duplicates coverage, remove it
+
+## Common Patterns and Fast Solutions
+
+### Pattern 1: Requirements Changed
+
+**Problem**: Tests fail after feature changes
+
+**Decision Tree**:
+1. Is the old behavior still required? → No → **Remove test**
+2. Is the new behavior critical? → Yes → **Update test**
+3. Is this covered elsewhere? → Yes → **Remove test**
+
+```typescript
+// ✅ Update test data to match new requirements
 const mockCategories = [
   createMockCategory({ name: 'Jacket' }),
-  createMockCategory({ name: 'Overshirt' }), // Instead of 'Jacket/Overshirt'
-  createMockCategory({ name: 'Shirt' })
+  createMockCategory({ name: 'Overshirt' })
 ];
 
-// ✅ Update test assertions
+// ✅ Update assertions
 expect(screen.getByText('Jacket')).toBeInTheDocument();
-expect(screen.getByText('Overshirt')).toBeInTheDocument();
 ```
 
-### Pattern 2: Component Interface Changes
+### Pattern 2: Component Refactored
 
-**Problem**: Tests fail when component props or behavior changes
+**Problem**: Tests fail after component restructuring
 
-**Solution**:
+**Decision**: If you're testing implementation details, remove the test.
+
 ```typescript
-// ✅ Update component usage in tests
-// Old: <CategoryDropdown category="Jacket/Overshirt" />
-// New: <CategoryDropdown category="Jacket" />
+// ❌ Remove: Testing internal structure
+expect(wrapper.find('.internal-class')).toHaveLength(1);
 
-// ✅ Update mock implementations
-vi.mock('@/components/CategoryDropdown', () => ({
-  CategoryDropdown: ({ category, onSelect }) => (
-    <div data-testid="category-dropdown">
-      <button onClick={() => onSelect('jacket-item')}>{category}</button>
-    </div>
-  )
-}));
+// ✅ Keep: Testing user-facing behavior
+expect(screen.getByRole('button', { name: 'Submit' })).toBeEnabled();
 ```
 
-### Pattern 3: Business Logic Changes
+### Pattern 3: Business Logic Changed
 
-**Problem**: Tests fail because underlying business logic changed
+**Problem**: Tests fail because core logic changed
 
-**Solution**:
+**Decision**: Update tests to match new business rules.
+
 ```typescript
-// ✅ Update test expectations to match new logic
-// Old: Both categories map to different slots
-// New: Both categories map to same slot
-
+// ✅ Update expectations to match new logic
+expect(calculateScore(outfit)).toBe(expectedNewScore);
 expect(mapCategoryToSlot('Jacket')).toBe('jacket');
-expect(mapCategoryToSlot('Overshirt')).toBe('jacket'); // Same slot now
 ```
 
-## Prevention Strategies
+## Prevention: Write Better Tests
 
-### 1. Robust Selectors
+### 1. Stable Selectors (Vercel Best Practice)
 
 ```typescript
-// ✅ Use stable, semantic selectors
-screen.getByRole('button', { name: /save/i });
-screen.getByLabelText('Category');
-screen.getByTestId('outfit-preview');
+// ✅ Semantic HTML with role-based selectors
+<button onClick={handleClick}>Submit</button>
+screen.getByRole('button', { name: /submit/i });
 
-// ❌ Avoid fragile selectors
-screen.getByText('Save'); // Breaks if text changes
+// ✅ Proper labels for form controls
+<label htmlFor="email">Email</label>
+<input id="email" type="email" />
+screen.getByLabelText('Email');
+
+// ❌ Avoid: Fragile selectors
+screen.getByText('Submit'); // Breaks if text changes
 document.querySelector('.btn-primary'); // Breaks if CSS changes
 ```
 
-### 2. Flexible Assertions
+### 2. Behavior-Based Assertions
 
 ```typescript
-// ✅ Flexible assertions
-expect(screen.getByText(/jacket/i)).toBeInTheDocument(); // Case-insensitive
-expect(categories).toHaveLength(expect.any(Number)); // Any positive number
-expect(result).toMatchObject({ name: expect.any(String) }); // Partial match
+// ✅ Test observable behavior
+expect(screen.getByRole('button')).toBeEnabled();
+expect(screen.getByText(/success/i)).toBeInTheDocument();
 
-// ❌ Brittle assertions
-expect(screen.getByText('Jacket')).toBeInTheDocument(); // Exact match only
-expect(categories).toHaveLength(5); // Exact count
-expect(result).toEqual(exactObject); // Exact object match
+// ❌ Avoid: Implementation details
+expect(component.state.isLoading).toBe(false);
+expect(wrapper.find('.internal-class')).toHaveLength(1);
 ```
 
-### 3. Test Data Management
+### 3. Minimal Mocking
 
 ```typescript
-// ✅ Centralized test data
-// test-utils/mock-data.ts
-export const DEFAULT_CATEGORIES = [
-  createMockCategory({ name: 'Jacket' }),
-  createMockCategory({ name: 'Overshirt' }),
-  createMockCategory({ name: 'Shirt' })
-];
+// ✅ Mock only external dependencies
+vi.mock('@/lib/api/client');
 
-// ✅ Environment-specific data
-const mockCategories = process.env.NODE_ENV === 'test' 
-  ? DEFAULT_CATEGORIES 
-  : PRODUCTION_CATEGORIES;
+// ❌ Avoid: Mocking everything
+vi.mock('@/components/Button');
+vi.mock('@/lib/utils/format');
+vi.mock('@/lib/hooks/use-state');
+// ... 10 more mocks (indicates test design problem)
 ```
 
 ### 4. Test Isolation
 
 ```typescript
-// ✅ Proper cleanup between tests
+// ✅ Clean state between tests
 beforeEach(() => {
   vi.clearAllMocks();
-  cleanup(); // React Testing Library cleanup
-  // Reset any global state
-  resetMockData();
+  cleanup();
 });
 
-afterEach(() => {
-  // Additional cleanup if needed
-  vi.restoreAllMocks();
-});
+// ✅ Avoid shared mutable state
+// Each test should be independent
 ```
 
-## When to Update Tests vs Fix Code
+## Fix vs Remove Decision Matrix
 
-### Update Tests When:
-- Requirements have changed
-- Test was testing implementation details
-- Test assumptions are no longer valid
-- UI/UX has been intentionally modified
+| Scenario | Action | Rationale |
+|----------|--------|-----------|
+| Test protects business logic | **Fix** | Core functionality must be verified |
+| Test protects security/permissions | **Fix** | Critical for data safety |
+| Test protects API contracts | **Fix** | Users depend on stable APIs |
+| Test checks exact styling | **Remove** | Implementation detail, not user-facing behavior |
+| Test checks internal state | **Remove** | Implementation detail, brittle |
+| Test duplicates another test | **Remove** | Redundant coverage |
+| Test requires 5+ mocks | **Refactor or Remove** | Over-testing implementation |
+| Test is flaky (timing issues) | **Fix once or Remove** | Flaky tests are expensive |
+| Test takes >1 second | **Optimize or Remove** | Slow tests reduce confidence |
+| Test fails after refactor | **Evaluate** | Is it testing behavior or implementation? |
 
-### Fix Code When:
-- Test reveals actual bug
-- Business logic is incorrect
-- Component behavior doesn't match requirements
-- Data transformation is wrong
+## Non-Negotiables
 
-### Refactor Both When:
-- Design has fundamentally changed
-- Architecture has been updated
-- New patterns are being adopted
-- Performance optimizations require changes
-
-## Documentation and Communication
-
-### Document Fixes
-When fixing tests, document:
-1. **What failed**: Original error message
-2. **Why it failed**: Root cause analysis
-3. **How it was fixed**: Solution applied
-4. **Prevention**: How to avoid similar issues
-
-### Example Fix Documentation:
-```typescript
-/**
- * Fix: Updated category selectors after category split
- * 
- * Problem: Tests failed with "Found multiple elements with text: Blue Jacket"
- * Cause: Both outfit preview and item grid showed same item name
- * Solution: Used more specific selectors with roles and test IDs
- * Prevention: Added unique test IDs to all interactive elements
- */
-```
+1. **Never weaken assertions to make tests pass** - Fix the root cause or remove the test
+2. **Never add arbitrary timeouts** - Use deterministic waits or remove the test
+3. **Never skip flaky tests** - Fix immediately or remove
+4. **Never test implementation details** - Test user-facing behavior only
+5. **Keep test runtime proportional to confidence gained** - Slow tests must provide high value
 
 ## Conclusion
 
-Effective test failure resolution requires:
-1. **Systematic diagnosis**: Identify the failure type first
-2. **Targeted solutions**: Apply appropriate fixes for each failure type
-3. **Prevention mindset**: Write tests that are resilient to change
-4. **Documentation**: Record fixes to help future debugging
+**Speed is a feature.** Fast failure resolution requires:
+1. **Ruthless prioritization**: Only test what matters
+2. **Quick decisions**: Fix in 5 minutes or remove
+3. **Stable patterns**: Use semantic selectors and behavior-based assertions
+4. **Lean suite**: Remove redundant and low-value tests
 
-Remember: Test failures are often symptoms of deeper issues. Fix the root cause, not just the symptom.
+**Remember**: A small suite of high-confidence tests is better than a large suite of brittle tests. When in doubt, remove the test.
