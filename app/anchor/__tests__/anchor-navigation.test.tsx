@@ -54,7 +54,8 @@ vi.mock('next/navigation', () => ({
     push: vi.fn(),
     replace: vi.fn(),
     back: vi.fn()
-  })
+  }),
+  usePathname: () => '/anchor/jacket',
 }));
 
 const createTestQueryClient = () => new QueryClient({

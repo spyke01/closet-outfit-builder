@@ -8,11 +8,13 @@ import { WardrobeItem, Category, OutfitSelection } from '@/lib/types/database';
 // Mock Next.js router
 const mockPush = vi.fn();
 const mockReplace = vi.fn();
+const mockPathname = '/outfits/create';
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: mockPush,
     replace: mockReplace,
   }),
+  usePathname: () => mockPathname,
 }));
 
 // Mock data with proper UUID formats
@@ -71,6 +73,7 @@ let mockCreateOutfitMutation = {
   isSuccess: false,
   isError: false,
   error: null,
+  reset: vi.fn(),
 };
 
 let mockScoreData = { score: 85 };
@@ -200,6 +203,7 @@ describe('Save Functionality Property Tests', () => {
       isSuccess: false,
       isError: false,
       error: null,
+      reset: vi.fn(),
     };
     mockScoreData = { score: 85 };
     mockIsDuplicate = false;
@@ -268,6 +272,7 @@ describe('Save Functionality Property Tests', () => {
           isSuccess: false,
           isError: false,
           error: null,
+          reset: vi.fn(),
         };
 
         const { unmount } = render(
@@ -395,6 +400,7 @@ describe('Save Functionality Property Tests', () => {
           isSuccess: false,
           isError: false,
           error: null,
+          reset: vi.fn(),
         };
 
         render(
@@ -450,6 +456,7 @@ describe('Save Functionality Property Tests', () => {
         isSuccess: false,
         isError: true,
         error: testError,
+        reset: vi.fn(),
       };
 
       render(
@@ -484,6 +491,7 @@ describe('Save Functionality Property Tests', () => {
           isSuccess: false,
           isError: true,
           error: error,
+          reset: vi.fn(),
         };
 
         render(
@@ -644,6 +652,7 @@ describe('Save Functionality Property Tests', () => {
           isSuccess: !error,
           isError: !!error,
           error: error,
+          reset: vi.fn(),
         };
 
         render(
@@ -757,6 +766,7 @@ describe('Save Functionality Property Tests', () => {
           isSuccess: false,
           isError: true,
           error: new Error(errorMessage),
+          reset: vi.fn(),
         };
 
         render(

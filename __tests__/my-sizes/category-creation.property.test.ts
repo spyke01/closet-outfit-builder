@@ -63,7 +63,7 @@ describe('Property 10: Category Creation Adds to Grid', () => {
               name: fc.oneof(
                 fc.constantFrom('Tops', 'Bottoms', 'Footwear', 'Outerwear', 'Accessories'),
                 fc.string({ minLength: 1, maxLength: 50 })
-              ),
+              ).filter(s => s.trim().length > 0).map(s => s.trim()),
               supported_formats: fc.array(
                 fc.constantFrom<SizingFormat>('letter', 'numeric', 'waist-inseam', 'measurements'),
                 { minLength: 1, maxLength: 4 }
@@ -73,7 +73,9 @@ describe('Property 10: Category Creation Adds to Grid', () => {
           ),
           newCategory: fc.record({
             id: fc.string({ minLength: 1, maxLength: 36 }),
-            name: fc.string({ minLength: 1, maxLength: 50 }),
+            name: fc.string({ minLength: 1, maxLength: 50 })
+              .filter(s => s.trim().length > 0)
+              .map(s => s.trim()),
             icon: fc.option(fc.constantFrom('👕', '👖', '👟', '🧥', '👔'), { nil: undefined }),
             supported_formats: fc.array(
               fc.constantFrom<SizingFormat>('letter', 'numeric', 'waist-inseam', 'measurements'),

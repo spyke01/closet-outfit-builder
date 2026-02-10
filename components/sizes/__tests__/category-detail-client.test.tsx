@@ -14,6 +14,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
+import React from 'react'
 import { CategoryDetailClient } from '../category-detail-client'
 import type { SizeCategory, StandardSize, BrandSize, CategoryMeasurements } from '@/lib/types/sizes'
 
@@ -24,7 +25,33 @@ vi.mock('@/lib/hooks/use-size-categories', () => ({
   useMeasurements: vi.fn(),
 }))
 
-// Mock the section components
+// Mock next/dynamic to return components synchronously in tests
+vi.mock('next/dynamic', () => ({
+  default: (fn: any) => {
+    // For tests, just return the component synchronously
+    const Component = fn().then ? null : fn
+    if (Component) return Component
+    
+    // If it's a promise, create a wrapper that resolves it
+    return (props: any) => {
+      const [LoadedComponent, setLoadedComponent] = React.useState<any>(null)
+      
+      React.useEffect(() => {
+        Promise.resolve(fn()).then((mod: any) => {
+          setLoadedComponent(() => mod.default || mod)
+        })
+      }, [])
+      
+      if (!LoadedComponent) {
+        return null // Don't show loading, just return null
+      }
+      
+      return <LoadedComponent {...props} />
+    }
+  },
+}))
+
+// Mock the section components - must be before the component import
 vi.mock('../standard-size-section', () => ({
   StandardSizeSection: ({ category }: any) => (
     <div data-testid="standard-size-section">
@@ -125,8 +152,8 @@ describe('CategoryDetailClient', () => {
   })
 
   describe('Three-Section Layout (Requirement 4.1)', () => {
-    it('should render all three sections', () => {
-      render(
+    it('should render all three sections', async () => {
+      const { findByTestId } = render(
         <CategoryDetailClient
           initialCategory={mockCategory}
           initialBrandSizes={mockBrandSizes}
@@ -134,13 +161,13 @@ describe('CategoryDetailClient', () => {
         />
       )
 
-      expect(screen.getByTestId('standard-size-section')).toBeInTheDocument()
-      expect(screen.getByTestId('brand-sizes-section')).toBeInTheDocument()
-      expect(screen.getByTestId('measurement-guide-section')).toBeInTheDocument()
+      expect(await findByTestId('standard-size-section')).toBeInTheDocument()
+      expect(await findByTestId('brand-sizes-section')).toBeInTheDocument()
+      expect(await findByTestId('measurement-guide-section')).toBeInTheDocument()
     })
 
-    it('should render sections in correct order', () => {
-      render(
+    it('should render sections in correct order', async () => {
+      const { findAllByTestId } = render(
         <CategoryDetailClient
           initialCategory={mockCategory}
           initialBrandSizes={mockBrandSizes}
@@ -148,14 +175,14 @@ describe('CategoryDetailClient', () => {
         />
       )
 
-      const sections = screen.getAllByTestId(/section/)
+      const sections = await findAllByTestId(/section/)
       expect(sections[0]).toHaveAttribute('data-testid', 'standard-size-section')
       expect(sections[1]).toHaveAttribute('data-testid', 'brand-sizes-section')
       expect(sections[2]).toHaveAttribute('data-testid', 'measurement-guide-section')
     })
 
-    it('should pass correct props to StandardSizeSection', () => {
-      render(
+    it('should pass correct props to StandardSizeSection', async () => {
+      const { findByText } = render(
         <CategoryDetailClient
           initialCategory={mockCategory}
           initialBrandSizes={mockBrandSizes}
@@ -163,11 +190,11 @@ describe('CategoryDetailClient', () => {
         />
       )
 
-      expect(screen.getByText(`Standard Size Section for ${mockCategory.name}`)).toBeInTheDocument()
+      expect(await findByText(`Standard Size Section for ${mockCategory.name}`)).toBeInTheDocument()
     })
 
-    it('should pass correct props to BrandSizesSection', () => {
-      render(
+    it('should pass correct props to BrandSizesSection', async () => {
+      const { findByText } = render(
         <CategoryDetailClient
           initialCategory={mockCategory}
           initialBrandSizes={mockBrandSizes}
@@ -175,11 +202,11 @@ describe('CategoryDetailClient', () => {
         />
       )
 
-      expect(screen.getByText(`Brand Sizes Section for ${mockCategory.id}`)).toBeInTheDocument()
+      expect(await findByText(`Brand Sizes Section for ${mockCategory.id}`)).toBeInTheDocument()
     })
 
-    it('should pass correct props to MeasurementGuideSection', () => {
-      render(
+    it('should pass correct props to MeasurementGuideSection', async () => {
+      const { findByText } = render(
         <CategoryDetailClient
           initialCategory={mockCategory}
           initialBrandSizes={mockBrandSizes}
@@ -187,7 +214,7 @@ describe('CategoryDetailClient', () => {
         />
       )
 
-      expect(screen.getByText(`Measurement Guide Section for ${mockCategory.id}`)).toBeInTheDocument()
+      expect(await findByText(`Measurement Guide Section for ${mockCategory.id}`)).toBeInTheDocument()
     })
   })
 
@@ -357,7 +384,9 @@ describe('CategoryDetailClient', () => {
       )
 
       const container = screen.getByRole('main').parentElement
-      expect(container).toHaveClass('bg-gray-50', 'md:bg-white')
+      // Check for the actual background classes used
+      expect(container).toHaveClass('bg-gray-50')
+      expect(container).toHaveClass('dark:bg-gray-900')
     })
   })
 
@@ -402,8 +431,8 @@ describe('CategoryDetailClient', () => {
       expect(screen.getByText('Loading category details...')).toBeInTheDocument()
     })
 
-    it('should handle null measurements', () => {
-      render(
+    it('should handle null measurements', async () => {
+      const { findByTestId } = render(
         <CategoryDetailClient
           initialCategory={mockCategory}
           initialBrandSizes={mockBrandSizes}
@@ -412,11 +441,11 @@ describe('CategoryDetailClient', () => {
       )
 
       // Should still render all sections
-      expect(screen.getByTestId('measurement-guide-section')).toBeInTheDocument()
+      expect(await findByTestId('measurement-guide-section')).toBeInTheDocument()
     })
 
-    it('should handle empty brand sizes array', () => {
-      render(
+    it('should handle empty brand sizes array', async () => {
+      const { findByTestId } = render(
         <CategoryDetailClient
           initialCategory={mockCategory}
           initialBrandSizes={[]}
@@ -425,7 +454,7 @@ describe('CategoryDetailClient', () => {
       )
 
       // Should still render brand sizes section
-      expect(screen.getByTestId('brand-sizes-section')).toBeInTheDocument()
+      expect(await findByTestId('brand-sizes-section')).toBeInTheDocument()
     })
   })
 
@@ -525,7 +554,7 @@ describe('CategoryDetailClient', () => {
       expect(screen.getByRole('heading', { name: longNameCategory.name })).toBeInTheDocument()
     })
 
-    it('should handle category without standard sizes', () => {
+    it('should handle category without standard sizes', async () => {
       const categoryWithoutStandardSize = {
         ...mockCategory,
         standard_sizes: [],
@@ -537,7 +566,7 @@ describe('CategoryDetailClient', () => {
         error: null,
       } as any)
 
-      render(
+      const { findByTestId } = render(
         <CategoryDetailClient
           initialCategory={categoryWithoutStandardSize}
           initialBrandSizes={mockBrandSizes}
@@ -546,7 +575,7 @@ describe('CategoryDetailClient', () => {
       )
 
       // Should still render all sections
-      expect(screen.getByTestId('standard-size-section')).toBeInTheDocument()
+      expect(await findByTestId('standard-size-section')).toBeInTheDocument()
     })
 
     it('should handle multiple close button clicks', () => {

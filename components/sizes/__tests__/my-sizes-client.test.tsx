@@ -7,6 +7,8 @@ import type { SizeCategory, PinnedPreference, StandardSize, BrandSize } from '@/
 vi.mock('@/lib/hooks/use-size-categories', () => ({
   useSizeCategories: vi.fn(),
   usePinnedPreferences: vi.fn(),
+  useSeedCategories: vi.fn(),
+  useUpdatePinnedPreferences: vi.fn(),
 }));
 
 // Mock child components
@@ -28,7 +30,7 @@ vi.mock('../category-grid', () => ({
   ),
 }));
 
-import { useSizeCategories, usePinnedPreferences } from '@/lib/hooks/use-size-categories';
+import { useSizeCategories, usePinnedPreferences, useSeedCategories } from '@/lib/hooks/use-size-categories';
 
 describe('MySizesClient', () => {
   const mockCategories: SizeCategory[] = [
@@ -104,6 +106,16 @@ describe('MySizesClient', () => {
       isLoading: false,
       error: null,
       refetch: vi.fn(),
+    } as any);
+
+    vi.mocked(useSeedCategories).mockReturnValue({
+      mutate: vi.fn(),
+      mutateAsync: vi.fn(),
+      isPending: false,
+      isSuccess: false,
+      isError: false,
+      error: null,
+      reset: vi.fn(),
     } as any);
   });
 

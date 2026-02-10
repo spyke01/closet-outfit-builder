@@ -8,10 +8,12 @@ import { WardrobeItem, Category } from '@/lib/types/database';
 
 // Mock Next.js router
 const mockPush = vi.fn();
+const mockPathname = '/outfits/create';
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: mockPush,
   }),
+  usePathname: () => mockPathname,
 }));
 
 // Mock data with proper UUID formats

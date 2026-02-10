@@ -551,7 +551,9 @@ describe('Property 4: Category Grid Item Completeness', () => {
         fc.uniqueArray(
           fc.record({
             categoryId: fc.uuid(), // Use UUID for guaranteed uniqueness
-            categoryName: fc.string({ minLength: 1, maxLength: 50 }),
+            categoryName: fc.string({ minLength: 1, maxLength: 50 })
+              .filter(s => s.trim().length > 0) // Filter out whitespace-only names
+              .map(s => s.trim()), // Trim the string to ensure no leading/trailing whitespace
             sizeCount: fc.integer({ min: 0, max: 15 }),
             hasVariations: fc.boolean()
           }),
@@ -596,7 +598,7 @@ describe('Property 4: Category Grid Item Completeness', () => {
             
             // They should be independent
             expect(firstItem.category.id).not.toBe(secondItem.category.id);
-            expect(firstItem.sizeCount).not.toBe(secondItem.sizeCount);
+            // Don't assert that size counts are different - they could legitimately be the same
           }
 
           return true;

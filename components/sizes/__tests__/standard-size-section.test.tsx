@@ -197,9 +197,12 @@ describe('StandardSizeSection', () => {
       const editButton = screen.getByRole('button', { name: /Edit standard size for Tops/i })
       fireEvent.click(editButton)
 
-      // Display view should not be visible
-      expect(screen.queryByText('Primary Size')).not.toBeInTheDocument()
+      // Display view should not be visible - check for display-specific elements
+      // The form will have "Primary Size" as a label, so we check for the actual value display
       expect(screen.queryByText('Last updated:')).not.toBeInTheDocument()
+      // Check that we're in edit mode by looking for Save/Cancel buttons
+      expect(screen.getByRole('button', { name: /Save/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /Cancel/i })).toBeInTheDocument()
     })
   })
 

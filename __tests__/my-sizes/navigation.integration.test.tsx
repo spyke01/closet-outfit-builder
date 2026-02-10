@@ -42,6 +42,11 @@ vi.mock('@/lib/hooks/use-size-categories', () => ({
   useSizeCategory: vi.fn(),
   useBrandSizes: vi.fn(),
   useMeasurements: vi.fn(),
+  useSeedCategories: vi.fn(() => ({
+    seedCategories: vi.fn(),
+    isSeeding: false,
+    error: null,
+  })),
   useUpdateMeasurements: vi.fn(() => ({
     mutate: vi.fn(),
     mutateAsync: vi.fn(),

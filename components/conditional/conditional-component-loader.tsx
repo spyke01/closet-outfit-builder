@@ -54,10 +54,10 @@ export const ConditionalComponentLoader: React.FC<ConditionalComponentLoaderProp
     setError(null);
 
     try {
-      const module = await conditionalImport(feature, importFn);
+      const loadedModule = await conditionalImport(feature, importFn);
       
-      if (module?.default) {
-        setComponent(() => module.default);
+      if (loadedModule?.default) {
+        setComponent(() => loadedModule.default);
       } else {
         throw new Error(`Component not found in module for feature: ${feature}`);
       }

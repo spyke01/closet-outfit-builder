@@ -37,6 +37,11 @@ vi.mock('@/lib/hooks/use-size-categories', () => ({
   useSizeCategory: () => mockUseSizeCategory(),
   useBrandSizes: () => mockUseBrandSizes(),
   useMeasurements: () => mockUseMeasurements(),
+  useSeedCategories: vi.fn(() => ({
+    seedCategories: vi.fn(),
+    isSeeding: false,
+    error: null,
+  })),
 }))
 
 // Helper to create test data
