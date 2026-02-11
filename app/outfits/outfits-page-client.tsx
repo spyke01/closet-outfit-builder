@@ -338,94 +338,93 @@ export function OutfitsPageClient() {
         ) : viewMode === 'grid' ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredAndSortedOutfits.map(outfit => (
-              <Card
+              <div
                 key={outfit.id}
-                className="cursor-pointer hover:shadow-md transition-all duration-200 overflow-hidden"
+                className="border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-all duration-200"
                 onClick={() => handleOutfitSelect(outfit)}
               >
                 {/* Card Header */}
-                <CardContent className="p-0">
-                  <div className="p-3 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-medium text-slate-800 dark:text-slate-200 text-sm truncate flex-1 mr-2">
-                        {outfit.name || 'Untitled Outfit'}
-                      </h3>
-                      
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        {typeof outfit.score === 'number' && (
-                          <ScoreCircle
-                            score={outfit.score}
-                            size="sm"
-                            showLabel={false}
-                            outfit={canGenerateScoreBreakdown(outfit) ? (() => {
-                              const selection = convertOutfitToSelection(outfit);
-                              return selection ? {
-                                ...selection,
-                                tuck_style: selection.tuck_style || 'Untucked'
-                              } as any : undefined;
-                            })() : undefined}
-                            className="scale-75 -m-2"
-                          />
-                        )}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteOutfit(outfit);
-                          }}
-                          className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
+                <div className="p-3 border-b border-gray-200 dark:border-slate-700">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-medium text-slate-800 dark:text-slate-200 text-sm truncate flex-1 mr-2">
+                      {outfit.name || 'Untitled Outfit'}
+                    </h3>
+                    
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {typeof outfit.score === 'number' && (
+                        <ScoreCircle
+                          score={outfit.score}
+                          size="sm"
+                          showLabel={false}
+                          outfit={canGenerateScoreBreakdown(outfit) ? (() => {
+                            const selection = convertOutfitToSelection(outfit);
+                            return selection ? {
+                              ...selection,
+                              tuck_style: selection.tuck_style || 'Untucked'
+                            } as any : undefined;
+                          })() : undefined}
+                          className="scale-75 -m-2"
+                        />
+                      )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteOutfit(outfit);
+                        }}
+                        className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                        aria-label="Delete outfit"
+                      >
+                        <Trash2 size={18} />
+                      </button>
                     </div>
                   </div>
-                  
-                  {/* Visual Layout */}
-                  <div className="relative h-80">
-                    {layoutType === 'grid' && (
-                      <OutfitGridLayout
-                        items={outfit.items || []}
-                        size="medium"
-                        className="w-full h-full"
-                      />
-                    )}
-                    {layoutType === 'visual' && (
-                      <OutfitSimpleLayout
-                        items={outfit.items || []}
-                        size="medium"
-                        className="w-full h-full"
-                      />
-                    )}
-                  </div>
-                  
-                  {/* Bottom info */}
-                  <div className="p-3 bg-slate-50 dark:bg-slate-900">
-                    <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                      <div className="flex items-center gap-2">
-                        <span>{outfit.source === 'curated' ? 'Curated' : 'Generated'}</span>
-                        {outfit.tuck_style && (
-                          <>
-                            <span>•</span>
-                            <span>{outfit.tuck_style}</span>
-                          </>
-                        )}
-                        {outfit.loved && (
-                          <>
-                            <span>•</span>
-                            <Heart className="h-3 w-3 fill-current text-red-500" />
-                          </>
-                        )}
-                      </div>
-                      
-                      {outfit.items && outfit.items.length > 0 && (
-                        <span>
-                          {outfit.items.length} item{outfit.items.length !== 1 ? 's' : ''}
-                        </span>
+                </div>
+                
+                {/* Visual Layout - no extra background, let the layout component handle it */}
+                <div className="relative h-80">
+                  {layoutType === 'grid' && (
+                    <OutfitGridLayout
+                      items={outfit.items || []}
+                      size="medium"
+                      className="w-full h-full"
+                    />
+                  )}
+                  {layoutType === 'visual' && (
+                    <OutfitSimpleLayout
+                      items={outfit.items || []}
+                      size="medium"
+                      className="w-full h-full"
+                    />
+                  )}
+                </div>
+                
+                {/* Card Footer */}
+                <div className="p-3 border-t border-gray-200 dark:border-slate-700">
+                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                    <div className="flex items-center gap-2">
+                      <span>{outfit.source === 'curated' ? 'Curated' : 'Generated'}</span>
+                      {outfit.tuck_style && (
+                        <>
+                          <span>•</span>
+                          <span>{outfit.tuck_style}</span>
+                        </>
+                      )}
+                      {outfit.loved && (
+                        <>
+                          <span>•</span>
+                          <Heart className="h-3 w-3 fill-current text-red-500" />
+                        </>
                       )}
                     </div>
+                    
+                    {outfit.items && outfit.items.length > 0 && (
+                      <span>
+                        {outfit.items.length} item{outfit.items.length !== 1 ? 's' : ''}
+                      </span>
+                    )}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         ) : (

@@ -263,60 +263,68 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Image Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shirt className="h-5 w-5" />
-                Item Image
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isEditing ? (
-                <div className="space-y-4">
-                  {editForm.image_url && (
-                    <div className="relative w-full max-w-sm mx-auto aspect-square">
-                      <Image
-                        src={editForm.image_url}
-                        alt={`${editForm.name || 'Item'}${editForm.brand ? ` by ${editForm.brand}` : ''}`}
-                        fill
-                        className="rounded-lg shadow-md object-cover"
-                        sizes="(max-width: 768px) 100vw, 384px"
-                        priority
-                        quality={90}
-                      />
-                    </div>
-                  )}
+          <div className="border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
+            {/* Image display */}
+            {isEditing ? (
+              <>
+                {editForm.image_url && (
+                  <div className="relative w-full h-96 bg-gray-50 dark:bg-slate-700">
+                    <Image
+                      src={editForm.image_url}
+                      alt={`${editForm.name || 'Item'}${editForm.brand ? ` by ${editForm.brand}` : ''}`}
+                      fill
+                      className="object-contain p-4"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      priority
+                      quality={90}
+                    />
+                  </div>
+                )}
+                {/* Upload section */}
+                <div className="p-4 border-t border-gray-200 dark:border-slate-700">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3 flex items-center gap-2">
+                    <Shirt className="h-4 w-4" />
+                    Item Image
+                  </p>
                   <ImageUpload
                     onUpload={handleImageUpload}
                     onError={(error) => console.error('Upload error:', error)}
                   />
                 </div>
-              ) : (
-                <div className="text-center">
-                  {item.image_url ? (
-                    <div className="relative w-full max-w-sm mx-auto aspect-square">
-                      <Image
-                        src={item.image_url}
-                        alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''} - ${category?.name || 'wardrobe item'}`}
-                        fill
-                        className="rounded-lg shadow-md object-cover"
-                        sizes="(max-width: 768px) 100vw, 384px"
-                        loading="lazy"
-                        quality={85}
-                      />
+              </>
+            ) : (
+              <>
+                {/* Image display */}
+                {item.image_url ? (
+                  <div className="relative w-full h-96 bg-gray-50 dark:bg-slate-700">
+                    <Image
+                      src={item.image_url}
+                      alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''} - ${category?.name || 'wardrobe item'}`}
+                      fill
+                      className="object-contain p-4"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      loading="lazy"
+                      quality={85}
+                    />
+                  </div>
+                ) : (
+                  <div className="relative w-full h-96 bg-gray-50 dark:bg-slate-700 flex items-center justify-center">
+                    <div className="text-center">
+                      <Shirt className="h-12 w-12 mx-auto text-slate-400 mb-2" />
+                      <p className="text-slate-500 dark:text-slate-400">No image</p>
                     </div>
-                  ) : (
-                    <div className="w-full max-w-sm mx-auto h-64 bg-stone-100 dark:bg-slate-700 rounded-lg flex items-center justify-center">
-                      <div className="text-center">
-                        <Shirt className="h-12 w-12 mx-auto text-slate-400 mb-2" />
-                        <p className="text-slate-500 dark:text-slate-400">No image</p>
-                      </div>
-                    </div>
-                  )}
+                  </div>
+                )}
+                {/* Item info */}
+                <div className="p-4 border-t border-gray-200 dark:border-slate-700">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">{category?.name || 'Item'}</p>
+                  <p className="text-sm font-medium text-slate-900 dark:text-white">
+                    {item.brand ? `${item.brand} ${item.name}` : item.name}
+                  </p>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              </>
+            )}
+          </div>
 
           {/* Details Section */}
           <Card>

@@ -200,7 +200,7 @@ export function WardrobePageClient() {
                         <div
                           key={item.id}
                           onClick={() => handleItemSelect(item)}
-                          className="p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer touch-manipulation border-stone-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-md active:scale-95"
+                          className="border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm overflow-hidden transition-all duration-200 cursor-pointer hover:shadow-md active:scale-95"
                           role="button"
                           tabIndex={0}
                           onKeyDown={(e) => {
@@ -211,14 +211,14 @@ export function WardrobePageClient() {
                           }}
                           aria-label={`Select ${item.brand ? `${item.brand} ${item.name}` : item.name} for outfit building`}
                         >
-                          {/* Fixed height image container */}
+                          {/* Image section */}
                           {item.image_url && (
-                            <div className="h-40 sm:h-44 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3 flex items-center justify-center relative">
+                            <div className="relative w-full h-48 bg-gray-50 dark:bg-slate-700">
                               <Image
                                 src={item.image_url}
                                 alt={`${item.brand ? `${item.brand} ${item.name}` : item.name} - ${category.name}`}
                                 fill
-                                className="object-contain p-3"
+                                className="object-contain p-4"
                                 loading="lazy"
                                 sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                                 quality={85}
@@ -226,14 +226,13 @@ export function WardrobePageClient() {
                             </div>
                           )}
                           
-                          {/* Item details */}
-                          <div className="space-y-2 min-w-0">
-                            <div className="flex items-start gap-2 min-w-0">
-                              <h3 className="font-medium text-slate-800 dark:text-slate-200 leading-tight text-sm sm:text-base line-clamp-2 break-words">
-                                {item.brand ? `${item.brand} ${item.name}` : item.name}
-                              </h3>
-                            </div>
-
+                          {/* Item info */}
+                          <div className="p-3 border-t border-gray-200 dark:border-slate-700">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">{category.name}</p>
+                            <p className="text-sm font-medium text-slate-900 dark:text-white line-clamp-2 mb-2">
+                              {item.brand ? `${item.brand} ${item.name}` : item.name}
+                            </p>
+                            
                             {item.capsule_tags && item.capsule_tags.length > 0 && (
                               <div className="flex flex-wrap gap-1">
                                 {item.capsule_tags.slice(0, 3).map(tag => (
@@ -264,63 +263,65 @@ export function WardrobePageClient() {
             selectedCategories.size === 1 ? (
               // Single category selected - show as flat grid
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
-                {filteredItems.map(item => (
-                  <div
-                    key={item.id}
-                    onClick={() => handleItemSelect(item)}
-                    className="p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer touch-manipulation border-stone-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-md active:scale-95"
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        handleItemSelect(item);
-                      }
-                    }}
-                    aria-label={`Select ${item.brand ? `${item.brand} ${item.name}` : item.name} for outfit building`}
-                  >
-                    {/* Fixed height image container */}
-                    {item.image_url && (
-                      <div className="h-40 sm:h-44 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3 flex items-center justify-center relative">
-                        <Image
-                          src={item.image_url}
-                          alt={item.name}
-                          fill
-                          className="object-contain p-3"
-                          loading="lazy"
-                          sizes="(max-width: 640px) 100vw, 50vw"
-                        />
-                      </div>
-                    )}
-                    
-                    {/* Item details */}
-                    <div className="space-y-2">
-                      <div className="flex items-start gap-2">
-                        <h3 className="font-medium text-slate-800 dark:text-slate-200 leading-tight text-sm sm:text-base">
-                          {item.brand ? `${item.brand} ${item.name}` : item.name}
-                        </h3>
-                      </div>
-
-                      {item.capsule_tags && item.capsule_tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1">
-                          {item.capsule_tags.slice(0, 3).map((tag: string) => (
-                            <span
-                              key={tag}
-                              className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                          {item.capsule_tags.length > 3 && (
-                            <span className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300">
-                              +{item.capsule_tags.length - 3}
-                            </span>
-                          )}
+                {filteredItems.map(item => {
+                  const category = categories.find(c => c.id === item.category_id);
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => handleItemSelect(item)}
+                      className="border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm overflow-hidden transition-all duration-200 cursor-pointer hover:shadow-md active:scale-95"
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleItemSelect(item);
+                        }
+                      }}
+                      aria-label={`Select ${item.brand ? `${item.brand} ${item.name}` : item.name} for outfit building`}
+                    >
+                      {/* Image section */}
+                      {item.image_url && (
+                        <div className="relative w-full h-48 bg-gray-50 dark:bg-slate-700">
+                          <Image
+                            src={item.image_url}
+                            alt={item.name}
+                            fill
+                            className="object-contain p-4"
+                            loading="lazy"
+                            sizes="(max-width: 640px) 100vw, 50vw"
+                          />
                         </div>
                       )}
+                      
+                      {/* Item info */}
+                      <div className="p-3 border-t border-gray-200 dark:border-slate-700">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">{category?.name || 'Item'}</p>
+                        <p className="text-sm font-medium text-slate-900 dark:text-white line-clamp-2 mb-2">
+                          {item.brand ? `${item.brand} ${item.name}` : item.name}
+                        </p>
+                        
+                        {item.capsule_tags && item.capsule_tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {item.capsule_tags.slice(0, 3).map((tag: string) => (
+                              <span
+                                key={tag}
+                                className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                            {item.capsule_tags.length > 3 && (
+                              <span className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300">
+                                +{item.capsule_tags.length - 3}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               // Multiple categories selected - show grouped by category
@@ -348,7 +349,7 @@ export function WardrobePageClient() {
                             <div
                               key={item.id}
                               onClick={() => handleItemSelect(item)}
-                              className="p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer touch-manipulation border-stone-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-md active:scale-95"
+                              className="border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm overflow-hidden transition-all duration-200 cursor-pointer hover:shadow-md active:scale-95"
                               role="button"
                               tabIndex={0}
                               onKeyDown={(e) => {
@@ -359,28 +360,27 @@ export function WardrobePageClient() {
                               }}
                               aria-label={`Select ${item.brand ? `${item.brand} ${item.name}` : item.name} for outfit building`}
                             >
-                              {/* Fixed height image container */}
+                              {/* Image section */}
                               {item.image_url && (
-                                <div className="h-40 sm:h-44 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3 flex items-center justify-center relative">
+                                <div className="relative w-full h-48 bg-gray-50 dark:bg-slate-700">
                                   <Image
                                     src={item.image_url}
                                     alt={item.name}
                                     fill
-                                    className="object-contain p-3"
+                                    className="object-contain p-4"
                                     loading="lazy"
                                     sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
                                   />
                                 </div>
                               )}
                               
-                              {/* Item details */}
-                              <div className="space-y-2">
-                                <div className="flex items-start gap-2">
-                                  <h3 className="font-medium text-slate-800 dark:text-slate-200 leading-tight text-sm sm:text-base">
-                                    {item.brand ? `${item.brand} ${item.name}` : item.name}
-                                  </h3>
-                                </div>
-
+                              {/* Item info */}
+                              <div className="p-3 border-t border-gray-200 dark:border-slate-700">
+                                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">{category.name}</p>
+                                <p className="text-sm font-medium text-slate-900 dark:text-white line-clamp-2 mb-2">
+                                  {item.brand ? `${item.brand} ${item.name}` : item.name}
+                                </p>
+                                
                                 {item.capsule_tags && item.capsule_tags.length > 0 && (
                                   <div className="flex flex-wrap gap-1">
                                     {item.capsule_tags.slice(0, 3).map(tag => (

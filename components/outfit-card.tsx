@@ -204,9 +204,9 @@ export const OutfitCard = React.memo<OutfitCardProps>(({
   };
 
   return (
-    <div className={`bg-white dark:bg-slate-800 border border-stone-200 dark:border-slate-700 rounded-xl overflow-hidden ${className}`}>
+    <div className={`border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm overflow-hidden ${className}`}>
       {/* Header */}
-      <div className="p-4 border-b border-stone-200 dark:border-slate-700">
+      <div className="p-4 border-b border-gray-200 dark:border-slate-700">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h3 className="font-medium text-slate-800 dark:text-slate-200">
@@ -257,7 +257,7 @@ export const OutfitCard = React.memo<OutfitCardProps>(({
         )}
       </div>
 
-      {/* Content */}
+      {/* Content - no extra background, let the content handle it */}
       <div className="p-4">
         {enableFlip && isFlipped ? renderVisualLayout() : renderOutfitItems()}
       </div>

@@ -194,35 +194,33 @@ export function AddItemPageClient() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Image Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shirt className="h-5 w-5" />
-                Item Image
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {formData.image_url && (
-                  <div className="relative w-full max-w-sm mx-auto aspect-square">
-                    <Image
-                      src={formData.image_url}
-                      alt={`${formData.name || 'New item'}${formData.brand ? ` by ${formData.brand}` : ''}`}
-                      fill
-                      className="rounded-lg shadow-md object-cover"
-                      sizes="(max-width: 768px) 100vw, 384px"
-                      priority
-                      quality={90}
-                    />
-                  </div>
-                )}
-                <ImageUpload
-                  onUpload={handleImageUpload}
-                  onError={(error) => console.error('Upload error:', error)}
+          <div className="border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
+            {/* Image display */}
+            {formData.image_url && (
+              <div className="relative w-full h-96 bg-gray-50 dark:bg-slate-700">
+                <Image
+                  src={formData.image_url}
+                  alt={`${formData.name || 'New item'}${formData.brand ? ` by ${formData.brand}` : ''}`}
+                  fill
+                  className="object-contain p-4"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  priority
+                  quality={90}
                 />
               </div>
-            </CardContent>
-          </Card>
+            )}
+            {/* Upload section */}
+            <div className="p-4 border-t border-gray-200 dark:border-slate-700">
+              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3 flex items-center gap-2">
+                <Shirt className="h-4 w-4" />
+                Item Image
+              </p>
+              <ImageUpload
+                onUpload={handleImageUpload}
+                onError={(error) => console.error('Upload error:', error)}
+              />
+            </div>
+          </div>
 
           {/* Details Section */}
           <Card>
