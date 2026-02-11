@@ -260,7 +260,7 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
               },
               condition: item.weather[0].description,
               icon: item.weather[0].icon,
-              precipitationProbability: item.pop ? Math.round(item.pop * 100) : undefined,
+              precipitationProbability: item.pop,
             });
           }
           return acc;
@@ -305,7 +305,7 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
           },
           condition: day.weather[0].description,
           icon: day.weather[0].icon,
-          precipitationProbability: day.pop ? Math.round(day.pop * 100) : undefined,
+          precipitationProbability: day.pop,
         };
       }),
     };
