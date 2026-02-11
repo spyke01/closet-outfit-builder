@@ -14,6 +14,7 @@
 - Use `npm run test:run` for non-interactive runs, CI, and agent execution.
 - Use `npm run test` only for local watch mode.
 - If the suite appears stuck, run targeted subsets with `npm run test:run -- <path>` to isolate failures quickly.
+- Run `npm run test:structure` when moving or adding tests to enforce colocated `__tests__/` placement.
 
 ## Assertion conventions
 - Prefer role/label-based selectors over exact text when punctuation can vary (`...` vs `…`).
@@ -24,6 +25,16 @@
 - Use realistic, schema-valid fixtures (for UUID-backed fields, use valid UUID strings).
 - Keep test data aligned with current component contracts (required props and hook exports must be fully mocked).
 - Prefer centralized factories in `lib/test/` for repeated object shapes.
+
+## Teardown conventions
+- Every test file that creates long-lived resources must clean them in `afterEach` or component unmount:
+  - timers/intervals,
+  - event listeners/subscriptions,
+  - outstanding async tasks/promises,
+  - custom global/window mutations,
+  - query clients or caches.
+- If a test creates a `QueryClient`, clear it after each test to avoid worker hangs.
+- Component code that performs async state updates must guard against updates after unmount.
 
 ## Performance test conventions
 - Avoid strict wall-clock micro-benchmarks in unit tests.

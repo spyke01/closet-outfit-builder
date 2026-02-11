@@ -61,6 +61,11 @@ afterEach(() => {
 });
 ```
 
+Additional guardrails:
+- If your test creates a `QueryClient`, clear it in `afterEach`.
+- For components with async loaders/effects, ensure late async completions cannot call `setState` after unmount.
+- In unit tests, mock heavy dynamic wrappers (`next/dynamic` loaders, large visual subtrees) when the test intent is parent behavior, not child rendering internals.
+
 ### Keep Framework Warnings Out of the Suite
 
 Warnings that repeat across many tests hide real failures and slow triage.
@@ -69,6 +74,7 @@ Rules:
 - Fix the root cause instead of suppressing warning output.
 - Keep test-time framework config aligned with production constraints.
 - For Next.js images, if tests use quality values above default, configure `images.qualities` to include those values (for example `75` and `85`) or update tests/components to use allowed values only.
+- Do not mute recurring warnings globally unless the source cannot be fixed; warning floods should be triaged as defects.
 
 ## Writing Lean, Fast Tests
 

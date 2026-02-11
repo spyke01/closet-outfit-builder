@@ -44,13 +44,17 @@ When a test fails:
 - Leaked timers, intervals, event listeners, or unresolved async tasks
 - Global `window`/`document`/`globalThis` mutation not restored
 - Runtime mismatch (Deno-style imports/tests running in Vitest)
+- Async completion trying to update React state after component unmount/teardown
+- Query/cache instances left alive after test completion
 
 **Fast Resolution**:
 1. Re-run in run-once mode: `npm run test:run`
 2. Isolate file: `npm run test:run -- <path-to-test>`
 3. Add/verify `afterEach` cleanup (`vi.restoreAllMocks`, `vi.useRealTimers`)
 4. Remove Deno-only imports (`https://...`) from Vitest test paths
-5. If still hanging, bisect test files by directory until offending file is isolated
+5. Ensure async loaders/effects ignore late completion after unmount
+6. Clear local query/cache clients created in the test
+7. If still hanging, bisect test files by directory until offending file is isolated
 
 ### 1. Selector Failures
 
@@ -125,6 +129,18 @@ await waitFor(() => {
 
 // ⚠️ Avoid: Arbitrary timeouts
 await new Promise(resolve => setTimeout(resolve, 1000)); // Brittle
+```
+
+#### Post-Teardown Async Errors
+```typescript
+// Symptom: "window is not defined" or setState warnings after tests finish
+// Cause: async completion runs after component unmount / test teardown
+
+// ✅ Fix in component code: ignore late completions
+const isMountedRef = useRef(true);
+useEffect(() => () => { isMountedRef.current = false; }, []);
+// Before setState in async completion:
+if (!isMountedRef.current) return;
 ```
 
 #### State Updates

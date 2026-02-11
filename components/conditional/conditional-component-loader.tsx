@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { conditionalImport, isFeatureEnabled, type FeatureFlags } from '@/lib/utils/feature-flags';
 import { Loader2 } from 'lucide-react';
 
@@ -33,8 +33,15 @@ export const ConditionalComponentLoader: React.FC<ConditionalComponentLoaderProp
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [preloaded, setPreloaded] = useState(false);
+  const isMountedRef = useRef(true);
 
   const featureEnabled = isFeatureEnabled(feature);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Load component when feature is enabled
   useEffect(() => {
@@ -50,22 +57,35 @@ export const ConditionalComponentLoader: React.FC<ConditionalComponentLoaderProp
       return;
     }
 
+    if (!isMountedRef.current) {
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
       const loadedModule = await conditionalImport(feature, importFn);
       
+      if (!isMountedRef.current) {
+        return;
+      }
+
       if (loadedModule?.default) {
         setComponent(() => loadedModule.default);
       } else {
         throw new Error(`Component not found in module for feature: ${feature}`);
       }
     } catch (err) {
+      if (!isMountedRef.current) {
+        return;
+      }
       console.warn(`Failed to load component for feature ${feature}:`, err);
       setError(err instanceof Error ? err.message : 'Failed to load component');
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
     }
   }, [feature, importFn, loading, Component]);
 

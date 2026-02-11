@@ -454,7 +454,7 @@ describe('Weather Normalization - Property-Based Tests', () => {
   it('Property 2: Temperature classification is exclusive', () => {
     fc.assert(
       fc.property(
-        fc.float({ min: -50, max: 150 }),
+        fc.float({ min: -50, max: 150, noNaN: true, noDefaultInfinity: true }),
         (temp) => {
           const result = classifyTemperature(temp);
           const bands = [result.isCold, result.isMild, result.isWarm, result.isHot];
@@ -472,7 +472,7 @@ describe('Weather Normalization - Property-Based Tests', () => {
   it('Property 2: Precipitation threshold is correctly applied', () => {
     fc.assert(
       fc.property(
-        fc.float({ min: 0, max: 1 }),
+        fc.float({ min: 0, max: 1, noNaN: true, noDefaultInfinity: true }),
         (precipChance) => {
           const result = isRainLikely(precipChance);
           
@@ -499,8 +499,8 @@ describe('Weather Normalization - Property-Based Tests', () => {
   it('Property 3: Daily swing equals high minus low', () => {
     fc.assert(
       fc.property(
-        fc.float({ min: -50, max: 150 }),
-        fc.float({ min: -50, max: 150 }),
+        fc.float({ min: -50, max: 150, noNaN: true, noDefaultInfinity: true }),
+        fc.float({ min: -50, max: 150, noNaN: true, noDefaultInfinity: true }),
         (temp1, temp2) => {
           const high = Math.max(temp1, temp2);
           const low = Math.min(temp1, temp2);
@@ -526,7 +526,7 @@ describe('Weather Normalization - Property-Based Tests', () => {
   it('Property 4: Target weight correctly maps to temperature bands', () => {
     fc.assert(
       fc.property(
-        fc.float({ min: -50, max: 150 }),
+        fc.float({ min: -50, max: 150, noNaN: true, noDefaultInfinity: true }),
         (temp) => {
           const bands = classifyTemperature(temp);
           const weight = mapTemperatureToWeight(bands);
@@ -562,7 +562,7 @@ describe('Weather Normalization - Property-Based Tests', () => {
   it('Property 5: Large swing flag correctly set for swings >= 20°F', () => {
     fc.assert(
       fc.property(
-        fc.float({ min: 0, max: 60 }),
+        fc.float({ min: 0, max: 60, noNaN: true, noDefaultInfinity: true }),
         (swing) => {
           const result = hasLargeSwing(swing);
           
@@ -581,10 +581,10 @@ describe('Weather Normalization - Property-Based Tests', () => {
   it('Property: normalizeWeatherContext produces valid WeatherContext', () => {
     fc.assert(
       fc.property(
-        fc.float({ min: -50, max: 150, noNaN: true }),
-        fc.float({ min: -50, max: 150, noNaN: true }),
-        fc.float({ min: -50, max: 150, noNaN: true }),
-        fc.float({ min: 0, max: 1, noNaN: true }),
+        fc.float({ min: -50, max: 150, noNaN: true, noDefaultInfinity: true }),
+        fc.float({ min: -50, max: 150, noNaN: true, noDefaultInfinity: true }),
+        fc.float({ min: -50, max: 150, noNaN: true, noDefaultInfinity: true }),
+        fc.float({ min: 0, max: 1, noNaN: true, noDefaultInfinity: true }),
         (currentTemp, temp1, temp2, precipChance) => {
           const high = Math.max(temp1, temp2);
           const low = Math.min(temp1, temp2);

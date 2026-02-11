@@ -1,10 +1,11 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { QueryClient } from '@tanstack/react-query';
 import { CreateOutfitPageClient } from '../create-outfit-client';
 import { Category, WardrobeItem } from '@/lib/types/database';
+import { renderWithQuery } from '@/lib/test/query-utils';
 
 const mockCategories: Category[] = [
   {
@@ -86,15 +87,34 @@ vi.mock('@/lib/hooks/use-outfits', () => ({
   useCheckOutfitDuplicate: () => ({ data: duplicateState }),
 }));
 
-function TestWrapper({ children }: { children: React.ReactNode }) {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
-    },
-  });
+vi.mock('@/components/dynamic/outfit-display-dynamic', () => ({
+  OutfitDisplayWithErrorBoundary: () => <div data-testid="outfit-display" />,
+}));
 
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+vi.mock('@/components/dynamic/items-grid-dynamic', () => ({
+  ItemsGridWithErrorBoundary: ({
+    items,
+    onItemSelect,
+  }: {
+    items: WardrobeItem[];
+    onItemSelect: (item: WardrobeItem | null) => void;
+  }) => (
+    <div data-testid="items-grid">
+      {items.map((item) => (
+        <button key={item.id} type="button" onClick={() => onItemSelect(item)}>
+          {item.name}
+        </button>
+      ))}
+    </div>
+  ),
+}));
+
+let activeQueryClient: QueryClient | null = null;
+
+function renderPage() {
+  const rendered = renderWithQuery(<CreateOutfitPageClient />);
+  activeQueryClient = rendered.queryClient;
+  return rendered;
 }
 
 async function selectMinimumOutfit(user: ReturnType<typeof userEvent.setup>) {
@@ -118,14 +138,15 @@ describe('Outfit Save Functionality', () => {
     mockMutation.reset = vi.fn();
   });
 
+  afterEach(() => {
+    activeQueryClient?.clear();
+    activeQueryClient = null;
+  });
+
   it('disables save until minimum outfit is selected', async () => {
     const user = userEvent.setup();
 
-    render(
-      <TestWrapper>
-        <CreateOutfitPageClient />
-      </TestWrapper>
-    );
+    renderPage();
 
     const createButton = screen.getByRole('button', { name: /create outfit/i });
     expect(createButton).toBeDisabled();
@@ -143,11 +164,7 @@ describe('Outfit Save Functionality', () => {
   it('shows duplicate warning from duplicate check', async () => {
     duplicateState = true;
 
-    render(
-      <TestWrapper>
-        <CreateOutfitPageClient />
-      </TestWrapper>
-    );
+    renderPage();
 
     expect(
       screen.getByText('This outfit combination already exists in your collection.')
@@ -161,11 +178,7 @@ describe('Outfit Save Functionality', () => {
     mockMutation.isError = true;
     mockMutation.error = saveError;
 
-    render(
-      <TestWrapper>
-        <CreateOutfitPageClient />
-      </TestWrapper>
-    );
+    renderPage();
 
     expect(screen.getByText('Failed to create outfit: Network error')).toBeInTheDocument();
   });

@@ -201,8 +201,8 @@ describe('User Workflow Integration Tests', () => {
 
       await waitFor(() => {
         expect(screen.getByText('My Wardrobe')).toBeInTheDocument();
-        expect(screen.getByText('Jacket')).toBeInTheDocument();
-        expect(screen.getByText('Overshirt')).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: 'Jacket' })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: 'Overshirt' })).toBeInTheDocument();
       });
     });
 

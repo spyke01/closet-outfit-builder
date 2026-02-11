@@ -46,8 +46,14 @@ const brandSizeArb = fc.record({
   ),
   fit_scale: fc.integer({ min: 1, max: 5 }),
   notes: fc.option(nonEmptyStringArb(1, 500), { nil: undefined }),
-  created_at: fc.date().map(d => d.toISOString()),
-  updated_at: fc.date().map(d => d.toISOString())
+  created_at: fc.date({
+    min: new Date('2000-01-01T00:00:00.000Z'),
+    max: new Date('2100-12-31T23:59:59.999Z')
+  }).map(d => d.toISOString()),
+  updated_at: fc.date({
+    min: new Date('2000-01-01T00:00:00.000Z'),
+    max: new Date('2100-12-31T23:59:59.999Z')
+  }).map(d => d.toISOString())
 })
 
 /**

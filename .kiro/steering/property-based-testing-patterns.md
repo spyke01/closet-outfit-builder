@@ -75,6 +75,16 @@ const complexCategoryArb = fc.record({
 });
 ```
 
+For numeric generators, default to finite values:
+
+```typescript
+// ✅ Prefer finite numeric domains
+fc.float({ min: -50, max: 150, noNaN: true, noDefaultInfinity: true })
+
+// ❌ Avoid implicit NaN/Infinity generation unless testing rejection paths
+fc.float({ min: -50, max: 150 })
+```
+
 ### 3. Async Property Correctness
 
 If the property body is async, use `fc.asyncProperty` and `await fc.assert(...)`.
@@ -456,6 +466,7 @@ Generating invalid schema data by default causes noisy failures and obscures rea
 
 Rules:
 - Default generators should produce schema-valid values (including UUID format and required fields).
+- Numeric generators should exclude `NaN` and Infinity unless explicitly testing error handling.
 - Use separate, explicit generators for rejection/error-path properties.
 
 ## Decision Guide: Property Test vs Unit Test
