@@ -20,7 +20,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
   const { current, forecast, loading: weatherLoading, error: weatherError } = useWeather(true);
   
   const [currentOutfit, setCurrentOutfit] = useState<GeneratedOutfit | null>(null);
-  const [recentlyUsed, setRecentlyUsed] = useState<string[]>([]);
+  const [recentlyUsedByCategory, setRecentlyUsedByCategory] = useState<Record<string, string[]>>({});
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -66,16 +66,24 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
       const outfit = generateOutfit({
         wardrobeItems,
         weatherContext,
-        excludeItems: recentlyUsed,
+        excludeItems: [],
       });
       setCurrentOutfit(outfit);
-      setRecentlyUsed(prev => [...prev, ...outfit.itemIds].slice(-10));
+      
+      // Track items by category
+      const newRecentlyUsed: Record<string, string[]> = {};
+      for (const [category, item] of Object.entries(outfit.items)) {
+        if (item) {
+          newRecentlyUsed[category] = [item.id];
+        }
+      }
+      setRecentlyUsedByCategory(newRecentlyUsed);
     } catch (error) {
       console.error('Failed to generate initial outfit:', error);
     } finally {
       setGenerating(false);
     }
-  }, [weatherContext, hasRequiredCategories, wardrobeItems, recentlyUsed, currentOutfit, generating]);
+  }, [weatherContext, hasRequiredCategories, wardrobeItems, currentOutfit, generating]);
   
   // Handle regenerate
   const handleRegenerate = useCallback(() => {
@@ -86,19 +94,34 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
     setSaveError(null);
     
     try {
+      // Flatten all recently used items for exclusion
+      const excludeItems = Object.values(recentlyUsedByCategory).flat();
+      
       const outfit = regenerateOutfit({
         wardrobeItems,
         weatherContext,
-        excludeItems: recentlyUsed,
+        excludeItems,
       });
       setCurrentOutfit(outfit);
-      setRecentlyUsed(prev => [...prev, ...outfit.itemIds].slice(-10));
+      
+      // Update recently used by category (keep last 3 per category)
+      setRecentlyUsedByCategory(prev => {
+        const updated = { ...prev };
+        for (const [category, item] of Object.entries(outfit.items)) {
+          if (item) {
+            const categoryKey = category;
+            const existing = updated[categoryKey] || [];
+            updated[categoryKey] = [...existing, item.id].slice(-3);
+          }
+        }
+        return updated;
+      });
     } catch (error) {
       console.error('Failed to regenerate outfit:', error);
     } finally {
       setGenerating(false);
     }
-  }, [wardrobeItems, weatherContext, recentlyUsed]);
+  }, [wardrobeItems, weatherContext, recentlyUsedByCategory]);
   
   // Handle swap item
   const handleSwap = useCallback((category: string) => {

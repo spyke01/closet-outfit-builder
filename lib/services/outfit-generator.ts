@@ -158,13 +158,15 @@ function determineIncludedCategories(
  * Select the best item from a category based on compatibility scoring
  * 
  * Applies constraint relaxation if no items meet strict criteria:
- * 1. Try strict criteria (high compatibility threshold)
- * 2. If no matches, relax to moderate criteria
- * 3. If still no matches, select best available item
+ * 1. Filter out excluded items (recently used)
+ * 2. Try strict criteria (high compatibility threshold)
+ * 3. If no matches, relax to moderate criteria
+ * 4. If still no matches, select best available item
+ * 5. If all items are excluded, fall back to excluded items
  * 
  * @param candidates - Array of items to choose from
  * @param context - Selection context (weather, selected items, exclusions)
- * @param options - Selection options (prefer shorts, exclusion penalty)
+ * @param options - Selection options (prefer shorts)
  * @returns The best matching item, or null if no candidates
  */
 function selectBestItem(
@@ -176,17 +178,22 @@ function selectBestItem(
   },
   options: {
     preferShorts?: boolean;
-    exclusionPenalty?: number;
   } = {}
 ): EnrichedItem | null {
   if (candidates.length === 0) return null;
   if (candidates.length === 1) return candidates[0];
   
   const { weatherContext, selectedItems, excludeItems } = context;
-  const { preferShorts = false, exclusionPenalty = 0.2 } = options;
+  const { preferShorts = false } = options;
+  
+  // Filter out excluded items (recently used)
+  const availableCandidates = candidates.filter(item => !excludeItems.has(item.id));
+  
+  // If all items are excluded, fall back to all candidates
+  const candidatesToScore = availableCandidates.length > 0 ? availableCandidates : candidates;
   
   // Score all candidates
-  const scoredCandidates = candidates.map(item => {
+  const scoredCandidates = candidatesToScore.map(item => {
     // Calculate base compatibility score
     const compatScore = calculateCompatibilityScore(item, {
       weatherContext,
@@ -198,11 +205,6 @@ function selectBestItem(
     // Apply shorts preference in hot weather
     if (preferShorts && item.name.toLowerCase().includes('shorts')) {
       finalScore += 0.15;
-    }
-    
-    // Apply exclusion penalty for recently used items
-    if (excludeItems.has(item.id)) {
-      finalScore -= exclusionPenalty;
     }
     
     return {
