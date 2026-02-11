@@ -27,7 +27,7 @@ const createMockItem = (overrides: Partial<EnrichedItem> = {}): EnrichedItem => 
   active: true,
   created_at: '2024-01-01T00:00:00Z',
   updated_at: '2024-01-01T00:00:00Z',
-  inferredColor: 'unknown',
+  color: 'unknown',
   formalityBand: 'smart-casual',
   weatherWeight: 1,
   ...overrides,
@@ -304,7 +304,7 @@ describe('calculateCompatibilityScore', () => {
     const item = createMockItem({
       weatherWeight: 1,
       formality_score: 5,
-      inferredColor: 'navy',
+      color: 'navy',
       capsule_tags: ['Refined'],
     });
     
@@ -313,7 +313,7 @@ describe('calculateCompatibilityScore', () => {
       selectedItems: {
         pants: createMockItem({
           formality_score: 6,
-          inferredColor: 'khaki',
+          color: 'khaki',
           capsule_tags: ['Refined'],
         }),
       },
@@ -343,7 +343,7 @@ describe('calculateCompatibilityScore', () => {
     const item = createMockItem({
       weatherWeight: 1,
       formality_score: 5,
-      inferredColor: 'navy',
+      color: 'navy',
       capsule_tags: ['Refined'],
     });
     
@@ -352,7 +352,7 @@ describe('calculateCompatibilityScore', () => {
       selectedItems: {
         pants: createMockItem({
           formality_score: 5,
-          inferredColor: 'navy',
+          color: 'navy',
           capsule_tags: ['Refined'],
         }),
       },
@@ -374,7 +374,7 @@ describe('calculateCompatibilityScore', () => {
     const item = createMockItem({
       weatherWeight: 1,
       formality_score: 5,
-      inferredColor: 'white',
+      color: 'white',
       capsule_tags: ['Refined'],
     });
     
@@ -383,12 +383,12 @@ describe('calculateCompatibilityScore', () => {
       selectedItems: {
         pants: createMockItem({
           formality_score: 6,
-          inferredColor: 'navy',
+          color: 'navy',
           capsule_tags: ['Refined'],
         }),
         shoes: createMockItem({
           formality_score: 7,
-          inferredColor: 'brown',
+          color: 'brown',
           capsule_tags: ['Crossover'],
         }),
       },
@@ -405,7 +405,7 @@ describe('calculateCompatibilityScore', () => {
     const item = createMockItem({
       weatherWeight: 1,
       formality_score: 5,
-      inferredColor: 'navy',
+      color: 'navy',
       capsule_tags: ['Refined'],
     });
     
@@ -427,7 +427,7 @@ describe('calculateCompatibilityScore', () => {
     const item = createMockItem({
       weatherWeight: 1,
       formality_score: 5,
-      inferredColor: 'navy',
+      color: 'navy',
       capsule_tags: ['Refined'],
     });
     
@@ -436,7 +436,7 @@ describe('calculateCompatibilityScore', () => {
       selectedItems: {
         pants: createMockItem({
           formality_score: 5,
-          inferredColor: 'khaki',
+          color: 'khaki',
           capsule_tags: ['Refined'],
         }),
       },
@@ -447,7 +447,7 @@ describe('calculateCompatibilityScore', () => {
       selectedItems: {
         pants: createMockItem({
           formality_score: 10,
-          inferredColor: 'red',
+          color: 'red',
           capsule_tags: ['Adventurer'],
         }),
       },
@@ -463,7 +463,7 @@ describe('calculateCompatibilityScore', () => {
     const item = createMockItem({
       weatherWeight: 0,
       formality_score: 1,
-      inferredColor: 'red',
+      color: 'red',
       capsule_tags: [],
     });
     
@@ -472,7 +472,7 @@ describe('calculateCompatibilityScore', () => {
       selectedItems: {
         pants: createMockItem({
           formality_score: 10,
-          inferredColor: 'green',
+          color: 'green',
           capsule_tags: ['Adventurer'],
         }),
       },

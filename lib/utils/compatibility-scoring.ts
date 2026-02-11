@@ -132,7 +132,7 @@ export function calculateColorHarmony(
 ): number {
   // Neutral colors that go with everything
   const neutrals: ColorCategory[] = [
-    'black', 'white', 'grey', 'gray', 'navy', 
+    'black', 'white', 'grey', 'navy', 
     'cream', 'khaki', 'brown', 'tan', 'charcoal'
   ];
   
@@ -267,7 +267,7 @@ export function calculateCompatibilityScore(
   let colorHarmony = 1.0; // Default if no items to compare
   if (selectedItemsArray.length > 0) {
     const harmonyScores = selectedItemsArray.map(selectedItem =>
-      calculateColorHarmony(item.inferredColor, selectedItem.inferredColor)
+      calculateColorHarmony(item.color, selectedItem.color)
     );
     colorHarmony = harmonyScores.reduce((sum, score) => sum + score, 0) / harmonyScores.length;
   }

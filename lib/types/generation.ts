@@ -35,16 +35,20 @@ export interface WeatherContext {
 }
 
 /**
- * Color classification inferred from item names
+ * Color classification from explicit color field
  * 
- * Colors are extracted from item names using keyword matching.
- * 'unknown' is used when no color keyword is found.
+ * Colors are stored explicitly in the database color field.
+ * 'unknown' is used when color is null or empty.
  */
 export type ColorCategory = 
-  | 'black' | 'white' | 'grey' | 'gray'
-  | 'navy' | 'blue' | 'cream' | 'khaki'
-  | 'brown' | 'tan' | 'green' | 'red'
-  | 'burgundy' | 'olive' | 'charcoal'
+  | 'black' | 'white' | 'grey' | 'charcoal' | 'ivory' | 'cream' | 'beige' | 'taupe' | 'stone'
+  | 'navy' | 'blue' | 'light-blue' | 'sky-blue' | 'teal'
+  | 'brown' | 'tan' | 'khaki' | 'camel' | 'chocolate'
+  | 'green' | 'olive' | 'forest' | 'sage'
+  | 'red' | 'burgundy' | 'maroon' | 'rust'
+  | 'yellow' | 'mustard'
+  | 'pink' | 'blush' | 'purple' | 'lavender'
+  | 'denim' | 'multicolor'
   | 'unknown';
 
 /**
@@ -58,13 +62,13 @@ export type ColorCategory =
 export type FormalityBand = 'casual' | 'smart-casual' | 'refined';
 
 /**
- * Item with inferred metadata for generation
+ * Item with enriched metadata for generation
  * 
  * Extends WardrobeItem with computed properties used by the
  * outfit generation algorithm.
  */
 export interface EnrichedItem extends WardrobeItem {
-  inferredColor: ColorCategory;
+  color: ColorCategory; // Explicit color from WardrobeItem.color field
   formalityBand: FormalityBand;
   weatherWeight: number; // 0-3, inferred from category and season
 }

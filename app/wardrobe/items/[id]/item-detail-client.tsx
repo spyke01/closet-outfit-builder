@@ -23,6 +23,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { WardrobeItem } from '@/lib/types/database';
 import { NavigationButtons } from '@/components/navigation-buttons';
+import { COLOR_OPTIONS, normalizeColor, isValidColor } from '@/lib/data/color-options';
 
 interface ItemDetailPageClientProps {
   itemId: string;
@@ -94,13 +95,20 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
   const handleSave = async () => {
     if (!item || !editForm.name?.trim()) return;
 
+    // Normalize and validate color
+    const normalizedColor = normalizeColor(editForm.color);
+    if (!isValidColor(normalizedColor)) {
+      console.error('Invalid color value:', editForm.color);
+      return;
+    }
+
     try {
       await updateItemMutation.mutateAsync({
         id: item.id,
         ...editForm,
         name: editForm.name.trim(),
         brand: editForm.brand?.trim() || undefined,
-        color: editForm.color?.trim() || undefined,
+        color: normalizedColor || undefined,
         material: editForm.material?.trim() || undefined,
       });
       setIsEditing(false);
@@ -364,12 +372,33 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                       <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                         Color
                       </label>
-                      <input
-                        type="text"
-                        value={editForm.color || ''}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, color: e.target.value }))}
-                        className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
-                      />
+                      <div className="relative">
+                        <select
+                          value={editForm.color || ''}
+                          onChange={(e) => setEditForm(prev => ({ ...prev, color: e.target.value }))}
+                          className="w-full py-2 pr-10 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 appearance-none"
+                          style={{
+                            paddingLeft: editForm.color && COLOR_OPTIONS.find(opt => opt.value === editForm.color)?.hex ? '32px' : '12px'
+                          }}
+                        >
+                          {COLOR_OPTIONS.map(option => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                        {editForm.color && COLOR_OPTIONS.find(opt => opt.value === editForm.color)?.hex && (
+                          <div 
+                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-slate-300 dark:border-slate-600 pointer-events-none"
+                            style={{ backgroundColor: COLOR_OPTIONS.find(opt => opt.value === editForm.color)?.hex || 'transparent' }}
+                          />
+                        )}
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                          <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                      </div>
                     </div>
 
                     <div>
@@ -425,15 +454,21 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Color</p>
-                      <div className="flex items-center gap-2">
-                        {item.color && (
-                          <div 
-                            className="w-4 h-4 rounded-full border border-stone-300 dark:border-slate-600"
-                            style={{ backgroundColor: item.color.toLowerCase() }}
-                          />
-                        )}
-                        <p className="text-slate-900 dark:text-slate-100">{item.color || 'Not specified'}</p>
-                      </div>
+                      {item.color ? (
+                        <div className="flex items-center gap-2">
+                          {COLOR_OPTIONS.find(opt => opt.value === item.color)?.hex && (
+                            <div 
+                              className="w-4 h-4 rounded-full border border-slate-300 dark:border-slate-600"
+                              style={{ backgroundColor: COLOR_OPTIONS.find(opt => opt.value === item.color)?.hex || 'transparent' }}
+                            />
+                          )}
+                          <p className="text-slate-900 dark:text-slate-100">
+                            {COLOR_OPTIONS.find(opt => opt.value === item.color)?.label || item.color}
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="text-slate-900 dark:text-slate-100">Not specified</p>
+                      )}
                     </div>
                   </div>
 

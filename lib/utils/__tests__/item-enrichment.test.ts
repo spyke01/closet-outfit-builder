@@ -126,11 +126,32 @@ describe('enrichItem', () => {
     ...overrides,
   });
   
-  it('enriches item with inferred color', () => {
-    const item = createMockItem({ name: 'Blue Oxford Shirt' });
+  it('uses explicit color field when provided', () => {
+    const item = createMockItem({ name: 'Oxford Shirt', color: 'blue' });
     const enriched = enrichItem(item);
     
-    expect(enriched.inferredColor).toBe('blue');
+    expect(enriched.color).toBe('blue');
+  });
+  
+  it('treats null color as unknown', () => {
+    const item = createMockItem({ name: 'Oxford Shirt', color: undefined });
+    const enriched = enrichItem(item);
+    
+    expect(enriched.color).toBe('unknown');
+  });
+  
+  it('treats empty string color as unknown', () => {
+    const item = createMockItem({ name: 'Oxford Shirt', color: '' });
+    const enriched = enrichItem(item);
+    
+    expect(enriched.color).toBe('unknown');
+  });
+  
+  it('treats undefined color as unknown', () => {
+    const item = createMockItem({ name: 'Oxford Shirt' });
+    const enriched = enrichItem(item);
+    
+    expect(enriched.color).toBe('unknown');
   });
   
   it('enriches item with formality band', () => {
@@ -152,9 +173,9 @@ describe('enrichItem', () => {
   
   it('preserves all original item properties', () => {
     const item = createMockItem({
-      name: 'Grey Wool Pants',
+      name: 'Wool Pants',
       brand: 'Test Brand',
-      color: 'Grey',
+      color: 'grey',
       material: 'Wool',
       formality_score: 7,
       capsule_tags: ['Refined'],
@@ -179,19 +200,20 @@ describe('enrichItem', () => {
   it('handles items with minimal data', () => {
     const item = createMockItem({
       name: 'Simple Shirt',
-      // No formality_score, category, or season
+      // No formality_score, category, season, or color
     });
     
     const enriched = enrichItem(item);
     
-    expect(enriched.inferredColor).toBe('unknown');
+    expect(enriched.color).toBe('unknown');
     expect(enriched.formalityBand).toBe('smart-casual'); // Default
     expect(enriched.weatherWeight).toBe(2); // Default
   });
   
   it('enriches complete example: Blue Oxford Shirt', () => {
     const item = createMockItem({
-      name: 'Blue Oxford Shirt',
+      name: 'Oxford Shirt',
+      color: 'blue',
       category: { name: 'Shirt', id: 'cat-1', user_id: 'user-1', is_anchor_item: false, display_order: 1, created_at: '', updated_at: '' },
       formality_score: 6,
       season: ['Spring', 'Fall'],
@@ -199,14 +221,15 @@ describe('enrichItem', () => {
     
     const enriched = enrichItem(item);
     
-    expect(enriched.inferredColor).toBe('blue');
+    expect(enriched.color).toBe('blue');
     expect(enriched.formalityBand).toBe('smart-casual');
     expect(enriched.weatherWeight).toBe(2);
   });
   
   it('enriches complete example: Black Leather Jacket', () => {
     const item = createMockItem({
-      name: 'Black Leather Jacket',
+      name: 'Leather Jacket',
+      color: 'black',
       category: { name: 'Jacket', id: 'cat-1', user_id: 'user-1', is_anchor_item: false, display_order: 1, created_at: '', updated_at: '' },
       formality_score: 5,
       season: ['Fall', 'Winter'],
@@ -214,14 +237,15 @@ describe('enrichItem', () => {
     
     const enriched = enrichItem(item);
     
-    expect(enriched.inferredColor).toBe('black');
+    expect(enriched.color).toBe('black');
     expect(enriched.formalityBand).toBe('smart-casual');
     expect(enriched.weatherWeight).toBe(3);
   });
   
   it('enriches complete example: Khaki Shorts', () => {
     const item = createMockItem({
-      name: 'Khaki Shorts',
+      name: 'Shorts',
+      color: 'khaki',
       category: { name: 'Shorts', id: 'cat-1', user_id: 'user-1', is_anchor_item: false, display_order: 1, created_at: '', updated_at: '' },
       formality_score: 2,
       season: ['Summer'],
@@ -229,7 +253,7 @@ describe('enrichItem', () => {
     
     const enriched = enrichItem(item);
     
-    expect(enriched.inferredColor).toBe('khaki');
+    expect(enriched.color).toBe('khaki');
     expect(enriched.formalityBand).toBe('casual');
     expect(enriched.weatherWeight).toBe(0);
   });
@@ -256,7 +280,8 @@ describe('enrichItems', () => {
     const items = [
       createMockItem({
         id: '1',
-        name: 'Blue Shirt',
+        name: 'Shirt',
+        color: 'blue',
         formality_score: 5,
       }),
     ];
@@ -265,7 +290,7 @@ describe('enrichItems', () => {
     
     expect(enriched).toHaveLength(1);
     expect(enriched[0].id).toBe('1');
-    expect(enriched[0].inferredColor).toBe('blue');
+    expect(enriched[0].color).toBe('blue');
     expect(enriched[0].formalityBand).toBe('smart-casual');
   });
   
@@ -273,19 +298,22 @@ describe('enrichItems', () => {
     const items = [
       createMockItem({
         id: '1',
-        name: 'Blue Shirt',
+        name: 'Shirt',
+        color: 'blue',
         category: { name: 'Shirt', id: 'cat-1', user_id: 'user-1', is_anchor_item: false, display_order: 1, created_at: '', updated_at: '' },
         formality_score: 6,
       }),
       createMockItem({
         id: '2',
-        name: 'Grey Pants',
+        name: 'Pants',
+        color: 'grey',
         category: { name: 'Pants', id: 'cat-2', user_id: 'user-1', is_anchor_item: false, display_order: 2, created_at: '', updated_at: '' },
         formality_score: 5,
       }),
       createMockItem({
         id: '3',
-        name: 'Brown Leather Shoes',
+        name: 'Leather Shoes',
+        color: 'brown',
         category: { name: 'Shoes', id: 'cat-3', user_id: 'user-1', is_anchor_item: false, display_order: 3, created_at: '', updated_at: '' },
         formality_score: 7,
       }),
@@ -297,19 +325,19 @@ describe('enrichItems', () => {
     
     // Check first item
     expect(enriched[0].id).toBe('1');
-    expect(enriched[0].inferredColor).toBe('blue');
+    expect(enriched[0].color).toBe('blue');
     expect(enriched[0].formalityBand).toBe('smart-casual');
     expect(enriched[0].weatherWeight).toBe(2);
     
     // Check second item
     expect(enriched[1].id).toBe('2');
-    expect(enriched[1].inferredColor).toBe('grey');
+    expect(enriched[1].color).toBe('grey');
     expect(enriched[1].formalityBand).toBe('smart-casual');
     expect(enriched[1].weatherWeight).toBe(2);
     
     // Check third item
     expect(enriched[2].id).toBe('3');
-    expect(enriched[2].inferredColor).toBe('brown');
+    expect(enriched[2].color).toBe('brown');
     expect(enriched[2].formalityBand).toBe('refined');
     expect(enriched[2].weatherWeight).toBe(2);
   });
@@ -328,7 +356,7 @@ describe('enrichItems', () => {
   
   it('does not mutate original items', () => {
     const items = [
-      createMockItem({ id: '1', name: 'Blue Shirt' }),
+      createMockItem({ id: '1', name: 'Shirt', color: 'blue' }),
     ];
     
     const originalItem = { ...items[0] };
@@ -336,7 +364,6 @@ describe('enrichItems', () => {
     
     // Original item should be unchanged
     expect(items[0]).toEqual(originalItem);
-    expect('inferredColor' in items[0]).toBe(false);
   });
 });
 
@@ -352,20 +379,34 @@ describe('Integration: Requirements Validation', () => {
     ...overrides,
   });
   
-  it('validates Requirement 6.2: Color inference from item names', () => {
+  it('validates Requirement 3.3: Uses explicit color field', () => {
     const items = [
-      createMockItem({ name: 'Black Leather Jacket' }),
-      createMockItem({ name: 'White Oxford Shirt' }),
-      createMockItem({ name: 'Navy Chinos' }),
-      createMockItem({ name: 'Brown Leather Shoes' }),
+      createMockItem({ name: 'Leather Jacket', color: 'black' }),
+      createMockItem({ name: 'Oxford Shirt', color: 'white' }),
+      createMockItem({ name: 'Chinos', color: 'navy' }),
+      createMockItem({ name: 'Leather Shoes', color: 'brown' }),
     ];
     
     const enriched = enrichItems(items);
     
-    expect(enriched[0].inferredColor).toBe('black');
-    expect(enriched[1].inferredColor).toBe('white');
-    expect(enriched[2].inferredColor).toBe('navy');
-    expect(enriched[3].inferredColor).toBe('brown');
+    expect(enriched[0].color).toBe('black');
+    expect(enriched[1].color).toBe('white');
+    expect(enriched[2].color).toBe('navy');
+    expect(enriched[3].color).toBe('brown');
+  });
+  
+  it('validates Requirement 3.6: Null colors treated as unknown', () => {
+    const items = [
+      createMockItem({ name: 'Item 1', color: undefined }),
+      createMockItem({ name: 'Item 2', color: '' }),
+      createMockItem({ name: 'Item 3' }), // undefined
+    ];
+    
+    const enriched = enrichItems(items);
+    
+    expect(enriched[0].color).toBe('unknown');
+    expect(enriched[1].color).toBe('unknown');
+    expect(enriched[2].color).toBe('unknown');
   });
   
   it('validates Requirement 6.3: Formality band classification', () => {

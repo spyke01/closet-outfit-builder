@@ -16,7 +16,7 @@ describe('inferColor', () => {
     });
 
     it('infers gray from "Gray Chinos"', () => {
-      expect(inferColor('Gray Chinos')).toBe('gray');
+      expect(inferColor('Gray Chinos')).toBe('grey'); // Consolidated to 'grey'
     });
 
     it('infers navy from "Navy Blazer"', () => {
@@ -166,12 +166,12 @@ describe('inferColor', () => {
   describe('grey vs gray spelling', () => {
     it('handles both grey and gray spellings', () => {
       expect(inferColor('Grey Pants')).toBe('grey');
-      expect(inferColor('Gray Pants')).toBe('gray');
+      expect(inferColor('Gray Pants')).toBe('grey'); // Consolidated to 'grey'
     });
 
-    it('treats grey and gray as distinct colors', () => {
-      // Both are valid but distinct color categories
-      expect(inferColor('Grey Shirt')).not.toBe(inferColor('Gray Shirt'));
+    it('treats grey and gray as the same color', () => {
+      // Both spellings now map to 'grey'
+      expect(inferColor('Grey Shirt')).toBe(inferColor('Gray Shirt'));
     });
   });
 });
@@ -191,7 +191,7 @@ describe('isNeutralColor', () => {
     });
 
     it('identifies gray as neutral', () => {
-      expect(isNeutralColor('gray')).toBe(true);
+      expect(isNeutralColor('grey')).toBe(true); // 'gray' consolidated to 'grey'
     });
 
     it('identifies navy as neutral', () => {

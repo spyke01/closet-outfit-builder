@@ -20,6 +20,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { type CreateWardrobeItemForm } from '@/lib/schemas';
 import { NavigationButtons } from '@/components/navigation-buttons';
+import { COLOR_OPTIONS, normalizeColor, isValidColor } from '@/lib/data/color-options';
 
 export function AddItemPageClient() {
   const router = useRouter();
@@ -86,12 +87,19 @@ export function AddItemPageClient() {
       return;
     }
 
+    // Normalize and validate color
+    const normalizedColor = normalizeColor(formData.color);
+    if (!isValidColor(normalizedColor)) {
+      console.error('Invalid color value:', formData.color);
+      return;
+    }
+
     try {
       const itemData = {
         ...formData,
         name: formData.name.trim(),
         brand: formData.brand?.trim() || undefined,
-        color: formData.color?.trim() || undefined,
+        color: normalizedColor || undefined,
         material: formData.material?.trim() || undefined,
         image_url: formData.image_url || undefined,
         formality_score: formData.formality_score ?? undefined,
@@ -279,13 +287,33 @@ export function AddItemPageClient() {
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                     Color
                   </label>
-                  <input
-                    type="text"
-                    value={formData.color || ''}
-                    onChange={(e) => handleInputChange('color', e.target.value)}
-                    className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
-                    placeholder="e.g., Navy"
-                  />
+                  <div className="relative">
+                    <select
+                      value={formData.color || ''}
+                      onChange={(e) => handleInputChange('color', e.target.value)}
+                      className="w-full py-2 pr-10 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 appearance-none"
+                      style={{
+                        paddingLeft: formData.color && COLOR_OPTIONS.find(opt => opt.value === formData.color)?.hex ? '32px' : '12px'
+                      }}
+                    >
+                      {COLOR_OPTIONS.map(option => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    {formData.color && COLOR_OPTIONS.find(opt => opt.value === formData.color)?.hex && (
+                      <div 
+                        className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-slate-300 dark:border-slate-600 pointer-events-none"
+                        style={{ backgroundColor: COLOR_OPTIONS.find(opt => opt.value === formData.color)?.hex || 'transparent' }}
+                      />
+                    )}
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
 
                 <div>

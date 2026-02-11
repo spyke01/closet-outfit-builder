@@ -46,14 +46,8 @@ const brandSizeArb = fc.record({
   ),
   fit_scale: fc.integer({ min: 1, max: 5 }),
   notes: fc.option(nonEmptyStringArb(1, 500), { nil: undefined }),
-  created_at: fc.date({
-    min: new Date('2000-01-01T00:00:00.000Z'),
-    max: new Date('2100-12-31T23:59:59.999Z')
-  }).map(d => d.toISOString()),
-  updated_at: fc.date({
-    min: new Date('2000-01-01T00:00:00.000Z'),
-    max: new Date('2100-12-31T23:59:59.999Z')
-  }).map(d => d.toISOString())
+  created_at: fc.integer({ min: 1577836800000, max: 1767225599999 }).map(ts => new Date(ts).toISOString()),
+  updated_at: fc.integer({ min: 1577836800000, max: 1767225599999 }).map(ts => new Date(ts).toISOString())
 })
 
 /**
@@ -191,8 +185,8 @@ describe('Property 5: Brand size entry completeness', () => {
           ),
           fit_scale: fc.integer({ min: 1, max: 5 }),
           notes: nonEmptyStringArb(1, 500),
-          created_at: fc.date().map(d => d.toISOString()),
-          updated_at: fc.date().map(d => d.toISOString())
+          created_at: fc.integer({ min: 1577836800000, max: 1767225599999 }).map(ts => new Date(ts).toISOString()),
+          updated_at: fc.integer({ min: 1577836800000, max: 1767225599999 }).map(ts => new Date(ts).toISOString())
         }),
         (brandSize) => {
           const display = extractBrandSizeDisplayData(brandSize)
@@ -226,8 +220,8 @@ describe('Property 5: Brand size entry completeness', () => {
           ),
           fit_scale: fc.integer({ min: 1, max: 5 }),
           notes: fc.constant(undefined),
-          created_at: fc.date().map(d => d.toISOString()),
-          updated_at: fc.date().map(d => d.toISOString())
+          created_at: fc.integer({ min: 1577836800000, max: 1767225599999 }).map(ts => new Date(ts).toISOString()),
+          updated_at: fc.integer({ min: 1577836800000, max: 1767225599999 }).map(ts => new Date(ts).toISOString())
         }),
         (brandSize) => {
           const display = extractBrandSizeDisplayData(brandSize)

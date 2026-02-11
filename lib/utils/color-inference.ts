@@ -1,3 +1,19 @@
+/**
+ * @deprecated This file is deprecated and should not be used in new code.
+ * 
+ * This file is kept only for the one-time migration script (scripts/migrate-colors.ts)
+ * that extracts colors from existing item names. After migration is complete,
+ * the system uses explicit color values from the database color field instead
+ * of inferring colors from item names.
+ * 
+ * New code should:
+ * - Use the explicit color field from WardrobeItem
+ * - Use lib/data/color-options.ts for color dropdown options
+ * - NOT import or use functions from this file
+ * 
+ * Related: Requirements 3.1 - Color Inference Removal
+ */
+
 import { ColorCategory } from '@/lib/types/generation';
 
 /**
@@ -13,9 +29,9 @@ const COLOR_KEYWORDS: Record<string, ColorCategory> = {
   // White
   'white': 'white',
   
-  // Grey/Gray (both spellings)
+  // Grey (consolidated from grey/gray)
   'grey': 'grey',
-  'gray': 'gray',
+  'gray': 'grey',
   
   // Navy
   'navy': 'navy',
@@ -121,7 +137,6 @@ export function isNeutralColor(color: ColorCategory): boolean {
     'black',
     'white',
     'grey',
-    'gray',
     'navy',
     'cream',
     'khaki',

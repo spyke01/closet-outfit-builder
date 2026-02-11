@@ -1,6 +1,5 @@
 import { WardrobeItem } from '@/lib/types/database';
 import { EnrichedItem, FormalityBand, ColorCategory } from '@/lib/types/generation';
-import { inferColor } from './color-inference';
 
 /**
  * Category-to-weight mapping for weather appropriateness
@@ -159,7 +158,7 @@ export function inferWeatherWeight(
  * 
  * This function adds computed properties to a wardrobe item that are
  * used by the outfit generation algorithm:
- * - inferredColor: Color category extracted from item name
+ * - color: Explicit color value from database (or 'unknown' if null/empty)
  * - formalityBand: Formality classification (casual/smart-casual/refined)
  * - weatherWeight: Warmth level (0-3) based on category and season
  * 
@@ -171,7 +170,8 @@ export function inferWeatherWeight(
  * @example
  * const item = {
  *   id: '123',
- *   name: 'Blue Oxford Shirt',
+ *   name: 'Oxford Shirt',
+ *   color: 'blue',
  *   category: { name: 'Shirt' },
  *   formality_score: 6,
  *   season: ['Spring', 'Fall'],
@@ -179,13 +179,13 @@ export function inferWeatherWeight(
  * };
  * 
  * const enriched = enrichItem(item);
- * // enriched.inferredColor === 'blue'
+ * // enriched.color === 'blue'
  * // enriched.formalityBand === 'smart-casual'
  * // enriched.weatherWeight === 2
  */
 export function enrichItem(item: WardrobeItem): EnrichedItem {
-  // Infer color from item name
-  const inferredColor: ColorCategory = inferColor(item.name);
+  // Use explicit color field, treating null/empty as 'unknown'
+  const color: ColorCategory = (item.color as ColorCategory) || 'unknown';
   
   // Classify formality band
   const formalityBand: FormalityBand = classifyFormalityBand(item.formality_score);
@@ -197,7 +197,7 @@ export function enrichItem(item: WardrobeItem): EnrichedItem {
   // Return enriched item with all original properties plus computed ones
   return {
     ...item,
-    inferredColor,
+    color,
     formalityBand,
     weatherWeight,
   };
@@ -214,13 +214,13 @@ export function enrichItem(item: WardrobeItem): EnrichedItem {
  * 
  * @example
  * const items = [
- *   { id: '1', name: 'Blue Shirt', ... },
- *   { id: '2', name: 'Grey Pants', ... },
- *   { id: '3', name: 'Brown Shoes', ... },
+ *   { id: '1', name: 'Shirt', color: 'blue', ... },
+ *   { id: '2', name: 'Pants', color: 'grey', ... },
+ *   { id: '3', name: 'Shoes', color: 'brown', ... },
  * ];
  * 
  * const enriched = enrichItems(items);
- * // Each item now has inferredColor, formalityBand, and weatherWeight
+ * // Each item now has color, formalityBand, and weatherWeight
  */
 export function enrichItems(items: WardrobeItem[]): EnrichedItem[] {
   return items.map(enrichItem);

@@ -115,7 +115,6 @@ export const EnrichedItemSchema = z.object({
   }).optional(),
   
   // Enriched fields
-  inferredColor: ColorCategorySchema,
   formalityBand: FormalityBandSchema,
   weatherWeight: z.number().int().min(0).max(3),
 });
