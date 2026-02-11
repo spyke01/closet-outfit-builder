@@ -85,10 +85,10 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
       // Top left - jacket
       jacket: {
         position: 'absolute',
-        top: '15%',
-        left: '15%',
-        width: '25%',
-        height: '30%',
+        top: '5%',
+        left: '5%',
+        width: '45%',
+        height: '50%',
         transform: 'rotate(-8deg)',
         zIndex: 1
       },
@@ -96,10 +96,10 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
       // Top center-left - overshirt
       overshirt: {
         position: 'absolute',
-        top: '18%',
-        left: '22%',
-        width: '23%',
-        height: '28%',
+        top: '8%',
+        left: '12%',
+        width: '42%',
+        height: '48%',
         transform: 'rotate(-5deg)',
         zIndex: 2
       },
@@ -107,10 +107,10 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
       // Top right - shirt
       shirt: {
         position: 'absolute',
-        top: '10%',
-        right: '20%',
-        width: '22%',
-        height: '28%',
+        top: '5%',
+        right: '8%',
+        width: '40%',
+        height: '48%',
         transform: 'rotate(5deg)',
         zIndex: 2
       },
@@ -118,10 +118,10 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
       // Center bottom - pants
       pants: {
         position: 'absolute',
-        top: '50%',
-        left: '25%',
-        width: '20%',
-        height: '35%',
+        top: '45%',
+        left: '15%',
+        width: '35%',
+        height: '50%',
         transform: 'rotate(-2deg)',
         zIndex: 1
       },
@@ -129,10 +129,10 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
       // Bottom left - belt
       belt: {
         position: 'absolute',
-        bottom: '30%',
-        left: '10%',
-        width: '20%',
-        height: '8%',
+        bottom: '25%',
+        left: '5%',
+        width: '30%',
+        height: '12%',
         transform: 'rotate(-25deg)',
         zIndex: 3
       },
@@ -140,10 +140,10 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
       // Center right - watch
       watch: {
         position: 'absolute',
-        top: '40%',
-        right: '15%',
-        width: '12%',
-        height: '12%',
+        top: '35%',
+        right: '8%',
+        width: '20%',
+        height: '20%',
         transform: 'rotate(20deg)',
         zIndex: 4
       },
@@ -151,10 +151,10 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
       // Bottom right - shoes
       shoes: {
         position: 'absolute',
-        bottom: '15%',
-        right: '18%',
-        width: '25%',
-        height: '18%',
+        bottom: '8%',
+        right: '10%',
+        width: '40%',
+        height: '28%',
         transform: 'rotate(3deg)',
         zIndex: 2
       },
@@ -162,10 +162,10 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
       // Far right - undershirt (if present)
       undershirt: {
         position: 'absolute',
-        top: '18%',
-        right: '8%',
-        width: '20%',
-        height: '25%',
+        top: '12%',
+        right: '3%',
+        width: '35%',
+        height: '40%',
         transform: 'rotate(12deg)',
         zIndex: 1
       }
@@ -175,8 +175,8 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
       position: 'absolute',
       top: `${20 + (index * 15)}%`,
       left: `${20 + (index * 10)}%`,
-      width: '15%',
-      height: '15%',
+      width: '25%',
+      height: '25%',
       transform: `rotate(${(index * 8) - 4}deg)`,
       zIndex: index + 1
     };
