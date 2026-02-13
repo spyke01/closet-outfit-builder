@@ -294,7 +294,7 @@ export function WardrobePageClient() {
                         >
                           {/* Image section */}
                           {item.image_url && (
-                            <div className="relative w-full h-48 bg-muted">
+                            <div className="relative w-full h-48 bg-card">
                               <Image
                                 src={item.image_url}
                                 alt={`${item.brand ? `${item.brand} ${item.name}` : item.name} - ${category.name}`}
@@ -363,7 +363,7 @@ export function WardrobePageClient() {
                     >
                       {/* Image section */}
                       {item.image_url && (
-                        <div className="relative w-full h-48 bg-muted">
+                        <div className="relative w-full h-48 bg-card">
                           <Image
                             src={item.image_url}
                             alt={item.name}
@@ -443,7 +443,7 @@ export function WardrobePageClient() {
                             >
                               {/* Image section */}
                               {item.image_url && (
-                                <div className="relative w-full h-48 bg-muted">
+                                <div className="relative w-full h-48 bg-card">
                                   <Image
                                     src={item.image_url}
                                     alt={item.name}

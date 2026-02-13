@@ -24,7 +24,7 @@ export default function TodayOutfitDisplay({ outfit, onSwap, generating }: Today
         return (
           <div key={category} className="border border-border rounded-lg bg-card shadow-sm overflow-hidden">
             {/* Image with floating swap button */}
-            <div className="relative w-full h-48 bg-muted">
+            <div className="relative w-full h-48 bg-card border-b border-border shadow-inner">
               {item.image_url && (
                 <Image
                   src={item.image_url}

@@ -108,7 +108,7 @@ export function OutfitFlatLayout({
           <Card key={item.id} className="group relative overflow-hidden border border-border bg-card shadow-sm hover:shadow-lg transition-shadow">
             <CardContent className="p-0 h-full">
               {/* Item image */}
-              <div className="relative h-48 bg-muted border-b border-border">
+              <div className="relative h-48 bg-card border-b border-border shadow-inner">
                 <div className="w-full h-full overflow-hidden">
                   {item.image_url ? (
                     <div className="relative w-full h-full">

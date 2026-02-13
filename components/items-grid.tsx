@@ -392,7 +392,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
             >
               {/* Fixed height image container */}
               {item.image_url && (
-                <div className="h-40 sm:h-44 bg-muted rounded-lg p-3 mb-3 flex items-center justify-center relative">
+                <div className="h-40 sm:h-44 bg-card border border-border rounded-lg p-3 mb-3 flex items-center justify-center relative">
                   <Image
                     src={item.image_url}
                     alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''} - ${item.category?.name || 'wardrobe item'}`}

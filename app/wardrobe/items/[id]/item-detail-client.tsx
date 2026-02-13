@@ -276,7 +276,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
             {isEditing ? (
               <>
                 {editForm.image_url && (
-                  <div className="relative w-full h-96 bg-muted">
+                  <div className="relative w-full h-96 bg-card">
                     <Image
                       src={editForm.image_url}
                       alt={`${editForm.name || 'Item'}${editForm.brand ? ` by ${editForm.brand}` : ''}`}
@@ -304,7 +304,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
               <>
                 {/* Image display */}
                 {item.image_url ? (
-                  <div className="relative w-full h-96 bg-muted">
+                  <div className="relative w-full h-96 bg-card">
                     <Image
                       src={item.image_url}
                       alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''} - ${category?.name || 'wardrobe item'}`}
@@ -316,7 +316,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                     />
                   </div>
                 ) : (
-                  <div className="relative w-full h-96 bg-muted flex items-center justify-center">
+                  <div className="relative w-full h-96 bg-card flex items-center justify-center">
                     <div className="text-center">
                       <Shirt className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
                       <p className="text-muted-foreground">No image</p>

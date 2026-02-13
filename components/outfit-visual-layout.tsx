@@ -186,7 +186,7 @@ export const OutfitVisualLayout: React.FC<OutfitVisualLayoutProps> = ({
     // Show a simple item count if we have items but no images
     if (items.length > 0) {
       return (
-        <div className={`${sizeClasses[size]} ${className} flex items-center justify-center bg-gradient-to-br from-muted to-muted from-card to-background rounded-lg border border-border`}>
+        <div className={`${sizeClasses[size]} ${className} flex items-center justify-center bg-gradient-to-br from-card via-muted to-card rounded-lg border border-border`}>
           <div className="text-center text-muted-foreground">
             <div className="text-3xl mb-2">👔</div>
             <div className="text-sm font-medium">{items.length} Items</div>
@@ -198,7 +198,7 @@ export const OutfitVisualLayout: React.FC<OutfitVisualLayoutProps> = ({
     
     // Show empty state if no items at all
     return (
-      <div className={`${sizeClasses[size]} ${className} flex items-center justify-center bg-gradient-to-br from-muted to-muted from-card to-background rounded-lg border-2 border-dashed border-border`}>
+      <div className={`${sizeClasses[size]} ${className} flex items-center justify-center bg-gradient-to-br from-card via-muted to-card rounded-lg border-2 border-dashed border-border`}>
         <div className="text-center text-muted-foreground">
           <div className="text-2xl mb-2">📷</div>
           <div className="text-sm">No items</div>
@@ -210,7 +210,7 @@ export const OutfitVisualLayout: React.FC<OutfitVisualLayoutProps> = ({
 
   return (
     <div 
-      className={`${sizeClasses[size]} ${className} relative bg-gradient-to-br from-muted via-muted to-muted from-card via-background to-background rounded-lg border border-border overflow-hidden shadow-inner`}
+      className={`${sizeClasses[size]} ${className} relative bg-gradient-to-br from-card via-muted to-card rounded-lg border border-border overflow-hidden shadow-inner`}
       style={{ 
         backgroundImage: `
           radial-gradient(circle at 20% 30%, rgba(148, 163, 184, 0.1) 0%, transparent 50%),

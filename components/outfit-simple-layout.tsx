@@ -184,7 +184,7 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
 
   if (items.length === 0) {
     return (
-      <div className={`${sizeClass} ${className} flex items-center justify-center bg-gradient-to-br from-muted to-muted from-card to-background rounded-lg border-2 border-dashed border-border`}>
+      <div className={`${sizeClass} ${className} flex items-center justify-center bg-gradient-to-br from-card via-muted to-card rounded-lg border-2 border-dashed border-border`}>
         <div className="text-center text-muted-foreground">
           <div className="text-2xl mb-2">👔</div>
           <div className="text-sm">No items</div>
@@ -195,7 +195,7 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
 
   return (
     <div 
-      className={`${sizeClass} ${className} relative bg-gradient-to-br from-muted via-muted to-muted from-card via-background to-background rounded-lg border border-border overflow-hidden`}
+      className={`${sizeClass} ${className} relative bg-gradient-to-br from-card via-muted to-card rounded-lg border border-border overflow-hidden`}
     >
       {/* Render clothing item placeholders */}
       {Object.entries(itemsByCategory).map(([category, item], index) => {
@@ -234,7 +234,7 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
 
       {/* Item count badge */}
       <div className="absolute bottom-2 right-2">
-        <div className="bg-white/90 bg-card/90 backdrop-blur-sm text-muted-foreground text-xs px-2 py-1 rounded-full border border-border shadow-sm">
+        <div className="bg-card/90 backdrop-blur-sm text-muted-foreground text-xs px-2 py-1 rounded-full border border-border shadow-sm">
           {items.length} item{items.length !== 1 ? 's' : ''}
         </div>
       </div>

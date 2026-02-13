@@ -106,7 +106,7 @@ export function StepReview({
                     <X className="w-4 h-4" aria-hidden="true" />
                   </button>
 
-                  <div className="relative w-full h-48 bg-muted">
+                  <div className="relative w-full h-48 bg-card">
                     {item.image_url ? (
                       <>
                         {loadingImages.has(item.id) && (

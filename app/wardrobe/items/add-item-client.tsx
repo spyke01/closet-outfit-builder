@@ -205,7 +205,7 @@ export function AddItemPageClient() {
           <div className="border border-border rounded-lg bg-card shadow-sm overflow-hidden">
             {/* Image display */}
             {formData.image_url && (
-              <div className="relative w-full h-96 bg-muted">
+              <div className="relative w-full h-96 bg-card">
                 <Image
                   src={formData.image_url}
                   alt={`${formData.name || 'New item'}${formData.brand ? ` by ${formData.brand}` : ''}`}
