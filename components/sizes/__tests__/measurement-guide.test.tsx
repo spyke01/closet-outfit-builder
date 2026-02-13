@@ -140,13 +140,43 @@ describe('MeasurementGuide', () => {
       expect(screen.getByText("men's")).toBeInTheDocument()
     })
 
-    it('should render visual diagram placeholders', () => {
+    it('should render visual diagrams for available images', () => {
       render(<MeasurementGuide guide={mockGuide} />)
 
-      expect(screen.getByText('Visual diagram: collar-measurement')).toBeInTheDocument()
-      expect(screen.getByText('Visual diagram: sleeve-measurement')).toBeInTheDocument()
-      const comingSoonElements = screen.getAllByText('(Coming soon)')
-      expect(comingSoonElements).toHaveLength(2)
+      // Both collar and sleeve measurements use dress-shirt.png
+      const images = screen.getAllByRole('img', { name: /how to measure/i })
+      expect(images).toHaveLength(2)
+      expect(images[0]).toHaveAttribute('alt', 'How to measure Collar Size')
+      expect(images[1]).toHaveAttribute('alt', 'How to measure Sleeve Length')
+    })
+
+    it('should not render anything for diagrams without images', () => {
+      const guideWithUnavailableDiagram: MeasurementGuideType = {
+        category_name: 'Shoes',
+        icon: 'footprints',
+        gender: 'men',
+        supported_formats: ['numeric'],
+        measurement_fields: [
+          {
+            name: 'foot_length',
+            label: 'Foot Length',
+            description: 'Measure from heel to longest toe.',
+            unit: 'inches',
+            typical_range: [9, 13],
+            diagram_ref: 'foot-length',
+          },
+        ],
+        size_examples: ['9', '10', '11'],
+      }
+
+      render(<MeasurementGuide guide={guideWithUnavailableDiagram} />)
+
+      // Should not show placeholder or "coming soon" text
+      expect(screen.queryByText('Visual diagram: foot-length')).not.toBeInTheDocument()
+      expect(screen.queryByText('(Coming soon)')).not.toBeInTheDocument()
+      
+      // Should still show the field description
+      expect(screen.getByText('Measure from heel to longest toe.')).toBeInTheDocument()
     })
 
     it('should render numbered measurement fields', () => {

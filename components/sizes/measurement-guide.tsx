@@ -5,12 +5,12 @@
  * 
  * Displays category-specific measurement instructions to help users
  * accurately determine their sizes. Features collapsible sections,
- * visual diagram placeholders, and comprehensive measurement tips.
+ * visual diagrams, and comprehensive measurement tips.
  * 
  * Features:
  * - Collapsible/expandable sections for better UX
  * - Category-specific measurement fields with descriptions
- * - Visual diagram placeholders (for future implementation)
+ * - Visual measurement diagrams
  * - Size examples for reference
  * - Helpful measurement tips
  * - Dark mode support
@@ -21,9 +21,40 @@
  */
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { ChevronDown, ChevronUp, Ruler, Info } from 'lucide-react'
 import type { MeasurementGuide as MeasurementGuideType } from '@/lib/data/measurement-guides'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+
+/**
+ * Mapping of diagram references to actual image files
+ * Available images: dress-shirt.png, dress.png, pants.png, suit.png
+ */
+const DIAGRAM_IMAGE_MAP: Record<string, string | undefined> = {
+  // Dress shirt measurements (collar, sleeve)
+  'collar-measurement': '/images/measurements/dress-shirt.png',
+  'sleeve-measurement': '/images/measurements/dress-shirt.png',
+  
+  // Suit/jacket measurements (chest, jacket length, shoulder)
+  'chest-measurement': '/images/measurements/suit.png',
+  'jacket-length': '/images/measurements/suit.png',
+  'shoulder-measurement': '/images/measurements/suit.png',
+  
+  // Pants measurements (waist, inseam, hip)
+  'waist-measurement': '/images/measurements/pants.png',
+  'inseam-measurement': '/images/measurements/pants.png',
+  'hip-measurement': '/images/measurements/pants.png',
+  
+  // Dress measurements (bust, waist, hip, shoulder)
+  'bust-measurement': '/images/measurements/dress.png',
+  
+  // Belt measurements
+  'belt-measurement': '/images/measurements/pants.png',
+  
+  // Foot measurements (no image available yet)
+  'foot-length': undefined,
+  'foot-width': undefined,
+}
 
 export interface MeasurementGuideProps {
   /** Measurement guide data for the category */
@@ -145,18 +176,17 @@ export function MeasurementGuide({
                       </div>
                     )}
 
-                    {/* Visual diagram placeholder */}
-                    {field.diagram_ref && (
-                      <div className="mt-3 rounded-md border border-dashed border-gray-300 bg-white p-4 text-center dark:border-gray-600 dark:bg-gray-900">
-                        <div className="flex flex-col items-center gap-2 text-gray-400 dark:text-gray-500">
-                          <Ruler className="h-8 w-8" aria-hidden="true" />
-                          <span className="text-xs">
-                            Visual diagram: {field.diagram_ref}
-                          </span>
-                          <span className="text-xs italic">
-                            (Coming soon)
-                          </span>
-                        </div>
+                    {/* Visual diagram - only show if image exists */}
+                    {field.diagram_ref && DIAGRAM_IMAGE_MAP[field.diagram_ref] && (
+                      <div className="mt-3 rounded-md border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+                        <Image
+                          src={DIAGRAM_IMAGE_MAP[field.diagram_ref]}
+                          alt={`How to measure ${field.label}`}
+                          width={600}
+                          height={400}
+                          className="w-full h-auto rounded-md"
+                          priority={false}
+                        />
                       </div>
                     )}
                   </div>
