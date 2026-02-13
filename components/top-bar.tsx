@@ -133,7 +133,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 border-b border-stone-200 dark:border-slate-700">
+    <div className="bg-card border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left: Logo + Mobile Menu Button */}
@@ -142,14 +142,14 @@ export const TopBar: React.FC<TopBarProps> = ({
             {validatedUser && (
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-stone-100 dark:hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label="Toggle mobile menu"
                 aria-expanded={mobileMenuOpen}
               >
                 {mobileMenuOpen ? (
-                  <X size={20} className="text-slate-700 dark:text-slate-300" />
+                  <X size={20} className="text-muted-foreground" />
                 ) : (
-                  <Menu size={20} className="text-slate-700 dark:text-slate-300" />
+                  <Menu size={20} className="text-muted-foreground" />
                 )}
               </button>
             )}
@@ -162,10 +162,10 @@ export const TopBar: React.FC<TopBarProps> = ({
                   handleTitleClick();
                 }
               }}
-              className="hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 rounded-lg"
+              className="hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg"
               aria-label="Navigate to home"
             >
-              <Logo className="h-8 w-auto" />
+              <Logo className="h-12 w-auto" />
             </button>
           </div>
 
@@ -174,10 +174,10 @@ export const TopBar: React.FC<TopBarProps> = ({
             <nav className="hidden md:flex items-center gap-1 absolute left-1/2 transform -translate-x-1/2">
               <Link
                 href="/today"
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                   currentView === 'today'
-                    ? 'bg-slate-800 dark:bg-slate-700 text-white'
-                    : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 }`}
                 aria-label="View today's outfit"
                 aria-current={currentView === 'today' ? 'page' : undefined}
@@ -188,10 +188,10 @@ export const TopBar: React.FC<TopBarProps> = ({
               </Link>
               <Link
                 href="/wardrobe"
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                   currentView === 'wardrobe'
-                    ? 'bg-slate-800 dark:bg-slate-700 text-white'
-                    : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 }`}
                 aria-label="View wardrobe"
                 aria-current={currentView === 'wardrobe' ? 'page' : undefined}
@@ -202,10 +202,10 @@ export const TopBar: React.FC<TopBarProps> = ({
               </Link>
               <Link
                 href="/outfits"
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                   currentView === 'outfits'
-                    ? 'bg-slate-800 dark:bg-slate-700 text-white'
-                    : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 }`}
                 aria-label="View outfits"
                 aria-current={currentView === 'outfits' ? 'page' : undefined}
@@ -216,10 +216,10 @@ export const TopBar: React.FC<TopBarProps> = ({
               </Link>
               <Link
                 href="/sizes"
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                   currentView === 'sizes'
-                    ? 'bg-slate-800 dark:bg-slate-700 text-white'
-                    : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 }`}
                 aria-label="View my sizes"
                 aria-current={currentView === 'sizes' ? 'page' : undefined}
@@ -241,26 +241,26 @@ export const TopBar: React.FC<TopBarProps> = ({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
-                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-stone-100 dark:hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     aria-label="User menu"
                   >
-                    <div className="w-8 h-8 rounded-full bg-slate-800 dark:bg-slate-600 flex items-center justify-center text-white text-sm font-medium">
+                    <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium">
                       {getUserInitials()}
                     </div>
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700">
+                <DropdownMenuContent align="end" className="w-56 bg-card border-border">
                   <DropdownMenuLabel className="pb-2">
                     <p className="text-xs leading-none text-muted-foreground truncate">
                       {validatedUser.email}
                     </p>
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-stone-200 dark:bg-slate-700" />
+                  <DropdownMenuSeparator className="bg-border" />
                   <DropdownMenuItem onClick={handleSettings} className="text-sm">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator className="bg-stone-200 dark:bg-slate-700" />
+                  <DropdownMenuSeparator className="bg-muted" />
                   {mounted && (
                     <>
                       <div className="px-2 py-1.5">
@@ -298,7 +298,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                           </DropdownMenuItem>
                         </div>
                       </div>
-                      <DropdownMenuSeparator className="bg-stone-200 dark:bg-slate-700" />
+                      <DropdownMenuSeparator className="bg-border" />
                     </>
                   )}
                   <DropdownMenuItem onClick={handleLogout} className="text-sm">
@@ -323,15 +323,15 @@ export const TopBar: React.FC<TopBarProps> = ({
 
       {/* Mobile Navigation Menu */}
       {validatedUser && mobileMenuOpen && (
-        <div className="md:hidden border-t border-stone-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+        <div className="md:hidden border-t border-border bg-card">
           <nav className="px-4 py-3 space-y-1">
             <Link
               href="/today"
               onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                 currentView === 'today'
-                  ? 'bg-slate-800 dark:bg-slate-700 text-white'
-                  : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
               aria-label="View today's outfit"
               aria-current={currentView === 'today' ? 'page' : undefined}
@@ -342,10 +342,10 @@ export const TopBar: React.FC<TopBarProps> = ({
             <Link
               href="/wardrobe"
               onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                 currentView === 'wardrobe'
-                  ? 'bg-slate-800 dark:bg-slate-700 text-white'
-                  : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
               aria-label="View wardrobe"
               aria-current={currentView === 'wardrobe' ? 'page' : undefined}
@@ -356,10 +356,10 @@ export const TopBar: React.FC<TopBarProps> = ({
             <Link
               href="/outfits"
               onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                 currentView === 'outfits'
-                  ? 'bg-slate-800 dark:bg-slate-700 text-white'
-                  : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
               aria-label="View outfits"
               aria-current={currentView === 'outfits' ? 'page' : undefined}
@@ -370,10 +370,10 @@ export const TopBar: React.FC<TopBarProps> = ({
             <Link
               href="/sizes"
               onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                 currentView === 'sizes'
-                  ? 'bg-slate-800 dark:bg-slate-700 text-white'
-                  : 'text-slate-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
               aria-label="View my sizes"
               aria-current={currentView === 'sizes' ? 'page' : undefined}

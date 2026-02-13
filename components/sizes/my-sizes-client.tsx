@@ -122,10 +122,10 @@ export function MySizesClient({
         <div className="animate-pulse space-y-8">
           {/* Loading message for seeding */}
           {seedCategories.isPending && (
-            <div className="mb-6 rounded-lg bg-blue-50 dark:bg-blue-900/20 p-4 border border-blue-200 dark:border-blue-800">
+            <div className="mb-6 rounded-lg bg-secondary/20 p-4 border border-secondary/40">
               <div className="flex items-center gap-3">
-                <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
-                <p className="text-sm text-blue-900 dark:text-blue-100 font-medium">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                <p className="text-sm text-foreground font-medium">
                   Setting up your size categories...
                 </p>
               </div>
@@ -134,12 +134,12 @@ export function MySizesClient({
 
           {/* Pinned cards skeleton */}
           <div className="space-y-4">
-            <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded" />
+            <div className="h-8 w-48 bg-muted rounded" />
             <div className="flex gap-4 overflow-x-auto">
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="h-32 w-64 flex-shrink-0 bg-gray-200 dark:bg-gray-700 rounded-lg"
+                  className="h-32 w-64 flex-shrink-0 bg-muted rounded-lg"
                 />
               ))}
             </div>
@@ -147,12 +147,12 @@ export function MySizesClient({
 
           {/* Category grid skeleton */}
           <div className="space-y-4">
-            <div className="h-8 w-64 bg-gray-200 dark:bg-gray-700 rounded" />
+            <div className="h-8 w-64 bg-muted rounded" />
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
-                  className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg"
+                  className="h-32 bg-muted rounded-lg"
                 />
               ))}
             </div>
@@ -166,10 +166,10 @@ export function MySizesClient({
     <div className="container mx-auto px-4 py-8">
       {/* Page header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+        <h1 className="text-3xl font-bold text-foreground mb-2">
           My Sizes
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-muted-foreground">
           Track your clothing sizes across categories and brands
         </p>
       </div>
@@ -206,7 +206,7 @@ export function MySizesClient({
           <div className="mb-4">
             <h2
               id="all-categories-heading"
-              className="text-xl font-bold text-gray-900 dark:text-gray-100"
+              className="text-xl font-bold text-foreground"
             >
               All Categories
             </h2>

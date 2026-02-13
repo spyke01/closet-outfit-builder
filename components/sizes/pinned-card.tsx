@@ -172,14 +172,14 @@ export function PinnedCard({
   if (isLoading) {
     return (
       <div 
-        className="pinned-card-skeleton bg-gray-100 dark:bg-gray-800 rounded-lg p-4 animate-pulse w-[85vw] md:w-auto"
+        className="pinned-card-skeleton bg-muted rounded-lg p-4 animate-pulse w-[85vw] md:w-auto"
         style={{ minHeight: '120px' }}
         aria-busy="true"
         aria-label="Loading category information"
       >
-        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-3"></div>
-        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+        <div className="h-6 bg-muted rounded w-3/4 mb-3"></div>
+        <div className="h-8 bg-muted rounded w-1/2 mb-2"></div>
+        <div className="h-4 bg-muted rounded w-1/3"></div>
       </div>
     );
   }
@@ -215,7 +215,7 @@ export function PinnedCard({
   // Determine what size to display based on display mode
   const getSizeDisplay = () => {
     if (!standardSize) {
-      return <span className="text-gray-400 dark:text-gray-500 text-sm">No size set</span>;
+      return <span className="text-muted-foreground text-sm">No size set</span>;
     }
 
     switch (displayMode) {
@@ -223,7 +223,7 @@ export function PinnedCard({
         // Show primary size only
         // Requirements: 15.2
         return (
-          <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <span className="text-2xl font-bold text-foreground">
             {standardSize.primary_size}
           </span>
         );
@@ -233,13 +233,13 @@ export function PinnedCard({
         // Requirements: 15.3
         return (
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <span className="text-2xl font-bold text-foreground">
               {standardSize.primary_size}
             </span>
             {standardSize.secondary_size && (
               <>
-                <span className="text-gray-400 dark:text-gray-500">/</span>
-                <span className="text-xl font-semibold text-gray-700 dark:text-gray-300">
+                <span className="text-muted-foreground">/</span>
+                <span className="text-xl font-semibold text-muted-foreground">
                   {standardSize.secondary_size}
                 </span>
               </>
@@ -255,10 +255,10 @@ export function PinnedCard({
           if (preferredBrand) {
             return (
               <div className="space-y-1">
-                <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                <span className="text-2xl font-bold text-foreground">
                   {preferredBrand.size}
                 </span>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
+                <div className="text-xs text-muted-foreground">
                   <TextTruncate 
                     text={`${preferredBrand.brand_name}${preferredBrand.item_type ? ` - ${preferredBrand.item_type}` : ''}`}
                   />
@@ -269,14 +269,14 @@ export function PinnedCard({
         }
         // Fall back to standard size if preferred brand not found
         return (
-          <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <span className="text-2xl font-bold text-foreground">
             {standardSize.primary_size}
           </span>
         );
       
       default:
         return (
-          <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <span className="text-2xl font-bold text-foreground">
             {standardSize.primary_size}
           </span>
         );
@@ -292,7 +292,7 @@ export function PinnedCard({
     >
       <div
         ref={cardRef}
-        className="pinned-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer w-[85vw] md:w-auto"
+        className="pinned-card bg-card border border-border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer w-[85vw] md:w-auto"
         style={{
           minHeight: '120px', // ✅ Ensures 44x44px minimum touch target
         }}
@@ -308,7 +308,7 @@ export function PinnedCard({
       >
         {/* Header with category name and menu button */}
         <div className="flex items-start justify-between mb-3">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex-1 min-w-0">
+          <h3 className="text-lg font-semibold text-foreground flex-1 min-w-0">
             <TextTruncate text={category.name} />
           </h3>
           
@@ -319,13 +319,13 @@ export function PinnedCard({
                 e.stopPropagation();
                 onLongPress();
               }}
-              className="icon-button p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+              className="icon-button p-2 hover:bg-muted rounded-md transition-colors"
               style={{ minWidth: '44px', minHeight: '44px' }} // ✅ 44x44px touch target
               aria-label={`Options for ${category.name}`}
               type="button"
             >
               <MoreVertical 
-                className="h-5 w-5 text-gray-500 dark:text-gray-400" 
+                className="h-5 w-5 text-muted-foreground" 
                 aria-hidden="true"
               />
             </button>
@@ -338,7 +338,7 @@ export function PinnedCard({
         </div>
 
         {/* Last updated timestamp */}
-        <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+        <div className="flex items-center gap-1 text-xs text-muted-foreground">
           <Clock className="h-3 w-3" aria-hidden="true" />
           <span>Updated {lastUpdated}</span>
         </div>

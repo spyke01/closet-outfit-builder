@@ -179,7 +179,7 @@ describe('CategoryGrid', () => {
     expect(emptyState).toBeInTheDocument();
 
     // Verify icon is present
-    const icon = container.querySelector('.rounded-full.bg-gray-100');
+    const icon = container.querySelector('.rounded-full.bg-muted');
     expect(icon).toBeInTheDocument();
 
     // Verify heading

@@ -15,7 +15,7 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white via-stone-50 to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white via-muted to-muted from-background via-card to-background">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute inset-0" style={{
@@ -27,18 +27,18 @@ export function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left side - Content */}
           <div className="text-center lg:text-left animate-fade-in">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-slate-700 text-blue-700 dark:text-slate-300 rounded-full text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/20 bg-card text-primary text-muted-foreground rounded-full text-sm font-medium mb-6">
               <Sparkles className="w-4 h-4" />
               Start your free trial
             </div>
             
-            <h1 className="font-display text-5xl lg:text-7xl font-bold text-slate-900 dark:text-slate-100 leading-tight mb-6">
+            <h1 className="font-display text-5xl lg:text-7xl font-bold text-foreground leading-tight mb-6">
               Never wonder{' '}
               <span className="text-amber-600 dark:text-amber-400">My AI Outfit</span>{' '}
               again.
             </h1>
             
-            <p className="text-xl lg:text-2xl text-slate-600 dark:text-slate-400 mb-8 leading-relaxed max-w-2xl">
+            <p className="text-xl lg:text-2xl text-muted-foreground mb-8 leading-relaxed max-w-2xl">
               Your personal AI stylist that builds outfits from your real wardrobe — instantly.
             </p>
             
@@ -46,7 +46,7 @@ export function HeroSection() {
               <Link href="/auth/sign-up">
                 <Button 
                   size="lg" 
-                  className="bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600 text-white dark:text-white px-8 py-4 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group"
+                  className="bg-primary text-primary-foreground hover:opacity-90 px-8 py-4 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group"
                 >
                   Get Started Free
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -57,31 +57,31 @@ export function HeroSection() {
                 variant="outline" 
                 size="lg"
                 onClick={scrollToDemo}
-                className="border-2 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 px-8 py-4 text-lg font-semibold rounded-2xl transition-all duration-300"
+                className="border-2 border-border text-muted-foreground hover:bg-muted px-8 py-4 text-lg font-semibold rounded-2xl transition-all duration-300"
               >
                 See How It Works
               </Button>
             </div>
             
-            <p className="text-sm text-slate-500 dark:text-slate-500">
+            <p className="text-sm text-muted-foreground">
               No credit card required • Start free
             </p>
           </div>
           
           {/* Right side - Hero mockup */}
           <div className="relative animate-slide-in-right">
-            <div className="relative bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 border border-slate-200 dark:border-slate-700">
+            <div className="relative bg-card rounded-3xl shadow-2xl p-8 border border-border">
               {/* Mock app interface */}
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-slate-900 dark:text-slate-100">Today's Outfit</h3>
+                  <h3 className="font-semibold text-foreground">Today's Outfit</h3>
                   <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
                     <Sparkles className="w-4 h-4 text-amber-600" />
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="aspect-square bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                  <div className="aspect-square bg-card rounded-2xl overflow-hidden shadow-sm">
                     <Image
                       src={heroOutfit.shirt.src}
                       alt={heroOutfit.shirt.alt}
@@ -92,7 +92,7 @@ export function HeroSection() {
                       quality={85}
                     />
                   </div>
-                  <div className="aspect-square bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                  <div className="aspect-square bg-card rounded-2xl overflow-hidden shadow-sm">
                     <Image
                       src={heroOutfit.pants.src}
                       alt={heroOutfit.pants.alt}
@@ -103,7 +103,7 @@ export function HeroSection() {
                       quality={85}
                     />
                   </div>
-                  <div className="aspect-square bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                  <div className="aspect-square bg-card rounded-2xl overflow-hidden shadow-sm">
                     <Image
                       src={heroOutfit.shoes.src}
                       alt={heroOutfit.shoes.alt}
@@ -114,7 +114,7 @@ export function HeroSection() {
                       quality={85}
                     />
                   </div>
-                  <div className="aspect-square bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                  <div className="aspect-square bg-card rounded-2xl overflow-hidden shadow-sm">
                     <Image
                       src={heroOutfit.accessory!.src}
                       alt={heroOutfit.accessory!.alt}
@@ -127,13 +127,13 @@ export function HeroSection() {
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Compatibility Score</span>
+                <div className="flex items-center justify-between pt-4 border-t border-border">
+                  <span className="text-sm text-muted-foreground">Compatibility Score</span>
                   <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
                       <div className="w-14 h-full bg-amber-500 dark:bg-amber-400 rounded-full"></div>
                     </div>
-                    <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">92%</span>
+                    <span className="text-sm font-semibold text-foreground">92%</span>
                   </div>
                 </div>
               </div>
@@ -143,8 +143,8 @@ export function HeroSection() {
             <div className="absolute -top-4 -right-4 w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center shadow-lg">
               <Sparkles className="w-8 h-8 text-amber-600" />
             </div>
-            <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center shadow-lg">
-              <div className="w-6 h-6 bg-blue-600 rounded-full"></div>
+            <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-6 h-6 bg-primary rounded-full"></div>
             </div>
           </div>
         </div>

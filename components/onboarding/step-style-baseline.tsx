@@ -99,15 +99,15 @@ export function StepStyleBaseline({ value, onChange }: StepStyleBaselineProps) {
                   className={`
                     flex flex-col items-center p-6 min-h-[120px] rounded-lg border-2 transition-all touch-manipulation
                     ${isSelected
-                      ? 'border-blue-600 bg-blue-50 dark:border-blue-500 dark:bg-blue-950'
-                      : 'border-gray-300 bg-white hover:border-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:hover:border-gray-500'
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border bg-card hover:border-secondary'
                     }
                   `}
                   aria-pressed={isSelected}
                   aria-label={`${option.label}: ${option.description}${isSelected ? ' (selected)' : ''}`}
                 >
-                  <Icon className={`w-8 h-8 mb-3 ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}`} aria-hidden="true" />
-                  <span className={`font-semibold mb-1 ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-foreground'}`}>
+                  <Icon className={`w-8 h-8 mb-3 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} aria-hidden="true" />
+                  <span className={`font-semibold mb-1 ${isSelected ? 'text-primary' : 'text-foreground'}`}>
                     {option.label}
                   </span>
                   <span className="text-sm text-center text-muted-foreground">
@@ -136,15 +136,15 @@ export function StepStyleBaseline({ value, onChange }: StepStyleBaselineProps) {
                   className={`
                     flex flex-col items-center p-6 min-h-[120px] rounded-lg border-2 transition-all touch-manipulation
                     ${isSelected
-                      ? 'border-blue-600 bg-blue-50 dark:border-blue-500 dark:bg-blue-950'
-                      : 'border-gray-300 bg-white hover:border-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:hover:border-gray-500'
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border bg-card hover:border-secondary'
                     }
                   `}
                   aria-pressed={isSelected}
                   aria-label={`${option.label}: ${option.description}${isSelected ? ' (selected)' : ''}`}
                 >
-                  <Icon className={`w-8 h-8 mb-3 ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}`} aria-hidden="true" />
-                  <span className={`font-semibold mb-1 ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-foreground'}`}>
+                  <Icon className={`w-8 h-8 mb-3 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} aria-hidden="true" />
+                  <span className={`font-semibold mb-1 ${isSelected ? 'text-primary' : 'text-foreground'}`}>
                     {option.label}
                   </span>
                   <span className="text-sm text-center text-muted-foreground">
@@ -158,22 +158,22 @@ export function StepStyleBaseline({ value, onChange }: StepStyleBaselineProps) {
       </div>
 
       {!value.primaryUse && !value.climate && (
-        <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-950 dark:border-amber-800" role="alert">
-          <p className="text-sm text-amber-800 dark:text-amber-200">
+        <div className="mt-4 p-4 bg-warning-light border border-warning rounded-lg" role="alert">
+          <p className="text-sm text-warning-dark">
             Please select both your primary clothing use and climate to continue.
           </p>
         </div>
       )}
       {value.primaryUse && !value.climate && (
-        <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-950 dark:border-amber-800" role="alert">
-          <p className="text-sm text-amber-800 dark:text-amber-200">
+        <div className="mt-4 p-4 bg-warning-light border border-warning rounded-lg" role="alert">
+          <p className="text-sm text-warning-dark">
             Please select your climate preference to continue.
           </p>
         </div>
       )}
       {!value.primaryUse && value.climate && (
-        <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-950 dark:border-amber-800" role="alert">
-          <p className="text-sm text-amber-800 dark:text-amber-200">
+        <div className="mt-4 p-4 bg-warning-light border border-warning rounded-lg" role="alert">
+          <p className="text-sm text-warning-dark">
             Please select your primary clothing use to continue.
           </p>
         </div>

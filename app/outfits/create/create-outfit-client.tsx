@@ -224,8 +224,8 @@ export function CreateOutfitPageClient() {
       <div className="flex-1 w-full max-w-7xl mx-auto p-6">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800 mx-auto mb-4"></div>
-            <p className="text-slate-600 dark:text-slate-400">Loading wardrobe...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading wardrobe...</p>
           </div>
         </div>
       </div>
@@ -243,10 +243,10 @@ export function CreateOutfitPageClient() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+            <h1 className="text-3xl font-bold text-foreground">
               Create New Outfit
             </h1>
-            <p className="text-slate-600 dark:text-slate-400 mt-1">
+            <p className="text-muted-foreground mt-1">
               Select items from your wardrobe to create an outfit
             </p>
           </div>
@@ -313,7 +313,7 @@ export function CreateOutfitPageClient() {
                 {/* Outfit Details */}
                 <div className="space-y-3">
                   <div>
-                    <label htmlFor="outfit-name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    <label htmlFor="outfit-name" className="block text-sm font-medium text-muted-foreground mb-1">
                       Outfit Name (Optional)
                     </label>
                     <input
@@ -323,14 +323,14 @@ export function CreateOutfitPageClient() {
                       autoComplete="off"
                       value={outfitName}
                       onChange={(e) => setOutfitName(e.target.value)}
-                      className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                      className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                       placeholder="e.g., Business Casual"
                       aria-label="Enter outfit name"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
                       Tuck Style
                     </label>
                     <div className="flex gap-2">
@@ -369,14 +369,14 @@ export function CreateOutfitPageClient() {
 
                 {/* Score Display */}
                 {selectedItemIds.length > 0 && (
-                  <div className="p-3 bg-stone-50 dark:bg-slate-800 rounded-lg">
+                  <div className="p-3 bg-muted rounded-lg">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                      <span className="text-sm font-medium text-muted-foreground">
                         Outfit Score
                       </span>
                       <div className="flex items-center gap-2">
                         <Star className="h-4 w-4 text-yellow-500" />
-                        <span className="font-bold text-slate-900 dark:text-slate-100">
+                        <span className="font-bold text-foreground">
                           {currentScore}/100
                         </span>
                       </div>
@@ -461,11 +461,11 @@ export function CreateOutfitPageClient() {
             ) : (
               <Card>
                 <CardContent className="p-8 text-center">
-                  <Shirt className="h-16 w-16 mx-auto text-slate-400 mb-4" />
-                  <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
+                  <Shirt className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">
                     Select a Category
                   </h3>
-                  <p className="text-slate-600 dark:text-slate-400">
+                  <p className="text-muted-foreground">
                     Choose a category above to start building your outfit.
                   </p>
                 </CardContent>
@@ -477,10 +477,10 @@ export function CreateOutfitPageClient() {
         {/* Empty state */}
         {categories.length === 0 && (
           <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
+            <h3 className="text-lg font-medium text-foreground mb-2">
               No categories found
             </h3>
-            <p className="text-slate-600 dark:text-slate-400 mb-4">
+            <p className="text-muted-foreground mb-4">
               Add items to your wardrobe first to create outfits.
             </p>
             <Link href="/wardrobe/items">

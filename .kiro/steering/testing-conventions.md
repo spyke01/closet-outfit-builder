@@ -20,6 +20,7 @@
 - Prefer role/label-based selectors over exact text when punctuation can vary (`...` vs `…`).
 - Avoid asserting exact class chains unless behavior depends on them.
 - Do not assert on implementation-only framework output when user-visible behavior is already covered.
+- For themed UI, prefer semantic token assertions (for example `bg-card`, `text-foreground`, `border-border`) over palette scale assertions (`text-blue-*`, `dark:text-gray-*`).
 
 ## Fixture conventions
 - Use realistic, schema-valid fixtures (for UUID-backed fields, use valid UUID strings).

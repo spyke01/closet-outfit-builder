@@ -37,7 +37,7 @@ export const OutfitList: React.FC<OutfitListProps> = ({
   if (validatedOutfits.length === 0) {
     return (
       <div className="text-center py-6">
-        <p className="text-slate-500 dark:text-slate-400 text-sm">
+        <p className="text-muted-foreground text-sm">
           No matching outfits found. Try adjusting your selection.
         </p>
       </div>
@@ -46,7 +46,7 @@ export const OutfitList: React.FC<OutfitListProps> = ({
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-medium text-slate-600 dark:text-slate-400">
+      <h3 className="text-sm font-medium text-muted-foreground">
         Matching Outfits ({validatedOutfits.length})
       </h3>
       
@@ -61,11 +61,11 @@ export const OutfitList: React.FC<OutfitListProps> = ({
                 handleOutfitSelect(outfit);
               }
             }}
-            className="p-3 border border-stone-200 dark:border-slate-600 rounded-lg hover:border-slate-300 dark:hover:border-slate-500 hover:shadow-sm transition-[border-color,box-shadow] text-left bg-white dark:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+            className="p-3 border border-border rounded-lg hover:border-border hover:shadow-sm transition-[border-color,box-shadow] text-left bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label={`Select outfit: ${outfit.name || 'Untitled Outfit'}`}
           >
             <div className="flex items-center justify-between mb-2">
-              <h4 className="font-medium text-slate-800 dark:text-slate-200 truncate">
+              <h4 className="font-medium text-foreground truncate">
                 {outfit.name || 'Untitled Outfit'}
               </h4>
               {typeof outfit.score === 'number' && (
@@ -84,7 +84,7 @@ export const OutfitList: React.FC<OutfitListProps> = ({
               )}
             </div>
             
-            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <span>{outfit.source === 'curated' ? 'Curated' : 'Generated'}</span>
               {outfit.tuck_style && (
                 <>

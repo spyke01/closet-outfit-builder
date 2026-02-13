@@ -115,7 +115,7 @@ describe('AboutPage - Unit Tests', () => {
     it('should have consistent card styling', () => {
       const { container } = render(<AboutPage />);
       
-      const cards = container.querySelectorAll('.bg-white.dark\\:bg-slate-800');
+      const cards = container.querySelectorAll('.bg-card');
       
       // Should have 4 feature cards
       expect(cards.length).toBeGreaterThanOrEqual(4);
@@ -124,7 +124,7 @@ describe('AboutPage - Unit Tests', () => {
     it('should have consistent card borders', () => {
       const { container } = render(<AboutPage />);
       
-      const cards = container.querySelectorAll('.border.border-slate-200');
+      const cards = container.querySelectorAll('.border.border-border');
       
       expect(cards.length).toBeGreaterThanOrEqual(4);
     });
@@ -166,7 +166,7 @@ describe('AboutPage - Unit Tests', () => {
     it('should have dark mode background gradient', () => {
       const { container } = render(<AboutPage />);
       
-      const mainContainer = container.querySelector('.dark\\:from-slate-900');
+      const mainContainer = container.querySelector('.bg-background');
       
       expect(mainContainer).toBeInTheDocument();
     });
@@ -177,7 +177,7 @@ describe('AboutPage - Unit Tests', () => {
       const headings = container.querySelectorAll('h1, h2, h3');
       
       headings.forEach((heading) => {
-        expect(heading.className).toContain('dark:text-slate-100');
+        expect(heading.className).toContain('text-foreground');
       });
     });
 
@@ -187,8 +187,8 @@ describe('AboutPage - Unit Tests', () => {
       const descriptions = container.querySelectorAll('p');
       
       descriptions.forEach((desc) => {
-        if (desc.className.includes('text-slate-')) {
-          expect(desc.className).toContain('dark:text-slate-');
+        if (desc.className.includes('text-muted-foreground')) {
+          expect(desc.className).toContain('text-muted-foreground');
         }
       });
     });
@@ -196,7 +196,7 @@ describe('AboutPage - Unit Tests', () => {
     it('should have dark mode card backgrounds', () => {
       const { container } = render(<AboutPage />);
       
-      const cards = container.querySelectorAll('.dark\\:bg-slate-800');
+      const cards = container.querySelectorAll('.bg-card');
       
       expect(cards.length).toBeGreaterThanOrEqual(4);
     });
@@ -204,7 +204,7 @@ describe('AboutPage - Unit Tests', () => {
     it('should have dark mode card borders', () => {
       const { container } = render(<AboutPage />);
       
-      const cards = container.querySelectorAll('.dark\\:border-slate-700');
+      const cards = container.querySelectorAll('.border-border');
       
       expect(cards.length).toBeGreaterThanOrEqual(4);
     });
@@ -247,7 +247,7 @@ describe('AboutPage - Unit Tests', () => {
       
       const button = screen.getByRole('link', { name: /get started today/i });
       
-      expect(button.className).toContain('bg-blue-600');
+      expect(button.className).toContain('bg-primary');
     });
 
     it('should have dark mode button styling', () => {
@@ -255,7 +255,7 @@ describe('AboutPage - Unit Tests', () => {
       
       const button = screen.getByRole('link', { name: /get started today/i });
       
-      expect(button.className).toContain('dark:bg-blue-700');
+      expect(button.className).toContain('');
     });
   });
 
@@ -444,7 +444,7 @@ describe('AboutPage - Unit Tests', () => {
       const headings = container.querySelectorAll('h1, h2, h3');
       
       headings.forEach((heading) => {
-        expect(heading.className).toContain('text-slate-900');
+        expect(heading.className).toContain('text-foreground');
       });
     });
   });

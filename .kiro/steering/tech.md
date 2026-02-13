@@ -110,3 +110,59 @@ npm run audit:setup-hooks    # Setup Git hooks for auditing
 - **Netlify**: Functions bundled with esbuild, Node 20 runtime, optimized headers and caching
 - **Vitest**: Test environment with jsdom, global test utilities, and coverage reporting
 - **Supabase**: Edge Functions with Deno runtime, database migrations, and RLS policies
+
+## Theming Standard
+
+This project uses a **semantic token-first theming system**. Treat direct color classes as exceptions, not defaults.
+
+### Source of truth
+
+- Theme tokens are defined in `app/globals.css` (CSS variables) and exposed in Tailwind via `@theme inline`.
+- See `.kiro/steering/theming.md` for full implementation rules and examples.
+
+### Required token usage
+
+- Use semantic tokens for app UI:
+  - `bg-background`, `bg-card`, `bg-muted`
+  - `text-foreground`, `text-muted-foreground`
+  - `border-border`
+  - `bg-primary`, `text-primary-foreground`
+  - `bg-secondary`, `text-secondary-foreground`
+  - `ring-ring`
+- Prefer semantic state tokens when applicable:
+  - `text-destructive`, `bg-destructive/10`, `border-destructive/30`
+  - `text-primary` for inline action links
+
+### Prohibited patterns in app UI
+
+- Do not use neutral scale theming classes: `slate-*`, `stone-*`, `gray-*`.
+- Do not mix conflicting surface classes in one element:
+  - `bg-white bg-card`
+  - `bg-muted bg-card`
+  - `bg-white bg-background`
+- Do not rely on `dark:*` color overrides when semantic tokens already handle both themes.
+
+### Active palette (reference)
+
+- Dark mode (app interface):
+  - `--background: #1A2830`
+  - `--card: #233A45`
+  - `--border: #2D4A58`
+  - `--foreground: #E8F0F2`
+  - `--primary: #D49E7C`
+  - `--secondary: #5A97AC`
+- Light mode (marketing/public):
+  - `--background: #F1E2C4`
+  - `--foreground: #231F20`
+  - `--card: #FFFFFF`
+  - `--border: #C8B895`
+  - `--primary: #194957`
+  - `--secondary: #D49E7C`
+
+### Navigation/loading consistency requirement
+
+- Any nav/top-bar fallback rendered during route transitions (for example Suspense skeletons) must use semantic nav surfaces (`bg-card`, `border-border`) to prevent flash-of-wrong-theme.
+
+### Test alignment
+
+- UI tests should assert semantic class usage and user-visible behavior, not legacy palette class names.

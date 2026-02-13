@@ -139,7 +139,7 @@ export function AddCategoryForm({ onSave, onCancel }: AddCategoryFormProps) {
             form.formState.errors.name ? 'category-name-error' : 'category-name-hint'
           }
         />
-        <p id="category-name-hint" className="text-sm text-gray-600 dark:text-gray-400">
+        <p id="category-name-hint" className="text-sm text-muted-foreground">
           Choose a descriptive name for this clothing category
         </p>
         {form.formState.errors.name && (
@@ -169,10 +169,10 @@ export function AddCategoryForm({ onSave, onCancel }: AddCategoryFormProps) {
               role="radio"
               aria-checked={selectedIcon === icon}
               onClick={() => setSelectedIcon(selectedIcon === icon ? undefined : icon)}
-              className={`flex h-12 w-12 items-center justify-center rounded-lg border-2 text-2xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+              className={`flex h-12 w-12 items-center justify-center rounded-lg border-2 text-2xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                 selectedIcon === icon
-                  ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20'
-                  : 'border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500'
+                  ? 'border-ring bg-secondary/20  '
+                  : 'border-border hover:border-border'
               }`}
               aria-label={`Select ${icon} icon`}
             >
@@ -187,7 +187,7 @@ export function AddCategoryForm({ onSave, onCancel }: AddCategoryFormProps) {
         <Label>
           Supported Sizing Formats <span aria-label="required" className="text-red-500">*</span>
         </Label>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-sm text-muted-foreground">
           Select all formats that apply to this category
         </p>
         <div className="space-y-3" role="group" aria-label="Sizing format options">
@@ -202,13 +202,13 @@ export function AddCategoryForm({ onSave, onCancel }: AddCategoryFormProps) {
               <div className="flex-1">
                 <label
                   htmlFor={`format-${option.value}`}
-                  className="cursor-pointer text-sm font-medium text-gray-900 dark:text-gray-100"
+                  className="cursor-pointer text-sm font-medium text-foreground"
                 >
                   {option.label}
                 </label>
                 <p
                   id={`format-${option.value}-description`}
-                  className="text-sm text-gray-600 dark:text-gray-400"
+                  className="text-sm text-muted-foreground"
                 >
                   {option.description}
                 </p>
@@ -233,11 +233,11 @@ export function AddCategoryForm({ onSave, onCancel }: AddCategoryFormProps) {
         <div className="flex-1">
           <label
             htmlFor="pin-to-top"
-            className="cursor-pointer text-sm font-medium text-gray-900 dark:text-gray-100"
+            className="cursor-pointer text-sm font-medium text-foreground"
           >
             Pin to top
           </label>
-          <p id="pin-to-top-description" className="text-sm text-gray-600 dark:text-gray-400">
+          <p id="pin-to-top-description" className="text-sm text-muted-foreground">
             Show this category in your pinned cards for quick access
           </p>
         </div>

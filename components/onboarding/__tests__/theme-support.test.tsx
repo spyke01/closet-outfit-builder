@@ -56,15 +56,14 @@ describe('OnboardingWizard - Theme Support', () => {
     );
   };
 
-  it('should have dark mode classes on all interactive elements', () => {
+  it('should use semantic theme classes on interactive elements', () => {
     renderWizard();
 
-    // Check buttons have dark mode classes
+    // Check buttons use semantic classes instead of hardcoded palette classes
     const buttons = screen.getAllByRole('button');
     buttons.forEach((button) => {
       const classes = button.className;
-      // Verify dark mode classes are present
-      expect(classes).toMatch(/dark:/);
+      expect(classes).not.toMatch(/(slate|stone|gray)-[0-9]{2,3}/);
     });
   });
 
@@ -76,26 +75,27 @@ describe('OnboardingWizard - Theme Support', () => {
     expect(heading.className).toContain('text-foreground');
   });
 
-  it('should have dark mode classes on navigation elements', () => {
+  it('should have semantic classes on navigation elements', () => {
     renderWizard();
 
     // Check navigation
     const nav = screen.getByRole('navigation', { name: /onboarding progress/i });
     expect(nav).toBeInTheDocument();
 
-    // Verify step indicators have dark mode support
+    // Verify step indicators are token-based
     const stepIndicators = nav.querySelectorAll('[role="img"]');
     stepIndicators.forEach((indicator) => {
-      expect(indicator.className).toMatch(/dark:/);
+      expect(indicator.className).toMatch(/(border|bg|text)-(primary|secondary|card|border|muted|foreground)/);
     });
   });
 
-  it('should have dark mode classes on alert messages', () => {
+  it('should have semantic classes on alert messages', () => {
     renderWizard();
 
     // Check alert message
     const alert = screen.getByRole('alert');
-    expect(alert.className).toMatch(/dark:/);
+    expect(alert.className).toContain('bg-warning-light');
+    expect(alert.className).toContain('border-warning');
   });
 
   it('should use theme-aware color classes', () => {
@@ -105,26 +105,24 @@ describe('OnboardingWizard - Theme Support', () => {
     const workButton = screen.getByRole('button', { name: /work.*professional/i });
     
     // Check for dark mode border and background classes
-    expect(workButton.className).toContain('dark:border-gray-600');
-    expect(workButton.className).toContain('dark:bg-gray-800');
+    expect(workButton.className).toContain('border-border');
+    expect(workButton.className).toContain('bg-card');
   });
 
-  it('should have consistent theme classes across all steps', () => {
+  it('should have consistent token-based classes across all steps', () => {
     renderWizard();
 
-    // Get all elements with dark mode classes
+    // Get all markup for step 1
     const container = screen.getByRole('main');
     const html = container.innerHTML;
 
-    // Verify dark mode classes are consistently used
-    expect(html).toContain('dark:');
-    
-    // Check for common theme patterns
+    // Check for common token patterns
     expect(html).toContain('text-foreground');
     expect(html).toContain('text-muted-foreground');
+    expect(html).toContain('border-border');
   });
 
-  it('should have proper contrast in both light and dark modes', () => {
+  it('should have semantic selected-state contrast classes', () => {
     renderWizard();
 
     // Verify selected state has proper contrast classes
@@ -133,13 +131,9 @@ describe('OnboardingWizard - Theme Support', () => {
     buttons.forEach((button) => {
       const classes = button.className;
       
-      // If button has selected state classes, verify dark mode equivalents
-      if (classes.includes('bg-blue-50')) {
-        expect(classes).toContain('dark:bg-blue-950');
-      }
-      
-      if (classes.includes('border-blue-600')) {
-        expect(classes).toContain('dark:border-blue-500');
+      // Selected state should use semantic primary tokens
+      if (classes.includes('bg-primary/10')) {
+        expect(classes).toContain('border-primary');
       }
     });
   });

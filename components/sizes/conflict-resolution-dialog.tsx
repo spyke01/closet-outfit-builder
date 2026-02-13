@@ -139,12 +139,12 @@ export function ConflictResolutionDialog({
             <h2 id="conflict-dialog-title" className="text-xl font-semibold">
               Sync Conflict Detected
               {conflicts.length > 1 && (
-                <span className="ml-2 text-sm font-normal text-gray-600">
+                <span className="ml-2 text-sm font-normal text-muted-foreground">
                   ({currentIndex + 1} of {conflicts.length})
                 </span>
               )}
             </h2>
-            <p id="conflict-dialog-description" className="mt-2 text-sm text-gray-600">
+            <p id="conflict-dialog-description" className="mt-2 text-sm text-muted-foreground">
               Your local changes conflict with changes made on another device or session.
               Choose how to resolve this conflict.
             </p>
@@ -164,36 +164,36 @@ export function ConflictResolutionDialog({
               <div className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
                   {/* Local version */}
-                  <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-                    <h3 className="font-semibold text-blue-900 mb-2">
+                  <div className="rounded-lg border border-secondary/40 bg-secondary/20 p-4">
+                    <h3 className="font-semibold text-foreground mb-2">
                       Your Changes
                     </h3>
-                    <p className="text-sm text-blue-700 mb-3">
+                    <p className="text-sm text-primary mb-3">
                       Modified: {formatTimestamp(currentConflict.localTimestamp)}
                     </p>
                     <div className="space-y-2 text-sm">
                       {Object.entries(formatData(currentConflict.localData)).map(([key, value]) => (
                         <div key={key}>
                           <span className="font-medium">{key}:</span>{' '}
-                          <span className="text-gray-700">{value}</span>
+                          <span className="text-muted-foreground">{value}</span>
                         </div>
                       ))}
                     </div>
                   </div>
                   
                   {/* Server version */}
-                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                    <h3 className="font-semibold text-gray-900 mb-2">
+                  <div className="rounded-lg border border-border bg-muted p-4">
+                    <h3 className="font-semibold text-foreground mb-2">
                       Server Version
                     </h3>
-                    <p className="text-sm text-gray-700 mb-3">
+                    <p className="text-sm text-muted-foreground mb-3">
                       Modified: {formatTimestamp(currentConflict.serverTimestamp)}
                     </p>
                     <div className="space-y-2 text-sm">
                       {Object.entries(formatData(currentConflict.serverData)).map(([key, value]) => (
                         <div key={key}>
                           <span className="font-medium">{key}:</span>{' '}
-                          <span className="text-gray-700">{value}</span>
+                          <span className="text-muted-foreground">{value}</span>
                         </div>
                       ))}
                     </div>
@@ -204,7 +204,7 @@ export function ConflictResolutionDialog({
                   <button
                     type="button"
                     onClick={() => handleResolve('view-both')}
-                    className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors w-full sm:w-auto"
+                    className="px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors w-full sm:w-auto"
                   >
                     <Eye className="inline mr-2 h-4 w-4" aria-hidden="true" />
                     View Both
@@ -212,7 +212,7 @@ export function ConflictResolutionDialog({
                   <button
                     type="button"
                     onClick={() => handleResolve('use-server')}
-                    className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors w-full sm:w-auto"
+                    className="px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors w-full sm:w-auto"
                   >
                     <X className="inline mr-2 h-4 w-4" aria-hidden="true" />
                     Use Server Version
@@ -220,7 +220,7 @@ export function ConflictResolutionDialog({
                   <button
                     type="button"
                     onClick={() => handleResolve('keep-local')}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors w-full sm:w-auto"
+                    className="px-4 py-2 bg-primary text-white rounded-md hover:opacity-90 transition-colors w-full sm:w-auto"
                   >
                     <Check className="inline mr-2 h-4 w-4" aria-hidden="true" />
                     Keep My Changes
@@ -237,8 +237,8 @@ export function ConflictResolutionDialog({
                       <thead>
                         <tr className="border-b">
                           <th className="text-left py-2 px-3 font-medium">Field</th>
-                          <th className="text-left py-2 px-3 font-medium bg-blue-50">Your Changes</th>
-                          <th className="text-left py-2 px-3 font-medium bg-gray-50">Server Version</th>
+                          <th className="text-left py-2 px-3 font-medium bg-secondary/20">Your Changes</th>
+                          <th className="text-left py-2 px-3 font-medium bg-muted">Server Version</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -253,8 +253,8 @@ export function ConflictResolutionDialog({
                           return (
                             <tr key={key} className={isDifferent ? 'bg-yellow-50' : ''}>
                               <td className="py-2 px-3 font-medium">{key}</td>
-                              <td className="py-2 px-3 bg-blue-50">{localValue || '-'}</td>
-                              <td className="py-2 px-3 bg-gray-50">{serverValue || '-'}</td>
+                              <td className="py-2 px-3 bg-secondary/20">{localValue || '-'}</td>
+                              <td className="py-2 px-3 bg-muted">{serverValue || '-'}</td>
                             </tr>
                           );
                         })}
@@ -262,7 +262,7 @@ export function ConflictResolutionDialog({
                     </table>
                   </div>
                   
-                  <div className="mt-3 text-xs text-gray-600">
+                  <div className="mt-3 text-xs text-muted-foreground">
                     <p>
                       <strong>Your changes:</strong> {formatTimestamp(currentConflict.localTimestamp)}
                     </p>
@@ -276,14 +276,14 @@ export function ConflictResolutionDialog({
                   <button
                     type="button"
                     onClick={() => setViewingBoth(false)}
-                    className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors w-full sm:w-auto"
+                    className="px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors w-full sm:w-auto"
                   >
                     Back
                   </button>
                   <button
                     type="button"
                     onClick={() => handleResolve('use-server')}
-                    className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors w-full sm:w-auto"
+                    className="px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors w-full sm:w-auto"
                   >
                     <X className="inline mr-2 h-4 w-4" aria-hidden="true" />
                     Use Server Version
@@ -291,7 +291,7 @@ export function ConflictResolutionDialog({
                   <button
                     type="button"
                     onClick={() => handleResolve('keep-local')}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors w-full sm:w-auto"
+                    className="px-4 py-2 bg-primary text-white rounded-md hover:opacity-90 transition-colors w-full sm:w-auto"
                   >
                     <Check className="inline mr-2 h-4 w-4" aria-hidden="true" />
                     Keep My Changes
@@ -301,7 +301,7 @@ export function ConflictResolutionDialog({
             )}
             
             {conflicts.length > 1 && !isLastConflict && (
-              <p className="text-sm text-gray-600 text-center">
+              <p className="text-sm text-muted-foreground text-center">
                 {conflicts.length - currentIndex - 1} more conflict{conflicts.length - currentIndex - 1 !== 1 ? 's' : ''} to resolve
               </p>
             )}

@@ -194,7 +194,7 @@ describe('HeroSection - Unit Tests', () => {
       const imageContainers = container.querySelectorAll('.aspect-square');
       
       imageContainers.forEach((containerEl) => {
-        expect(containerEl.className).toContain('dark:bg-slate-800');
+        expect(containerEl.className).toContain('bg-card');
       });
     });
 
@@ -203,7 +203,7 @@ describe('HeroSection - Unit Tests', () => {
       
       // Check heading has dark mode text color
       const heading = container.querySelector('h1');
-      expect(heading?.className).toContain('dark:text-slate-100');
+      expect(heading?.className).toContain('text-foreground');
     });
   });
 

@@ -18,9 +18,9 @@ export default function HowItWorksPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-stone-50 to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-muted to-muted from-background via-card to-background">
       <div className="text-center">
-        <p className="text-slate-600 dark:text-slate-400">Redirecting to How It Works...</p>
+        <p className="text-muted-foreground">Redirecting to How It Works...</p>
       </div>
     </div>
   );

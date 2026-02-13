@@ -80,7 +80,7 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
       <div
         key={item.id}
         className={`
-          relative bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700
+          relative bg-card rounded-lg border border-border
           shadow-sm hover:shadow-md transition-[box-shadow,transform] duration-200 overflow-hidden
           ${isClickable ? 'cursor-pointer hover:scale-105 will-change-transform' : ''}
           w-full h-full max-w-[125px] max-h-[125px]
@@ -101,8 +101,8 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
             />
           </div>
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-slate-100 dark:bg-slate-700">
-            <IconComponent className="w-8 h-8 text-slate-400" />
+          <div className="w-full h-full flex items-center justify-center bg-muted">
+            <IconComponent className="w-8 h-8 text-muted-foreground" />
           </div>
         )}
         
@@ -134,7 +134,7 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
 
   return (
     <div className={`${sizeClasses[size]} ${className}`}>
-      <div className="w-full h-full p-3 bg-slate-50 dark:bg-slate-900 rounded-lg">
+      <div className="w-full h-full p-3 bg-muted bg-background rounded-lg">
         {/* Flexible Grid Layout - up to 3 rows, 2-3 columns for 8 categories */}
         <div className="h-full grid gap-2 place-items-center" style={{
           gridTemplateColumns: items.length <= 2 ? 'repeat(2, 1fr)' : 

@@ -134,41 +134,41 @@ export function StepSubcategorySelection({
           return (
             <div
               key={categoryKey}
-              className="border border-gray-300 rounded-lg overflow-hidden dark:border-gray-600"
+              className="border border-border rounded-lg overflow-hidden"
             >
               <button
                 type="button"
                 onClick={() => toggleCategory(categoryKey)}
-                className="w-full flex items-center justify-between p-4 min-h-[56px] bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors touch-manipulation"
+                className="w-full flex items-center justify-between p-4 min-h-[56px] bg-muted hover:bg-card transition-colors touch-manipulation"
                 aria-expanded={isExpanded}
                 aria-controls={`category-${categoryKey}`}
                 aria-label={`${category.name} category${selectedCount > 0 ? `, ${selectedCount} items selected` : ''}`}
               >
                 <div className="flex items-center gap-3">
                   {IconComponent && (
-                    <IconComponent className="w-5 h-5 text-gray-600 dark:text-gray-400" aria-hidden="true" />
+                    <IconComponent className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
                   )}
                   <span className="text-lg font-semibold text-foreground">{category.name}</span>
                   {selectedCount > 0 && (
-                    <span className="text-sm px-2 py-1 rounded bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                    <span className="text-sm px-2 py-1 rounded bg-secondary/20 text-secondary">
                       {selectedCount} selected
                     </span>
                   )}
                 </div>
                 {isExpanded ? (
-                  <ChevronUp className="w-5 h-5 text-gray-600 dark:text-gray-400" aria-hidden="true" />
+                  <ChevronUp className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-600 dark:text-gray-400" aria-hidden="true" />
+                  <ChevronDown className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
                 )}
               </button>
 
               {isExpanded && (
-                <div id={`category-${categoryKey}`} className="p-4 bg-white dark:bg-gray-900">
+                <div id={`category-${categoryKey}`} className="p-4 bg-card">
                   <div className="flex gap-2 mb-4">
                     <button
                       type="button"
                       onClick={() => handleSelectAll(categoryKey)}
-                      className="text-sm px-3 py-2 min-h-[44px] rounded border border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800 transition-colors touch-manipulation"
+                      className="text-sm px-3 py-2 min-h-[44px] rounded border border-border hover:bg-muted transition-colors touch-manipulation"
                       aria-label={`Select all ${category.name} items`}
                     >
                       Select All
@@ -176,7 +176,7 @@ export function StepSubcategorySelection({
                     <button
                       type="button"
                       onClick={() => handleSelectNone(categoryKey)}
-                      className="text-sm px-3 py-2 min-h-[44px] rounded border border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800 transition-colors touch-manipulation"
+                      className="text-sm px-3 py-2 min-h-[44px] rounded border border-border hover:bg-muted transition-colors touch-manipulation"
                       aria-label={`Deselect all ${category.name} items`}
                     >
                       Select None
@@ -195,8 +195,8 @@ export function StepSubcategorySelection({
                           className={`
                             flex items-center gap-2 p-3 min-h-[44px] rounded-lg border-2 cursor-pointer transition-all touch-manipulation
                             ${isSelected
-                              ? 'border-blue-600 bg-blue-50 dark:border-blue-500 dark:bg-blue-950'
-                              : 'border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500'
+                              ? 'border-primary bg-primary/10'
+                              : 'border-border hover:border-secondary'
                             }
                           `}
                         >
@@ -210,16 +210,16 @@ export function StepSubcategorySelection({
                           {iconNode ? (
                             <Icon 
                               iconNode={iconNode}
-                              className={`w-4 h-4 flex-shrink-0 ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}`}
+                              className={`w-4 h-4 flex-shrink-0 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`}
                               aria-hidden="true"
                             />
                           ) : MainIcon ? (
                             <MainIcon 
-                              className={`w-4 h-4 flex-shrink-0 ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}`}
+                              className={`w-4 h-4 flex-shrink-0 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`}
                               aria-hidden="true"
                             />
                           ) : null}
-                          <span className={`text-sm ${isSelected ? 'text-blue-600 font-medium dark:text-blue-400' : 'text-foreground'}`}>
+                          <span className={`text-sm ${isSelected ? 'text-primary font-medium' : 'text-foreground'}`}>
                             {subcategory.name}
                           </span>
                         </label>
@@ -234,8 +234,8 @@ export function StepSubcategorySelection({
       </div>
 
       {totalSelected === 0 && (
-        <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-950 dark:border-amber-800" role="alert">
-          <p className="text-sm text-amber-800 dark:text-amber-200">
+        <div className="p-4 bg-warning-light border border-warning rounded-lg" role="alert">
+          <p className="text-sm text-warning-dark">
             Please select at least one subcategory to continue. Expand a category above and check the items you own.
           </p>
         </div>

@@ -136,8 +136,8 @@ describe('FeatureHighlights - Unit Tests', () => {
       const headings = container.querySelectorAll('h2, h3');
       
       headings.forEach((heading) => {
-        expect(heading.className).toContain('text-slate-900');
-        expect(heading.className).toContain('dark:text-slate-100');
+        expect(heading.className).toContain('text-foreground');
+        expect(heading.className).toContain('text-foreground');
       });
     });
 
@@ -148,8 +148,8 @@ describe('FeatureHighlights - Unit Tests', () => {
       
       descriptions.forEach((desc) => {
         const classes = desc.className;
-        // Should have slate-600 or slate-400 for good readability
-        expect(classes).toMatch(/text-slate-(400|600)/);
+        // Should use semantic foreground tokens for readable secondary copy
+        expect(classes).toMatch(/text-muted-foreground|text-foreground/);
       });
     });
 
@@ -266,7 +266,7 @@ describe('FeatureHighlights - Unit Tests', () => {
       const headings = container.querySelectorAll('h2, h3');
       
       headings.forEach((heading) => {
-        expect(heading.className).toContain('dark:text-slate-100');
+        expect(heading.className).toContain('text-foreground');
       });
     });
 
@@ -276,7 +276,7 @@ describe('FeatureHighlights - Unit Tests', () => {
       const descriptions = container.querySelectorAll('p');
       
       descriptions.forEach((desc) => {
-        expect(desc.className).toContain('dark:text-slate-400');
+        expect(desc.className).toContain('text-muted-foreground');
       });
     });
   });

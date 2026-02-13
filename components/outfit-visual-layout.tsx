@@ -186,8 +186,8 @@ export const OutfitVisualLayout: React.FC<OutfitVisualLayoutProps> = ({
     // Show a simple item count if we have items but no images
     if (items.length > 0) {
       return (
-        <div className={`${sizeClasses[size]} ${className} flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-lg border border-slate-200 dark:border-slate-600`}>
-          <div className="text-center text-slate-600 dark:text-slate-400">
+        <div className={`${sizeClasses[size]} ${className} flex items-center justify-center bg-gradient-to-br from-muted to-muted from-card to-background rounded-lg border border-border`}>
+          <div className="text-center text-muted-foreground">
             <div className="text-3xl mb-2">👔</div>
             <div className="text-sm font-medium">{items.length} Items</div>
             <div className="text-xs mt-1 opacity-75">Add images to see layout</div>
@@ -198,8 +198,8 @@ export const OutfitVisualLayout: React.FC<OutfitVisualLayoutProps> = ({
     
     // Show empty state if no items at all
     return (
-      <div className={`${sizeClasses[size]} ${className} flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-600`}>
-        <div className="text-center text-slate-500 dark:text-slate-400">
+      <div className={`${sizeClasses[size]} ${className} flex items-center justify-center bg-gradient-to-br from-muted to-muted from-card to-background rounded-lg border-2 border-dashed border-border`}>
+        <div className="text-center text-muted-foreground">
           <div className="text-2xl mb-2">📷</div>
           <div className="text-sm">No items</div>
           <div className="text-xs mt-1 opacity-75">Create an outfit to see items</div>
@@ -210,7 +210,7 @@ export const OutfitVisualLayout: React.FC<OutfitVisualLayoutProps> = ({
 
   return (
     <div 
-      className={`${sizeClasses[size]} ${className} relative bg-gradient-to-br from-slate-50 via-slate-25 to-stone-100 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden shadow-inner`}
+      className={`${sizeClasses[size]} ${className} relative bg-gradient-to-br from-muted via-muted to-muted from-card via-background to-background rounded-lg border border-border overflow-hidden shadow-inner`}
       style={{ 
         backgroundImage: `
           radial-gradient(circle at 20% 30%, rgba(148, 163, 184, 0.1) 0%, transparent 50%),
@@ -271,7 +271,7 @@ export const OutfitVisualLayout: React.FC<OutfitVisualLayoutProps> = ({
 
       {/* Item count badge */}
       <div className="absolute bottom-2 right-2">
-        <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-700 dark:text-slate-300 text-xs px-2 py-1 rounded-full border border-slate-200 dark:border-slate-600 shadow-sm">
+        <div className="bg-white/90 bg-card/90 backdrop-blur-sm text-muted-foreground text-xs px-2 py-1 rounded-full border border-border shadow-sm">
           {validItems.length} item{validItems.length !== 1 ? 's' : ''}
         </div>
       </div>

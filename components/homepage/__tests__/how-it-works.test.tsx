@@ -95,7 +95,7 @@ describe('HowItWorks - Unit Tests', () => {
       const { container } = render(<HowItWorks />);
       
       // Find progress bar containers
-      const progressBars = container.querySelectorAll('.bg-slate-200.rounded-full');
+      const progressBars = container.querySelectorAll('.bg-muted.rounded-full');
       
       // Should have at least 3 progress bars (one for each item)
       expect(progressBars.length).toBeGreaterThanOrEqual(3);
@@ -182,7 +182,7 @@ describe('HowItWorks - Unit Tests', () => {
     it('should have icon containers for each step', () => {
       const { container } = render(<HowItWorks />);
       
-      const iconContainers = container.querySelectorAll('.bg-gradient-to-br.from-blue-100');
+      const iconContainers = container.querySelectorAll('.bg-gradient-to-br.rounded-2xl');
       
       // Should have 3 icon containers
       expect(iconContainers.length).toBeGreaterThanOrEqual(3);
@@ -270,28 +270,28 @@ describe('HowItWorks - Unit Tests', () => {
   });
 
   describe('Dark Mode Support', () => {
-    it('should have dark mode classes on containers', () => {
+    it('should use semantic themed container classes', () => {
       const { container } = render(<HowItWorks />);
       
-      const darkContainers = container.querySelectorAll('.dark\\:bg-slate-800');
+      const themedContainers = container.querySelectorAll('.bg-card, .bg-background, .bg-muted');
       
-      expect(darkContainers.length).toBeGreaterThanOrEqual(3);
+      expect(themedContainers.length).toBeGreaterThanOrEqual(3);
     });
 
-    it('should have dark mode text colors', () => {
+    it('should use semantic text color classes', () => {
       const { container } = render(<HowItWorks />);
       
-      const darkText = container.querySelectorAll('.dark\\:text-slate-100');
+      const textElements = container.querySelectorAll('.text-foreground, .text-muted-foreground');
       
-      expect(darkText.length).toBeGreaterThanOrEqual(3);
+      expect(textElements.length).toBeGreaterThanOrEqual(3);
     });
 
-    it('should have dark mode image container backgrounds', () => {
+    it('should use semantic image container backgrounds', () => {
       const { container } = render(<HowItWorks />);
       
-      const darkImageContainers = container.querySelectorAll('.dark\\:bg-slate-700');
+      const imageContainers = container.querySelectorAll('.bg-card');
       
-      expect(darkImageContainers.length).toBeGreaterThanOrEqual(3);
+      expect(imageContainers.length).toBeGreaterThanOrEqual(3);
     });
   });
 

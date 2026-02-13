@@ -61,14 +61,14 @@ describe('AnimatedIcon', () => {
 
   it('should combine animation and additional classes', () => {
     const { container } = render(
-      <AnimatedIcon animation="animate-spin" className="text-blue-500">
+      <AnimatedIcon animation="animate-spin" className="text-primary">
         <div>Icon</div>
       </AnimatedIcon>
     );
     
     const wrapper = container.firstChild as HTMLElement;
     expect(wrapper.className).toContain('animate-spin');
-    expect(wrapper.className).toContain('text-blue-500');
+    expect(wrapper.className).toContain('text-primary');
   });
 
   it('should have aria-hidden attribute', () => {

@@ -21,7 +21,7 @@ export const Logo: React.FC<LogoProps> = ({
     setMounted(true);
   }, []);
 
-  // Use light logo for light theme, dark logo for dark theme
+  // Use light-background logo in light mode and dark-background logo in dark mode
   const logoSrc = resolvedTheme === 'dark' 
     ? '/my-ai-outfit-logo-dark-bg.png'
     : '/my-ai-outfit-logo-light-bg.png';

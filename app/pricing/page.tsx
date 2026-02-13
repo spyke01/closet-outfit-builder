@@ -4,7 +4,7 @@ import { PricingSection } from "@/components/homepage/pricing-section";
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-cream-50 to-navy-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-white via-cream-50 to-navy-50 from-background via-card to-background">
       <StaticPageNavigation />
       
       <main className="pt-16">

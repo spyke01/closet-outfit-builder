@@ -181,12 +181,12 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
   if (!hasRequiredCategories) {
     return (
       <div className="container mx-auto p-4 pt-24">
-        <h1 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white">Today&apos;s Outfit</h1>
+        <h1 className="text-2xl font-bold mb-6 text-foreground">Today&apos;s Outfit</h1>
         <div className="text-center py-12">
-          <p className="text-lg mb-4 text-slate-700 dark:text-slate-300">
+          <p className="text-lg mb-4 text-muted-foreground">
             You need at least one Shirt, Pants, and Shoes to generate outfits.
           </p>
-          <Link href="/wardrobe" className="text-blue-600 dark:text-blue-400 hover:underline">
+          <Link href="/wardrobe" className="text-primary hover:underline">
             Add items to your wardrobe →
           </Link>
         </div>
@@ -196,7 +196,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
   
   return (
     <div className="container mx-auto p-6 max-w-7xl">
-      <h1 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white">Today&apos;s Outfit</h1>
+      <h1 className="text-2xl font-bold mb-6 text-foreground">Today&apos;s Outfit</h1>
       
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Left sidebar - Weather and Actions (desktop only) */}
@@ -220,20 +220,20 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
           )}
           
           {saveSuccess && (
-            <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-              <p className="text-green-800 dark:text-green-200 mb-2 text-sm">Outfit saved successfully!</p>
-              <Link href="/outfits" className="text-green-600 dark:text-green-400 hover:underline text-sm">
+            <div className="mt-4 p-4 bg-secondary/20 border border-secondary/40 rounded-lg">
+              <p className="text-foreground mb-2 text-sm">Outfit saved successfully!</p>
+              <Link href="/outfits" className="text-primary hover:underline text-sm">
                 View your outfits →
               </Link>
             </div>
           )}
           
           {saveError && (
-            <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <p className="text-red-800 dark:text-red-200 mb-2 text-sm">{saveError}</p>
+            <div className="mt-4 p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
+              <p className="text-destructive mb-2 text-sm">{saveError}</p>
               <button
                 onClick={() => handleSave(false)}
-                className="text-red-600 dark:text-red-400 hover:underline text-sm"
+                className="text-destructive hover:underline text-sm"
               >
                 Try again
               </button>
@@ -245,7 +245,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
         <div className="flex-1">
           {generating && !currentOutfit && (
             <div className="text-center py-12">
-              <p className="text-lg text-slate-700 dark:text-slate-300">Generating your outfit...</p>
+              <p className="text-lg text-muted-foreground">Generating your outfit...</p>
             </div>
           )}
           

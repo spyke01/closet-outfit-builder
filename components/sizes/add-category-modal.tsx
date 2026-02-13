@@ -72,20 +72,20 @@ export function AddCategoryModal({ isOpen, onClose, onSave }: AddCategoryModalPr
     >
       {/* Modal Content */}
       <div
-        className="relative w-full max-h-[90vh] overflow-y-auto bg-white shadow-xl md:max-w-2xl md:rounded-lg dark:bg-gray-900"
+        className="relative w-full max-h-[90vh] overflow-y-auto bg-background shadow-xl md:max-w-2xl md:rounded-lg"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4 dark:border-gray-700 dark:bg-gray-900">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-background px-6 py-4 border-border">
           <h2
             id="add-category-title"
-            className="text-xl font-semibold text-gray-900 dark:text-gray-100"
+            className="text-xl font-semibold text-foreground"
           >
             Add Category
           </h2>
           <button
             onClick={onClose}
-            className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 text-muted-foreground  dark:hover:text-muted-foreground"
             aria-label="Close dialog"
           >
             <X className="h-5 w-5" aria-hidden="true" />

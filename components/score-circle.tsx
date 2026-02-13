@@ -184,12 +184,12 @@ export const ScoreCircle = React.memo<ScoreCircleProps>(({
     return (
       <div className={`flex flex-col items-center gap-1 ${className}`}>
         <div className={`relative ${container}`}>
-          <div className={`flex items-center justify-center w-full h-full ${text} font-semibold text-slate-400`}>
+          <div className={`flex items-center justify-center w-full h-full ${text} font-semibold text-muted-foreground`}>
             --
           </div>
         </div>
         {showLabel && (
-          <span className="text-xs text-slate-500 font-medium">Invalid Score</span>
+          <span className="text-xs text-muted-foreground font-medium">Invalid Score</span>
         )}
       </div>
     );
@@ -245,7 +245,7 @@ export const ScoreCircle = React.memo<ScoreCircleProps>(({
               stroke="currentColor"
               strokeWidth={stroke}
               fill="transparent"
-              className="text-stone-200 dark:text-slate-600"
+              className="text-muted-foreground"
             />
             {/* Progress circle */}
             <circle
@@ -268,7 +268,7 @@ export const ScoreCircle = React.memo<ScoreCircleProps>(({
         </div>
         
         {showLabel && (
-          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+          <span className="text-xs text-muted-foreground font-medium">
             {hasBreakdown ? 'Outfit Score' : 'Score'}
           </span>
         )}
@@ -287,35 +287,35 @@ export const ScoreCircle = React.memo<ScoreCircleProps>(({
                       'translate(0%, -50%)'
           }}
         >
-          <div className="bg-white dark:bg-slate-800 border border-stone-200 dark:border-slate-700 rounded-lg shadow-xl p-4 min-w-[280px] max-w-[320px] relative">
+          <div className="bg-card border border-border rounded-lg shadow-xl p-4 min-w-[280px] max-w-[320px] relative">
             <ScoreBreakdown breakdown={calculatedBreakdown} showDetails={true} />
             
             {/* Arrow */}
             {tooltipPosition.placement === 'top' && (
               <div className="absolute top-full left-1/2 transform -translate-x-1/2">
-                <div className="w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-transparent border-t-white dark:border-t-slate-800"></div>
-                <div className="absolute -top-[1px] left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[7px] border-r-[7px] border-t-[7px] border-transparent border-t-stone-200 dark:border-t-slate-700"></div>
+                <div className="w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-transparent border-t-card"></div>
+                <div className="absolute -top-[1px] left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[7px] border-r-[7px] border-t-[7px] border-transparent border-t-border"></div>
               </div>
             )}
             
             {tooltipPosition.placement === 'bottom' && (
               <div className="absolute bottom-full left-1/2 transform -translate-x-1/2">
-                <div className="w-0 h-0 border-l-[6px] border-r-[6px] border-b-[6px] border-transparent border-b-white dark:border-b-slate-800"></div>
-                <div className="absolute -bottom-[1px] left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[7px] border-r-[7px] border-b-[7px] border-transparent border-b-stone-200 dark:border-b-slate-700"></div>
+                <div className="w-0 h-0 border-l-[6px] border-r-[6px] border-b-[6px] border-transparent border-b-card"></div>
+                <div className="absolute -bottom-[1px] left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[7px] border-r-[7px] border-b-[7px] border-transparent border-b-border"></div>
               </div>
             )}
             
             {tooltipPosition.placement === 'left' && (
               <div className="absolute right-full top-1/2 transform -translate-y-1/2">
-                <div className="w-0 h-0 border-t-[6px] border-b-[6px] border-l-[6px] border-transparent border-l-white dark:border-l-slate-800"></div>
-                <div className="absolute -left-[1px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[7px] border-b-[7px] border-l-[7px] border-transparent border-l-stone-200 dark:border-l-slate-700"></div>
+                <div className="w-0 h-0 border-t-[6px] border-b-[6px] border-l-[6px] border-transparent border-l-card"></div>
+                <div className="absolute -left-[1px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[7px] border-b-[7px] border-l-[7px] border-transparent border-l-border"></div>
               </div>
             )}
             
             {tooltipPosition.placement === 'right' && (
               <div className="absolute left-full top-1/2 transform -translate-y-1/2">
-                <div className="w-0 h-0 border-t-[6px] border-b-[6px] border-r-[6px] border-transparent border-r-white dark:border-r-slate-800"></div>
-                <div className="absolute -right-[1px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[7px] border-b-[7px] border-r-[7px] border-transparent border-r-stone-200 dark:border-r-slate-700"></div>
+                <div className="w-0 h-0 border-t-[6px] border-b-[6px] border-r-[6px] border-transparent border-r-card"></div>
+                <div className="absolute -right-[1px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[7px] border-b-[7px] border-r-[7px] border-transparent border-r-border"></div>
               </div>
             )}
           </div>

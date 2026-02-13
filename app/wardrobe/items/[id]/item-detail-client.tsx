@@ -166,8 +166,8 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
       <div className="flex-1 w-full max-w-4xl mx-auto p-6">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800 mx-auto mb-4"></div>
-            <p className="text-slate-600 dark:text-slate-400">Loading item...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading item...</p>
           </div>
         </div>
       </div>
@@ -205,11 +205,11 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+            <h1 className="text-3xl font-bold text-foreground">
               {isEditing ? 'Edit Item' : item.name}
             </h1>
             {category && (
-              <p className="text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-muted-foreground mt-1">
                 {category.name}
               </p>
             )}
@@ -271,12 +271,12 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Image Section */}
-          <div className="border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
+          <div className="border border-border rounded-lg bg-card shadow-sm overflow-hidden">
             {/* Image display */}
             {isEditing ? (
               <>
                 {editForm.image_url && (
-                  <div className="relative w-full h-96 bg-gray-50 dark:bg-slate-700">
+                  <div className="relative w-full h-96 bg-muted">
                     <Image
                       src={editForm.image_url}
                       alt={`${editForm.name || 'Item'}${editForm.brand ? ` by ${editForm.brand}` : ''}`}
@@ -289,8 +289,8 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                   </div>
                 )}
                 {/* Upload section */}
-                <div className="p-4 border-t border-gray-200 dark:border-slate-700">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3 flex items-center gap-2">
+                <div className="p-4 border-t border-border">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
                     <Shirt className="h-4 w-4" />
                     Item Image
                   </p>
@@ -304,7 +304,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
               <>
                 {/* Image display */}
                 {item.image_url ? (
-                  <div className="relative w-full h-96 bg-gray-50 dark:bg-slate-700">
+                  <div className="relative w-full h-96 bg-muted">
                     <Image
                       src={item.image_url}
                       alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''} - ${category?.name || 'wardrobe item'}`}
@@ -316,17 +316,17 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                     />
                   </div>
                 ) : (
-                  <div className="relative w-full h-96 bg-gray-50 dark:bg-slate-700 flex items-center justify-center">
+                  <div className="relative w-full h-96 bg-muted flex items-center justify-center">
                     <div className="text-center">
-                      <Shirt className="h-12 w-12 mx-auto text-slate-400 mb-2" />
-                      <p className="text-slate-500 dark:text-slate-400">No image</p>
+                      <Shirt className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
+                      <p className="text-muted-foreground">No image</p>
                     </div>
                   </div>
                 )}
                 {/* Item info */}
-                <div className="p-4 border-t border-gray-200 dark:border-slate-700">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">{category?.name || 'Item'}</p>
-                  <p className="text-sm font-medium text-slate-900 dark:text-white">
+                <div className="p-4 border-t border-border">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{category?.name || 'Item'}</p>
+                  <p className="text-sm font-medium text-foreground">
                     {item.brand ? `${item.brand} ${item.name}` : item.name}
                   </p>
                 </div>
@@ -343,40 +343,40 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
               {isEditing ? (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">
                       Name *
                     </label>
                     <input
                       type="text"
                       value={editForm.name || ''}
                       onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
-                      className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                      className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">
                       Brand
                     </label>
                     <input
                       type="text"
                       value={editForm.brand || ''}
                       onChange={(e) => setEditForm(prev => ({ ...prev, brand: e.target.value }))}
-                      className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                      className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block text-sm font-medium text-muted-foreground mb-1">
                         Color
                       </label>
                       <div className="relative">
                         <select
                           value={editForm.color || ''}
                           onChange={(e) => setEditForm(prev => ({ ...prev, color: e.target.value }))}
-                          className="w-full py-2 pr-10 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 appearance-none"
+                          className="w-full py-2 pr-10 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground appearance-none"
                           style={{
                             paddingLeft: editForm.color && COLOR_OPTIONS.find(opt => opt.value === editForm.color)?.hex ? '32px' : '12px'
                           }}
@@ -389,12 +389,12 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                         </select>
                         {editForm.color && COLOR_OPTIONS.find(opt => opt.value === editForm.color)?.hex && (
                           <div 
-                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-slate-300 dark:border-slate-600 pointer-events-none"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-border pointer-events-none"
                             style={{ backgroundColor: COLOR_OPTIONS.find(opt => opt.value === editForm.color)?.hex || 'transparent' }}
                           />
                         )}
                         <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                          <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                           </svg>
                         </div>
@@ -402,20 +402,20 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label className="block text-sm font-medium text-muted-foreground mb-1">
                         Material
                       </label>
                       <input
                         type="text"
                         value={editForm.material || ''}
                         onChange={(e) => setEditForm(prev => ({ ...prev, material: e.target.value }))}
-                        className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                        className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">
                       Formality Score (1-10)
                     </label>
                     <input
@@ -424,18 +424,18 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                       max="10"
                       value={editForm.formality_score || 5}
                       onChange={(e) => setEditForm(prev => ({ ...prev, formality_score: parseInt(e.target.value) }))}
-                      className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                      className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
                       Category
                     </label>
                     <select
                       value={editForm.category_id || ''}
                       onChange={(e) => setEditForm(prev => ({ ...prev, category_id: e.target.value }))}
-                      className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                      className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                     >
                       {categories.map(cat => (
                         <option key={cat.id} value={cat.id}>
@@ -449,37 +449,37 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Brand</p>
-                      <p className="text-slate-900 dark:text-slate-100">{item.brand || 'Not specified'}</p>
+                      <p className="text-sm font-medium text-muted-foreground">Brand</p>
+                      <p className="text-foreground">{item.brand || 'Not specified'}</p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Color</p>
+                      <p className="text-sm font-medium text-muted-foreground">Color</p>
                       {item.color ? (
                         <div className="flex items-center gap-2">
                           {COLOR_OPTIONS.find(opt => opt.value === item.color)?.hex && (
                             <div 
-                              className="w-4 h-4 rounded-full border border-slate-300 dark:border-slate-600"
+                              className="w-4 h-4 rounded-full border border-border"
                               style={{ backgroundColor: COLOR_OPTIONS.find(opt => opt.value === item.color)?.hex || 'transparent' }}
                             />
                           )}
-                          <p className="text-slate-900 dark:text-slate-100">
+                          <p className="text-foreground">
                             {COLOR_OPTIONS.find(opt => opt.value === item.color)?.label || item.color}
                           </p>
                         </div>
                       ) : (
-                        <p className="text-slate-900 dark:text-slate-100">Not specified</p>
+                        <p className="text-foreground">Not specified</p>
                       )}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Material</p>
-                      <p className="text-slate-900 dark:text-slate-100">{item.material || 'Not specified'}</p>
+                      <p className="text-sm font-medium text-muted-foreground">Material</p>
+                      <p className="text-foreground">{item.material || 'Not specified'}</p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Formality Score</p>
-                      <p className="text-slate-900 dark:text-slate-100">{item.formality_score || 'Not set'}/10</p>
+                      <p className="text-sm font-medium text-muted-foreground">Formality Score</p>
+                      <p className="text-foreground">{item.formality_score || 'Not set'}/10</p>
                     </div>
                   </div>
                 </>
@@ -521,7 +521,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                       </Badge>
                     ))
                   ) : (
-                    <p className="text-slate-500 dark:text-slate-400">No tags assigned</p>
+                    <p className="text-muted-foreground">No tags assigned</p>
                   )}
                 </div>
               )}
@@ -578,7 +578,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-600 dark:text-slate-400 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Are you sure you want to delete &quot;{item.name}&quot;? This action cannot be undone and will remove the item from any outfits.
                 </p>
                 <div className="flex gap-2 justify-end">

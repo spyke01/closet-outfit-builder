@@ -74,9 +74,9 @@ export function CategoryGrid({
   if (categories.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-        <div className="mb-6 rounded-full bg-gray-100 p-6 dark:bg-gray-800">
+        <div className="mb-6 rounded-full bg-muted p-6 bg-card">
           <svg 
-            className="h-12 w-12 text-gray-400" 
+            className="h-12 w-12 text-muted-foreground" 
             fill="none" 
             viewBox="0 0 24 24" 
             stroke="currentColor"
@@ -85,10 +85,10 @@ export function CategoryGrid({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
         </div>
-        <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <h3 className="mb-2 text-lg font-semibold text-foreground">
           No categories yet
         </h3>
-        <p className="max-w-sm text-sm text-gray-600 dark:text-gray-400">
+        <p className="max-w-sm text-sm text-muted-foreground">
           Your size categories will appear here once they are set up
         </p>
       </div>
@@ -105,7 +105,7 @@ export function CategoryGrid({
         <Link
           key={category.id}
           href={`/sizes/${category.id}`}
-          className="group relative flex min-h-[120px] flex-col justify-between rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-blue-500 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-400"
+          className="group relative flex min-h-[120px] flex-col justify-between rounded-lg border border-border bg-card p-4 transition-all hover:border-border hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           style={{
             contentVisibility: categories.length > 50 ? 'auto' : undefined,
             containIntrinsicSize: categories.length > 50 ? '0 120px' : undefined,
@@ -116,24 +116,24 @@ export function CategoryGrid({
           {/* Category icon (if available) */}
           {category.icon && (
             <div className="mb-2">
-              <CategoryIcon iconName={category.icon} className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+              <CategoryIcon iconName={category.icon} className="h-6 w-6 text-muted-foreground" />
             </div>
           )}
 
           {/* Category name */}
-          <h3 className="mb-2 text-base font-semibold text-gray-900 group-hover:text-blue-600 dark:text-gray-100 dark:group-hover:text-blue-400">
+          <h3 className="mb-2 text-base font-semibold text-foreground group-hover:text-primary text-foreground group-hover:text-secondary">
             <TextTruncate text={category.name} maxLines={2} />
           </h3>
 
           {/* Size count and variations indicator */}
-          <div className="flex flex-col gap-1 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex flex-col gap-1 text-sm text-muted-foreground">
             <span>
               {sizeCount === 0 && 'No sizes saved'}
               {sizeCount === 1 && '1 size'}
               {sizeCount > 1 && `${sizeCount} sizes`}
             </span>
             {hasVariations && (
-              <span className="text-xs text-blue-600 dark:text-blue-400">
+              <span className="text-xs text-primary">
                 Varies by brand
               </span>
             )}

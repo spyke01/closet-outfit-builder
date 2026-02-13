@@ -231,28 +231,28 @@ export function CustomizePinnedCardsView({
       {/* Tablet+: side drawer */}
       {/* Requirements: 8.2, 8.3 */}
       <div
-        className="fixed inset-0 md:inset-y-0 md:right-0 md:left-auto md:w-96 bg-white dark:bg-gray-900 z-50 flex flex-col"
+        className="fixed inset-0 md:inset-y-0 md:right-0 md:left-auto md:w-96 bg-background z-50 flex flex-col"
         role="dialog"
         aria-modal="true"
         aria-labelledby="customize-pinned-title"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-4 border-b border-border">
           <h2
             id="customize-pinned-title"
-            className="text-xl font-bold text-gray-900 dark:text-gray-100"
+            className="text-xl font-bold text-foreground"
           >
             Customize Pinned Cards
           </h2>
           
           <button
             onClick={handleCancel}
-            className="icon-button p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+            className="icon-button p-2 hover:bg-muted rounded-md transition-colors"
             style={{ minWidth: '44px', minHeight: '44px' }} // ✅ 44x44px touch target
             aria-label="Close customize view"
             type="button"
           >
-            <X className="h-5 w-5 text-gray-500 dark:text-gray-400" aria-hidden="true" />
+            <X className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
           </button>
         </div>
 
@@ -261,7 +261,7 @@ export function CustomizePinnedCardsView({
           {/* Pinned categories section */}
           {localPinnedIds.length > 0 && (
             <div className="space-y-2">
-              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                 Pinned Categories
               </h3>
               
@@ -281,17 +281,17 @@ export function CustomizePinnedCardsView({
                       onDragLeave={handleDragLeave}
                       onDrop={(e) => handleDrop(e, index)}
                       onDragEnd={handleDragEnd}
-                      className={`bg-gray-50 dark:bg-gray-800 border rounded-lg p-3 transition-all ${
-                        isDraggedOver 
-                          ? 'border-blue-500 dark:border-blue-400 border-2' 
-                          : 'border-gray-200 dark:border-gray-700'
+                      className={`bg-muted border rounded-lg p-3 transition-all ${
+                        isDraggedOver
+                          ? 'border-ring border-2 bg-secondary/10'
+                          : 'border-border'
                       }`}
                     >
                       {/* Category header with drag handle and toggle */}
                       <div className="flex items-center gap-3 mb-3">
                         {/* Drag handle with keyboard support */}
                         <div
-                          className="drag-handle cursor-move text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                          className="drag-handle cursor-move text-muted-foreground hover:text-foreground transition-colors"
                           role="button"
                           tabIndex={0}
                           aria-label={`Reorder ${category.name}. Use arrow keys to move up or down.`}
@@ -302,7 +302,7 @@ export function CustomizePinnedCardsView({
                         </div>
 
                         {/* Category name */}
-                        <span className="flex-1 font-medium text-gray-900 dark:text-gray-100">
+                        <span className="flex-1 font-medium text-foreground">
                           {category.name}
                         </span>
 
@@ -321,7 +321,7 @@ export function CustomizePinnedCardsView({
                       <div className="space-y-2">
                         <Label
                           htmlFor={`display-mode-${categoryId}`}
-                          className="text-sm text-gray-600 dark:text-gray-400"
+                          className="text-sm text-muted-foreground"
                         >
                           Display Mode
                         </Label>
@@ -330,7 +330,7 @@ export function CustomizePinnedCardsView({
                           id={`display-mode-${categoryId}`}
                           value={displayModes[categoryId] || 'standard'}
                           onChange={(e) => handleDisplayModeChange(categoryId, e.target.value as DisplayMode)}
-                          className="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-gray-100"
+                          className="w-full px-3 py-2 bg-background border border-border rounded-md text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                           style={{ minHeight: '44px' }} // ✅ 44x44px touch target
                         >
                           <option value="standard">Standard Size</option>
@@ -347,7 +347,7 @@ export function CustomizePinnedCardsView({
 
           {/* Unpinned categories section */}
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
               {localPinnedIds.length > 0 ? 'Other Categories' : 'All Categories'}
             </h3>
             
@@ -357,16 +357,16 @@ export function CustomizePinnedCardsView({
                 .map((category) => (
                   <div
                     key={category.id}
-                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg"
+                    className="flex items-center justify-between p-3 bg-muted border border-border rounded-lg"
                   >
-                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                    <span className="font-medium text-foreground">
                       {category.name}
                     </span>
 
                     <div className="flex items-center gap-2">
                       <Label
                         htmlFor={`pin-${category.id}`}
-                        className="text-sm text-gray-600 dark:text-gray-400"
+                        className="text-sm text-muted-foreground"
                       >
                         Pin
                       </Label>
@@ -384,7 +384,7 @@ export function CustomizePinnedCardsView({
 
           {/* Empty state */}
           {categories.length === 0 && (
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            <div className="text-center py-8 text-muted-foreground">
               <p>No categories available.</p>
               <p className="text-sm mt-2">Create a category first to pin it.</p>
             </div>
@@ -392,10 +392,10 @@ export function CustomizePinnedCardsView({
         </div>
 
         {/* Footer with action buttons */}
-        <div className="flex gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex gap-3 p-4 border-t border-border">
           <button
             onClick={handleCancel}
-            className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 font-medium rounded-lg transition-colors"
+            className="flex-1 px-4 py-2 bg-card border border-border hover:bg-muted text-foreground font-medium rounded-lg transition-colors"
             style={{ minHeight: '44px' }} // ✅ 44x44px touch target
             type="button"
           >
@@ -405,7 +405,7 @@ export function CustomizePinnedCardsView({
           <button
             onClick={handleSave}
             disabled={updatePinnedPreferences.isPending}
-            className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-colors inline-flex items-center justify-center gap-2"
+            className="flex-1 px-4 py-2 bg-primary hover:opacity-90 disabled:opacity-50 text-primary-foreground font-medium rounded-lg transition-colors inline-flex items-center justify-center gap-2"
             style={{ minHeight: '44px' }} // ✅ 44x44px touch target
             type="button"
           >

@@ -227,7 +227,7 @@ export function MeasurementGuideSection({
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">Measurement Guide</h3>
         </div>
-        <div className="text-sm text-gray-500">Loading...</div>
+        <div className="text-sm text-muted-foreground">Loading...</div>
       </div>
     );
   }
@@ -243,7 +243,7 @@ export function MeasurementGuideSection({
             type="button"
             onClick={handleUnitToggle}
             disabled={isEditing}
-            className="px-3 py-1 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 py-2 text-sm font-medium rounded-md border border-border bg-card hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label={`Switch to ${currentUnit === 'imperial' ? 'metric' : 'imperial'} units`}
           >
             {currentUnit === 'imperial' ? 'in' : 'cm'}
@@ -254,10 +254,11 @@ export function MeasurementGuideSection({
             <button
               type="button"
               onClick={() => setIsEditing(true)}
-              className="p-2 rounded-md hover:bg-gray-100"
+              className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               aria-label="Edit measurements"
             >
               <Edit className="h-4 w-4" aria-hidden="true" />
+              Edit
             </button>
           ) : (
             <>
@@ -265,19 +266,21 @@ export function MeasurementGuideSection({
                 type="button"
                 onClick={form.handleSubmit(onSubmit)}
                 disabled={updateMeasurements.isPending}
-                className="p-2 rounded-md hover:bg-green-100 text-green-600 disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
                 aria-label="Save measurements"
               >
                 <Save className="h-4 w-4" aria-hidden="true" />
+                Save
               </button>
               <button
                 type="button"
                 onClick={handleCancel}
                 disabled={updateMeasurements.isPending}
-                className="p-2 rounded-md hover:bg-red-100 text-red-600 disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
                 aria-label="Cancel editing"
               >
                 <X className="h-4 w-4" aria-hidden="true" />
+                Cancel
               </button>
             </>
           )}
@@ -294,7 +297,7 @@ export function MeasurementGuideSection({
             <div key={field} className="space-y-1">
               <label
                 htmlFor={`measurement-${field}`}
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-muted-foreground"
               >
                 {label}
               </label>
@@ -309,11 +312,11 @@ export function MeasurementGuideSection({
                     {...form.register(`measurements.${field}`, {
                       valueAsNumber: true,
                     })}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="mt-1 block flex-1 px-3 py-2 border border-border rounded-md shadow-sm bg-background text-foreground placeholder:text-muted-foreground dark:placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring sm:text-sm"
                     aria-invalid={!!error}
                     aria-describedby={error ? `measurement-${field}-error` : undefined}
                   />
-                  <span className="text-sm text-gray-500 w-8">
+                  <span className="text-sm text-muted-foreground w-8">
                     {currentUnit === 'imperial' ? 'in' : 'cm'}
                   </span>
                 </div>
@@ -321,7 +324,7 @@ export function MeasurementGuideSection({
                 <div className="text-base">
                   {value !== undefined && value !== null
                     ? formatMeasurement(value, currentUnit)
-                    : <span className="text-gray-400">Not set</span>
+                    : <span className="text-muted-foreground">Not set</span>
                   }
                 </div>
               )}
@@ -342,7 +345,7 @@ export function MeasurementGuideSection({
       
       {/* Loading/error states */}
       {updateMeasurements.isPending && (
-        <div className="text-sm text-gray-500" aria-live="polite">
+        <div className="text-sm text-muted-foreground" aria-live="polite">
           Saving measurements...
         </div>
       )}

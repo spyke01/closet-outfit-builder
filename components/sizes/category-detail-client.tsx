@@ -33,8 +33,8 @@ const StandardSizeSection = dynamic(
   {
     loading: () => (
       <div className="animate-pulse space-y-4">
-        <div className="h-6 bg-gray-200 rounded w-1/3"></div>
-        <div className="h-20 bg-gray-200 rounded"></div>
+        <div className="h-6 bg-muted rounded w-1/3"></div>
+        <div className="h-20 bg-muted rounded"></div>
       </div>
     ),
     ssr: false
@@ -46,8 +46,8 @@ const BrandSizesSection = dynamic(
   {
     loading: () => (
       <div className="animate-pulse space-y-4">
-        <div className="h-6 bg-gray-200 rounded w-1/3"></div>
-        <div className="h-32 bg-gray-200 rounded"></div>
+        <div className="h-6 bg-muted rounded w-1/3"></div>
+        <div className="h-32 bg-muted rounded"></div>
       </div>
     ),
     ssr: false
@@ -59,8 +59,8 @@ const MeasurementGuideSection = dynamic(
   {
     loading: () => (
       <div className="animate-pulse space-y-4">
-        <div className="h-6 bg-gray-200 rounded w-1/3"></div>
-        <div className="h-40 bg-gray-200 rounded"></div>
+        <div className="h-6 bg-muted rounded w-1/3"></div>
+        <div className="h-40 bg-muted rounded"></div>
       </div>
     ),
     ssr: false
@@ -146,24 +146,24 @@ export function CategoryDetailClient({
   if (!category) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500">Loading category details...</p>
+        <p className="text-muted-foreground">Loading category details...</p>
       </div>
     )
   }
   
   return (
     <div 
-      className="min-h-screen bg-gray-50 dark:bg-gray-900"
+      className="min-h-screen bg-muted bg-background"
       onKeyDown={handleKeyDown}
     >
       {/* Header with navigation */}
-      <header className="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+      <header className="sticky top-0 z-10 bg-card border-b border-border shadow-sm">
         <div className="container mx-auto px-4 py-4 md:px-6">
           <div className="flex items-center justify-between">
             {/* Mobile: Back button */}
             <button
               onClick={handleBack}
-              className="md:hidden inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+              className="md:hidden inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               aria-label="Back to sizes"
             >
               <ArrowLeft className="h-5 w-5" aria-hidden="true" />
@@ -171,14 +171,14 @@ export function CategoryDetailClient({
             </button>
             
             {/* Category name */}
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <h1 className="text-xl md:text-2xl font-bold text-foreground">
               {category.name}
             </h1>
             
             {/* Tablet+: Close button */}
             <button
               onClick={handleClose}
-              className="hidden md:inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+              className="hidden md:inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               aria-label="Close category details"
             >
               <X className="h-5 w-5" aria-hidden="true" />
@@ -188,7 +188,7 @@ export function CategoryDetailClient({
             {/* Mobile: Close button (icon only) */}
             <button
               onClick={handleClose}
-              className="md:hidden p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+              className="md:hidden p-2 text-muted-foreground hover:bg-muted rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               aria-label="Close category details"
             >
               <X className="h-5 w-5" aria-hidden="true" />
@@ -221,12 +221,12 @@ export function CategoryDetailClient({
         )}
         
         {/* Section 1: Standard Size */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-4 md:p-6">
           <StandardSizeSection category={category} />
         </div>
         
         {/* Section 2: Brand-Specific Sizes */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-4 md:p-6">
           <BrandSizesSection 
             brandSizes={brandSizes || []} 
             categoryId={category.id} 
@@ -234,7 +234,7 @@ export function CategoryDetailClient({
         </div>
         
         {/* Section 3: Measurement Guide */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-4 md:p-6">
           <MeasurementGuideSection
             measurements={measurements}
             category={category}

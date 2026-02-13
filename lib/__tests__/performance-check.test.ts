@@ -62,7 +62,7 @@ describe('Performance Optimizations', () => {
     );
     
     // Check for dark mode classes
-    expect(heroContent).toContain('dark:bg-slate-800');
+    expect(heroContent).toContain('bg-card');
   });
 
   it('should have explicit width and height on all images', () => {

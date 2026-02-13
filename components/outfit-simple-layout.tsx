@@ -184,8 +184,8 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
 
   if (items.length === 0) {
     return (
-      <div className={`${sizeClass} ${className} flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-600`}>
-        <div className="text-center text-slate-500 dark:text-slate-400">
+      <div className={`${sizeClass} ${className} flex items-center justify-center bg-gradient-to-br from-muted to-muted from-card to-background rounded-lg border-2 border-dashed border-border`}>
+        <div className="text-center text-muted-foreground">
           <div className="text-2xl mb-2">👔</div>
           <div className="text-sm">No items</div>
         </div>
@@ -195,7 +195,7 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
 
   return (
     <div 
-      className={`${sizeClass} ${className} relative bg-gradient-to-br from-slate-50 via-slate-25 to-stone-100 dark:from-slate-800 dark:via-slate-850 dark:to-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden`}
+      className={`${sizeClass} ${className} relative bg-gradient-to-br from-muted via-muted to-muted from-card via-background to-background rounded-lg border border-border overflow-hidden`}
     >
       {/* Render clothing item placeholders */}
       {Object.entries(itemsByCategory).map(([category, item], index) => {
@@ -221,8 +221,8 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
                   />
                 </div>
               ) : (
-                <div className="w-full h-full bg-slate-200 dark:bg-slate-600 rounded-lg flex items-center justify-center border-2 border-slate-300 dark:border-slate-500 shadow-sm">
-                  <div className="text-slate-500 dark:text-slate-400">
+                <div className="w-full h-full bg-muted rounded-lg flex items-center justify-center border-2 border-border shadow-sm">
+                  <div className="text-muted-foreground">
                     {getCategoryIcon(category)}
                   </div>
                 </div>
@@ -234,7 +234,7 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
 
       {/* Item count badge */}
       <div className="absolute bottom-2 right-2">
-        <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-700 dark:text-slate-300 text-xs px-2 py-1 rounded-full border border-slate-200 dark:border-slate-600 shadow-sm">
+        <div className="bg-white/90 bg-card/90 backdrop-blur-sm text-muted-foreground text-xs px-2 py-1 rounded-full border border-border shadow-sm">
           {items.length} item{items.length !== 1 ? 's' : ''}
         </div>
       </div>

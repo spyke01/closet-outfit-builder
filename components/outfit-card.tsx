@@ -98,9 +98,9 @@ export const OutfitCard = React.memo<OutfitCardProps>(({
 
     if (items.length === 0) {
       return (
-        <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-          <div className="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-lg mx-auto mb-3 flex items-center justify-center">
-            <div className="w-8 h-8 bg-slate-200 dark:bg-slate-600 rounded-md" />
+        <div className="text-center py-8 text-muted-foreground">
+          <div className="w-16 h-16 bg-muted rounded-lg mx-auto mb-3 flex items-center justify-center">
+            <div className="w-8 h-8 bg-muted rounded-md" />
           </div>
           <p className="text-sm">No items selected</p>
           <p className="text-xs mt-1 opacity-75">
@@ -113,9 +113,9 @@ export const OutfitCard = React.memo<OutfitCardProps>(({
     return (
       <div className="space-y-3">
         {items.map(({ key, label, item }) => (
-          <div key={key} className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+          <div key={key} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
             {/* Item image or placeholder */}
-            <div className="w-14 h-14 bg-slate-100 dark:bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+            <div className="w-14 h-14 bg-muted rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
               {item?.image_url ? (
                 <Image
                   src={item.image_url}
@@ -127,31 +127,31 @@ export const OutfitCard = React.memo<OutfitCardProps>(({
                   quality={80}
                 />
               ) : (
-                <div className="w-8 h-8 bg-slate-200 dark:bg-slate-600 rounded-md" />
+                <div className="w-8 h-8 bg-muted rounded-md" />
               )}
             </div>
             
             {/* Item details */}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">
+              <p className="text-sm font-medium text-foreground truncate">
                 {item?.name || 'Unknown Item'}
               </p>
               {item?.brand && (
-                <p className="text-xs text-slate-600 dark:text-slate-400 truncate">
+                <p className="text-xs text-muted-foreground truncate">
                   {item.brand}
                 </p>
               )}
-              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+              <p className="text-xs text-muted-foreground truncate">
                 {label}
               </p>
               {item?.color && (
                 <div className="flex items-center gap-1 mt-1 min-w-0">
                   <div 
-                    className="w-2 h-2 rounded-full border border-slate-300 dark:border-slate-600 flex-shrink-0"
+                    className="w-2 h-2 rounded-full border border-border flex-shrink-0"
                     style={{ backgroundColor: item.color.toLowerCase() }}
                     aria-label={`Color: ${item.color}`}
                   />
-                  <span className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                  <span className="text-xs text-muted-foreground truncate">
                     {item.color}
                   </span>
                 </div>
@@ -167,14 +167,14 @@ export const OutfitCard = React.memo<OutfitCardProps>(({
   const renderVisualLayout = () => {
     if (outfitItems.length === 0) {
       return (
-        <div className="bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-lg p-6 min-h-[300px] flex items-center justify-center">
+        <div className="bg-gradient-to-b from-muted to-muted from-card to-background rounded-lg p-6 min-h-[300px] flex items-center justify-center">
           <div className="text-center">
-            <div className="w-32 h-40 bg-slate-200 dark:bg-slate-700 rounded-lg mx-auto mb-4 flex items-center justify-center">
-              <span className="text-slate-500 dark:text-slate-400 text-sm">
+            <div className="w-32 h-40 bg-muted rounded-lg mx-auto mb-4 flex items-center justify-center">
+              <span className="text-muted-foreground text-sm">
                 No Visual Items
               </span>
             </div>
-            <p className="text-slate-600 dark:text-slate-400 text-sm">
+            <p className="text-muted-foreground text-sm">
               Add images to wardrobe items to see visual layout
             </p>
           </div>
@@ -204,12 +204,12 @@ export const OutfitCard = React.memo<OutfitCardProps>(({
   };
 
   return (
-    <div className={`border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm overflow-hidden ${className}`}>
+    <div className={`border border-border rounded-lg bg-card shadow-sm overflow-hidden ${className}`}>
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-slate-700">
+      <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h3 className="font-medium text-slate-800 dark:text-slate-200">
+            <h3 className="font-medium text-foreground">
               {variant === 'detailed' ? 'Current Outfit' : 'Outfit'}
             </h3>
             {showScore && (
@@ -230,7 +230,7 @@ export const OutfitCard = React.memo<OutfitCardProps>(({
                 className={`p-2 rounded-lg transition-colors ${
                   isLoved 
                     ? 'text-red-500 bg-red-50 dark:bg-red-900/20' 
-                    : 'text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'
+                    : 'text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'
                 }`}
                 aria-label={isLoved ? 'Remove from favorites' : 'Add to favorites'}
               >
@@ -241,7 +241,7 @@ export const OutfitCard = React.memo<OutfitCardProps>(({
             {enableFlip && (
               <button
                 onClick={handleFlip}
-                className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                className="p-2 text-muted-foreground hover:text-muted-foreground rounded-lg hover:bg-muted transition-colors"
                 aria-label={isFlipped ? 'Show item list' : 'Show mockup view'}
               >
                 <RotateCcw size={16} />
@@ -251,7 +251,7 @@ export const OutfitCard = React.memo<OutfitCardProps>(({
         </div>
         
         {validatedOutfit.tuck_style && (
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Style: {validatedOutfit.tuck_style}
           </p>
         )}

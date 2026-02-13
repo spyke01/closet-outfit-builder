@@ -10,19 +10,19 @@ const WardrobeSearchFiltersLoading = () => (
     {/* Header skeleton */}
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
-        <div className="h-8 w-48 bg-slate-200 dark:bg-slate-700 rounded animate-pulse mb-2"></div>
-        <div className="h-4 w-64 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+        <div className="h-8 w-48 bg-muted rounded animate-pulse mb-2"></div>
+        <div className="h-4 w-64 bg-muted rounded animate-pulse"></div>
       </div>
       
       <div className="flex gap-2">
-        <div className="h-10 w-20 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
-        <div className="h-10 w-24 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+        <div className="h-10 w-20 bg-muted rounded animate-pulse"></div>
+        <div className="h-10 w-24 bg-muted rounded animate-pulse"></div>
       </div>
     </div>
 
     {/* Loading indicator */}
     <div className="flex items-center justify-center py-4">
-      <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+      <div className="flex items-center gap-2 text-muted-foreground">
         <Loader2 size={20} className="animate-spin" />
         <span>Loading search filters...</span>
       </div>
@@ -32,17 +32,17 @@ const WardrobeSearchFiltersLoading = () => (
     <div className="space-y-4">
       {/* Search bar skeleton */}
       <div className="relative w-full">
-        <div className="w-full h-12 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse"></div>
+        <div className="w-full h-12 bg-muted rounded-lg animate-pulse"></div>
       </div>
 
       {/* Category filters skeleton */}
       <div className="space-y-2">
-        <div className="h-4 w-20 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+        <div className="h-4 w-20 bg-muted rounded animate-pulse"></div>
         <div className="space-y-2">
           {[1, 2, 3, 4].map(i => (
             <div key={i} className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
-              <div className="h-4 w-24 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+              <div className="w-4 h-4 bg-muted rounded animate-pulse"></div>
+              <div className="h-4 w-24 bg-muted rounded animate-pulse"></div>
             </div>
           ))}
         </div>
@@ -50,16 +50,16 @@ const WardrobeSearchFiltersLoading = () => (
 
       {/* Filter tags skeleton */}
       <div className="flex flex-wrap items-center gap-2">
-        <div className="w-4 h-4 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
-        <div className="h-4 w-12 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+        <div className="w-4 h-4 bg-muted rounded animate-pulse"></div>
+        <div className="h-4 w-12 bg-muted rounded animate-pulse"></div>
         {[1, 2, 3, 4].map(i => (
-          <div key={i} className="w-20 h-10 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse"></div>
+          <div key={i} className="w-20 h-10 bg-muted rounded-lg animate-pulse"></div>
         ))}
       </div>
     </div>
 
     {/* Results count skeleton */}
-    <div className="h-4 w-32 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+    <div className="h-4 w-32 bg-muted rounded animate-pulse"></div>
   </div>
 );
 
@@ -72,15 +72,15 @@ const WardrobeSearchFiltersError = ({ error, retry }: { error: Error; retry: () 
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
         </svg>
       </div>
-      <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
+      <h3 className="text-lg font-medium text-foreground mb-2">
         Failed to Load Search Filters
       </h3>
-      <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">
+      <p className="text-muted-foreground text-sm mb-4">
         {error.message || 'An error occurred while loading the search filters component.'}
       </p>
       <button
         onClick={retry}
-        className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors"
+        className="px-4 py-2 bg-card text-white rounded-lg hover:bg-card transition-colors"
       >
         Try Again
       </button>

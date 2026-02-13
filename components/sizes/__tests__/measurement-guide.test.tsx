@@ -460,22 +460,22 @@ describe('MeasurementGuide', () => {
       const { container } = render(<MeasurementGuide guide={mockGuide} />)
 
       const card = container.firstChild
-      expect(card).toHaveClass('dark:border-gray-700')
-      expect(card).toHaveClass('dark:bg-gray-900')
+      expect(card).toHaveClass('border-border')
+      expect(card).toHaveClass('bg-background')
     })
 
     it('should have dark mode classes on measurement field containers', () => {
       const { container } = render(<MeasurementGuide guide={mockGuide} />)
 
-      const fieldContainers = container.querySelectorAll('[class*="dark:border-gray-700"]')
+      const fieldContainers = container.querySelectorAll('[class*="border-border"]')
       expect(fieldContainers.length).toBeGreaterThan(0)
     })
 
-    it('should have dark mode text colors', () => {
+    it('should use semantic text color tokens', () => {
       const { container } = render(<MeasurementGuide guide={mockGuide} />)
 
-      const darkTextElements = container.querySelectorAll('[class*="dark:text-gray"]')
-      expect(darkTextElements.length).toBeGreaterThan(0)
+      const tokenTextElements = container.querySelectorAll('[class*="text-foreground"], [class*="text-muted-foreground"]')
+      expect(tokenTextElements.length).toBeGreaterThan(0)
     })
   })
 

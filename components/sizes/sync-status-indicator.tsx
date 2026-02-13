@@ -76,15 +76,15 @@ export function SyncStatusIndicator({
         
         {isSyncing && (
           <>
-            <RefreshCw className="h-4 w-4 animate-spin text-blue-600" aria-hidden="true" />
-            <span className="text-blue-700">Syncing...</span>
+            <RefreshCw className="h-4 w-4 animate-spin text-primary" aria-hidden="true" />
+            <span className="text-primary">Syncing...</span>
           </>
         )}
         
         {!isSyncing && hasQueuedMutations && (
           <>
-            <span className="text-gray-600">•</span>
-            <span className="text-gray-700">{queueCount}</span>
+            <span className="text-muted-foreground">•</span>
+            <span className="text-muted-foreground">{queueCount}</span>
           </>
         )}
         
@@ -108,9 +108,9 @@ export function SyncStatusIndicator({
       
       {/* Offline notice */}
       {!online && hasQueuedMutations && (
-        <div className="flex gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <CloudOff className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
-          <div className="text-sm text-blue-800">
+        <div className="flex gap-3 p-4 bg-secondary/20 border border-secondary/40 rounded-lg">
+          <CloudOff className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <div className="text-sm text-foreground">
             You're offline. Your changes will sync automatically when you're back online.
           </div>
         </div>
@@ -121,7 +121,7 @@ export function SyncStatusIndicator({
         <button
           type="button"
           onClick={sync}
-          className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors text-sm w-full sm:w-auto"
+          className="px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors text-sm w-full sm:w-auto"
         >
           <RefreshCw className="inline mr-2 h-4 w-4" aria-hidden="true" />
           Sync Now
@@ -130,7 +130,7 @@ export function SyncStatusIndicator({
       
       {/* Detailed status */}
       {showDetails && (
-        <div className="text-xs text-gray-600 space-y-1">
+        <div className="text-xs text-muted-foreground space-y-1">
           {syncStatus.lastQueuedAt && (
             <p>
               Last queued: {new Date(syncStatus.lastQueuedAt).toLocaleString()}

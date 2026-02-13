@@ -125,7 +125,7 @@ export default function DebugPage() {
       </div>
 
       {results && (
-        <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
+        <div className="bg-muted p-4 rounded-lg">
           <h2 className="text-lg font-semibold mb-4">Test Results</h2>
           <pre className="text-sm overflow-auto">
             {JSON.stringify(results, null, 2)}
@@ -133,7 +133,7 @@ export default function DebugPage() {
         </div>
       )}
 
-      <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+      <div className="mt-8 p-4 bg-secondary/20 rounded-lg">
         <h3 className="font-semibold mb-2">Environment Info</h3>
         <div className="text-sm space-y-1">
           <div>URL: {process.env.NEXT_PUBLIC_SUPABASE_URL || '❌ Not set'}</div>

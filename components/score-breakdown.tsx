@@ -56,10 +56,10 @@ export const ScoreBreakdown = React.memo<ScoreBreakdownProps>(({
   if (!showDetails) {
     return (
       <div className="text-center">
-        <div className="text-2xl font-bold text-slate-800 dark:text-slate-200">
+        <div className="text-2xl font-bold text-foreground">
           {breakdown.percentage}%
         </div>
-        <div className="text-sm text-slate-500 dark:text-slate-400">
+        <div className="text-sm text-muted-foreground">
           {breakdown.total} points
         </div>
       </div>
@@ -69,10 +69,10 @@ export const ScoreBreakdown = React.memo<ScoreBreakdownProps>(({
   return (
     <div className="space-y-3">
       <div className="text-center">
-        <div className="text-xl font-bold text-slate-800 dark:text-slate-200">
+        <div className="text-xl font-bold text-foreground">
           {breakdown.percentage}%
         </div>
-        <div className="text-xs text-slate-500 dark:text-slate-400">
+        <div className="text-xs text-muted-foreground">
           Total Score
         </div>
       </div>
@@ -81,10 +81,10 @@ export const ScoreBreakdown = React.memo<ScoreBreakdownProps>(({
         {/* Formality Score with Weight */}
         <div className="space-y-1">
           <div className="flex justify-between items-center">
-            <span className="text-slate-600 dark:text-slate-400">
+            <span className="text-muted-foreground">
               Formality ({Math.round(breakdown.formalityWeight * 100)}% weight)
             </span>
-            <span className="font-medium text-slate-800 dark:text-slate-200">{breakdown.formalityScore}%</span>
+            <span className="font-medium text-foreground">{breakdown.formalityScore}%</span>
           </div>
           
           {/* Layer Adjustments */}
@@ -92,13 +92,13 @@ export const ScoreBreakdown = React.memo<ScoreBreakdownProps>(({
             <div className="ml-4 space-y-1">
               {breakdown.layerAdjustments.map((adjustment, index) => (
                 <div key={index} className="flex justify-between items-center text-xs">
-                  <span className="text-slate-500 dark:text-slate-500 flex items-center gap-1">
+                  <span className="text-muted-foreground flex items-center gap-1">
                     <span className="truncate max-w-[120px]" title={adjustment.itemName}>
                       {adjustment.itemName}
                     </span>
                     <WeightIndicator reason={adjustment.reason} weight={adjustment.weight} />
                   </span>
-                  <span className="text-slate-600 dark:text-slate-400 font-mono">
+                  <span className="text-muted-foreground font-mono">
                     {adjustment.originalScore} × {adjustment.weight} = {adjustment.adjustedScore.toFixed(1)}
                   </span>
                 </div>
@@ -109,7 +109,7 @@ export const ScoreBreakdown = React.memo<ScoreBreakdownProps>(({
         
         {/* Consistency Bonus with Weight */}
         <div className="flex justify-between items-center">
-          <span className="text-slate-600 dark:text-slate-400">
+          <span className="text-muted-foreground">
             Style Consistency ({Math.round(breakdown.consistencyWeight * 100)}% weight)
           </span>
           <span className="font-medium text-green-600 dark:text-green-400">+{breakdown.consistencyBonus}%</span>
@@ -117,32 +117,32 @@ export const ScoreBreakdown = React.memo<ScoreBreakdownProps>(({
         
         {/* Compatibility Factors */}
         <div className="space-y-1">
-          <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+          <div className="text-xs text-muted-foreground font-medium">
             Compatibility Factors:
           </div>
           <div className="ml-2 space-y-1 text-xs">
             <div className="flex justify-between">
-              <span className="text-slate-600 dark:text-slate-400">Color Harmony</span>
-              <span className="text-slate-700 dark:text-slate-300">Good</span>
+              <span className="text-muted-foreground">Color Harmony</span>
+              <span className="text-muted-foreground">Good</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600 dark:text-slate-400">Formality Match</span>
-              <span className="text-slate-700 dark:text-slate-300">
+              <span className="text-muted-foreground">Formality Match</span>
+              <span className="text-muted-foreground">
                 {breakdown.consistencyBonus >= 15 ? 'Excellent' : 
                  breakdown.consistencyBonus >= 10 ? 'Good' : 'Fair'}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600 dark:text-slate-400">Seasonal Fit</span>
-              <span className="text-slate-700 dark:text-slate-300">Appropriate</span>
+              <span className="text-muted-foreground">Seasonal Fit</span>
+              <span className="text-muted-foreground">Appropriate</span>
             </div>
           </div>
         </div>
         
-        <div className="border-t border-stone-200 dark:border-slate-600 pt-2 mt-2">
+        <div className="border-t border-border pt-2 mt-2">
           <div className="flex justify-between items-center font-medium">
-            <span className="text-slate-700 dark:text-slate-300">Total</span>
-            <span className="text-slate-800 dark:text-slate-200">{breakdown.total}%</span>
+            <span className="text-muted-foreground">Total</span>
+            <span className="text-foreground">{breakdown.total}%</span>
           </div>
         </div>
       </div>

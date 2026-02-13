@@ -30,7 +30,7 @@ export const WeatherWidget: React.FC<{ className?: string }> = ({
   }
 
   const getWeatherIcon = (condition: string) => {
-    const iconProps = { size: 16, className: "text-slate-600 dark:text-slate-300" };
+    const iconProps = { size: 16, className: "text-muted-foreground" };
     
     switch (condition.toLowerCase()) {
       case 'sunny':
@@ -59,9 +59,9 @@ export const WeatherWidget: React.FC<{ className?: string }> = ({
     return (
       <div className={`flex items-center gap-2 ${className}`}>
         <SpinningIcon>
-          <RefreshCw size={16} className="text-slate-400" />
+          <RefreshCw size={16} className="text-muted-foreground" />
         </SpinningIcon>
-        <span className="text-slate-500 dark:text-slate-400 text-xs">Loading weather…</span>
+        <span className="text-muted-foreground text-xs">Loading weather…</span>
       </div>
     );
   }
@@ -74,14 +74,14 @@ export const WeatherWidget: React.FC<{ className?: string }> = ({
 
     return (
       <div className={`flex items-center gap-2 ${className}`}>
-        <AlertCircle size={16} className="text-red-500" />
-        <span className="text-red-600 dark:text-red-400 text-xs max-w-48 truncate" title={error.error}>
+        <AlertCircle size={16} className="text-destructive" />
+        <span className="text-destructive text-xs max-w-48 truncate" title={error.error}>
           {error.error}
         </span>
         {isRecoverable && (
           <button
             onClick={retry}
-            className="text-xs text-blue-600 dark:text-blue-400 hover:underline ml-1 flex-shrink-0"
+            className="text-xs text-primary hover:underline ml-1 flex-shrink-0"
             aria-label="Retry loading weather"
           >
             Retry
@@ -101,10 +101,10 @@ export const WeatherWidget: React.FC<{ className?: string }> = ({
       onMouseEnter={handleMouseEnter}
     >
       {getWeatherIcon(current.condition)}
-      <span className="text-slate-600 dark:text-slate-300 text-sm font-medium">
+      <span className="text-muted-foreground text-sm font-medium">
         {Math.round(current.temperature)}°
       </span>
-      <span className="text-slate-500 dark:text-slate-400 text-xs hidden sm:inline">
+      <span className="text-muted-foreground text-xs hidden sm:inline">
         {current.condition}
       </span>
       {usingFallback && (

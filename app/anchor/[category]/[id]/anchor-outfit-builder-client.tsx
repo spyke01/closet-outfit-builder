@@ -163,8 +163,8 @@ export function AnchorOutfitBuilderClient({ categoryName, anchorItemId }: Anchor
       <div className="flex-1 w-full max-w-7xl mx-auto p-6">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800 mx-auto mb-4"></div>
-            <p className="text-slate-600 dark:text-slate-400">Loading outfit builder...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading outfit builder...</p>
           </div>
         </div>
       </div>
@@ -208,10 +208,10 @@ export function AnchorOutfitBuilderClient({ categoryName, anchorItemId }: Anchor
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+            <h1 className="text-3xl font-bold text-foreground">
               Build Outfit
             </h1>
-            <p className="text-slate-600 dark:text-slate-400 mt-1">
+            <p className="text-muted-foreground mt-1">
               Using {anchorItem.name} as anchor
             </p>
           </div>
@@ -245,12 +245,12 @@ export function AnchorOutfitBuilderClient({ categoryName, anchorItemId }: Anchor
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <Info className="h-5 w-5 text-blue-500" />
+              <Info className="h-5 w-5 text-secondary" />
               <div className="flex-1">
-                <h3 className="font-medium text-slate-900 dark:text-slate-100">
+                <h3 className="font-medium text-foreground">
                   Anchor Item: {anchorItem.name}
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-muted-foreground">
                   {anchorCategory?.name}
                   {anchorItem.brand && ` • ${anchorItem.brand}`}
                   {anchorItem.color && ` • ${anchorItem.color}`}
@@ -299,20 +299,20 @@ export function AnchorOutfitBuilderClient({ categoryName, anchorItemId }: Anchor
               />
               
               {currentScore > 0 && (
-                <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                <div className="mt-4 p-3 bg-muted rounded-lg">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    <span className="text-sm font-medium text-muted-foreground">
                       Compatibility Score
                     </span>
                     <div className="flex items-center gap-2">
                       <Star className="h-4 w-4 text-yellow-500" />
-                      <span className="font-bold text-slate-900 dark:text-slate-100">
+                      <span className="font-bold text-foreground">
                         {currentScore}/100
                       </span>
                     </div>
                   </div>
                   {scoreData?.breakdown && (
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Based on formality, color harmony, and style compatibility
                     </p>
                   )}
@@ -329,8 +329,8 @@ export function AnchorOutfitBuilderClient({ categoryName, anchorItemId }: Anchor
             <CardContent className="space-y-4">
               {availableCategories.length === 0 ? (
                 <div className="text-center py-8">
-                  <Shirt className="h-12 w-12 mx-auto text-slate-400 mb-3" />
-                  <p className="text-slate-600 dark:text-slate-400">
+                  <Shirt className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground">
                     No other categories available. Add more items to your wardrobe to build complete outfits.
                   </p>
                   <Link href="/wardrobe/items" className="mt-3 inline-block">
@@ -340,7 +340,7 @@ export function AnchorOutfitBuilderClient({ categoryName, anchorItemId }: Anchor
               ) : (
                 availableCategories.map(categoryName => (
                   <div key={categoryName}>
-                    <h4 className="font-medium text-slate-900 dark:text-slate-100 mb-2">
+                    <h4 className="font-medium text-foreground mb-2">
                       {categoryName}
                     </h4>
                     <ItemsGrid
@@ -365,20 +365,20 @@ export function AnchorOutfitBuilderClient({ categoryName, anchorItemId }: Anchor
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Outfit Name (Optional)
                   </label>
                   <input
                     type="text"
                     value={outfitName}
                     onChange={(e) => setOutfitName(e.target.value)}
-                    className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                     placeholder="e.g., Business Casual with Blue Shirt"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label className="block text-sm font-medium text-muted-foreground mb-2">
                     Tuck Style
                   </label>
                   <div className="flex gap-2">

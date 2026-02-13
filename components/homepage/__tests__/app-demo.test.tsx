@@ -146,7 +146,7 @@ describe('AppDemo - Unit Tests', () => {
       const { container } = render(<AppDemo />);
       
       // Find all progress bar containers
-      const progressBars = container.querySelectorAll('.bg-slate-200.rounded-full');
+      const progressBars = container.querySelectorAll('.bg-muted.rounded-full');
       
       // Should have 3 progress bars (one for each metric)
       expect(progressBars.length).toBeGreaterThanOrEqual(3);
@@ -206,17 +206,17 @@ describe('AppDemo - Unit Tests', () => {
       const imageContainers = container.querySelectorAll('.aspect-square');
       
       imageContainers.forEach((containerEl) => {
-        expect(containerEl.className).toContain('dark:bg-slate-800');
+        expect(containerEl.className).toContain('bg-card');
       });
     });
 
-    it('should have dark mode compatible styling', () => {
+    it('should have semantic theme-compatible styling', () => {
       const { container } = render(<AppDemo />);
       
-      // Check for dark mode classes throughout the component
-      const darkElements = container.querySelectorAll('[class*="dark:"]');
+      // Check for semantic classes throughout the component
+      const themedElements = container.querySelectorAll('.bg-card, .bg-background, .text-foreground, .text-muted-foreground');
       
-      expect(darkElements.length).toBeGreaterThan(0);
+      expect(themedElements.length).toBeGreaterThan(0);
     });
   });
 

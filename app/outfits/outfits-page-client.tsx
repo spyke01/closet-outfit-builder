@@ -103,8 +103,8 @@ export function OutfitsPageClient() {
       <div className="flex-1 w-full max-w-7xl mx-auto p-6">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800 mx-auto mb-4"></div>
-            <p className="text-slate-600 dark:text-slate-400">Loading outfits...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading outfits...</p>
           </div>
         </div>
       </div>
@@ -130,8 +130,8 @@ export function OutfitsPageClient() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">My Outfits</h1>
-            <p className="text-slate-600 dark:text-slate-400 mt-1">
+            <h1 className="text-3xl font-bold text-foreground">My Outfits</h1>
+            <p className="text-muted-foreground mt-1">
               {outfits.length} outfit{outfits.length !== 1 ? 's' : ''} in your collection
             </p>
           </div>
@@ -147,7 +147,7 @@ export function OutfitsPageClient() {
               Filters
             </Button>
             
-            <div className="flex border border-stone-300 dark:border-slate-600 rounded-lg">
+            <div className="flex border border-border rounded-lg">
               <Button
                 variant={viewMode === 'grid' ? 'default' : 'ghost'}
                 size="sm"
@@ -168,7 +168,7 @@ export function OutfitsPageClient() {
             
             {/* Layout Type Toggle (only show in grid mode) */}
             {viewMode === 'grid' && (
-              <div className="flex border border-stone-300 dark:border-slate-600 rounded-lg">
+              <div className="flex border border-border rounded-lg">
                 <Button
                   variant={layoutType === 'grid' ? 'default' : 'ghost'}
                   size="sm"
@@ -206,11 +206,11 @@ export function OutfitsPageClient() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Search */}
                 <div>
-                  <label htmlFor="outfit-search" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label htmlFor="outfit-search" className="block text-sm font-medium text-muted-foreground mb-2">
                     Search
                   </label>
                   <div className="relative">
-                    <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
+                    <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
                     <input
                       id="outfit-search"
                       type="search"
@@ -220,7 +220,7 @@ export function OutfitsPageClient() {
                       placeholder="Search outfits..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                      className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                       aria-label="Search outfits by name or item"
                     />
                   </div>
@@ -228,14 +228,14 @@ export function OutfitsPageClient() {
 
                 {/* Filter */}
                 <div>
-                  <label htmlFor="outfit-filter" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label htmlFor="outfit-filter" className="block text-sm font-medium text-muted-foreground mb-2">
                     Filter
                   </label>
                   <select
                     id="outfit-filter"
                     value={filterBy}
                     onChange={(e) => setFilterBy(e.target.value as any)}
-                    className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                     aria-label="Filter outfits by type"
                   >
                     <option value="all">All Outfits</option>
@@ -247,14 +247,14 @@ export function OutfitsPageClient() {
 
                 {/* Sort */}
                 <div>
-                  <label htmlFor="outfit-sort" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label htmlFor="outfit-sort" className="block text-sm font-medium text-muted-foreground mb-2">
                     Sort By
                   </label>
                   <select
                     id="outfit-sort"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as any)}
-                    className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                     aria-label="Sort outfits by criteria"
                   >
                     <option value="newest">Newest First</option>
@@ -286,7 +286,7 @@ export function OutfitsPageClient() {
 
         {/* Results count */}
         <div className="flex items-center justify-between">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-muted-foreground">
             {filteredAndSortedOutfits.length} outfit{filteredAndSortedOutfits.length !== 1 ? 's' : ''} found
             {(searchTerm || filterBy !== 'all') && (
               <span className="ml-2">
@@ -301,11 +301,11 @@ export function OutfitsPageClient() {
           <div className="text-center py-12">
             {outfits.length === 0 ? (
               <>
-                <Shirt className="h-16 w-16 mx-auto text-slate-400 mb-4" />
-                <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
+                <Shirt className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">
                   No outfits yet
                 </h3>
-                <p className="text-slate-600 dark:text-slate-400 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Start creating outfits from your wardrobe items.
                 </p>
                 <Link href="/outfits/create">
@@ -317,10 +317,10 @@ export function OutfitsPageClient() {
               </>
             ) : (
               <>
-                <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
+                <h3 className="text-lg font-medium text-foreground mb-2">
                   No outfits match your criteria
                 </h3>
-                <p className="text-slate-600 dark:text-slate-400 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Try adjusting your search or filters.
                 </p>
                 <Button
@@ -340,13 +340,13 @@ export function OutfitsPageClient() {
             {filteredAndSortedOutfits.map(outfit => (
               <div
                 key={outfit.id}
-                className="border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-all duration-200"
+                className="border border-border rounded-lg bg-card shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-all duration-200"
                 onClick={() => handleOutfitSelect(outfit)}
               >
                 {/* Card Header */}
-                <div className="p-3 border-b border-gray-200 dark:border-slate-700">
+                <div className="p-3 border-b border-border">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-medium text-slate-800 dark:text-slate-200 text-sm truncate flex-1 mr-2">
+                    <h3 className="font-medium text-foreground text-sm truncate flex-1 mr-2">
                       {outfit.name || 'Untitled Outfit'}
                     </h3>
                     
@@ -399,8 +399,8 @@ export function OutfitsPageClient() {
                 </div>
                 
                 {/* Card Footer */}
-                <div className="p-3 border-t border-gray-200 dark:border-slate-700">
-                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                <div className="p-3 border-t border-border">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <div className="flex items-center gap-2">
                       <span>{outfit.source === 'curated' ? 'Curated' : 'Generated'}</span>
                       {outfit.tuck_style && (
@@ -445,7 +445,7 @@ export function OutfitsPageClient() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-600 dark:text-slate-400 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Are you sure you want to delete &quot;{outfitToDelete.name || 'Untitled Outfit'}&quot;? This action cannot be undone.
                 </p>
                 <div className="flex gap-2 justify-end">

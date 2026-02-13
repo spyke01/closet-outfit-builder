@@ -45,7 +45,7 @@ function StepLoadingFallback() {
   return (
     <div className="flex items-center justify-center min-h-[400px]" role="status" aria-live="polite">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" aria-hidden="true"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" aria-hidden="true"></div>
         <p className="text-muted-foreground">Loading step...</p>
       </div>
     </div>
@@ -436,7 +436,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       {!isHydrated ? (
         <div className="flex items-center justify-center min-h-[400px]" role="status" aria-live="polite">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" aria-hidden="true"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" aria-hidden="true"></div>
             <p className="text-muted-foreground">Loading wizard...</p>
           </div>
         </div>
@@ -452,7 +452,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
           {/* Error Display */}
           {error && (
             <div
-              className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 dark:bg-red-900 dark:border-red-700 dark:text-red-200"
+              className="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-lg text-destructive"
               role="alert"
               aria-live="assertive"
             >
@@ -468,12 +468,12 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
 
           {/* Navigation Buttons */}
           {wizardState.step < 6 && (
-            <nav className="flex justify-between items-center pt-6 border-t border-gray-300 dark:border-gray-600" aria-label="Wizard navigation">
+            <nav className="flex justify-between items-center pt-6 border-t border-border" aria-label="Wizard navigation">
               <button
                 type="button"
                 onClick={goBack}
                 disabled={wizardState.step === 1 || isLoading}
-                className="flex items-center gap-2 px-6 py-3 min-h-[44px] border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-600 dark:hover:bg-gray-800 text-foreground touch-manipulation"
+                className="flex items-center gap-2 px-6 py-3 min-h-[44px] border-2 border-border rounded-lg font-semibold hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-foreground touch-manipulation"
                 aria-label="Go back to previous step"
               >
                 <ChevronLeft className="w-5 h-5" aria-hidden="true" />
@@ -486,7 +486,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                   type="button"
                   onClick={goNext}
                   disabled={!canProceed() || isLoading}
-                  className="flex items-center gap-2 px-6 py-3 min-h-[44px] bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-blue-500 dark:hover:bg-blue-600 touch-manipulation"
+                  className="flex items-center gap-2 px-6 py-3 min-h-[44px] bg-primary text-primary-foreground rounded-lg font-semibold hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-ring focus:ring-offset-2 touch-manipulation"
                   aria-label="Go to next step"
                 >
                   {isLoading ? (
@@ -508,7 +508,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                   type="button"
                   onClick={handleComplete}
                   disabled={!canProceed() || isLoading}
-                  className="px-6 py-3 min-h-[44px] bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:bg-green-500 dark:hover:bg-green-600 flex items-center gap-2 touch-manipulation"
+                  className="px-6 py-3 min-h-[44px] bg-secondary text-secondary-foreground rounded-lg font-semibold hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-ring focus:ring-offset-2 flex items-center gap-2 touch-manipulation"
                   aria-label="Create your wardrobe"
                 >
                   {isLoading ? (

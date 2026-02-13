@@ -56,8 +56,7 @@ describe('HeroSection - Accessibility', () => {
     const headings = container.querySelectorAll('h1, h2, h3');
     headings.forEach((heading) => {
       const classes = heading.className;
-      // Should have dark mode text colors
-      expect(classes).toMatch(/text-slate-\d+|text-amber-\d+|text-blue-\d+/);
+      expect(classes).toMatch(/text-foreground|text-primary|text-secondary/);
     });
   });
 

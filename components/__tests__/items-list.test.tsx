@@ -134,7 +134,7 @@ describe('ItemsList', () => {
     );
 
     const firstItem = screen.getByText('Brand A Blue Shirt').closest('[role="button"]');
-    expect(firstItem).toHaveClass('border-slate-800');
+    expect(firstItem).toHaveClass('border-border');
   });
 
   it('shows empty state when no items', () => {

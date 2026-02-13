@@ -22,9 +22,9 @@ export function WizardStepper({ currentStep, totalSteps, stepLabels }: WizardSte
                 <div
                   className={`
                     flex items-center justify-center w-10 h-10 min-w-[44px] min-h-[44px] rounded-full border-2 transition-colors
-                    ${isCurrent ? 'border-blue-600 bg-blue-600 text-white dark:border-blue-500 dark:bg-blue-500' : ''}
-                    ${isCompleted ? 'border-green-600 bg-green-600 text-white dark:border-green-500 dark:bg-green-500' : ''}
-                    ${isUpcoming ? 'border-gray-300 bg-white text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400' : ''}
+                    ${isCurrent ? 'border-primary bg-primary text-primary-foreground' : ''}
+                    ${isCompleted ? 'border-secondary bg-secondary text-secondary-foreground' : ''}
+                    ${isUpcoming ? 'border-border bg-card text-muted-foreground' : ''}
                   `}
                   aria-current={isCurrent ? 'step' : undefined}
                   aria-label={`Step ${stepNumber}${stepLabels?.[index] ? `: ${stepLabels[index]}` : ''}${isCurrent ? ' (current)' : ''}${isCompleted ? ' (completed)' : ''}`}
@@ -36,9 +36,9 @@ export function WizardStepper({ currentStep, totalSteps, stepLabels }: WizardSte
                   <span
                     className={`
                       mt-2 text-xs text-center hidden sm:block
-                      ${isCurrent ? 'text-blue-600 font-semibold dark:text-blue-400' : ''}
-                      ${isCompleted ? 'text-green-600 dark:text-green-400' : ''}
-                      ${isUpcoming ? 'text-gray-500 dark:text-gray-400' : ''}
+                      ${isCurrent ? 'text-primary font-semibold' : ''}
+                      ${isCompleted ? 'text-secondary' : ''}
+                      ${isUpcoming ? 'text-muted-foreground' : ''}
                     `}
                     aria-hidden="true"
                   >
@@ -50,7 +50,7 @@ export function WizardStepper({ currentStep, totalSteps, stepLabels }: WizardSte
                 <div
                   className={`
                     flex-1 h-0.5 mx-2 transition-colors
-                    ${stepNumber < currentStep ? 'bg-green-600 dark:bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}
+                    ${stepNumber < currentStep ? 'bg-secondary' : 'bg-border'}
                   `}
                   aria-hidden="true"
                 />

@@ -200,13 +200,13 @@ export class ValidationErrorBoundary extends Component<Props, State> {
                   <summary className="cursor-pointer text-sm font-medium">
                     Validation Error Details (Development)
                   </summary>
-                  <pre className="mt-2 text-xs bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-auto">
+                  <pre className="mt-2 text-xs bg-muted p-2 rounded overflow-auto">
                     {this.sanitizeValidationError(this.state.error.message)}
                   </pre>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Error ID: {this.state.errorId}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     Context: {this.state.validationContext}
                   </p>
                 </details>

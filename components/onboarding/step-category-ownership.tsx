@@ -51,8 +51,8 @@ export function StepCategoryOwnership({ selectedCategories, onChange }: StepCate
               className={`
                 relative flex flex-col items-start p-6 min-h-[120px] rounded-lg border-2 transition-all text-left touch-manipulation
                 ${isSelected
-                  ? 'border-blue-600 bg-blue-50 dark:border-blue-500 dark:bg-blue-950'
-                  : 'border-gray-300 bg-white hover:border-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:hover:border-gray-500'
+                  ? 'border-primary bg-primary/10'
+                  : 'border-border bg-card hover:border-secondary'
                 }
               `}
               role="checkbox"
@@ -60,14 +60,14 @@ export function StepCategoryOwnership({ selectedCategories, onChange }: StepCate
               aria-label={`${category.name}: ${category.description}${isEssential ? ' (essential category)' : ''}${isSelected ? ' (selected)' : ''}`}
             >
               {isEssential && (
-                <span className="absolute top-2 right-2 text-xs font-semibold px-2 py-1 rounded bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                <span className="absolute top-2 right-2 text-xs font-semibold px-2 py-1 rounded bg-secondary/20 text-secondary">
                   Essential
                 </span>
               )}
               
               <div className="flex items-center mb-3">
-                <Icon className={`w-8 h-8 mr-3 ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}`} aria-hidden="true" />
-                <span className={`text-lg font-semibold ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-foreground'}`}>
+                <Icon className={`w-8 h-8 mr-3 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} aria-hidden="true" />
+                <span className={`text-lg font-semibold ${isSelected ? 'text-primary' : 'text-foreground'}`}>
                   {category.name}
                 </span>
               </div>
@@ -82,8 +82,8 @@ export function StepCategoryOwnership({ selectedCategories, onChange }: StepCate
     </fieldset>
 
       {selectedCategories.length === 0 && (
-        <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-950 dark:border-amber-800" role="alert">
-          <p className="text-sm text-amber-800 dark:text-amber-200">
+        <div className="p-4 bg-warning-light border border-warning rounded-lg" role="alert">
+          <p className="text-sm text-warning-dark">
             Please select at least one category to continue. Essential categories (Tops, Bottoms, Shoes) are recommended for a complete wardrobe.
           </p>
         </div>

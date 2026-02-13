@@ -62,7 +62,7 @@ export default async function AuthCodeError({
       </div>
       
       <div className="text-center mt-6">
-        <p className="text-sm text-slate-600 dark:text-slate-400">
+        <p className="text-sm text-muted-foreground">
           If this problem persists, please contact support.
         </p>
       </div>

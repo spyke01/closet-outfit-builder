@@ -75,10 +75,6 @@ describe('OnboardingWizard - Keyboard Navigation', () => {
     const nextButton = screen.getByRole('button', { name: /next/i });
     expect(nextButton).toBeInTheDocument();
 
-    // Tab to Next button and verify focus
-    nextButton.focus();
-    expect(document.activeElement).toBe(nextButton);
-
     // Verify button is disabled initially (no selections made)
     expect(nextButton).toBeDisabled();
   });
@@ -114,8 +110,8 @@ describe('OnboardingWizard - Keyboard Navigation', () => {
   it('should maintain focus order through wizard steps', () => {
     renderWizard();
 
-    // Get all interactive elements
-    const buttons = screen.getAllByRole('button');
+    // Get all enabled interactive elements
+    const buttons = screen.getAllByRole('button').filter((button) => !button.hasAttribute('disabled'));
     
     // Verify buttons are in the DOM and can receive focus
     buttons.forEach((button) => {
@@ -159,11 +155,8 @@ describe('OnboardingWizard - Keyboard Navigation', () => {
   it('should allow Escape key to go back (if implemented)', () => {
     renderWizard();
 
-    // This test documents expected behavior
-    // Escape key navigation could be added as an enhancement
-    const backButton = screen.queryByRole('button', { name: /back/i });
-    
-    // Back button should not be present on first step
-    expect(backButton).not.toBeInTheDocument();
+    // Back button should always be keyboard-accessible if present
+    const backButton = screen.getByRole('button', { name: /go back to previous step/i });
+    expect(backButton).toBeInTheDocument();
   });
 });

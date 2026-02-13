@@ -11,9 +11,9 @@ const ItemsGridLoading = () => (
       <div className="mb-4 sm:mb-6">
         <div className="flex items-center justify-between gap-2 mb-4">
           <div className="flex items-center gap-2">
-            <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded animate-pulse w-32"></div>
-            <div className="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
-              <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full animate-pulse"></div>
+            <div className="h-6 bg-muted rounded animate-pulse w-32"></div>
+            <div className="inline-flex items-center gap-1 text-xs text-primary">
+              <div className="w-2 h-2 bg-primary  rounded-full animate-pulse"></div>
               Loading...
             </div>
           </div>
@@ -22,14 +22,14 @@ const ItemsGridLoading = () => (
         <div className="space-y-3 sm:space-y-4">
           {/* Search bar skeleton */}
           <div className="relative w-full">
-            <div className="w-full h-12 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse"></div>
+            <div className="w-full h-12 bg-muted rounded-lg animate-pulse"></div>
           </div>
 
           {/* Filter tags skeleton */}
           <div className="flex flex-wrap items-center gap-2">
-            <div className="w-4 h-4 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+            <div className="w-4 h-4 bg-muted rounded animate-pulse"></div>
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="w-20 h-10 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse"></div>
+              <div key={i} className="w-20 h-10 bg-muted rounded-lg animate-pulse"></div>
             ))}
           </div>
         </div>
@@ -38,13 +38,13 @@ const ItemsGridLoading = () => (
       {/* Grid skeleton */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4">
         {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-          <div key={i} className="p-3 sm:p-4 rounded-xl border-2 border-stone-200 dark:border-slate-600 bg-white dark:bg-slate-800">
-            <div className="h-40 sm:h-44 bg-gray-200 dark:bg-gray-700 rounded-lg mb-3 animate-pulse"></div>
+          <div key={i} className="p-3 sm:p-4 rounded-xl border-2 border-border bg-card">
+            <div className="h-40 sm:h-44 bg-muted rounded-lg mb-3 animate-pulse"></div>
             <div className="space-y-2">
-              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+              <div className="h-4 bg-muted rounded animate-pulse"></div>
               <div className="flex gap-1">
-                <div className="h-6 w-16 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
-                <div className="h-6 w-20 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+                <div className="h-6 w-16 bg-muted rounded animate-pulse"></div>
+                <div className="h-6 w-20 bg-muted rounded animate-pulse"></div>
               </div>
             </div>
           </div>
@@ -64,15 +64,15 @@ const ItemsGridError = ({ error, retry }: { error: Error; retry: () => void }) =
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
           </svg>
         </div>
-        <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
+        <h3 className="text-lg font-medium text-foreground mb-2">
           Failed to Load Items Grid
         </h3>
-        <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">
+        <p className="text-muted-foreground text-sm mb-4">
           {error.message || 'An error occurred while loading the items grid component.'}
         </p>
         <button
           onClick={retry}
-          className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors"
+          className="px-4 py-2 bg-card text-white rounded-lg hover:bg-card transition-colors"
         >
           Try Again
         </button>

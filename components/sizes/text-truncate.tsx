@@ -133,13 +133,13 @@ export function TextTruncate({
       {/* Tooltip */}
       {showTooltip && isTruncated && (
         <span
-          className={`absolute z-50 px-3 py-2 text-sm font-normal text-white bg-gray-900 dark:bg-gray-800 rounded-lg shadow-lg whitespace-normal break-words max-w-xs left-0 top-full mt-2 animate-in fade-in slide-in-from-top-1 duration-150 ${tooltipClassName}`}
+          className={`absolute z-50 px-3 py-2 text-sm font-normal text-white bg-background bg-card rounded-lg shadow-lg whitespace-normal break-words max-w-xs left-0 top-full mt-2 animate-in fade-in slide-in-from-top-1 duration-150 ${tooltipClassName}`}
           role="tooltip"
         >
           {text}
           {/* Tooltip arrow */}
           <span
-            className="absolute w-2 h-2 bg-gray-900 dark:bg-gray-800 transform rotate-45 -top-1 left-4"
+            className="absolute w-2 h-2 bg-background bg-card transform rotate-45 -top-1 left-4"
             aria-hidden="true"
           />
         </span>

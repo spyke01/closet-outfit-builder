@@ -6,18 +6,18 @@ import { Upload, Loader2 } from 'lucide-react';
 
 // Loading component for image upload
 const ImageUploadLoading: React.FC = () => (
-  <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800">
-    <Loader2 className="w-8 h-8 animate-spin text-gray-400 mb-2" />
-    <p className="text-sm text-gray-500 dark:text-gray-400">Loading image upload...</p>
+  <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-border rounded-lg bg-muted">
+    <Loader2 className="w-8 h-8 animate-spin text-muted-foreground mb-2" />
+    <p className="text-sm text-muted-foreground">Loading image upload...</p>
   </div>
 );
 
 // Fallback component when image processing is disabled
 const ImageUploadFallback: React.FC = () => (
-  <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800">
-    <Upload className="w-8 h-8 text-gray-400 mb-2" />
-    <p className="text-sm text-gray-500 dark:text-gray-400">Image upload not available</p>
-    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Sign in to upload images</p>
+  <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-border rounded-lg bg-muted">
+    <Upload className="w-8 h-8 text-muted-foreground mb-2" />
+    <p className="text-sm text-muted-foreground">Image upload not available</p>
+    <p className="text-xs text-muted-foreground mt-1">Sign in to upload images</p>
   </div>
 );
 

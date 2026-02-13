@@ -13,23 +13,23 @@ export function StaticPageNavigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-700">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 bg-background/80 backdrop-blur-lg border-b border-border">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <Logo className="h-8 w-auto" />
+            <Logo className="h-12 w-auto" />
           </Link>
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <Link href="/how-it-works" className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">
+            <Link href="/how-it-works" className="text-muted-foreground hover:text-foreground dark:hover:text-muted-foreground transition-colors">
               How it works
             </Link>
-            <Link href="/pricing" className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">
+            <Link href="/pricing" className="text-muted-foreground hover:text-foreground dark:hover:text-muted-foreground transition-colors">
               Pricing
             </Link>
-            <Link href="/about" className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">
+            <Link href="/about" className="text-muted-foreground hover:text-foreground dark:hover:text-muted-foreground transition-colors">
               About
             </Link>
           </div>
@@ -37,12 +37,12 @@ export function StaticPageNavigation() {
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-4">
             <Link href="/auth/login">
-              <Button variant="ghost" className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100">
+              <Button variant="ghost" className="text-muted-foreground hover:text-foreground dark:hover:text-muted-foreground">
                 Sign In
               </Button>
             </Link>
             <Link href="/auth/sign-up">
-              <Button className="bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600 text-white dark:text-white rounded-xl">
+              <Button className="bg-primary text-primary-foreground hover:opacity-90 rounded-xl">
                 Get Started
               </Button>
             </Link>
@@ -56,7 +56,7 @@ export function StaticPageNavigation() {
               variant="ghost"
               size="sm"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-slate-700 dark:text-slate-300"
+              className="text-muted-foreground"
             >
               {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
@@ -65,36 +65,36 @@ export function StaticPageNavigation() {
         
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-slate-200 dark:border-slate-700 py-4 space-y-4">
+          <div className="md:hidden border-t border-border py-4 space-y-4">
             <Link 
               href="/how-it-works" 
-              className="block text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+              className="block text-muted-foreground hover:text-foreground dark:hover:text-muted-foreground transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               How it works
             </Link>
             <Link 
               href="/pricing" 
-              className="block text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+              className="block text-muted-foreground hover:text-foreground dark:hover:text-muted-foreground transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Pricing
             </Link>
             <Link 
               href="/about" 
-              className="block text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+              className="block text-muted-foreground hover:text-foreground dark:hover:text-muted-foreground transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               About
             </Link>
-            <div className="flex flex-col gap-2 pt-4 border-t border-slate-200 dark:border-slate-700">
+            <div className="flex flex-col gap-2 pt-4 border-t border-border">
               <Link href="/auth/login" onClick={() => setIsMenuOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start text-slate-700 dark:text-slate-300">
+                <Button variant="ghost" className="w-full justify-start text-muted-foreground">
                   Sign In
                 </Button>
               </Link>
               <Link href="/auth/sign-up" onClick={() => setIsMenuOpen(false)}>
-                <Button className="w-full bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600 text-white dark:text-white">
+                <Button className="w-full bg-primary text-primary-foreground hover:opacity-90">
                   Get Started
                 </Button>
               </Link>

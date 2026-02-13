@@ -10,7 +10,6 @@ import { OutfitDisplayWithErrorBoundary as OutfitDisplay } from '@/components/dy
 import { convertOutfitToSelection } from '@/lib/utils/outfit-conversion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Edit, 
@@ -266,13 +265,15 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
     return convertOutfitToSelection(outfit) || undefined;
   }, [outfit, isEditing, selection, scoreData]);
 
+  const outfitItemCount = outfit?.items?.length || 0;
+
   if (outfitLoading || (isEditing && (categoriesLoading || itemsLoading))) {
     return (
       <div className="flex-1 w-full max-w-7xl mx-auto p-6">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800 mx-auto mb-4"></div>
-            <p className="text-slate-600 dark:text-slate-400">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border mx-auto mb-4"></div>
+            <p className="text-muted-foreground">
               {isEditing ? 'Loading wardrobe...' : 'Loading outfit...'}
             </p>
           </div>
@@ -307,31 +308,14 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
         />
 
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold text-foreground">
               {isEditing ? 'Edit Outfit' : (outfit.name || 'Untitled Outfit')}
             </h1>
-            <div className="flex items-center gap-4 mt-1">
-              <div className="flex items-center gap-2">
-                <Star className="h-4 w-4 text-yellow-500" />
-                <span className="text-slate-600 dark:text-slate-400">
-                  Score: {outfit.score || 0}/100
-                </span>
-              </div>
-              <Badge variant={outfit.source === 'curated' ? 'default' : 'secondary'}>
-                {outfit.source === 'curated' ? 'Curated' : 'Generated'}
-              </Badge>
-              {outfit.loved && (
-                <Badge variant="outline" className="text-red-500 border-red-500">
-                  <Heart className="h-3 w-3 mr-1 fill-current" />
-                  Loved
-                </Badge>
-              )}
-            </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 lg:justify-end">
             {isEditing ? (
               <>
                 <Button
@@ -423,20 +407,20 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
             {isEditing ? (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Outfit Name
                   </label>
                   <input
                     type="text"
                     value={editForm.name || ''}
                     onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
-                    className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                     placeholder="e.g., Business Casual"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label className="block text-sm font-medium text-muted-foreground mb-2">
                     Tuck Style
                   </label>
                   <div className="flex gap-2">
@@ -474,14 +458,14 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
 
                 {/* Score Display in Edit Mode */}
                 {selectedItemIds.length > 0 && (
-                  <div className="p-3 bg-stone-50 dark:bg-slate-800 rounded-lg">
+                  <div className="p-3 bg-muted rounded-lg">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                      <span className="text-sm font-medium text-muted-foreground">
                         Current Score
                       </span>
                       <div className="flex items-center gap-2">
                         <Star className="h-4 w-4 text-yellow-500" />
-                        <span className="font-bold text-slate-900 dark:text-slate-100">
+                        <span className="font-bold text-foreground">
                           {scoreData?.score || 0}/100
                         </span>
                       </div>
@@ -490,23 +474,32 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
                 )}
               </>
             ) : (
-              <>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Created</p>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-slate-400" />
-                      <p className="text-slate-900 dark:text-slate-100">
-                        {new Date(outfit.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Tuck Style</p>
-                    <p className="text-slate-900 dark:text-slate-100">{outfit.tuck_style || 'Untucked'}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <div className="rounded-lg border border-border bg-card/60 p-4 space-y-2">
+                  <p className="text-xs font-medium tracking-wide uppercase text-muted-foreground">Created</p>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <p className="text-foreground">
+                      {new Date(outfit.created_at).toLocaleDateString()}
+                    </p>
                   </div>
                 </div>
-              </>
+                <div className="rounded-lg border border-border bg-card/60 p-4 space-y-2">
+                  <p className="text-xs font-medium tracking-wide uppercase text-muted-foreground">Tuck Style</p>
+                  <p className="text-foreground">{outfit.tuck_style || 'Untucked'}</p>
+                </div>
+                <div className="rounded-lg border border-border bg-card/60 p-4 space-y-2">
+                  <p className="text-xs font-medium tracking-wide uppercase text-muted-foreground">Outfit Score</p>
+                  <div className="flex items-center gap-2">
+                    <Star className="h-4 w-4 text-yellow-500" />
+                    <p className="text-foreground">{outfit.score || 0}/100</p>
+                  </div>
+                </div>
+                <div className="rounded-lg border border-border bg-card/60 p-4 space-y-2">
+                  <p className="text-xs font-medium tracking-wide uppercase text-muted-foreground">Source</p>
+                  <p className="text-foreground">{outfit.source === 'curated' ? 'Curated' : 'Generated'}</p>
+                </div>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -596,11 +589,11 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
               ) : (
                 <Card>
                   <CardContent className="p-8 text-center">
-                    <Shirt className="h-16 w-16 mx-auto text-slate-400 mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
+                    <Shirt className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium text-foreground mb-2">
                       Select a Category to Edit
                     </h3>
-                    <p className="text-slate-600 dark:text-slate-400">
+                    <p className="text-muted-foreground">
                       Choose a category above to modify items in your outfit.
                     </p>
                   </CardContent>
@@ -611,8 +604,8 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
         ) : (
           /* Items List - Flat Layout for View Mode */
           <Card>
-            <CardHeader>
-              <CardTitle>Items in this Outfit</CardTitle>
+            <CardHeader className="pb-2">
+              <CardTitle>Items in this Outfit ({outfitItemCount})</CardTitle>
             </CardHeader>
             <CardContent>
               <OutfitFlatLayout
@@ -620,6 +613,8 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
                 outfitScore={outfit.score || 0}
                 onRemoveItem={undefined} // No removal in view mode
                 isEditable={false}
+                showHeader={false}
+                showSummary={false}
               />
             </CardContent>
           </Card>
@@ -636,7 +631,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-600 dark:text-slate-400 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Are you sure you want to delete &quot;{outfit.name || 'Untitled Outfit'}&quot;? This action cannot be undone.
                 </p>
                 <div className="flex gap-2 justify-end">

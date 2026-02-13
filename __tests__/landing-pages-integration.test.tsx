@@ -135,7 +135,7 @@ describe('Landing Pages Integration Tests', () => {
       const { container } = render(<AboutPage />);
       
       // Check for feature cards
-      const cards = container.querySelectorAll('.bg-white.dark\\:bg-slate-800');
+      const cards = container.querySelectorAll('.bg-card');
       expect(cards.length).toBeGreaterThanOrEqual(4);
     });
   });
@@ -189,9 +189,9 @@ describe('Landing Pages Integration Tests', () => {
       components.forEach((component) => {
         const { container } = component;
         
-        // Check for dark mode text colors
-        const darkText = container.querySelectorAll('.dark\\:text-slate-100, .dark\\:text-slate-400');
-        expect(darkText.length).toBeGreaterThan(0);
+        // Check for semantic text colors
+        const tokenText = container.querySelectorAll('.text-muted-foreground, .text-foreground');
+        expect(tokenText.length).toBeGreaterThan(0);
         
         component.unmount();
       });
@@ -200,12 +200,12 @@ describe('Landing Pages Integration Tests', () => {
     it('should have consistent CTA styling in components', () => {
       const hero = render(<HeroSection />);
       const heroButton = hero.getByRole('link', { name: /get started free/i });
-      expect(heroButton.querySelector('button')?.className).toContain('bg-blue-600');
+      expect(heroButton.querySelector('button')?.className).toContain('bg-primary');
       hero.unmount();
       
       const about = render(<AboutPage />);
       const aboutButton = about.getByRole('link', { name: /get started today/i });
-      expect(aboutButton.className).toContain('bg-blue-600');
+      expect(aboutButton.className).toContain('bg-primary');
       about.unmount();
     });
   });

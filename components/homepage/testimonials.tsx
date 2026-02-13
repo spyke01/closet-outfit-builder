@@ -30,13 +30,13 @@ const testimonials = [
 
 export function Testimonials() {
   return (
-    <section className="py-20 lg:py-32 bg-white dark:bg-slate-900">
+    <section className="py-20 lg:py-32 bg-background">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="font-display text-4xl lg:text-5xl font-bold text-slate-900 dark:text-slate-100 mb-6">
+          <h2 className="font-display text-4xl lg:text-5xl font-bold text-foreground mb-6">
             Loved by style enthusiasts
           </h2>
-          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Join thousands who've transformed their daily outfit selection.
           </p>
         </div>
@@ -45,7 +45,7 @@ export function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <div 
               key={testimonial.author}
-              className="bg-gradient-to-br from-slate-50 to-stone-50 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 animate-slide-up"
+              className="bg-gradient-to-br from-muted to-muted rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 animate-slide-up"
               style={{ animationDelay: `${index * 0.2}s` }}
             >
               {/* Rating */}
@@ -56,7 +56,7 @@ export function Testimonials() {
               </div>
               
               {/* Quote */}
-              <blockquote className="text-lg text-slate-700 leading-relaxed mb-6 font-medium">
+              <blockquote className="text-lg text-muted-foreground leading-relaxed mb-6 font-medium">
                 &ldquo;{testimonial.quote}&rdquo;
               </blockquote>
               
@@ -66,8 +66,8 @@ export function Testimonials() {
                   {testimonial.avatar}
                 </div>
                 <div>
-                  <div className="font-semibold text-slate-900">{testimonial.author}</div>
-                  <div className="text-sm text-slate-600">{testimonial.role}</div>
+                  <div className="font-semibold text-foreground">{testimonial.author}</div>
+                  <div className="text-sm text-muted-foreground">{testimonial.role}</div>
                 </div>
               </div>
             </div>

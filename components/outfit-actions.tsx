@@ -26,7 +26,7 @@ export default function OutfitActions({ onRegenerate, onSave, disabled }: Outfit
       <button
         onClick={() => handleSave(false)}
         disabled={disabled || saving}
-        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
         aria-label="Save outfit"
       >
         <Save className="w-4 h-4" aria-hidden="true" />
@@ -36,7 +36,7 @@ export default function OutfitActions({ onRegenerate, onSave, disabled }: Outfit
       <button
         onClick={onRegenerate}
         disabled={disabled}
-        className="w-full flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800"
+        className="w-full flex items-center justify-center gap-2 px-6 py-3 border border-border rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-foreground bg-card"
         aria-label="Regenerate outfit"
       >
         <RefreshCw className="w-4 h-4" aria-hidden="true" />

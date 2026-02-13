@@ -62,14 +62,13 @@ describe('Feature Parity Validation Tests', () => {
 
   describe('UI/UX Pattern Preservation', () => {
     it('maintains consistent color scheme and theming', () => {
-      // Test that dark mode classes are properly applied
+      // Test semantic theme tokens are used consistently
       const testElement = document.createElement('div');
-      testElement.className = 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100';
+      testElement.className = 'bg-card text-foreground';
       
-      expect(testElement.classList.contains('bg-white')).toBe(true);
-      expect(testElement.classList.contains('dark:bg-slate-800')).toBe(true);
-      expect(testElement.classList.contains('text-slate-900')).toBe(true);
-      expect(testElement.classList.contains('dark:text-slate-100')).toBe(true);
+      expect(testElement.classList.contains('bg-card')).toBe(true);
+      expect(testElement.classList.contains('text-foreground')).toBe(true);
+      expect(testElement.classList.contains('bg-white')).toBe(false);
     });
 
     it('maintains consistent spacing and layout patterns', () => {
@@ -97,14 +96,14 @@ describe('Feature Parity Validation Tests', () => {
     it('maintains consistent button styles and interactions', () => {
       // Test button design patterns
       const testElement = document.createElement('button');
-      testElement.className = 'px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors min-h-[44px]';
+      testElement.className = 'px-4 py-2 bg-card text-white rounded-lg hover:bg-card transition-colors min-h-[44px]';
       
       expect(testElement.classList.contains('px-4')).toBe(true);
       expect(testElement.classList.contains('py-2')).toBe(true);
-      expect(testElement.classList.contains('bg-slate-800')).toBe(true);
+      expect(testElement.classList.contains('bg-card')).toBe(true);
       expect(testElement.classList.contains('text-white')).toBe(true);
       expect(testElement.classList.contains('rounded-lg')).toBe(true);
-      expect(testElement.classList.contains('hover:bg-slate-700')).toBe(true);
+      expect(testElement.classList.contains('hover:bg-card')).toBe(true);
       expect(testElement.classList.contains('transition-colors')).toBe(true);
       expect(testElement.classList.contains('min-h-[44px]')).toBe(true);
     });
@@ -178,11 +177,11 @@ describe('Feature Parity Validation Tests', () => {
     it('maintains focus management', () => {
       // Test focus indicators
       const testElement = document.createElement('button');
-      testElement.className = 'focus:outline-none focus:ring-2 focus:ring-slate-500';
+      testElement.className = 'focus:outline-none focus:ring-2 focus:ring-ring';
       
       expect(testElement.classList.contains('focus:outline-none')).toBe(true);
       expect(testElement.classList.contains('focus:ring-2')).toBe(true);
-      expect(testElement.classList.contains('focus:ring-slate-500')).toBe(true);
+      expect(testElement.classList.contains('focus:ring-ring')).toBe(true);
     });
   });
 
@@ -201,9 +200,9 @@ describe('Feature Parity Validation Tests', () => {
     it('maintains hover and active states', () => {
       // Test interactive states
       const testElement = document.createElement('button');
-      testElement.className = 'hover:bg-slate-50 active:scale-95 hover:shadow-md';
+      testElement.className = 'hover:bg-muted active:scale-95 hover:shadow-md';
       
-      expect(testElement.classList.contains('hover:bg-slate-50')).toBe(true);
+      expect(testElement.classList.contains('hover:bg-muted')).toBe(true);
       expect(testElement.classList.contains('active:scale-95')).toBe(true);
       expect(testElement.classList.contains('hover:shadow-md')).toBe(true);
     });
@@ -211,9 +210,9 @@ describe('Feature Parity Validation Tests', () => {
     it('maintains loading and disabled states', () => {
       // Test state-based styling
       const testElement = document.createElement('button');
-      testElement.className = 'disabled:bg-slate-600 disabled:cursor-not-allowed disabled:opacity-50';
+      testElement.className = 'disabled:bg-muted disabled:cursor-not-allowed disabled:opacity-50';
       
-      expect(testElement.classList.contains('disabled:bg-slate-600')).toBe(true);
+      expect(testElement.classList.contains('disabled:bg-muted')).toBe(true);
       expect(testElement.classList.contains('disabled:cursor-not-allowed')).toBe(true);
       expect(testElement.classList.contains('disabled:opacity-50')).toBe(true);
     });
@@ -247,13 +246,13 @@ describe('Feature Parity Validation Tests', () => {
     it('maintains consistent empty state patterns', () => {
       // Test empty state styling
       const testElement = document.createElement('div');
-      testElement.className = 'text-center py-8 sm:py-12 text-slate-500 dark:text-slate-400';
+      testElement.className = 'text-center py-8 sm:py-12 text-muted-foreground';
       
       expect(testElement.classList.contains('text-center')).toBe(true);
       expect(testElement.classList.contains('py-8')).toBe(true);
       expect(testElement.classList.contains('sm:py-12')).toBe(true);
-      expect(testElement.classList.contains('text-slate-500')).toBe(true);
-      expect(testElement.classList.contains('dark:text-slate-400')).toBe(true);
+      expect(testElement.classList.contains('text-muted-foreground')).toBe(true);
+      expect(testElement.classList.contains('text-muted-foreground')).toBe(true);
     });
   });
 

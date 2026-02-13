@@ -154,9 +154,9 @@ describe('WardrobeSearchFilters', () => {
     const crossoverTag = screen.getByText('Crossover');
     const adventurerTag = screen.getByText('Adventurer');
     
-    expect(refinedTag).toHaveClass('bg-slate-800');
-    expect(crossoverTag).toHaveClass('bg-slate-800');
-    expect(adventurerTag).not.toHaveClass('bg-slate-800');
+    expect(refinedTag).toHaveClass('bg-primary');
+    expect(crossoverTag).toHaveClass('bg-primary');
+    expect(adventurerTag).toHaveClass('bg-card');
   });
 
   it('shows filtering indicator when search is active', () => {

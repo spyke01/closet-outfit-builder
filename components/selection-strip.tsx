@@ -255,7 +255,7 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
   }
 
   return (
-    <div className="border-b border-stone-200 dark:border-slate-700 px-3 sm:px-6 py-3 sm:py-4">
+    <div className="border-b border-border px-3 sm:px-6 py-3 sm:py-4">
       <div className="space-y-3 sm:space-y-4 relative">
         {/* Error Message */}
         {state.error && (
@@ -288,7 +288,7 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
         {/* Category Dropdowns - Mobile-First Responsive */}
         <div className="space-y-3 md:space-y-0">
           {/* Label */}
-          <span className="block text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400">
+          <span className="block text-xs sm:text-sm font-medium text-muted-foreground">
             {validatedAnchorItem ? `Building from ${formatItemName(validatedAnchorItem, true)}:` : 'Build Outfit:'}
           </span>
           

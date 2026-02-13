@@ -124,7 +124,7 @@ export const ConditionalComponentLoader: React.FC<ConditionalComponentLoaderProp
         {loadingComponent || (
           <div className="flex items-center justify-center p-4">
             <Loader2 className="w-4 h-4 animate-spin" />
-            <span className="ml-2 text-sm text-gray-500">Loading...</span>
+            <span className="ml-2 text-sm text-muted-foreground">Loading...</span>
           </div>
         )}
       </>

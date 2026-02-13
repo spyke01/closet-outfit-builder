@@ -22,9 +22,9 @@ export default function TodayOutfitDisplay({ outfit, onSwap, generating }: Today
         const hasAlternatives = outfit.swappable[category];
         
         return (
-          <div key={category} className="border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
+          <div key={category} className="border border-border rounded-lg bg-card shadow-sm overflow-hidden">
             {/* Image with floating swap button */}
-            <div className="relative w-full h-48 bg-gray-50 dark:bg-slate-700">
+            <div className="relative w-full h-48 bg-muted">
               {item.image_url && (
                 <Image
                   src={item.image_url}
@@ -40,7 +40,7 @@ export default function TodayOutfitDisplay({ outfit, onSwap, generating }: Today
                 <button
                   onClick={() => onSwap(category)}
                   disabled={generating}
-                  className="absolute top-2 right-2 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-slate-700 dark:text-slate-300"
+                  className="absolute top-2 right-2 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-card border border-border rounded-md shadow-sm hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-foreground"
                   aria-label={`Swap ${category}`}
                 >
                   <RefreshCw className="w-3 h-3" aria-hidden="true" />
@@ -50,9 +50,9 @@ export default function TodayOutfitDisplay({ outfit, onSwap, generating }: Today
             </div>
             
             {/* Item info */}
-            <div className="p-3 border-t border-gray-200 dark:border-slate-700">
-              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">{category}</p>
-              <p className="text-sm font-medium text-slate-900 dark:text-white line-clamp-2">{item.name}</p>
+            <div className="p-3 border-t border-border">
+              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{category}</p>
+              <p className="text-sm font-medium text-foreground line-clamp-2">{item.name}</p>
             </div>
           </div>
         );

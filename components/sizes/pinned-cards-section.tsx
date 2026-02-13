@@ -77,22 +77,22 @@ export function PinnedCardsSection({
   // Requirements: 12.1
   if (sortedPreferences.length === 0) {
     return (
-      <div className="pinned-cards-empty-state bg-gray-50 dark:bg-gray-900 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-8 text-center">
+      <div className="pinned-cards-empty-state bg-muted bg-background border-2 border-dashed border-border rounded-lg p-8 text-center">
         <div className="max-w-md mx-auto space-y-4">
           <div className="flex justify-center">
-            <div className="bg-gray-200 dark:bg-gray-800 rounded-full p-4">
+            <div className="bg-muted rounded-full p-4">
               <Settings 
-                className="h-8 w-8 text-gray-400 dark:text-gray-500" 
+                className="h-8 w-8 text-muted-foreground" 
                 aria-hidden="true"
               />
             </div>
           </div>
           
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            <h3 className="text-lg font-semibold text-foreground mb-2">
               No Pinned Categories
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">
+            <p className="text-muted-foreground text-sm">
               Pin your most frequently used categories for quick access to your sizes.
             </p>
           </div>
@@ -100,7 +100,7 @@ export function PinnedCardsSection({
           {onCustomize && (
             <button
               onClick={onCustomize}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:opacity-90 text-primary-foreground font-medium rounded-lg transition-colors"
               style={{ minHeight: '44px' }} // ✅ 44x44px touch target
               aria-label="Customize pinned categories"
             >
@@ -117,14 +117,14 @@ export function PinnedCardsSection({
     <div className="pinned-cards-section">
       {/* Section header with customize button */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+        <h2 className="text-xl font-bold text-foreground">
           Pinned Sizes
         </h2>
         
         {onCustomize && (
           <button
             onClick={onCustomize}
-            className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted rounded-lg transition-colors"
             style={{ minHeight: '44px' }} // ✅ 44x44px touch target
             aria-label="Customize pinned categories"
           >

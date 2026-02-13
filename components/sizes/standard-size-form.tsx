@@ -77,16 +77,16 @@ export function StandardSizeForm({
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 p-4 bg-card border border-border rounded-lg">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold dark:text-gray-100">
+        <h3 className="text-lg font-semibold text-foreground">
           {standardSize ? 'Edit Standard Size' : 'Add Standard Size'}
         </h3>
         <button
           type="button"
           onClick={onCancel}
           aria-label="Close form"
-          className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
+          className="p-1 text-muted-foreground hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
         >
           <X className="h-5 w-5" aria-hidden="true" />
         </button>
@@ -97,7 +97,7 @@ export function StandardSizeForm({
         <div className="form-field">
           <label 
             htmlFor="primary-size" 
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="block text-sm font-medium text-muted-foreground"
           >
             Primary Size <span className="text-red-500" aria-label="required">*</span>
           </label>
@@ -109,10 +109,10 @@ export function StandardSizeForm({
             aria-required="true"
             aria-invalid={!!form.formState.errors.primary_size}
             aria-describedby="primary-size-hint primary-size-error"
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1 block w-full px-3 py-2 border border-border rounded-md shadow-sm bg-background text-foreground placeholder:text-muted-foreground dark:placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring sm:text-sm"
             {...form.register('primary_size')}
           />
-          <p id="primary-size-hint" className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          <p id="primary-size-hint" className="mt-1 text-xs text-muted-foreground">
             {getFormatHelperText()}
           </p>
           {form.formState.errors.primary_size && (
@@ -130,9 +130,9 @@ export function StandardSizeForm({
         <div className="form-field">
           <label 
             htmlFor="secondary-size" 
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="block text-sm font-medium text-muted-foreground"
           >
-            Secondary Size <span className="text-gray-400 text-xs">(optional)</span>
+            Secondary Size <span className="text-muted-foreground text-xs">(optional)</span>
           </label>
           <input
             id="secondary-size"
@@ -141,10 +141,10 @@ export function StandardSizeForm({
             placeholder={getSizePlaceholder()}
             aria-invalid={!!form.formState.errors.secondary_size}
             aria-describedby="secondary-size-hint secondary-size-error"
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1 block w-full px-3 py-2 border border-border rounded-md shadow-sm bg-background text-foreground placeholder:text-muted-foreground dark:placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring sm:text-sm"
             {...form.register('secondary_size')}
           />
-          <p id="secondary-size-hint" className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          <p id="secondary-size-hint" className="mt-1 text-xs text-muted-foreground">
             Optional alternative size (e.g., for between sizes)
           </p>
           {form.formState.errors.secondary_size && (
@@ -162,9 +162,9 @@ export function StandardSizeForm({
         <div className="form-field">
           <label 
             htmlFor="size-notes" 
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="block text-sm font-medium text-muted-foreground"
           >
-            Notes <span className="text-gray-400 text-xs">(optional)</span>
+            Notes <span className="text-muted-foreground text-xs">(optional)</span>
           </label>
           <textarea
             id="size-notes"
@@ -172,10 +172,10 @@ export function StandardSizeForm({
             placeholder="Add any notes about fit, preferences, or sizing details..."
             aria-invalid={!!form.formState.errors.notes}
             aria-describedby="size-notes-hint size-notes-error"
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm resize-none"
+            className="mt-1 block w-full px-3 py-2 border border-border rounded-md shadow-sm bg-background text-foreground placeholder:text-muted-foreground dark:placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring sm:text-sm resize-none"
             {...form.register('notes')}
           />
-          <p id="size-notes-hint" className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          <p id="size-notes-hint" className="mt-1 text-xs text-muted-foreground">
             Maximum 500 characters
           </p>
           {form.formState.errors.notes && (
@@ -191,19 +191,19 @@ export function StandardSizeForm({
       </div>
 
       {/* Form Actions */}
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
         <button
           type="button"
           onClick={onCancel}
           disabled={updateStandardSize.isPending}
-          className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 text-sm font-medium text-muted-foreground text-foreground bg-card border border-border rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={updateStandardSize.isPending}
-          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {updateStandardSize.isPending ? 'Saving...' : 'Save'}
         </button>

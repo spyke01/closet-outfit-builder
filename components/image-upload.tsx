@@ -250,7 +250,7 @@ export function ImageUpload({
           <div
             className={`
               border-2 border-dashed rounded-lg p-8 text-center transition-colors
-              ${uploadState.isUploading ? 'border-blue-300 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}
+              ${uploadState.isUploading ? 'border-secondary/50 bg-secondary/20' : 'border-border hover:border-border'}
               ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
             `}
             onDrop={handleDrop}
@@ -295,15 +295,15 @@ export function ImageUpload({
               </div>
             ) : (
               <div className="space-y-4">
-                <Upload className="w-12 h-12 mx-auto text-gray-400" />
+                <Upload className="w-12 h-12 mx-auto text-muted-foreground" />
                 <div>
-                  <p className="text-lg font-medium text-gray-900">
+                  <p className="text-lg font-medium text-foreground">
                     {uploadState.isUploading ? 'Processing image...' : 'Upload an image'}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     Drag and drop or click to select • Max {(maxSize / 1024 / 1024).toFixed(0)}MB
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Supported formats: {acceptedTypes.map(type => type.split('/')[1].toUpperCase()).join(', ')}
                   </p>
                 </div>
@@ -314,7 +314,7 @@ export function ImageUpload({
           {uploadState.isUploading && (
             <div className="mt-4 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-muted-foreground">
                   {uploadState.progress < 90 ? 'Uploading...' : 'Processing...'}
                 </span>
                 <Button
@@ -327,7 +327,7 @@ export function ImageUpload({
                 </Button>
               </div>
               <Progress value={uploadState.progress} className="w-full" />
-              <div className="flex items-center gap-2 text-xs text-gray-500">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Loader2 className="w-3 h-3 animate-spin" />
                 {removeBackground && 'Removing background automatically...'}
               </div>

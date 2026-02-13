@@ -51,7 +51,7 @@ export function StepSuccess({
         <button
           type="button"
           onClick={handleViewWardrobe}
-          className="flex-1 px-6 py-3 min-h-[44px] bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-blue-500 dark:hover:bg-blue-600 touch-manipulation"
+          className="flex-1 px-6 py-3 min-h-[44px] bg-primary text-primary-foreground rounded-lg font-semibold hover:opacity-90 transition-colors focus:ring-2 focus:ring-ring focus:ring-offset-2 touch-manipulation"
           aria-label="View your wardrobe"
         >
           View My Wardrobe
@@ -59,7 +59,7 @@ export function StepSuccess({
         <button
           type="button"
           onClick={handleGenerateOutfits}
-          className="flex-1 px-6 py-3 min-h-[44px] border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-blue-500 dark:text-blue-400 dark:hover:bg-blue-950 touch-manipulation"
+          className="flex-1 px-6 py-3 min-h-[44px] border-2 border-primary text-primary rounded-lg font-semibold hover:bg-muted transition-colors focus:ring-2 focus:ring-ring focus:ring-offset-2 touch-manipulation"
           aria-label="Generate outfit recommendations"
         >
           Generate Outfits

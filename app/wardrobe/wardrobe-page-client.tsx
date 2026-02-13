@@ -109,7 +109,7 @@ export function WardrobePageClient() {
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <h3 className="text-lg font-medium text-red-600 mb-2">Error Loading Wardrobe</h3>
-            <p className="text-slate-600 dark:text-slate-400 mb-4">
+            <p className="text-muted-foreground mb-4">
               {categoriesError?.message || itemsError?.message || 'Unknown error occurred'}
             </p>
             <Button onClick={() => window.location.reload()}>
@@ -126,8 +126,8 @@ export function WardrobePageClient() {
       <div className="flex-1 w-full max-w-7xl mx-auto p-6">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800 mx-auto mb-4"></div>
-            <p className="text-slate-600 dark:text-slate-400">Loading wardrobe...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading wardrobe...</p>
           </div>
         </div>
       </div>
@@ -152,7 +152,7 @@ export function WardrobePageClient() {
 
         {/* View Mode Toggle */}
         <div className="flex justify-end">
-          <div className="flex border border-stone-300 dark:border-slate-600 rounded-lg">
+          <div className="flex border border-border rounded-lg">
             <Button
               variant={viewMode === 'grid' ? 'default' : 'ghost'}
               size="sm"
@@ -186,10 +186,10 @@ export function WardrobePageClient() {
                 return (
                   <div key={category.id} className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200">
+                      <h2 className="text-xl font-semibold text-foreground">
                         {category.name}
                       </h2>
-                      <span className="text-sm text-slate-500 dark:text-slate-400">
+                      <span className="text-sm text-muted-foreground">
                         {categoryItems.length} item{categoryItems.length !== 1 ? 's' : ''}
                       </span>
                     </div>
@@ -200,7 +200,7 @@ export function WardrobePageClient() {
                         <div
                           key={item.id}
                           onClick={() => handleItemSelect(item)}
-                          className="border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm overflow-hidden transition-all duration-200 cursor-pointer hover:shadow-md active:scale-95"
+                          className="border border-border rounded-lg bg-card shadow-sm overflow-hidden transition-all duration-200 cursor-pointer hover:shadow-md active:scale-95"
                           role="button"
                           tabIndex={0}
                           onKeyDown={(e) => {
@@ -213,7 +213,7 @@ export function WardrobePageClient() {
                         >
                           {/* Image section */}
                           {item.image_url && (
-                            <div className="relative w-full h-48 bg-gray-50 dark:bg-slate-700">
+                            <div className="relative w-full h-48 bg-muted">
                               <Image
                                 src={item.image_url}
                                 alt={`${item.brand ? `${item.brand} ${item.name}` : item.name} - ${category.name}`}
@@ -227,9 +227,9 @@ export function WardrobePageClient() {
                           )}
                           
                           {/* Item info */}
-                          <div className="p-3 border-t border-gray-200 dark:border-slate-700">
-                            <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">{category.name}</p>
-                            <p className="text-sm font-medium text-slate-900 dark:text-white line-clamp-2 mb-2">
+                          <div className="p-3 border-t border-border">
+                            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{category.name}</p>
+                            <p className="text-sm font-medium text-foreground line-clamp-2 mb-2">
                               {item.brand ? `${item.brand} ${item.name}` : item.name}
                             </p>
                             
@@ -238,13 +238,13 @@ export function WardrobePageClient() {
                                 {item.capsule_tags.slice(0, 3).map(tag => (
                                   <span
                                     key={tag}
-                                    className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300 truncate"
+                                    className="px-2 py-1 text-xs rounded-md bg-muted text-muted-foreground truncate"
                                   >
                                     {tag}
                                   </span>
                                 ))}
                                 {item.capsule_tags.length > 3 && (
-                                  <span className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300">
+                                  <span className="px-2 py-1 text-xs rounded-md bg-muted text-muted-foreground">
                                     +{item.capsule_tags.length - 3}
                                   </span>
                                 )}
@@ -269,7 +269,7 @@ export function WardrobePageClient() {
                     <div
                       key={item.id}
                       onClick={() => handleItemSelect(item)}
-                      className="border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm overflow-hidden transition-all duration-200 cursor-pointer hover:shadow-md active:scale-95"
+                      className="border border-border rounded-lg bg-card shadow-sm overflow-hidden transition-all duration-200 cursor-pointer hover:shadow-md active:scale-95"
                       role="button"
                       tabIndex={0}
                       onKeyDown={(e) => {
@@ -282,7 +282,7 @@ export function WardrobePageClient() {
                     >
                       {/* Image section */}
                       {item.image_url && (
-                        <div className="relative w-full h-48 bg-gray-50 dark:bg-slate-700">
+                        <div className="relative w-full h-48 bg-muted">
                           <Image
                             src={item.image_url}
                             alt={item.name}
@@ -295,9 +295,9 @@ export function WardrobePageClient() {
                       )}
                       
                       {/* Item info */}
-                      <div className="p-3 border-t border-gray-200 dark:border-slate-700">
-                        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">{category?.name || 'Item'}</p>
-                        <p className="text-sm font-medium text-slate-900 dark:text-white line-clamp-2 mb-2">
+                      <div className="p-3 border-t border-border">
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{category?.name || 'Item'}</p>
+                        <p className="text-sm font-medium text-foreground line-clamp-2 mb-2">
                           {item.brand ? `${item.brand} ${item.name}` : item.name}
                         </p>
                         
@@ -306,13 +306,13 @@ export function WardrobePageClient() {
                             {item.capsule_tags.slice(0, 3).map((tag: string) => (
                               <span
                                 key={tag}
-                                className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300"
+                                className="px-2 py-1 text-xs rounded-md bg-muted text-muted-foreground"
                               >
                                 {tag}
                               </span>
                             ))}
                             {item.capsule_tags.length > 3 && (
-                              <span className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300">
+                              <span className="px-2 py-1 text-xs rounded-md bg-muted text-muted-foreground">
                                 +{item.capsule_tags.length - 3}
                               </span>
                             )}
@@ -336,10 +336,10 @@ export function WardrobePageClient() {
                     return (
                       <div key={category.id} className="space-y-4">
                         <div className="flex items-center justify-between">
-                          <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200">
+                          <h2 className="text-xl font-semibold text-foreground">
                             {category.name}
                           </h2>
-                          <span className="text-sm text-slate-500 dark:text-slate-400">
+                          <span className="text-sm text-muted-foreground">
                             {categoryItems.length} item{categoryItems.length !== 1 ? 's' : ''}
                           </span>
                         </div>
@@ -349,7 +349,7 @@ export function WardrobePageClient() {
                             <div
                               key={item.id}
                               onClick={() => handleItemSelect(item)}
-                              className="border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm overflow-hidden transition-all duration-200 cursor-pointer hover:shadow-md active:scale-95"
+                              className="border border-border rounded-lg bg-card shadow-sm overflow-hidden transition-all duration-200 cursor-pointer hover:shadow-md active:scale-95"
                               role="button"
                               tabIndex={0}
                               onKeyDown={(e) => {
@@ -362,7 +362,7 @@ export function WardrobePageClient() {
                             >
                               {/* Image section */}
                               {item.image_url && (
-                                <div className="relative w-full h-48 bg-gray-50 dark:bg-slate-700">
+                                <div className="relative w-full h-48 bg-muted">
                                   <Image
                                     src={item.image_url}
                                     alt={item.name}
@@ -375,9 +375,9 @@ export function WardrobePageClient() {
                               )}
                               
                               {/* Item info */}
-                              <div className="p-3 border-t border-gray-200 dark:border-slate-700">
-                                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">{category.name}</p>
-                                <p className="text-sm font-medium text-slate-900 dark:text-white line-clamp-2 mb-2">
+                              <div className="p-3 border-t border-border">
+                                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{category.name}</p>
+                                <p className="text-sm font-medium text-foreground line-clamp-2 mb-2">
                                   {item.brand ? `${item.brand} ${item.name}` : item.name}
                                 </p>
                                 
@@ -386,13 +386,13 @@ export function WardrobePageClient() {
                                     {item.capsule_tags.slice(0, 3).map(tag => (
                                       <span
                                         key={tag}
-                                        className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300"
+                                        className="px-2 py-1 text-xs rounded-md bg-muted text-muted-foreground"
                                       >
                                         {tag}
                                       </span>
                                     ))}
                                     {item.capsule_tags.length > 3 && (
-                                      <span className="px-2 py-1 text-xs rounded-md bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-slate-300">
+                                      <span className="px-2 py-1 text-xs rounded-md bg-muted text-muted-foreground">
                                         +{item.capsule_tags.length - 3}
                                       </span>
                                     )}
@@ -421,10 +421,10 @@ export function WardrobePageClient() {
                 return (
                   <div key={category.id} className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200">
+                      <h2 className="text-xl font-semibold text-foreground">
                         {category.name}
                       </h2>
-                      <span className="text-sm text-slate-500 dark:text-slate-400">
+                      <span className="text-sm text-muted-foreground">
                         {categoryItems.length} item{categoryItems.length !== 1 ? 's' : ''}
                       </span>
                     </div>
@@ -458,10 +458,10 @@ export function WardrobePageClient() {
                   return (
                     <div key={category.id} className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200">
+                        <h2 className="text-xl font-semibold text-foreground">
                           {category.name}
                         </h2>
-                        <span className="text-sm text-slate-500 dark:text-slate-400">
+                        <span className="text-sm text-muted-foreground">
                           {categoryItems.length} item{categoryItems.length !== 1 ? 's' : ''}
                         </span>
                       </div>
@@ -481,10 +481,10 @@ export function WardrobePageClient() {
         {/* Empty states */}
         {categories.length === 0 && (
           <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
+            <h3 className="text-lg font-medium text-foreground mb-2">
               No categories found
             </h3>
-            <p className="text-slate-600 dark:text-slate-400 mb-4">
+            <p className="text-muted-foreground mb-4">
               Categories will be automatically created when you add your first items.
             </p>
           </div>
@@ -492,10 +492,10 @@ export function WardrobePageClient() {
 
         {filteredItems.length === 0 && categories.length > 0 && (
           <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
+            <h3 className="text-lg font-medium text-foreground mb-2">
               No items found
             </h3>
-            <p className="text-slate-600 dark:text-slate-400 mb-4">
+            <p className="text-muted-foreground mb-4">
               {searchTerm || selectedTags.size > 0 || selectedCategories.size > 0
                 ? 'Try adjusting your search criteria or filters.'
                 : 'Start building your wardrobe by adding your first items.'}

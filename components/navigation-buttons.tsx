@@ -25,13 +25,13 @@ export function NavigationButtons({ backTo, className = '' }: NavigationButtonsP
     >
       <Link 
         href={backTo.href} 
-        className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 rounded-lg"
+        className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg"
         {...getNavigationProps(backTo.href)}
       >
         <Button 
           variant="outline" 
           size="sm" 
-          className="flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+          className="flex items-center gap-2 hover:bg-muted transition-colors"
           aria-label={`Navigate ${backTo.label}`}
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />

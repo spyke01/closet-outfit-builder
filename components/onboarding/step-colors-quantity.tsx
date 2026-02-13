@@ -114,19 +114,19 @@ export function StepColorsQuantity({
           return (
             <div
               key={`${categoryKey}-${subcategory}`}
-              className="p-6 border border-gray-300 rounded-lg dark:border-gray-600"
+              className="p-6 border border-border rounded-lg bg-card"
             >
               <div className="mb-4">
                 <div className="flex items-center gap-2 mb-1">
                   {iconNode ? (
                     <Icon 
                       iconNode={iconNode}
-                      className="w-5 h-5 text-gray-600 dark:text-gray-400" 
+                      className="w-5 h-5 text-muted-foreground" 
                       aria-hidden="true" 
                     />
                   ) : MainIcon ? (
                     <MainIcon 
-                      className="w-5 h-5 text-gray-600 dark:text-gray-400" 
+                      className="w-5 h-5 text-muted-foreground" 
                       aria-hidden="true" 
                     />
                   ) : null}
@@ -151,15 +151,15 @@ export function StepColorsQuantity({
                       className={`
                         flex items-center gap-2 p-2 min-h-[44px] rounded-md border transition-all text-left touch-manipulation
                         ${isSelected
-                          ? 'border-blue-600 bg-blue-50 dark:border-blue-500 dark:bg-blue-950'
-                          : 'border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500'
+                          ? 'border-primary bg-primary/10'
+                          : 'border-border hover:border-secondary'
                         }
                       `}
                       aria-label={`${colorOption.label}${isSelected ? ' (selected)' : ''}`}
                       aria-pressed={isSelected}
                     >
                       <div
-                        className="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600 flex-shrink-0"
+                        className="w-6 h-6 rounded-full border border-border flex-shrink-0"
                         style={{
                           backgroundColor: colorOption.hex || '#ccc',
                           ...(colorOption.value === 'white' && {
@@ -172,7 +172,7 @@ export function StepColorsQuantity({
                         {colorOption.label}
                       </span>
                       {isSelected && (
-                        <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
                           <svg
                             className="w-2.5 h-2.5 text-white"
                             fill="none"
@@ -197,8 +197,8 @@ export function StepColorsQuantity({
       </div>
 
       {!hasValidSelection && (
-        <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-950 dark:border-amber-800" role="alert">
-          <p className="text-sm text-amber-800 dark:text-amber-200">
+        <div className="p-4 bg-warning-light border border-warning rounded-lg" role="alert">
+          <p className="text-sm text-warning-dark">
             Please select at least one color for at least one item type to continue.
           </p>
         </div>

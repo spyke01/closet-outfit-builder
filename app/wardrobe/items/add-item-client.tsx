@@ -127,8 +127,8 @@ export function AddItemPageClient() {
       <div className="flex-1 w-full max-w-4xl mx-auto p-6">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800 mx-auto mb-4"></div>
-            <p className="text-slate-600 dark:text-slate-400">Loading categories...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading categories...</p>
           </div>
         </div>
       </div>
@@ -146,10 +146,10 @@ export function AddItemPageClient() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+            <h1 className="text-3xl font-bold text-foreground">
               Add New Item
             </h1>
-            <p className="text-slate-600 dark:text-slate-400 mt-1">
+            <p className="text-muted-foreground mt-1">
               Add a new item to your wardrobe
             </p>
           </div>
@@ -202,10 +202,10 @@ export function AddItemPageClient() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Image Section */}
-          <div className="border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
+          <div className="border border-border rounded-lg bg-card shadow-sm overflow-hidden">
             {/* Image display */}
             {formData.image_url && (
-              <div className="relative w-full h-96 bg-gray-50 dark:bg-slate-700">
+              <div className="relative w-full h-96 bg-muted">
                 <Image
                   src={formData.image_url}
                   alt={`${formData.name || 'New item'}${formData.brand ? ` by ${formData.brand}` : ''}`}
@@ -218,8 +218,8 @@ export function AddItemPageClient() {
               </div>
             )}
             {/* Upload section */}
-            <div className="p-4 border-t border-gray-200 dark:border-slate-700">
-              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3 flex items-center gap-2">
+            <div className="p-4 border-t border-border">
+              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
                 <Shirt className="h-4 w-4" />
                 Item Image
               </p>
@@ -237,27 +237,27 @@ export function AddItemPageClient() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   Name *
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                   placeholder="e.g., Navy Blazer"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   Category *
                 </label>
                 <select
                   value={formData.category_id}
                   onChange={(e) => handleInputChange('category_id', e.target.value)}
-                  className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                   required
                 >
                   <option value="">Select a category</option>
@@ -270,28 +270,28 @@ export function AddItemPageClient() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   Brand
                 </label>
                 <input
                   type="text"
                   value={formData.brand || ''}
                   onChange={(e) => handleInputChange('brand', e.target.value)}
-                  className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                   placeholder="e.g., J.Crew"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Color
                   </label>
                   <div className="relative">
                     <select
                       value={formData.color || ''}
                       onChange={(e) => handleInputChange('color', e.target.value)}
-                      className="w-full py-2 pr-10 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 appearance-none"
+                      className="w-full py-2 pr-10 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground appearance-none"
                       style={{
                         paddingLeft: formData.color && COLOR_OPTIONS.find(opt => opt.value === formData.color)?.hex ? '32px' : '12px'
                       }}
@@ -304,12 +304,12 @@ export function AddItemPageClient() {
                     </select>
                     {formData.color && COLOR_OPTIONS.find(opt => opt.value === formData.color)?.hex && (
                       <div 
-                        className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-slate-300 dark:border-slate-600 pointer-events-none"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-border pointer-events-none"
                         style={{ backgroundColor: COLOR_OPTIONS.find(opt => opt.value === formData.color)?.hex || 'transparent' }}
                       />
                     )}
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                      <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>
@@ -317,21 +317,21 @@ export function AddItemPageClient() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Material
                   </label>
                   <input
                     type="text"
                     value={formData.material || ''}
                     onChange={(e) => handleInputChange('material', e.target.value)}
-                    className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                     placeholder="e.g., Cotton"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   Formality Score (1-10)
                 </label>
                 <input
@@ -340,9 +340,9 @@ export function AddItemPageClient() {
                   max="10"
                   value={formData.formality_score || 5}
                   onChange={(e) => handleInputChange('formality_score', parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                 />
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   1 = Very casual, 10 = Very formal
                 </p>
               </div>
@@ -374,7 +374,7 @@ export function AddItemPageClient() {
                   </Button>
                 ))}
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+              <p className="text-xs text-muted-foreground mt-2">
                 Select tags that describe this item&apos;s style
               </p>
             </CardContent>
@@ -402,7 +402,7 @@ export function AddItemPageClient() {
                   </Button>
                 ))}
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+              <p className="text-xs text-muted-foreground mt-2">
                 Select when this item is appropriate to wear
               </p>
             </CardContent>

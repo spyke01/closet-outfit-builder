@@ -34,19 +34,22 @@ describe('HowItWorksPage - Redirect Tests', () => {
       expect(mockPush).toHaveBeenCalledWith('/#how-it-works');
     });
 
-    it('should have dark mode background gradient', () => {
+    it('should have semantic background gradient classes', () => {
       const { container } = render(<HowItWorksPage />);
       
-      const darkBg = container.querySelector('.dark\\:from-slate-900');
-      expect(darkBg).toBeInTheDocument();
+      const gradientContainer = container.querySelector('.bg-gradient-to-br');
+      expect(gradientContainer).toBeInTheDocument();
+      expect(gradientContainer).toHaveClass('from-background');
+      expect(gradientContainer).toHaveClass('via-card');
+      expect(gradientContainer).toHaveClass('to-background');
     });
 
     it('should have proper text styling', () => {
       const { container } = render(<HowItWorksPage />);
       
       const text = screen.getByText(/redirecting to how it works/i);
-      expect(text.className).toContain('text-slate-600');
-      expect(text.className).toContain('dark:text-slate-400');
+      expect(text.className).toContain('text-muted-foreground');
+      expect(text.className).toContain('text-muted-foreground');
     });
   });
 });

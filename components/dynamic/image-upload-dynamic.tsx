@@ -7,14 +7,14 @@ import React from 'react';
 // Loading component for ImageUpload
 const ImageUploadLoading = () => (
   <div className="space-y-4">
-    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+    <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
       <div className="space-y-4">
-        <Loader2 className="w-12 h-12 mx-auto text-gray-400 animate-spin" />
+        <Loader2 className="w-12 h-12 mx-auto text-muted-foreground animate-spin" />
         <div>
-          <p className="text-lg font-medium text-gray-900">
+          <p className="text-lg font-medium text-foreground">
             Loading Image Upload...
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             Preparing upload functionality
           </p>
         </div>

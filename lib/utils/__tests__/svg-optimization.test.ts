@@ -31,8 +31,8 @@ describe('SVG Optimization Utilities', () => {
     });
 
     it('should combine animation class with additional classes', () => {
-      const result = getOptimizedAnimationClass('animate-spin', 'text-blue-500');
-      expect(result).toBe('animate-spin text-blue-500');
+      const result = getOptimizedAnimationClass('animate-spin', 'text-primary');
+      expect(result).toBe('animate-spin text-primary');
     });
   });
 

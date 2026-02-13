@@ -19,6 +19,8 @@ interface OutfitFlatLayoutProps {
   onRemoveItem?: (itemId: string) => void;
   isEditable?: boolean;
   className?: string;
+  showHeader?: boolean;
+  showSummary?: boolean;
 }
 
 interface ItemWithScore extends WardrobeItem {
@@ -31,7 +33,9 @@ export function OutfitFlatLayout({
   outfitScore = 0, 
   onRemoveItem, 
   isEditable = false,
-  className = '' 
+  className = '',
+  showHeader = true,
+  showSummary = true,
 }: OutfitFlatLayoutProps) {
   // Calculate individual item score contributions
   const itemsWithScores = useMemo((): ItemWithScore[] => {
@@ -70,8 +74,8 @@ export function OutfitFlatLayout({
     return (
       <div className={`flex items-center justify-center p-8 ${className}`}>
         <div className="text-center">
-          <Shirt size={48} className="text-slate-300 mx-auto mb-4" />
-          <p className="text-slate-500 dark:text-slate-400">
+          <Shirt size={48} className="text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground">
             No items in this outfit
           </p>
         </div>
@@ -82,35 +86,37 @@ export function OutfitFlatLayout({
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Header with total score */}
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-          Outfit Items ({items.length})
-        </h3>
-        {outfitScore > 0 && (
-          <div className="flex items-center gap-2">
-            <Star className="h-4 w-4 text-yellow-500" />
-            <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
-              Total Score: {outfitScore}/100
-            </span>
-          </div>
-        )}
-      </div>
+      {showHeader && (
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-foreground">
+            Outfit Items ({items.length})
+          </h3>
+          {outfitScore > 0 && (
+            <div className="flex items-center gap-2">
+              <Star className="h-4 w-4 text-yellow-500" />
+              <span className="text-sm font-medium text-muted-foreground">
+                Total Score: {outfitScore}/100
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Responsive grid of items */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {itemsWithScores.map((item) => (
-          <Card key={item.id} className="group relative overflow-hidden hover:shadow-md transition-shadow">
-            <CardContent className="p-4">
+          <Card key={item.id} className="group relative overflow-hidden border border-border bg-card shadow-sm hover:shadow-lg transition-shadow">
+            <CardContent className="p-0 h-full">
               {/* Item image */}
-              <div className="relative mb-3">
-                <div className="aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-700">
+              <div className="relative h-48 bg-muted border-b border-border">
+                <div className="w-full h-full overflow-hidden">
                   {item.image_url ? (
                     <div className="relative w-full h-full">
                       <Image
                         src={item.image_url}
                         alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''} - ${item.category?.name || 'outfit item'}`}
                         fill
-                        className="object-cover"
+                        className="object-contain p-4"
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                         loading="lazy"
                         quality={85}
@@ -118,20 +124,20 @@ export function OutfitFlatLayout({
                     </div>
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <Shirt className="h-8 w-8 text-slate-400" />
+                      <Shirt className="h-8 w-8 text-muted-foreground" />
                     </div>
                   )}
                 </div>
 
                 {/* Action buttons overlay */}
                 {isEditable && (
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
                     <div className="flex gap-1">
                       <Link href={`/wardrobe/items/${item.id}`}>
                         <Button
                           size="sm"
                           variant="secondary"
-                          className="h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-sm"
+                          className="h-8 w-8 p-0 bg-card/95 border border-border text-foreground hover:bg-muted shadow-sm"
                           onClick={(e) => handleViewDetails(item.id, e)}
                         >
                           <Eye className="h-3 w-3" />
@@ -141,7 +147,7 @@ export function OutfitFlatLayout({
                         <Button
                           size="sm"
                           variant="destructive"
-                          className="h-8 w-8 p-0 bg-red-500/90 hover:bg-red-600 shadow-sm"
+                          className="h-8 w-8 p-0 shadow-sm"
                           onClick={(e) => handleRemoveItem(item.id, e)}
                         >
                           <X className="h-3 w-3" />
@@ -154,7 +160,7 @@ export function OutfitFlatLayout({
                 {/* Score contribution badge */}
                 {outfitScore > 0 && (
                   <div className="absolute bottom-2 left-2">
-                    <Badge variant="secondary" className="text-xs bg-white/90 text-slate-700">
+                    <Badge variant="outline" className="text-xs bg-card/95 text-foreground border-border backdrop-blur-sm">
                       {item.scoreContribution} pts
                     </Badge>
                   </div>
@@ -162,33 +168,32 @@ export function OutfitFlatLayout({
               </div>
 
               {/* Item details */}
-              <div className="space-y-2 min-w-0">
-                {/* Category label */}
+              <div className="p-3 space-y-2 min-w-0">
                 <div className="flex items-center justify-between gap-2 min-w-0">
-                  <Badge variant="outline" className="text-xs truncate">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide truncate">
                     {item.category?.name || 'Unknown'}
-                  </Badge>
+                  </p>
                   {outfitScore > 0 && (
-                    <span className="text-xs text-slate-500 dark:text-slate-400 flex-shrink-0">
+                    <span className="text-xs text-muted-foreground flex-shrink-0">
                       {item.scorePercentage}%
                     </span>
                   )}
                 </div>
 
                 {/* Item name */}
-                <h4 className="font-medium text-slate-900 dark:text-slate-100 text-sm leading-tight line-clamp-2 break-words" title={item.name}>
+                <h4 className="font-medium text-foreground text-sm leading-tight line-clamp-2 break-words" title={item.name}>
                   {item.name}
                 </h4>
 
                 {/* Item metadata */}
                 <div className="space-y-1 min-w-0">
                   {item.brand && (
-                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate" title={item.brand}>
+                    <p className="text-xs text-muted-foreground truncate" title={item.brand}>
                       {item.brand}
                     </p>
                   )}
                   
-                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 gap-2 min-w-0">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground gap-2 min-w-0">
                     {item.color && (
                       <span className="truncate" title={item.color}>{item.color}</span>
                     )}
@@ -201,36 +206,35 @@ export function OutfitFlatLayout({
                   </div>
                 </div>
 
-                {/* Interactive link overlay for non-editable mode */}
-                {!isEditable && (
-                  <Link 
-                    href={`/wardrobe/items/${item.id}`}
-                    className="absolute inset-0 z-10"
-                    aria-label={`View ${item.name} details`}
-                  >
-                    <span className="sr-only">View {item.name} details</span>
-                  </Link>
-                )}
               </div>
             </CardContent>
+            {!isEditable && (
+              <Link 
+                href={`/wardrobe/items/${item.id}`}
+                className="absolute inset-0 z-10"
+                aria-label={`View ${item.name} details`}
+              >
+                <span className="sr-only">View {item.name} details</span>
+              </Link>
+            )}
           </Card>
         ))}
       </div>
 
       {/* Summary footer */}
-      {outfitScore > 0 && (
-        <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+      {showSummary && outfitScore > 0 && (
+        <div className="mt-6 p-4 bg-muted rounded-lg">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-slate-600 dark:text-slate-400">
+            <span className="text-muted-foreground">
               Score Distribution
             </span>
             <div className="flex items-center gap-4">
-              <span className="text-slate-600 dark:text-slate-400">
+              <span className="text-muted-foreground">
                 Avg per item: {Math.round(outfitScore / items.length)}
               </span>
               <div className="flex items-center gap-1">
                 <Star className="h-4 w-4 text-yellow-500" />
-                <span className="font-medium text-slate-900 dark:text-slate-100">
+                <span className="font-medium text-foreground">
                   {outfitScore}/100
                 </span>
               </div>

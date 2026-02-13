@@ -139,7 +139,7 @@ describe('Loading Skeletons', () => {
       const { container } = render(<PageContentSkeleton />);
       
       // Should use slate colors for dark mode support
-      const skeletons = container.querySelectorAll('.bg-slate-200, .dark\\:bg-slate-700');
+      const skeletons = container.querySelectorAll('.bg-muted, .dark\\:bg-card');
       expect(skeletons.length).toBeGreaterThan(0);
     });
   });

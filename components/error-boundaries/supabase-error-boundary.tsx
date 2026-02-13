@@ -132,11 +132,11 @@ export class SupabaseErrorBoundary extends Component<Props, State> {
       case 'permission':
         return <AlertTriangle className="h-5 w-5 text-red-500" />;
       case 'network':
-        return <AlertTriangle className="h-5 w-5 text-blue-500" />;
+        return <AlertTriangle className="h-5 w-5 text-secondary" />;
       case 'validation':
         return <AlertTriangle className="h-5 w-5 text-orange-500" />;
       default:
-        return <AlertTriangle className="h-5 w-5 text-gray-500" />;
+        return <AlertTriangle className="h-5 w-5 text-muted-foreground" />;
     }
   }
 
@@ -180,10 +180,10 @@ export class SupabaseErrorBoundary extends Component<Props, State> {
                     <summary className="cursor-pointer text-sm font-medium">
                       Error Details (Development)
                     </summary>
-                    <pre className="mt-2 text-xs bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-auto">
+                    <pre className="mt-2 text-xs bg-muted p-2 rounded overflow-auto">
                       {this.sanitizeError(this.state.error).message}
                     </pre>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Error ID: {this.state.errorId}
                     </p>
                   </details>

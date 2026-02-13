@@ -52,11 +52,11 @@ export function StandardSizeSection({ category }: StandardSizeSectionProps) {
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold dark:text-gray-100">Standard Size</h2>
+        <h2 className="text-lg font-semibold text-foreground">Standard Size</h2>
         <button
           onClick={() => setIsEditing(true)}
           aria-label={`Edit standard size for ${category.name}`}
-          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground text-foreground bg-card border border-border rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <Edit className="h-4 w-4" aria-hidden="true" />
           Edit
@@ -64,19 +64,19 @@ export function StandardSizeSection({ category }: StandardSizeSectionProps) {
       </div>
 
       {standardSize ? (
-        <div className="space-y-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <div className="space-y-3 p-4 bg-muted rounded-lg">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Primary Size</dt>
-              <dd className="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <dt className="text-sm font-medium text-muted-foreground">Primary Size</dt>
+              <dd className="mt-1 text-lg font-semibold text-foreground">
                 {standardSize.primary_size}
               </dd>
             </div>
             
             {standardSize.secondary_size && (
               <div>
-                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Secondary Size</dt>
-                <dd className="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                <dt className="text-sm font-medium text-muted-foreground">Secondary Size</dt>
+                <dd className="mt-1 text-lg font-semibold text-foreground">
                   {standardSize.secondary_size}
                 </dd>
               </div>
@@ -85,27 +85,27 @@ export function StandardSizeSection({ category }: StandardSizeSectionProps) {
 
           {standardSize.notes && (
             <div>
-              <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Notes</dt>
-              <dd className="mt-1 text-sm text-gray-700 dark:text-gray-300">
+              <dt className="text-sm font-medium text-muted-foreground">Notes</dt>
+              <dd className="mt-1 text-sm text-muted-foreground">
                 {standardSize.notes}
               </dd>
             </div>
           )}
 
-          <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+          <div className="pt-2 border-t border-border">
+            <p className="text-xs text-muted-foreground">
               Last updated: {formatTimestamp(standardSize.updated_at)}
             </p>
           </div>
         </div>
       ) : (
-        <div className="p-6 text-center bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
-          <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
+        <div className="p-6 text-center bg-muted rounded-lg border-2 border-dashed border-border">
+          <p className="text-sm text-muted-foreground mb-3">
             No standard size set for this category
           </p>
           <button
             onClick={() => setIsEditing(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             Add Standard Size
           </button>

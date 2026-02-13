@@ -29,12 +29,12 @@ export default async function TodayPage() {
   if (wardrobeError) {
     console.error('Failed to fetch wardrobe:', wardrobeError);
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-900">
+      <div className="min-h-screen bg-background">
         <TopBarWrapper user={user} />
         <div className="container mx-auto p-4 pt-24">
-          <h1 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">Today&apos;s Outfit</h1>
+          <h1 className="text-2xl font-bold mb-4 text-foreground">Today&apos;s Outfit</h1>
           <div className="text-center py-12">
-            <p className="text-lg text-red-600 dark:text-red-400 mb-4">
+            <p className="text-lg text-destructive mb-4">
               Error loading wardrobe. Please try again.
             </p>
           </div>
@@ -44,7 +44,7 @@ export default async function TodayPage() {
   }
   
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900">
+    <div className="min-h-screen bg-background">
       <TopBarWrapper user={user} />
       <TodayPageClient wardrobeItems={wardrobeItems || []} />
     </div>

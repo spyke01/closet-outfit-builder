@@ -84,8 +84,8 @@ export function AnchorCategoryPageClient({ categoryName }: AnchorCategoryPageCli
       <div className="flex-1 w-full max-w-7xl mx-auto p-6">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800 mx-auto mb-4"></div>
-            <p className="text-slate-600 dark:text-slate-400">Loading anchor items...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading anchor items...</p>
           </div>
         </div>
       </div>
@@ -133,10 +133,10 @@ export function AnchorCategoryPageClient({ categoryName }: AnchorCategoryPageCli
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+            <h1 className="text-3xl font-bold text-foreground">
               Anchor: {categoryName}
             </h1>
-            <p className="text-slate-600 dark:text-slate-400 mt-1">
+            <p className="text-muted-foreground mt-1">
               Select an anchor item to build outfits around
             </p>
           </div>
@@ -158,12 +158,12 @@ export function AnchorCategoryPageClient({ categoryName }: AnchorCategoryPageCli
         <Card>
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <Shirt className="h-5 w-5 text-slate-500 mt-0.5" />
+              <Shirt className="h-5 w-5 text-muted-foreground mt-0.5" />
               <div>
-                <h3 className="font-medium text-slate-900 dark:text-slate-100 mb-1">
+                <h3 className="font-medium text-foreground mb-1">
                   Anchor-Based Outfit Building
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-sm text-muted-foreground">
                   Choose a {categoryName.toLowerCase()} item as your anchor piece. We&apos;ll help you find 
                   compatible items from other categories to create complete outfits that work well together.
                 </p>
@@ -179,30 +179,30 @@ export function AnchorCategoryPageClient({ categoryName }: AnchorCategoryPageCli
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Search */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label className="block text-sm font-medium text-muted-foreground mb-2">
                     Search Items
                   </label>
                   <div className="relative">
-                    <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
+                    <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
                     <input
                       type="text"
                       placeholder="Search by name, brand, color..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                      className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                     />
                   </div>
                 </div>
 
                 {/* Sort */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label className="block text-sm font-medium text-muted-foreground mb-2">
                     Sort By
                   </label>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as 'newest' | 'oldest' | 'name' | 'brand')}
-                    className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                   >
                     <option value="newest">Newest First</option>
                     <option value="oldest">Oldest First</option>
@@ -232,7 +232,7 @@ export function AnchorCategoryPageClient({ categoryName }: AnchorCategoryPageCli
 
         {/* Results count */}
         <div className="flex items-center justify-between">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-muted-foreground">
             {categoryItems.length} {categoryName.toLowerCase()} item{categoryItems.length !== 1 ? 's' : ''} available
             {searchTerm && (
               <span className="ml-2">
@@ -247,11 +247,11 @@ export function AnchorCategoryPageClient({ categoryName }: AnchorCategoryPageCli
           <div className="text-center py-12">
             {items.filter(item => item.category_id === category.id && item.active).length === 0 ? (
               <>
-                <Shirt className="h-16 w-16 mx-auto text-slate-400 mb-4" />
-                <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
+                <Shirt className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">
                   No {categoryName.toLowerCase()} items yet
                 </h3>
-                <p className="text-slate-600 dark:text-slate-400 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Add some {categoryName.toLowerCase()} items to your wardrobe to use as anchor pieces.
                 </p>
                 <Link href="/wardrobe/items">
@@ -262,10 +262,10 @@ export function AnchorCategoryPageClient({ categoryName }: AnchorCategoryPageCli
               </>
             ) : (
               <>
-                <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
+                <h3 className="text-lg font-medium text-foreground mb-2">
                   No items match your search
                 </h3>
-                <p className="text-slate-600 dark:text-slate-400 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Try adjusting your search terms or filters.
                 </p>
                 <Button

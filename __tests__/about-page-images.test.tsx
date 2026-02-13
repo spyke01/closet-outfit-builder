@@ -81,8 +81,8 @@ describe('About Page Feature Card Images', () => {
     
     // Check that feature cards have dark mode classes
     const personalSecureCard = screen.getByText('Personal & Secure').closest('div');
-    expect(personalSecureCard?.className).toContain('dark:bg-slate-800');
-    expect(personalSecureCard?.className).toContain('dark:border-slate-700');
+    expect(personalSecureCard?.className).toContain('bg-card');
+    expect(personalSecureCard?.className).toContain('border-border');
   });
 
   it('should preserve existing card layout and styling', () => {
@@ -121,12 +121,12 @@ describe('About Page Feature Card Images', () => {
     
     // Check that text colors maintain proper contrast
     const heading = screen.getByText('Personal & Secure');
-    expect(heading.className).toContain('text-slate-900');
-    expect(heading.className).toContain('dark:text-slate-100');
+    expect(heading.className).toContain('text-foreground');
+    expect(heading.className).toContain('text-foreground');
     
     const description = screen.getByText(/Multi-user authentication/i);
-    expect(description.className).toContain('text-slate-700');
-    expect(description.className).toContain('dark:text-slate-300');
+    expect(description.className).toContain('text-muted-foreground');
+    expect(description.className).toContain('text-muted-foreground');
   });
 
   it('should use representative items for each feature', () => {

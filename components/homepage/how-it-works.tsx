@@ -32,13 +32,13 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-20 lg:py-32 bg-gradient-to-br from-slate-50 to-stone-50 dark:from-slate-800 dark:to-slate-900">
+    <section id="how-it-works" className="py-20 lg:py-32 bg-gradient-to-br from-muted to-muted from-card to-background">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="font-display text-4xl lg:text-5xl font-bold text-slate-900 dark:text-slate-100 mb-6">
+          <h2 className="font-display text-4xl lg:text-5xl font-bold text-foreground mb-6">
             How it works
           </h2>
-          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Getting started is effortless. Three simple steps to transform your daily outfit selection.
           </p>
         </div>
@@ -62,22 +62,22 @@ export function HowItWorks() {
                       {step.number}
                     </span>
                     <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center">
-                      <Icon className="w-8 h-8 text-blue-600 dark:text-slate-400" />
+                      <Icon className="w-8 h-8 text-primary text-muted-foreground" />
                     </div>
                   </div>
                   
-                  <h3 className="font-display text-3xl lg:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-6">
+                  <h3 className="font-display text-3xl lg:text-4xl font-bold text-foreground mb-6">
                     {step.title}
                   </h3>
                   
-                  <p className="text-xl text-slate-600 dark:text-slate-400 leading-relaxed mb-8">
+                  <p className="text-xl text-muted-foreground leading-relaxed mb-8">
                     {step.description}
                   </p>
                 </div>
                 
                 {/* Visual */}
                 <div className={`animate-slide-in-${isEven ? 'right' : 'left'} ${isEven ? '' : 'lg:col-start-1'}`}>
-                  <div className="relative bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 border border-slate-200 dark:border-slate-700">
+                  <div className="relative bg-card rounded-3xl shadow-2xl p-8 border border-border">
                     {/* Mock interface based on step */}
                     {step.image === 'upload' && (
                       <div className="space-y-6">
@@ -85,11 +85,11 @@ export function HowItWorks() {
                           <div className="w-24 h-24 bg-gradient-to-br from-amber-100 to-amber-200 rounded-3xl flex items-center justify-center mx-auto mb-4">
                             <Upload className="w-12 h-12 text-amber-600" />
                           </div>
-                          <p className="text-slate-600 dark:text-slate-400">Drag & drop your photos</p>
+                          <p className="text-muted-foreground">Drag & drop your photos</p>
                         </div>
                         <div className="grid grid-cols-3 gap-3">
                           {uploadStepItems.map((item, i) => (
-                            <div key={i} className="aspect-square bg-white dark:bg-slate-700 rounded-xl overflow-hidden shadow-sm">
+                            <div key={i} className="aspect-square bg-card rounded-xl overflow-hidden shadow-sm">
                               <Image
                                 src={item.src}
                                 alt={item.alt}
@@ -106,13 +106,13 @@ export function HowItWorks() {
                     {step.image === 'ai' && (
                       <div className="space-y-6">
                         <div className="flex items-center justify-between">
-                          <span className="text-slate-900 dark:text-slate-100 font-semibold">Generating outfits...</span>
+                          <span className="text-foreground font-semibold">Generating outfits...</span>
                           <Sparkles className="w-6 h-6 text-amber-600 animate-pulse" />
                         </div>
                         <div className="space-y-3">
                           {aiMatchingItems.map((item, i) => (
                             <div key={i} className="flex items-center gap-3">
-                              <div className="w-12 h-12 bg-white dark:bg-slate-700 rounded-lg overflow-hidden shadow-sm">
+                              <div className="w-12 h-12 bg-card rounded-lg overflow-hidden shadow-sm">
                                 <Image
                                   src={item.src}
                                   alt={item.alt}
@@ -121,7 +121,7 @@ export function HowItWorks() {
                                   className="w-full h-full object-contain p-1"
                                 />
                               </div>
-                              <div className="flex-1 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                              <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                                 <div 
                                   className="h-full bg-amber-500 rounded-full transition-all duration-1000"
                                   style={{ width: `${80 + i * 5}%` }}
@@ -136,12 +136,12 @@ export function HowItWorks() {
                     {step.image === 'outfit' && (
                       <div className="space-y-6">
                         <div className="flex items-center justify-between">
-                          <span className="text-slate-900 dark:text-slate-100 font-semibold">Perfect match!</span>
+                          <span className="text-foreground font-semibold">Perfect match!</span>
                           <Heart className="w-6 h-6 text-red-500 fill-current" />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                           {finalOutfitItems.map((item, i) => (
-                            <div key={i} className="aspect-square bg-white dark:bg-slate-700 rounded-2xl overflow-hidden shadow-sm">
+                            <div key={i} className="aspect-square bg-card rounded-2xl overflow-hidden shadow-sm">
                               <Image
                                 src={item.src}
                                 alt={item.alt}
@@ -171,7 +171,7 @@ export function HowItWorks() {
           <Link href="/auth/sign-up">
             <Button 
               size="lg"
-              className="bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600 text-white dark:text-white px-8 py-4 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+              className="bg-primary text-primary-foreground hover:opacity-90 px-8 py-4 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
             >
               Start Your Free Trial
             </Button>

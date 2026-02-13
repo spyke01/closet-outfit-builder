@@ -7,16 +7,16 @@ import { Cloud, Loader2 } from 'lucide-react';
 // Loading component for weather widget
 const WeatherWidgetLoading: React.FC<{ className?: string }> = ({ className = "" }) => (
   <div className={`flex items-center gap-2 ${className}`}>
-    <Loader2 size={16} className="animate-spin text-gray-400" />
-    <span className="text-gray-500 dark:text-gray-400 text-xs">Loading weather...</span>
+    <Loader2 size={16} className="animate-spin text-muted-foreground" />
+    <span className="text-muted-foreground text-xs">Loading weather...</span>
   </div>
 );
 
 // Fallback component when weather is disabled
 const WeatherWidgetFallback: React.FC<{ className?: string }> = ({ className = "" }) => (
   <div className={`flex items-center gap-2 ${className}`}>
-    <Cloud size={16} className="text-gray-400" />
-    <span className="text-gray-500 dark:text-gray-400 text-xs">Weather disabled</span>
+    <Cloud size={16} className="text-muted-foreground" />
+    <span className="text-muted-foreground text-xs">Weather disabled</span>
   </div>
 );
 

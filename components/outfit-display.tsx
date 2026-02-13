@@ -328,17 +328,17 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
       return (
         <div className="flex-1 flex items-center justify-center p-4 sm:p-6">
           <div className="text-center max-w-md w-full">
-            <Shirt size={48} className="text-slate-300 mx-auto mb-4" />
-            <h3 className="text-lg sm:text-xl font-light text-slate-600 dark:text-slate-400 mb-2">
+            <Shirt size={48} className="text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg sm:text-xl font-light text-muted-foreground mb-2">
               Start Building Your Look
             </h3>
-            <p className="text-slate-500 dark:text-slate-400 mb-6 text-sm sm:text-base">
+            <p className="text-muted-foreground mb-6 text-sm sm:text-base">
               Select a category above to begin composing your outfit, or use Randomize for instant inspiration.
             </p>
             <button
               onClick={handleRandomize}
               disabled={isGenerating || state.isTransitioning}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors mx-auto min-h-[44px] w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-card text-white rounded-lg hover:bg-card disabled:bg-muted disabled:cursor-not-allowed transition-colors mx-auto min-h-[44px] w-full sm:w-auto"
             >
               {(isGenerating || state.isTransitioning) ? (
                 <>
@@ -376,12 +376,12 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
           
           <div className="relative">
             {(isGenerating || state.isTransitioning) && (
-              <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl">
+              <div className="absolute inset-0 bg-white/80 bg-background/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl">
                 <div className="flex flex-col items-center gap-3">
                   <SpinningIcon>
-                    <Loader2 size={32} className="text-slate-600 dark:text-slate-300" />
+                    <Loader2 size={32} className="text-muted-foreground" />
                   </SpinningIcon>
-                  <p className="text-slate-600 dark:text-slate-300 font-medium">Generating new outfit…</p>
+                  <p className="text-muted-foreground font-medium">Generating new outfit…</p>
                 </div>
               </div>
             )}
@@ -406,7 +406,7 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
                 <button
                   onClick={handleRandomize}
                   disabled={isGenerating || state.isTransitioning}
-                  className="flex items-center justify-center gap-2 px-6 sm:px-8 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors mx-auto min-h-[44px] w-full sm:w-auto"
+                  className="flex items-center justify-center gap-2 px-6 sm:px-8 py-3 bg-card text-white rounded-lg hover:bg-card disabled:bg-muted disabled:cursor-not-allowed transition-colors mx-auto min-h-[44px] w-full sm:w-auto"
                 >
                   {(isGenerating || state.isTransitioning) ? (
                     <>
@@ -431,7 +431,7 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
                 <button
                   onClick={handleSaveOutfit}
                   disabled={state.isSaving || !hasCompleteOutfit}
-                  className="flex items-center gap-2 px-4 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 border border-border text-muted-foreground rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {state.isSaving ? (
                     <>
