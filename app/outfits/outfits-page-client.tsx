@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useEffect, startTransition } from 'react';
 import { useOutfits, useDeleteOutfit } from '@/lib/hooks/use-outfits';
 import { OutfitList } from '@/components/outfit-list';
 import { OutfitSimpleLayout } from '@/components/outfit-simple-layout';
@@ -18,25 +18,85 @@ import {
   Heart,
   AlertCircle,
   Shirt,
-  Trash2
+  Trash2,
+  X
 } from 'lucide-react';
 import Link from 'next/link';
 import { Outfit } from '@/lib/types/database';
 import { convertOutfitToSelection, canGenerateScoreBreakdown } from '@/lib/utils/outfit-conversion';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+
+const FILTER_OPTIONS = ['all', 'loved', 'curated', 'generated'] as const;
+const SORT_OPTIONS = ['newest', 'oldest', 'score', 'name'] as const;
+
+type FilterBy = (typeof FILTER_OPTIONS)[number];
+type SortBy = (typeof SORT_OPTIONS)[number];
 
 export function OutfitsPageClient() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchParamsKey = searchParams.toString();
+
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [layoutType, setLayoutType] = useState<'grid' | 'visual'>('grid');
   const [showFilters, setShowFilters] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterBy, setFilterBy] = useState<'all' | 'loved' | 'curated' | 'generated'>('all');
-  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'score' | 'name'>('newest');
+  const [filterBy, setFilterBy] = useState<FilterBy>('all');
+  const [sortBy, setSortBy] = useState<SortBy>('newest');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [outfitToDelete, setOutfitToDelete] = useState<Outfit | null>(null);
 
   // Fetch data
   const { data: outfits = [], isLoading, error } = useOutfits();
   const deleteOutfitMutation = useDeleteOutfit();
+
+  const hasActiveFilters = Boolean(searchTerm || filterBy !== 'all' || sortBy !== 'newest');
+
+  const updateQueryParams = useCallback((updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, value]) => {
+      if (!value) {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
+    });
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  }, [pathname, router, searchParamsKey]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParamsKey);
+    const nextSearch = params.get('q') ?? '';
+    const nextFilter = params.get('filter');
+    const nextSort = params.get('sort');
+    const nextView = params.get('view');
+    const nextLayout = params.get('layout');
+    const normalizedFilter: FilterBy = FILTER_OPTIONS.includes(nextFilter as FilterBy) ? nextFilter as FilterBy : 'all';
+    const normalizedSort: SortBy = SORT_OPTIONS.includes(nextSort as SortBy) ? nextSort as SortBy : 'newest';
+    const normalizedView: 'grid' | 'list' = nextView === 'list' ? 'list' : 'grid';
+    const normalizedLayout: 'grid' | 'visual' = nextLayout === 'visual' ? 'visual' : 'grid';
+
+    setSearchTerm(prev => (prev === nextSearch ? prev : nextSearch));
+    setFilterBy(prev => (prev === normalizedFilter ? prev : normalizedFilter));
+    setSortBy(prev => (prev === normalizedSort ? prev : normalizedSort));
+    setViewMode(prev => (prev === normalizedView ? prev : normalizedView));
+    setLayoutType(prev => (prev === normalizedLayout ? prev : normalizedLayout));
+  }, [searchParamsKey]);
+
+  // Debounce URL sync for search to keep typing responsive.
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      const params = new URLSearchParams(searchParamsKey);
+      const currentQuery = params.get('q') ?? '';
+      if (currentQuery !== searchTerm) {
+        updateQueryParams({ q: searchTerm || null });
+      }
+    }, 250);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [searchTerm, searchParamsKey, updateQueryParams]);
 
   // Filter and sort outfits
   const filteredAndSortedOutfits = useMemo(() => {
@@ -80,6 +140,40 @@ export function OutfitsPageClient() {
   const handleOutfitSelect = (outfit: Outfit) => {
     window.location.href = `/outfits/${outfit.id}`;
   };
+
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+  };
+
+  const handleFilterChange = (value: FilterBy) => {
+    setFilterBy(value);
+    updateQueryParams({ filter: value === 'all' ? null : value });
+  };
+
+  const handleSortChange = (value: SortBy) => {
+    setSortBy(value);
+    updateQueryParams({ sort: value === 'newest' ? null : value });
+  };
+
+  const handleViewModeChange = (value: 'grid' | 'list') => {
+    setViewMode(value);
+    updateQueryParams({ view: value === 'grid' ? null : value });
+  };
+
+  const handleLayoutTypeChange = (value: 'grid' | 'visual') => {
+    setLayoutType(value);
+    updateQueryParams({ layout: value === 'grid' ? null : value });
+  };
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setFilterBy('all');
+    setSortBy('newest');
+    updateQueryParams({ q: null, filter: null, sort: null });
+  };
+
+  const filterPillBase =
+    'h-10 px-4 rounded-lg border text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
 
   const handleDeleteOutfit = async (outfit: Outfit) => {
     setOutfitToDelete(outfit);
@@ -136,34 +230,36 @@ export function OutfitsPageClient() {
             </p>
           </div>
           
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               variant="outline"
-              size="sm"
+              size="default"
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2"
+              className="h-10 px-4 flex items-center gap-2 bg-card border-border text-foreground hover:bg-muted"
+              aria-label={showFilters ? 'Hide advanced filters' : 'Show advanced filters'}
+              aria-expanded={showFilters}
             >
               <Filter size={16} />
-              Filters
+              More Filters
             </Button>
             
             <div className="flex border border-border rounded-lg">
-              <Button
-                variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('grid')}
-                className="rounded-r-none"
-              >
-                <Grid size={16} />
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('list')}
-                className="rounded-l-none"
-              >
-                <List size={16} />
-              </Button>
+                <Button
+                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                  size="default"
+                  onClick={() => handleViewModeChange('grid')}
+                  className="h-10 rounded-r-none"
+                >
+                  <Grid size={16} />
+                </Button>
+                <Button
+                  variant={viewMode === 'list' ? 'default' : 'ghost'}
+                  size="default"
+                  onClick={() => handleViewModeChange('list')}
+                  className="h-10 rounded-l-none"
+                >
+                  <List size={16} />
+                </Button>
             </div>
             
             {/* Layout Type Toggle (only show in grid mode) */}
@@ -171,18 +267,18 @@ export function OutfitsPageClient() {
               <div className="flex border border-border rounded-lg">
                 <Button
                   variant={layoutType === 'grid' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setLayoutType('grid')}
-                  className="rounded-r-none text-xs px-2"
+                  size="default"
+                  onClick={() => handleLayoutTypeChange('grid')}
+                  className="h-10 rounded-r-none text-xs px-3"
                   title="Organized Grid"
                 >
                   Grid
                 </Button>
                 <Button
                   variant={layoutType === 'visual' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setLayoutType('visual')}
-                  className="rounded-l-none text-xs px-2"
+                  size="default"
+                  onClick={() => handleLayoutTypeChange('visual')}
+                  className="h-10 rounded-l-none text-xs px-3"
                   title="Original Visual"
                 >
                   Visual
@@ -199,86 +295,124 @@ export function OutfitsPageClient() {
           </div>
         </div>
 
-        {/* Filters and Search */}
+        <Card className="rounded-lg bg-card border-border">
+          <CardContent className="p-4 space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+              <div className="relative lg:col-span-2">
+                <label htmlFor="outfit-search" className="sr-only">
+                  Search outfits
+                </label>
+                <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+                <input
+                  id="outfit-search"
+                  type="search"
+                  name="search"
+                  autoComplete="off"
+                  spellCheck={false}
+                  placeholder="Search outfits by name, item, or brand..."
+                  value={searchTerm}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
+                  aria-label="Search outfits by name, item, or brand"
+                />
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {FILTER_OPTIONS.map(option => {
+                  const labelMap: Record<FilterBy, string> = {
+                    all: 'All',
+                    loved: 'Loved',
+                    curated: 'Curated',
+                    generated: 'Generated',
+                  };
+                  const selected = filterBy === option;
+                  return (
+                    <button
+                      key={option}
+                      onClick={() => handleFilterChange(option)}
+                      aria-pressed={selected}
+                      className={`${filterPillBase} ${
+                        selected
+                          ? 'bg-primary text-primary-foreground border-primary'
+                          : 'bg-card text-muted-foreground border-border hover:bg-muted'
+                      }`}
+                    >
+                      {labelMap[option]}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {hasActiveFilters && (
+              <div className="flex flex-wrap items-center gap-2 text-sm">
+                <span className="text-muted-foreground">Active:</span>
+                {searchTerm && (
+                  <button
+                    onClick={() => handleSearchChange('')}
+                    className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-muted transition-colors"
+                    aria-label="Clear search filter"
+                  >
+                    Search: {searchTerm}
+                    <X size={14} />
+                  </button>
+                )}
+                {filterBy !== 'all' && (
+                  <button
+                    onClick={() => handleFilterChange('all')}
+                    className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-muted transition-colors"
+                    aria-label="Clear type filter"
+                  >
+                    Type: {filterBy}
+                    <X size={14} />
+                  </button>
+                )}
+                {sortBy !== 'newest' && (
+                  <button
+                    onClick={() => handleSortChange('newest')}
+                    className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-muted transition-colors"
+                    aria-label="Reset sort order"
+                  >
+                    Sort: {sortBy}
+                    <X size={14} />
+                  </button>
+                )}
+                <Button variant="ghost" size="default" className="h-10 px-4" onClick={clearFilters}>
+                  Clear all
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Advanced Filters */}
         {showFilters && (
-          <Card>
+          <Card className="rounded-lg bg-card border-border">
             <CardContent className="p-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Search */}
-                <div>
-                  <label htmlFor="outfit-search" className="block text-sm font-medium text-muted-foreground mb-2">
-                    Search
-                  </label>
-                  <div className="relative">
-                    <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      id="outfit-search"
-                      type="search"
-                      name="search"
-                      autoComplete="off"
-                      spellCheck={false}
-                      placeholder="Search outfits..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
-                      aria-label="Search outfits by name or item"
-                    />
-                  </div>
-                </div>
-
-                {/* Filter */}
-                <div>
-                  <label htmlFor="outfit-filter" className="block text-sm font-medium text-muted-foreground mb-2">
-                    Filter
-                  </label>
-                  <select
-                    id="outfit-filter"
-                    value={filterBy}
-                    onChange={(e) => setFilterBy(e.target.value as any)}
-                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
-                    aria-label="Filter outfits by type"
-                  >
-                    <option value="all">All Outfits</option>
-                    <option value="loved">Loved</option>
-                    <option value="curated">Curated</option>
-                    <option value="generated">Generated</option>
-                  </select>
-                </div>
-
-                {/* Sort */}
-                <div>
-                  <label htmlFor="outfit-sort" className="block text-sm font-medium text-muted-foreground mb-2">
-                    Sort By
-                  </label>
-                  <select
-                    id="outfit-sort"
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as any)}
-                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
-                    aria-label="Sort outfits by criteria"
-                  >
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="score">Highest Score</option>
-                    <option value="name">Name</option>
-                  </select>
-                </div>
-
-                {/* Clear Filters */}
-                <div className="flex items-end">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setSearchTerm('');
-                      setFilterBy('all');
-                      setSortBy('newest');
-                    }}
-                    className="w-full"
-                  >
-                    Clear Filters
-                  </Button>
-                </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <label htmlFor="outfit-sort" className="text-sm font-medium text-muted-foreground">
+                  Sort by
+                </label>
+                <select
+                  id="outfit-sort"
+                  value={sortBy}
+                  onChange={(e) => handleSortChange(e.target.value as SortBy)}
+                  className="h-10 min-w-[220px] px-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
+                  aria-label="Sort outfits by criteria"
+                >
+                  <option value="newest">Newest First</option>
+                  <option value="oldest">Oldest First</option>
+                  <option value="score">Highest Score</option>
+                  <option value="name">Name</option>
+                </select>
+                <Button
+                  variant="outline"
+                  size="default"
+                  onClick={clearFilters}
+                  className="h-10 px-4 bg-card border-border text-foreground hover:bg-muted"
+                >
+                  Clear Filters
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -325,10 +459,7 @@ export function OutfitsPageClient() {
                 </p>
                 <Button
                   variant="outline"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setFilterBy('all');
-                  }}
+                  onClick={clearFilters}
                 >
                   Clear Filters
                 </Button>

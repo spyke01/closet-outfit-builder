@@ -74,6 +74,7 @@ describe('Dynamic Component Imports', () => {
         onSearchChange={() => {}}
         onTagToggle={() => {}}
         onCategoryToggle={() => {}}
+        onClearAll={() => {}}
         itemCount={0}
         totalCount={0}
       />

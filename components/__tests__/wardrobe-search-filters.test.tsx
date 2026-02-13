@@ -27,6 +27,7 @@ describe('WardrobeSearchFilters', () => {
     onSearchChange: vi.fn(),
     onTagToggle: vi.fn(),
     onCategoryToggle: vi.fn(),
+    onClearAll: vi.fn(),
     itemCount: 10,
     totalCount: 15,
   };
@@ -53,22 +54,24 @@ describe('WardrobeSearchFilters', () => {
   it('toggles filters visibility', () => {
     render(<WardrobeSearchFilters {...mockProps} />);
     
-    // Filters should be hidden initially
-    expect(screen.queryByPlaceholderText('Search items across all categories...')).not.toBeInTheDocument();
+    // Search is always visible
+    expect(screen.getByPlaceholderText('Search items across all categories...')).toBeInTheDocument();
+    // Advanced category controls are collapsed initially
+    expect(screen.queryByLabelText('Jacket')).not.toBeInTheDocument();
     
-    // Click filters button
-    const filtersButton = screen.getByText('Filters');
+    // Open advanced filters
+    const filtersButton = screen.getByText('More Filters');
     fireEvent.click(filtersButton);
     
-    // Filters should now be visible
-    expect(screen.getByPlaceholderText('Search items across all categories...')).toBeInTheDocument();
+    // Advanced categories should now be visible
+    expect(screen.getByLabelText('Jacket')).toBeInTheDocument();
   });
 
   it('calls onSearchChange when search input changes', async () => {
     render(<WardrobeSearchFilters {...mockProps} />);
     
     // Open filters
-    const filtersButton = screen.getByText('Filters');
+    const filtersButton = screen.getByText('More Filters');
     fireEvent.click(filtersButton);
     
     const searchInput = screen.getByPlaceholderText('Search items across all categories...');
@@ -83,7 +86,7 @@ describe('WardrobeSearchFilters', () => {
     render(<WardrobeSearchFilters {...mockProps} />);
     
     // Open filters
-    const filtersButton = screen.getByText('Filters');
+    const filtersButton = screen.getByText('More Filters');
     fireEvent.click(filtersButton);
     
     const jacketCheckbox = screen.getByLabelText('Jacket');
@@ -96,7 +99,7 @@ describe('WardrobeSearchFilters', () => {
     render(<WardrobeSearchFilters {...mockProps} />);
     
     // Open filters
-    const filtersButton = screen.getByText('Filters');
+    const filtersButton = screen.getByText('More Filters');
     fireEvent.click(filtersButton);
     
     // Check that all categories are present as checkboxes
@@ -112,7 +115,7 @@ describe('WardrobeSearchFilters', () => {
     render(<WardrobeSearchFilters {...mockProps} />);
     
     // Open filters
-    const filtersButton = screen.getByText('Filters');
+    const filtersButton = screen.getByText('More Filters');
     fireEvent.click(filtersButton);
     
     const refinedTag = screen.getByText('Refined');
@@ -127,7 +130,7 @@ describe('WardrobeSearchFilters', () => {
     render(<WardrobeSearchFilters {...mockProps} />);
     
     // Open filters
-    const filtersButton = screen.getByText('Filters');
+    const filtersButton = screen.getByText('More Filters');
     fireEvent.click(filtersButton);
     
     expect(screen.getByText('Refined')).toBeInTheDocument();
@@ -147,7 +150,7 @@ describe('WardrobeSearchFilters', () => {
     );
     
     // Open filters
-    const filtersButton = screen.getByText('Filters');
+    const filtersButton = screen.getByText('More Filters');
     fireEvent.click(filtersButton);
     
     const refinedTag = screen.getByText('Refined');
@@ -168,7 +171,7 @@ describe('WardrobeSearchFilters', () => {
     );
     
     // Open filters
-    const filtersButton = screen.getByText('Filters');
+    const filtersButton = screen.getByText('More Filters');
     fireEvent.click(filtersButton);
     
     // Should show filtering indicator
@@ -214,7 +217,7 @@ describe('WardrobeSearchFilters', () => {
     );
     
     // Open filters
-    const filtersButton = screen.getByText('Filters');
+    const filtersButton = screen.getByText('More Filters');
     fireEvent.click(filtersButton);
     
     const jacketCheckbox = screen.getByLabelText('Jacket') as HTMLInputElement;
@@ -230,7 +233,7 @@ describe('WardrobeSearchFilters', () => {
     render(<WardrobeSearchFilters {...mockProps} />);
     
     // Open filters
-    const filtersButton = screen.getByText('Filters');
+    const filtersButton = screen.getByText('More Filters');
     fireEvent.click(filtersButton);
     
     const jacketCheckbox = screen.getByLabelText('Jacket');
@@ -243,7 +246,7 @@ describe('WardrobeSearchFilters', () => {
     render(<WardrobeSearchFilters {...mockProps} />);
     
     // Open filters
-    const filtersButton = screen.getByText('Filters');
+    const filtersButton = screen.getByText('More Filters');
     fireEvent.click(filtersButton);
     
     const overshirtCheckbox = screen.getByLabelText('Overshirt');
@@ -263,7 +266,7 @@ describe('WardrobeSearchFilters', () => {
     );
     
     // Open filters
-    const filtersButton = screen.getByText('Filters');
+    const filtersButton = screen.getByText('More Filters');
     fireEvent.click(filtersButton);
     
     const jacketCheckbox = screen.getByLabelText('Jacket') as HTMLInputElement;
@@ -281,7 +284,7 @@ describe('WardrobeSearchFilters', () => {
     );
     
     // Open filters
-    const filtersButton = screen.getByText('Filters');
+    const filtersButton = screen.getByText('More Filters');
     fireEvent.click(filtersButton);
     
     const overshirtCheckbox = screen.getByLabelText('Overshirt') as HTMLInputElement;
@@ -292,7 +295,7 @@ describe('WardrobeSearchFilters', () => {
     render(<WardrobeSearchFilters {...mockProps} />);
     
     // Open filters
-    const filtersButton = screen.getByText('Filters');
+    const filtersButton = screen.getByText('More Filters');
     fireEvent.click(filtersButton);
     
     // Verify that both new categories are available as checkboxes
@@ -307,7 +310,7 @@ describe('WardrobeSearchFilters', () => {
     render(<WardrobeSearchFilters {...mockProps} />);
     
     // Open filters
-    const filtersButton = screen.getByText('Filters');
+    const filtersButton = screen.getByText('More Filters');
     fireEvent.click(filtersButton);
     
     // Select multiple categories
@@ -325,7 +328,7 @@ describe('WardrobeSearchFilters', () => {
     render(<WardrobeSearchFilters {...mockProps} />);
     
     // Open filters
-    const filtersButton = screen.getByText('Filters');
+    const filtersButton = screen.getByText('More Filters');
     fireEvent.click(filtersButton);
     
     const allCategoriesCheckbox = screen.getByLabelText('All Categories') as HTMLInputElement;
@@ -343,7 +346,7 @@ describe('WardrobeSearchFilters', () => {
     );
     
     // Open filters
-    const filtersButton = screen.getByText('Filters');
+    const filtersButton = screen.getByText('More Filters');
     fireEvent.click(filtersButton);
     
     const allCategoriesCheckbox = screen.getByLabelText('All Categories') as HTMLInputElement;
@@ -361,7 +364,7 @@ describe('WardrobeSearchFilters', () => {
     );
     
     // Open filters
-    const filtersButton = screen.getByText('Filters');
+    const filtersButton = screen.getByText('More Filters');
     fireEvent.click(filtersButton);
     
     const allCategoriesCheckbox = screen.getByLabelText('All Categories');

@@ -64,6 +64,7 @@ describe('Category Filtering Properties', () => {
             onSearchChange: vi.fn(),
             onTagToggle: vi.fn(),
             onCategoryToggle: vi.fn(),
+    onClearAll: vi.fn(),
             itemCount,
             totalCount,
           };
@@ -77,7 +78,7 @@ describe('Category Filtering Properties', () => {
           expect(screen.getByText(`${itemCount} item${itemCount !== 1 ? 's' : ''} found`)).toBeInTheDocument();
           
           // Property: Should have filters button
-          const filtersButton = screen.getByText('Filters');
+          const filtersButton = screen.getByText('More Filters');
           expect(filtersButton).toBeInTheDocument();
           
           // Property: No old "Jacket/Overshirt" category should exist anywhere
@@ -206,6 +207,7 @@ describe('Category Filtering Properties', () => {
             onSearchChange: vi.fn(),
             onTagToggle: vi.fn(),
             onCategoryToggle: vi.fn(),
+    onClearAll: vi.fn(),
             itemCount: 10,
             totalCount: 15,
           };
@@ -216,7 +218,7 @@ describe('Category Filtering Properties', () => {
           expect(screen.getByText('My Wardrobe')).toBeInTheDocument();
           
           // Property: Should have filters functionality
-          const filtersButton = screen.getByText('Filters');
+          const filtersButton = screen.getByText('More Filters');
           expect(filtersButton).toBeInTheDocument();
           
           // Property: Should show correct counts

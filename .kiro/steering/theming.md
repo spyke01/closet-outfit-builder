@@ -79,6 +79,15 @@ Do not add redundant `dark:*` color overrides unless there is a true, intentiona
   - `bg-muted` for pulsing blocks
 - This prevents white flashes during route transitions.
 
+### Filter toolbars
+- Toolbar container: `bg-card border border-border rounded-lg`
+- Search input: semantic input recipe (`bg-card border-border text-foreground focus:ring-ring`)
+- Quick filter pills:
+  - Selected: `bg-primary text-primary-foreground border-primary`
+  - Unselected: `bg-card text-muted-foreground border-border hover:bg-muted`
+- Active filter chips:
+  - `bg-card border border-border text-foreground`
+
 ## 5) Route transition + Suspense rule
 
 Any layout `Suspense` fallback that visually replaces themed UI must use the same semantic token surfaces as the final component.

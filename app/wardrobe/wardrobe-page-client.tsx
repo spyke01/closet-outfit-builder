@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useCallback, startTransition } from 'react';
+import React, { useState, useMemo, useCallback, startTransition, useEffect } from 'react';
 import Image from 'next/image';
 import { useCategories } from '@/lib/hooks/use-categories';
 import { useWardrobeItems } from '@/lib/hooks/use-wardrobe-items';
@@ -11,20 +11,71 @@ import { Grid, List } from 'lucide-react';
 
 
 import { WardrobeItem } from '@/lib/types/database';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 export function WardrobePageClient() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchParamsKey = searchParams.toString();
+
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
+  const [sortBy, setSortBy] = useState<'default' | 'name-asc' | 'name-desc'>('default');
 
   // Fetch data using hooks
   const { data: categories = [], isLoading: categoriesLoading, error: categoriesError } = useCategories();
   const { data: items = [], isLoading: itemsLoading, error: itemsError } = useWardrobeItems();
 
+  const updateQueryParams = useCallback((updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, value]) => {
+      if (!value) {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
+    });
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  }, [pathname, router, searchParamsKey]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParamsKey);
+    const q = params.get('q') ?? '';
+    const tagsParam = params.get('tags') ?? '';
+    const categoriesParam = params.get('categories') ?? '';
+    const viewParam = params.get('view');
+    const sortParam = params.get('sort');
+
+    const tags = tagsParam ? tagsParam.split(',').filter(Boolean) : [];
+    const categoryIds = categoriesParam ? categoriesParam.split(',').filter(Boolean) : [];
+
+    setSearchTerm(prev => (prev === q ? prev : q));
+    setSelectedTags(new Set(tags));
+    setSelectedCategories(new Set(categoryIds));
+    setViewMode(viewParam === 'list' ? 'list' : 'grid');
+    setSortBy(sortParam === 'name-asc' || sortParam === 'name-desc' ? sortParam : 'default');
+  }, [searchParamsKey]);
+
+  // Debounce URL sync for search to keep typing responsive.
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      const params = new URLSearchParams(searchParamsKey);
+      const currentQuery = params.get('q') ?? '';
+      if (currentQuery !== searchTerm) {
+        updateQueryParams({ q: searchTerm || null });
+      }
+    }, 250);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [searchTerm, searchParamsKey, updateQueryParams]);
+
   // Filter items by search term, tags, and categories
   const filteredItems = useMemo(() => {
-    let filtered = items;
+    let filtered = [...items];
 
     // Filter by search term
     if (searchTerm) {
@@ -46,8 +97,14 @@ export function WardrobePageClient() {
       filtered = filtered.filter(item => selectedCategories.has(item.category_id));
     }
 
+    if (sortBy === 'name-asc') {
+      filtered.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortBy === 'name-desc') {
+      filtered.sort((a, b) => b.name.localeCompare(a.name));
+    }
+
     return filtered;
-  }, [items, searchTerm, selectedTags, selectedCategories]);
+  }, [items, searchTerm, selectedTags, selectedCategories, sortBy]);
 
   // Group items by category for display
   const itemsByCategory = useMemo(() => {
@@ -70,9 +127,7 @@ export function WardrobePageClient() {
 
   // Search and filter handlers
   const handleSearchChange = useCallback((value: string) => {
-    startTransition(() => {
-      setSearchTerm(value);
-    });
+    setSearchTerm(value);
   }, []);
 
   const handleTagToggle = useCallback((tag: string) => {
@@ -84,10 +139,12 @@ export function WardrobePageClient() {
         } else {
           newTags.add(tag);
         }
+        const serialized = Array.from(newTags).sort().join(',');
+        updateQueryParams({ tags: serialized || null });
         return newTags;
       });
     });
-  }, []);
+  }, [updateQueryParams]);
 
   const handleCategoryToggle = useCallback((categoryId: string) => {
     startTransition(() => {
@@ -98,10 +155,25 @@ export function WardrobePageClient() {
         } else {
           newCategories.add(categoryId);
         }
+        const serialized = Array.from(newCategories).sort().join(',');
+        updateQueryParams({ categories: serialized || null });
         return newCategories;
       });
     });
-  }, []);
+  }, [updateQueryParams]);
+
+  const clearAllFilters = useCallback(() => {
+    setSearchTerm('');
+    setSelectedTags(new Set());
+    setSelectedCategories(new Set());
+    setSortBy('default');
+    updateQueryParams({ q: null, tags: null, categories: null, sort: null });
+  }, [updateQueryParams]);
+
+  const handleSortChange = useCallback((value: 'default' | 'name-asc' | 'name-desc') => {
+    setSortBy(value);
+    updateQueryParams({ sort: value === 'default' ? null : value });
+  }, [updateQueryParams]);
 
   if (categoriesError || itemsError) {
     return (
@@ -146,6 +218,9 @@ export function WardrobePageClient() {
           onSearchChange={handleSearchChange}
           onTagToggle={handleTagToggle}
           onCategoryToggle={handleCategoryToggle}
+          onClearAll={clearAllFilters}
+          sortBy={sortBy}
+          onSortChange={handleSortChange}
           itemCount={filteredItems.length}
           totalCount={items.length}
         />
@@ -156,7 +231,10 @@ export function WardrobePageClient() {
             <Button
               variant={viewMode === 'grid' ? 'default' : 'ghost'}
               size="sm"
-              onClick={() => setViewMode('grid')}
+              onClick={() => {
+                setViewMode('grid');
+                updateQueryParams({ view: null });
+              }}
               className="rounded-r-none"
             >
               <Grid size={16} />
@@ -164,7 +242,10 @@ export function WardrobePageClient() {
             <Button
               variant={viewMode === 'list' ? 'default' : 'ghost'}
               size="sm"
-              onClick={() => setViewMode('list')}
+              onClick={() => {
+                setViewMode('list');
+                updateQueryParams({ view: 'list' });
+              }}
               className="rounded-l-none"
             >
               <List size={16} />

@@ -199,6 +199,7 @@ describe('Multi-Category Selection Properties', () => {
             onSearchChange: vi.fn(),
             onTagToggle: vi.fn(),
             onCategoryToggle: vi.fn(),
+    onClearAll: vi.fn(),
             itemCount,
             totalCount,
           };
@@ -213,7 +214,7 @@ describe('Multi-Category Selection Properties', () => {
           expect(itemCountText).toBeTruthy();
 
           // Property: Should not show old combined category name
-          const filtersButtons = screen.queryAllByText('Filters');
+          const filtersButtons = screen.queryAllByText('More Filters');
           if (filtersButtons.length > 0) {
             fireEvent.click(filtersButtons[0]);
             const oldCategory = screen.queryByLabelText('Jacket/Overshirt');

@@ -166,3 +166,14 @@ This project uses a **semantic token-first theming system**. Treat direct color 
 ### Test alignment
 
 - UI tests should assert semantic class usage and user-visible behavior, not legacy palette class names.
+
+## Filtering Standard
+
+Filter/search interfaces must follow the project filtering contract in:
+- `.kiro/steering/filtering.md`
+
+Required baseline:
+- Always-visible primary search in toolbar
+- Progressive disclosure for advanced filters
+- Active filter chips + `Clear all`
+- URL-synced filter state via App Router query params
