@@ -25,6 +25,8 @@
     "build:restore": "node scripts/restore-dynamic-config.js",
     "start": "next start",
     "generate:outfits": "node scripts/generate-outfits.js",
+    "generate:wardrobe-images": "tsx scripts/generate-wardrobe-item-images.ts",
+    "compress:wardrobe-images": "tsx scripts/compress-wardrobe-images.ts",
     "migrate:colors": "tsx scripts/migrate-colors.ts",
     "migrate:colors:dry-run": "tsx scripts/migrate-colors.ts --dry-run",
     "migrate:normalize-grey": "tsx scripts/normalize-gray-to-grey.ts",

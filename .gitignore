@@ -37,6 +37,7 @@ node_modules
 # testing
 /audits
 /coverage
+/tmp
 
 # next.js
 /.next/
