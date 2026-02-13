@@ -42,3 +42,14 @@ export type {
   DisplayMode,
   MeasurementUnit,
 } from './sizes';
+
+// Re-export onboarding types
+export type {
+  StyleBaseline,
+  QuantityLabel,
+  SubcategoryColorSelection,
+  GeneratedWardrobeItem,
+  WizardState,
+} from './onboarding';
+
+export { QUANTITY_MAP, INITIAL_WIZARD_STATE } from './onboarding';

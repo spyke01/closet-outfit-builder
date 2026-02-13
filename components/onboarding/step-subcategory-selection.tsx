@@ -1,0 +1,245 @@
+'use client';
+
+import { useState } from 'react';
+import { ChevronDown, ChevronUp, Shirt, Layers, Footprints, Layers2, Sparkles, Watch } from 'lucide-react/dist/esm/icons';
+import { Icon } from 'lucide-react';
+import { 
+  shirtT, 
+  shirtFoldedButtons, 
+  shirtLongSleeve, 
+  shirtTVNeck, 
+  sweater, 
+  trousers, 
+  skirt, 
+  jacketSports, 
+  jacket, 
+  dress, 
+  belt, 
+  tie, 
+  scarf 
+} from '@lucide/lab';
+import { getCategoryByKey, type CategoryKey } from '@/lib/data/onboarding-categories';
+
+// Icon mapping for categories (from main lucide-react)
+const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  Shirt,
+  Layers,
+  Footprints,
+  Layers2,
+  Sparkles,
+  Watch,
+};
+
+// Icon mapping for subcategories (from @lucide/lab)
+const SUBCATEGORY_ICON_NODES: Record<string, any> = {
+  shirtT,
+  shirtFoldedButtons,
+  shirtLongSleeve,
+  shirtTVNeck,
+  sweater,
+  trousers,
+  skirt,
+  jacketSports,
+  jacket,
+  dress,
+  belt,
+  tie,
+  scarf,
+};
+
+// For icons from main Lucide (Footprints, Watch), we need to handle them differently
+const MAIN_LUCIDE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  Footprints,
+  Watch,
+};
+
+interface StepSubcategorySelectionProps {
+  selectedCategories: CategoryKey[];
+  selectedSubcategories: Record<CategoryKey, string[]>;
+  onChange: (subcategories: Record<CategoryKey, string[]>) => void;
+}
+
+export function StepSubcategorySelection({
+  selectedCategories,
+  selectedSubcategories,
+  onChange,
+}: StepSubcategorySelectionProps) {
+  const [expandedCategories, setExpandedCategories] = useState<Set<CategoryKey>>(
+    new Set(selectedCategories)
+  );
+
+  const toggleCategory = (categoryKey: CategoryKey) => {
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(categoryKey)) {
+      newExpanded.delete(categoryKey);
+    } else {
+      newExpanded.add(categoryKey);
+    }
+    setExpandedCategories(newExpanded);
+  };
+
+  const handleToggleSubcategory = (categoryKey: CategoryKey, subcategoryName: string) => {
+    const currentSubcategories = selectedSubcategories[categoryKey] || [];
+    const newSubcategories = currentSubcategories.includes(subcategoryName)
+      ? currentSubcategories.filter(name => name !== subcategoryName)
+      : [...currentSubcategories, subcategoryName];
+
+    onChange({
+      ...selectedSubcategories,
+      [categoryKey]: newSubcategories,
+    });
+  };
+
+  const handleSelectAll = (categoryKey: CategoryKey) => {
+    const category = getCategoryByKey(categoryKey);
+    if (!category) return;
+
+    onChange({
+      ...selectedSubcategories,
+      [categoryKey]: category.subcategories.map(sub => sub.name),
+    });
+  };
+
+  const handleSelectNone = (categoryKey: CategoryKey) => {
+    onChange({
+      ...selectedSubcategories,
+      [categoryKey]: [],
+    });
+  };
+
+  const totalSelected = Object.values(selectedSubcategories).reduce(
+    (sum, subs) => sum + subs.length,
+    0
+  );
+
+  return (
+    <div className="space-y-8">
+      <header>
+        <h2 className="text-2xl font-semibold mb-2 text-foreground">Choose your items</h2>
+        <p className="text-muted-foreground">
+          Select the specific types of clothing you own within each category.
+        </p>
+      </header>
+
+      <div className="space-y-4">
+        {selectedCategories.map((categoryKey) => {
+          const category = getCategoryByKey(categoryKey);
+          if (!category) return null;
+
+          const isExpanded = expandedCategories.has(categoryKey);
+          const categorySubcategories = selectedSubcategories[categoryKey] || [];
+          const selectedCount = categorySubcategories.length;
+          const IconComponent = CATEGORY_ICONS[category.icon];
+
+          return (
+            <div
+              key={categoryKey}
+              className="border border-gray-300 rounded-lg overflow-hidden dark:border-gray-600"
+            >
+              <button
+                type="button"
+                onClick={() => toggleCategory(categoryKey)}
+                className="w-full flex items-center justify-between p-4 min-h-[56px] bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors touch-manipulation"
+                aria-expanded={isExpanded}
+                aria-controls={`category-${categoryKey}`}
+                aria-label={`${category.name} category${selectedCount > 0 ? `, ${selectedCount} items selected` : ''}`}
+              >
+                <div className="flex items-center gap-3">
+                  {IconComponent && (
+                    <IconComponent className="w-5 h-5 text-gray-600 dark:text-gray-400" aria-hidden="true" />
+                  )}
+                  <span className="text-lg font-semibold text-foreground">{category.name}</span>
+                  {selectedCount > 0 && (
+                    <span className="text-sm px-2 py-1 rounded bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                      {selectedCount} selected
+                    </span>
+                  )}
+                </div>
+                {isExpanded ? (
+                  <ChevronUp className="w-5 h-5 text-gray-600 dark:text-gray-400" aria-hidden="true" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-gray-600 dark:text-gray-400" aria-hidden="true" />
+                )}
+              </button>
+
+              {isExpanded && (
+                <div id={`category-${categoryKey}`} className="p-4 bg-white dark:bg-gray-900">
+                  <div className="flex gap-2 mb-4">
+                    <button
+                      type="button"
+                      onClick={() => handleSelectAll(categoryKey)}
+                      className="text-sm px-3 py-2 min-h-[44px] rounded border border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800 transition-colors touch-manipulation"
+                      aria-label={`Select all ${category.name} items`}
+                    >
+                      Select All
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSelectNone(categoryKey)}
+                      className="text-sm px-3 py-2 min-h-[44px] rounded border border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800 transition-colors touch-manipulation"
+                      aria-label={`Deselect all ${category.name} items`}
+                    >
+                      Select None
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {category.subcategories.map((subcategory) => {
+                      const isSelected = categorySubcategories.includes(subcategory.name);
+                      const iconNode = SUBCATEGORY_ICON_NODES[subcategory.icon];
+                      const MainIcon = MAIN_LUCIDE_ICONS[subcategory.icon];
+
+                      return (
+                        <label
+                          key={subcategory.name}
+                          className={`
+                            flex items-center gap-2 p-3 min-h-[44px] rounded-lg border-2 cursor-pointer transition-all touch-manipulation
+                            ${isSelected
+                              ? 'border-blue-600 bg-blue-50 dark:border-blue-500 dark:bg-blue-950'
+                              : 'border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500'
+                            }
+                          `}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => handleToggleSubcategory(categoryKey, subcategory.name)}
+                            className="sr-only"
+                            aria-label={`${subcategory.name}${isSelected ? ' (selected)' : ''}`}
+                          />
+                          {iconNode ? (
+                            <Icon 
+                              iconNode={iconNode}
+                              className={`w-4 h-4 flex-shrink-0 ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}`}
+                              aria-hidden="true"
+                            />
+                          ) : MainIcon ? (
+                            <MainIcon 
+                              className={`w-4 h-4 flex-shrink-0 ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}`}
+                              aria-hidden="true"
+                            />
+                          ) : null}
+                          <span className={`text-sm ${isSelected ? 'text-blue-600 font-medium dark:text-blue-400' : 'text-foreground'}`}>
+                            {subcategory.name}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {totalSelected === 0 && (
+        <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-950 dark:border-amber-800" role="alert">
+          <p className="text-sm text-amber-800 dark:text-amber-200">
+            Please select at least one subcategory to continue. Expand a category above and check the items you own.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
