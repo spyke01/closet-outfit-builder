@@ -158,17 +158,18 @@ export const handler: Handler = async (event: HandlerEvent) => {
   const requestOrigin = event.headers.origin;
   const headers = buildCorsHeaders(requestOrigin);
   const allowedOrigin = resolveAllowedOrigin(requestOrigin);
+  const hasOriginHeader = Boolean(requestOrigin);
 
   // Handle preflight requests
   if (event.httpMethod === 'OPTIONS') {
     return {
-      statusCode: allowedOrigin ? 200 : 403,
+      statusCode: !hasOriginHeader || allowedOrigin ? 200 : 403,
       headers,
       body: '',
     };
   }
 
-  if (!allowedOrigin) {
+  if (hasOriginHeader && !allowedOrigin) {
     return {
       statusCode: 403,
       headers,

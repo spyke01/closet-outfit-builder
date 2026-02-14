@@ -60,15 +60,13 @@ describe('Weather Function', () => {
     const event = createMockEvent('OPTIONS');
     const result = await handler(event, mockContext, vi.fn());
 
-    expect(result).toEqual({
-      statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Content-Type': 'application/json',
-      },
-      body: '',
+    expect(result?.statusCode).toBe(200);
+    expect(result?.body).toBe('');
+    expect(result?.headers).toMatchObject({
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Content-Type': 'application/json',
+      Vary: 'Origin',
     });
   });
 
