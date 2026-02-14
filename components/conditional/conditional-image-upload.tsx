@@ -4,6 +4,7 @@ import React from 'react';
 import { withConditionalLoading } from './conditional-component-loader';
 import { Upload, Loader2 } from 'lucide-react';
 import type { ImageUploadProps } from '../image-upload';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Loading component for image upload
 const ImageUploadLoading: React.FC = () => (
@@ -24,11 +25,11 @@ const ImageUploadFallback: React.FC = () => (
 
 // Error component for image upload
 const ImageUploadError: React.FC = () => (
-  <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-red-300 dark:border-red-600 rounded-lg bg-red-50 dark:bg-red-900/20">
-    <Upload className="w-8 h-8 text-red-400 mb-2" />
-    <p className="text-sm text-red-600 dark:text-red-400">Failed to load image upload</p>
-    <p className="text-xs text-red-500 dark:text-red-400 mt-1">Please refresh the page</p>
-  </div>
+  <Alert variant="destructive" className="flex flex-col items-center justify-center p-8 border-2 border-dashed">
+    <Upload className="w-8 h-8 mb-2" />
+    <AlertDescription className="text-sm">Failed to load image upload</AlertDescription>
+    <p className="text-xs mt-1">Please refresh the page</p>
+  </Alert>
 );
 
 /**

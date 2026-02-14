@@ -182,7 +182,7 @@ describe('ErrorDisplay', () => {
       render(<ErrorDisplay error={error} />)
       
       const alert = screen.getByRole('alert')
-      expect(alert.className).toContain('border-orange')
+      expect(alert.className).toContain('border-warning')
     })
 
     it('should apply auth error styling for authentication errors', () => {
@@ -190,7 +190,7 @@ describe('ErrorDisplay', () => {
       render(<ErrorDisplay error={error} />)
       
       const alert = screen.getByRole('alert')
-      expect(alert.className).toContain('border-yellow')
+      expect(alert.className).toContain('border-warning')
     })
 
     it('should apply generic error styling for other errors', () => {
@@ -198,7 +198,7 @@ describe('ErrorDisplay', () => {
       render(<ErrorDisplay error={error} />)
       
       const alert = screen.getByRole('alert')
-      expect(alert.className).toContain('border-red')
+      expect(alert.className).toContain('border-danger')
     })
 
     it('should apply custom className when provided', () => {

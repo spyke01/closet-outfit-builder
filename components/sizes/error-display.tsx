@@ -123,6 +123,7 @@ export function ErrorDisplay({
   if (!error) return null
 
   const { type, userMessage } = parseError(error)
+  const isWarningType = type === 'connection' || type === 'auth'
 
   return (
     <div
@@ -130,22 +131,18 @@ export function ErrorDisplay({
       aria-live="polite"
       aria-atomic="true"
       className={`rounded-lg border p-4 ${
-        type === 'connection'
-          ? 'border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-900/20'
-          : type === 'auth'
-          ? 'border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-900/20'
-          : 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20'
+        isWarningType
+          ? 'border-warning/40 bg-warning-light text-warning-dark dark:border-warning/60 dark:bg-warning-dark/20 dark:text-amber-200'
+          : 'border-danger/40 bg-danger-light text-danger-dark dark:border-danger/60 dark:bg-danger-dark/20 dark:text-red-200'
       } ${className}`}
     >
       <div className="flex items-start gap-3">
         {/* Error icon */}
         <AlertCircle
           className={`h-5 w-5 flex-shrink-0 ${
-            type === 'connection'
-              ? 'text-orange-600 dark:text-orange-400'
-              : type === 'auth'
-              ? 'text-yellow-600 dark:text-yellow-400'
-              : 'text-red-600 dark:text-red-400'
+            isWarningType
+              ? 'text-warning dark:text-amber-300'
+              : 'text-danger dark:text-red-300'
           }`}
           aria-hidden="true"
         />
@@ -154,11 +151,9 @@ export function ErrorDisplay({
         <div className="flex-1 min-w-0">
           <p
             className={`text-sm font-medium ${
-              type === 'connection'
-                ? 'text-orange-800 dark:text-orange-300'
-                : type === 'auth'
-                ? 'text-yellow-800 dark:text-yellow-300'
-                : 'text-red-800 dark:text-red-300'
+              isWarningType
+                ? 'text-warning-dark dark:text-amber-200'
+                : 'text-danger-dark dark:text-red-200'
             }`}
           >
             {userMessage}
@@ -171,11 +166,9 @@ export function ErrorDisplay({
                 <button
                   onClick={handleRetry}
                   className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
-                    type === 'connection'
-                      ? 'bg-orange-600 text-white hover:bg-orange-700 focus-visible:ring-orange-500 dark:bg-orange-500 dark:hover:bg-orange-600'
-                      : type === 'auth'
-                      ? 'bg-yellow-600 text-white hover:bg-yellow-700 focus-visible:ring-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600'
-                      : 'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500 dark:bg-red-500 dark:hover:bg-red-600'
+                    isWarningType
+                      ? 'bg-warning text-warning-dark hover:opacity-90 focus-visible:ring-ring dark:text-amber-950'
+                      : 'bg-destructive text-destructive-foreground hover:opacity-90 focus-visible:ring-ring'
                   }`}
                   aria-label="Retry action"
                 >
@@ -188,11 +181,9 @@ export function ErrorDisplay({
                 <button
                   onClick={handleDismiss}
                   className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
-                    type === 'connection'
-                      ? 'text-orange-700 hover:bg-orange-100 focus-visible:ring-orange-500 dark:text-orange-300 dark:hover:bg-orange-900/40'
-                      : type === 'auth'
-                      ? 'text-yellow-700 hover:bg-yellow-100 focus-visible:ring-yellow-500 dark:text-yellow-300 dark:hover:bg-yellow-900/40'
-                      : 'text-red-700 hover:bg-red-100 focus-visible:ring-red-500 dark:text-red-300 dark:hover:bg-red-900/40'
+                    isWarningType
+                      ? 'text-warning-dark hover:bg-warning-light/50 focus-visible:ring-ring dark:text-amber-200 dark:hover:bg-warning-dark/30'
+                      : 'text-danger-dark hover:bg-danger-light/50 focus-visible:ring-ring dark:text-red-200 dark:hover:bg-danger-dark/30'
                   }`}
                   aria-label="Dismiss error"
                 >

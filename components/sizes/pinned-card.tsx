@@ -20,7 +20,8 @@ import { useCallback, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useSizeCategory, useBrandSizes } from '@/lib/hooks/use-size-categories';
 import type { DisplayMode } from '@/lib/types/sizes';
-import { Clock, MoreVertical } from 'lucide-react';
+import { AlertCircle, Clock, MoreVertical } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { TextTruncate } from './text-truncate';
 
 /**
@@ -187,18 +188,19 @@ export function PinnedCard({
   // Error state
   if (error || !categoryData) {
     return (
-      <div 
-        className="pinned-card-error bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 w-[85vw] md:w-auto"
+      <Alert
+        variant="destructive"
+        className="pinned-card-error w-[85vw] md:w-auto min-h-[120px] p-4"
         style={{ minHeight: '120px' }}
-        role="alert"
       >
-        <p className="text-red-800 dark:text-red-200 font-medium">
+        <AlertCircle className="h-4 w-4" />
+        <p className="font-medium">
           Failed to load category
         </p>
-        <p className="text-red-600 dark:text-red-400 text-sm mt-1">
+        <AlertDescription className="mt-1">
           {error?.message || 'Category not found'}
-        </p>
-      </div>
+        </AlertDescription>
+      </Alert>
     );
   }
 

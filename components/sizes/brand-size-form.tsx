@@ -23,6 +23,7 @@ import { X, Check } from 'lucide-react'
 import { brandSizeInputSchema, type BrandSizeInput } from '@/lib/schemas/sizes'
 import { useCreateBrandSize, useBrandSizes } from '@/lib/hooks/use-size-categories'
 import type { BrandSize } from '@/lib/types/sizes'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export interface BrandSizeFormProps {
   categoryId: string
@@ -339,14 +340,9 @@ export function BrandSizeForm({
       
       {/* Error message from mutation */}
       {createBrandSize.isError && (
-        <div 
-          role="alert" 
-          className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md"
-        >
-          <p className="text-sm text-red-800 dark:text-red-300">
-            Failed to save brand size. Please try again.
-          </p>
-        </div>
+        <Alert variant="destructive">
+          <AlertDescription>Failed to save brand size. Please try again.</AlertDescription>
+        </Alert>
       )}
     </form>
   )

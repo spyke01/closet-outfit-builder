@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useCreateCategory, useCreatePinnedPreference } from '@/lib/hooks/use-size-categories';
 import { sizeCategoryInputSchema, type SizeCategoryInput, type SizingFormat } from '@/lib/schemas/sizes';
 
@@ -269,13 +270,9 @@ export function AddCategoryForm({ onSave, onCancel }: AddCategoryFormProps) {
 
       {/* Error message for mutation failures */}
       {(createCategory.isError || createPinnedPreference.isError) && (
-        <div
-          role="alert"
-          aria-live="polite"
-          className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400"
-        >
-          Failed to create category. Please try again.
-        </div>
+        <Alert variant="destructive" aria-live="polite">
+          <AlertDescription>Failed to create category. Please try again.</AlertDescription>
+        </Alert>
       )}
     </form>
   );

@@ -4,6 +4,7 @@ import { useCallback, useMemo, useEffect, useRef } from 'react';
 import { produce } from 'immer';
 import { useImmerState } from '@/lib/utils/immer-state';
 import { safeValidate } from '@/lib/utils/validation';
+import { AlertCircle, X } from 'lucide-react';
 import { 
   OutfitSelectionSchema, 
   WardrobeItemSchema,
@@ -11,6 +12,7 @@ import {
   type WardrobeItem
 } from '@/lib/schemas';
 import { type Outfit } from '@/lib/types/database';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CategoryDropdown } from './category-dropdown';
 import { OutfitList } from './outfit-list';
 
@@ -238,30 +240,17 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
       <div className="space-y-3 sm:space-y-4 relative">
         {/* Error Message */}
         {state.error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg px-3 sm:px-4 py-2 sm:py-3" role="alert">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <svg className="h-4 w-4 sm:h-5 sm:w-5 text-red-400 dark:text-red-300" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-2 sm:ml-3">
-                <p className="text-xs sm:text-sm text-red-800 dark:text-red-200">{state.error}</p>
-              </div>
-              <div className="ml-auto pl-2 sm:pl-3">
-                <button
-                  onClick={() => updateState(draft => { draft.error = null; })}
-                  className="inline-flex text-red-400 dark:text-red-300 hover:text-red-600 dark:hover:text-red-200 min-h-[44px] min-w-[44px] items-center justify-center sm:min-h-0 sm:min-w-0"
-                  aria-label="Dismiss error message"
-                >
-                  <span className="sr-only">Dismiss</span>
-                  <svg className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
+          <Alert variant="destructive" className="px-3 sm:px-4 py-2 sm:py-3">
+            <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5" />
+            <AlertDescription className="text-xs sm:text-sm pr-8">{state.error}</AlertDescription>
+            <button
+              onClick={() => updateState(draft => { draft.error = null; })}
+              className="absolute right-2 top-2 inline-flex min-h-[36px] min-w-[36px] items-center justify-center rounded-md text-destructive hover:bg-destructive/10"
+              aria-label="Dismiss error message"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </Alert>
         )}
 
         {/* Category Dropdowns - Mobile-First Responsive */}

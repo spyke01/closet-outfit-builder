@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AuthHeader } from "@/components/auth-header";
 
 export default async function AuthCodeError({
@@ -12,25 +14,19 @@ export default async function AuthCodeError({
   return (
     <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center gap-2 mx-auto">
       <AuthHeader />
-      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
+      <Alert variant="destructive" className="p-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="flex-shrink-0">
-            <svg className="h-6 w-6 text-red-400 dark:text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
-          </div>
+          <AlertTriangle className="h-6 w-6 flex-shrink-0" />
           <div>
-            <h3 className="text-lg font-medium text-red-800 dark:text-red-200">
-              Authentication Error
-            </h3>
+            <AlertTitle className="text-lg font-medium">Authentication Error</AlertTitle>
           </div>
         </div>
         
-        <div className="text-red-700 dark:text-red-300 mb-6">
+        <AlertDescription className="mb-6">
           {error ? (
             <div className="mb-4">
               <p className="font-medium mb-2">Error Details:</p>
-              <p className="text-sm bg-red-100 dark:bg-red-900/30 p-3 rounded border">
+              <p className="text-sm rounded border border-danger/40 bg-danger-light/60 p-3 dark:border-danger/60 dark:bg-danger-dark/30">
                 {error}
               </p>
             </div>
@@ -45,7 +41,7 @@ export default async function AuthCodeError({
             <li>A temporary issue with the authentication service</li>
             <li>OAuth redirect URL not configured in Supabase dashboard</li>
           </ul>
-        </div>
+        </AlertDescription>
 
         <div className="flex flex-col sm:flex-row gap-3">
           <Button asChild className="flex-1">
@@ -59,7 +55,7 @@ export default async function AuthCodeError({
             </Link>
           </Button>
         </div>
-      </div>
+      </Alert>
       
       <div className="text-center mt-6">
         <p className="text-sm text-muted-foreground">

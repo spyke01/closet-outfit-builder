@@ -1,8 +1,9 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Loader2 } from 'lucide-react';
+import { AlertTriangle, Loader2 } from 'lucide-react';
 import React from 'react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 // Loading component for ImageUpload
 const ImageUploadLoading = () => (
@@ -26,29 +27,23 @@ const ImageUploadLoading = () => (
 // Error fallback component
 const ImageUploadError = ({ error, retry }: { error: Error; retry: () => void }) => (
   <div className="space-y-4">
-    <div className="border-2 border-dashed border-red-300 rounded-lg p-8 text-center bg-red-50">
+    <Alert variant="destructive" className="border-2 border-dashed rounded-lg p-8 text-center">
       <div className="space-y-4">
-        <div className="text-red-500">
-          <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
-          </svg>
-        </div>
+        <AlertTriangle className="w-12 h-12 mx-auto" />
         <div>
-          <p className="text-lg font-medium text-red-900">
-            Failed to Load Image Upload
-          </p>
-          <p className="text-sm text-red-700 mb-4">
+          <AlertTitle className="text-lg font-medium">Failed to Load Image Upload</AlertTitle>
+          <AlertDescription className="text-sm mb-4">
             {error.message || 'An error occurred while loading the image upload component.'}
-          </p>
+          </AlertDescription>
           <button
             onClick={retry}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            className="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:opacity-90 transition-colors"
           >
             Try Again
           </button>
         </div>
       </div>
-    </div>
+    </Alert>
   </div>
 );
 
