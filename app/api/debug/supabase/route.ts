@@ -1,39 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+function isDebugAllowed(): boolean {
+  return process.env.NODE_ENV !== 'production';
+}
+
+async function getAuthenticatedUser() {
+  const supabase = await createClient();
+  const { data: { user }, error } = await supabase.auth.getUser();
+  return { supabase, user, error };
+}
+
 export async function GET() {
+  if (!isDebugAllowed()) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
+
   try {
-    console.log('🔍 Debug: Testing Supabase connection from server...');
-    
-    // Check environment variables - early return if missing
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-    
-    if (!supabaseUrl || !supabaseKey) {
-      return NextResponse.json({
-        success: false,
-        error: 'Missing environment variables',
-        details: {
-          hasUrl: !!supabaseUrl,
-          hasKey: !!supabaseKey,
-        }
-      }, { status: 500 });
+    const { supabase, user, error: authError } = await getAuthenticatedUser();
+    if (authError || !user) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Create Supabase client
-    const supabase = await createClient();
-    
-    // Test basic connectivity and auth in parallel
-    const [queryResult, authResult] = await Promise.all([
-      supabase.from('wardrobe_items').select('count').limit(1),
-      supabase.auth.getUser()
-    ]);
-    
-    const { data, error } = queryResult;
-    const { data: { user } } = authResult;
+    const { data, error } = await supabase.from('wardrobe_items').select('count').limit(1);
     
     if (error) {
-      console.log('❌ Supabase query failed:', error);
       return NextResponse.json({
         success: false,
         error: 'Supabase query failed',
@@ -49,16 +40,14 @@ export async function GET() {
       success: true,
       message: 'Supabase connection successful',
       details: {
-        hasUser: !!user,
-        userId: user?.id,
-        userEmail: user?.email,
+        hasUser: true,
+        userId: user.id,
         queryResult: data,
         timestamp: new Date().toISOString(),
       }
     });
 
   } catch (error) {
-    console.error('❌ Debug API error:', error);
     return NextResponse.json({
       success: false,
       error: 'Server error',
@@ -70,19 +59,25 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  if (!isDebugAllowed()) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
+
   try {
     const body = await request.json();
     const { testType = 'basic' } = body;
     
-    const supabase = await createClient();
+    const { supabase, user, error: authError } = await getAuthenticatedUser();
+    if (authError || !user) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
     
     switch (testType) {
       case 'auth': {
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
         return NextResponse.json({
-          success: !authError,
-          user: user ? { id: user.id, email: user.email } : null,
-          error: authError?.message,
+          success: true,
+          user: { id: user.id },
+          error: null,
         });
       }
         

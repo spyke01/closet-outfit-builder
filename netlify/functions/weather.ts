@@ -94,6 +94,49 @@ const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 const RATE_LIMIT_MAX_REQUESTS = 10;
 
+function getAllowedOrigins(): string[] {
+  const platformOrigins = [
+    process.env.URL,
+    process.env.DEPLOY_PRIME_URL,
+    process.env.NETLIFY_URL ? `https://${process.env.NETLIFY_URL}` : undefined,
+  ].filter((origin): origin is string => Boolean(origin));
+
+  const envOrigins = (process.env.CORS_ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+  const defaults = process.env.NODE_ENV === 'production'
+    ? []
+    : ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:8888', 'http://127.0.0.1:8888'];
+
+  return Array.from(new Set([...platformOrigins, ...envOrigins, ...defaults]));
+}
+
+function resolveAllowedOrigin(originHeader?: string): string | null {
+  if (!originHeader) {
+    return null;
+  }
+  const allowedOrigins = getAllowedOrigins();
+  return allowedOrigins.includes(originHeader) ? originHeader : null;
+}
+
+function buildCorsHeaders(originHeader?: string): Record<string, string> {
+  const allowedOrigin = resolveAllowedOrigin(originHeader);
+  const headers: Record<string, string> = {
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Content-Type': 'application/json',
+    Vary: 'Origin',
+  };
+
+  if (allowedOrigin) {
+    headers['Access-Control-Allow-Origin'] = allowedOrigin;
+    return headers;
+  }
+
+  return headers;
+}
+
 function checkRateLimit(clientIP: string): boolean {
   const now = Date.now();
   const clientData = rateLimitStore.get(clientIP);
@@ -112,20 +155,24 @@ function checkRateLimit(clientIP: string): boolean {
 }
 
 export const handler: Handler = async (event: HandlerEvent) => {
-  // CORS headers
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Content-Type': 'application/json',
-  };
+  const requestOrigin = event.headers.origin;
+  const headers = buildCorsHeaders(requestOrigin);
+  const allowedOrigin = resolveAllowedOrigin(requestOrigin);
 
   // Handle preflight requests
   if (event.httpMethod === 'OPTIONS') {
     return {
-      statusCode: 200,
+      statusCode: allowedOrigin ? 200 : 403,
       headers,
       body: '',
+    };
+  }
+
+  if (!allowedOrigin) {
+    return {
+      statusCode: 403,
+      headers,
+      body: JSON.stringify({ error: 'Origin not allowed' }),
     };
   }
 

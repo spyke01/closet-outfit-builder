@@ -46,6 +46,7 @@ Welcome to the My AI Outfit development team! This guide will help you get up to
    - `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anon key
    - `OPENWEATHER_API_KEY`: OpenWeatherMap API key (optional)
+   - `CORS_ALLOWED_ORIGINS`: Optional comma-separated CORS allowlist. Netlify runtime origins are auto-allowed.
 
 4. **Run development server**
    ```bash

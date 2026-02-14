@@ -28,6 +28,8 @@ yarn-error.log*
 
 # Supabase
 /supabase/.temp
+/supabase/.env
+**/.env
 
 # dependencies
 node_modules

@@ -3,6 +3,33 @@ import { createClient } from '@/lib/supabase/server';
 import { ImageProcessingRequestSchema, ImageProcessingResponseSchema, FileValidationSchema } from '@/lib/schemas';
 import { z } from 'zod';
 
+function getAllowedOrigins(): string[] {
+  const platformOrigins = [
+    process.env.URL,
+    process.env.DEPLOY_PRIME_URL,
+    process.env.NETLIFY_URL ? `https://${process.env.NETLIFY_URL}` : undefined,
+  ].filter((origin): origin is string => Boolean(origin));
+
+  const envOrigins = (process.env.CORS_ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+  const defaults = process.env.NODE_ENV === 'production'
+    ? []
+    : ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:8888', 'http://127.0.0.1:8888'];
+
+  return Array.from(new Set([...platformOrigins, ...envOrigins, ...defaults]));
+}
+
+function resolveAllowedOrigin(requestOrigin: string | null): string | null {
+  if (!requestOrigin) {
+    return null;
+  }
+
+  const allowedOrigins = getAllowedOrigins();
+  return allowedOrigins.includes(requestOrigin) ? requestOrigin : null;
+}
+
 // Magic bytes for file type validation
 const MAGIC_BYTES = {
   jpeg: [0xFF, 0xD8, 0xFF],
@@ -181,13 +208,20 @@ export async function POST(request: NextRequest) {
 }
 
 // Handle OPTIONS for CORS
-export async function OPTIONS() {
+export async function OPTIONS(request: NextRequest) {
+  const allowedOrigin = resolveAllowedOrigin(request.headers.get('origin'));
+  if (!allowedOrigin) {
+    return new NextResponse(null, { status: 403 });
+  }
+
   return new NextResponse(null, {
     status: 200,
     headers: {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': allowedOrigin,
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Credentials': 'true',
+      Vary: 'Origin',
     },
   });
 }

@@ -222,6 +222,7 @@ cp .env.example .env.local
 # NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 # SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 # OPENWEATHER_API_KEY=your_openweathermap_api_key_here (optional)
+# CORS_ALLOWED_ORIGINS=https://your-app-domain.com,https://your-preview-domain.com (optional)
 ```
 
 4. **Set up Supabase database:**
@@ -282,6 +283,7 @@ cp .env.example .env.local
 
 # Add your OpenWeatherMap API key to .env.local
 # OPENWEATHER_API_KEY=your_api_key_here
+# CORS_ALLOWED_ORIGINS is optional (runtime Netlify origins are auto-allowed)
 
 # Start development with weather functions
 npm run dev:netlify
@@ -621,6 +623,7 @@ This creates an optimized build in the `out/` directory with:
    NEXT_PUBLIC_SUPABASE_URL=your_production_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_production_anon_key
    OPENWEATHER_API_KEY=your_production_api_key
+   CORS_ALLOWED_ORIGINS=https://your-production-domain.com
    NODE_ENV=production
    ```
 
