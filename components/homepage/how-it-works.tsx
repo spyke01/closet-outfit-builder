@@ -32,7 +32,7 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-20 lg:py-32 bg-gradient-to-br from-muted to-muted from-card to-background">
+    <section id="how-it-works" className="py-20 lg:py-32 bg-gradient-to-br from-card to-background">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="font-display text-4xl lg:text-5xl font-bold text-foreground mb-6">
@@ -58,11 +58,11 @@ export function HowItWorks() {
                 {/* Content */}
                 <div className={`animate-slide-in-${isEven ? 'left' : 'right'}`}>
                   <div className="flex items-center gap-4 mb-6">
-                    <span className="font-display text-6xl font-bold text-amber-600">
+                    <span className="font-display text-6xl font-bold text-primary">
                       {step.number}
                     </span>
-                    <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center">
-                      <Icon className="w-8 h-8 text-primary text-muted-foreground" />
+                    <div className="w-16 h-16 bg-secondary/20 rounded-2xl flex items-center justify-center">
+                      <Icon className="w-8 h-8 text-secondary-foreground" />
                     </div>
                   </div>
                   
@@ -82,14 +82,14 @@ export function HowItWorks() {
                     {step.image === 'upload' && (
                       <div className="space-y-6">
                         <div className="text-center">
-                          <div className="w-24 h-24 bg-gradient-to-br from-amber-100 to-amber-200 rounded-3xl flex items-center justify-center mx-auto mb-4">
-                            <Upload className="w-12 h-12 text-amber-600" />
+                          <div className="w-24 h-24 bg-secondary/20 rounded-3xl flex items-center justify-center mx-auto mb-4">
+                            <Upload className="w-12 h-12 text-secondary-foreground" />
                           </div>
                           <p className="text-muted-foreground">Drag & drop your photos</p>
                         </div>
                         <div className="grid grid-cols-3 gap-3">
                           {uploadStepItems.map((item, i) => (
-                            <div key={i} className="aspect-square bg-card rounded-xl overflow-hidden shadow-sm">
+                            <div key={i} className="aspect-square bg-muted rounded-xl overflow-hidden shadow-sm">
                               <Image
                                 src={item.src}
                                 alt={item.alt}
@@ -107,12 +107,12 @@ export function HowItWorks() {
                       <div className="space-y-6">
                         <div className="flex items-center justify-between">
                           <span className="text-foreground font-semibold">Generating outfits...</span>
-                          <Sparkles className="w-6 h-6 text-amber-600 animate-pulse" />
+                          <Sparkles className="w-6 h-6 text-primary animate-pulse" />
                         </div>
                         <div className="space-y-3">
                           {aiMatchingItems.map((item, i) => (
                             <div key={i} className="flex items-center gap-3">
-                              <div className="w-12 h-12 bg-card rounded-lg overflow-hidden shadow-sm">
+                              <div className="w-12 h-12 bg-muted rounded-lg overflow-hidden shadow-sm">
                                 <Image
                                   src={item.src}
                                   alt={item.alt}
@@ -123,7 +123,7 @@ export function HowItWorks() {
                               </div>
                               <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                                 <div 
-                                  className="h-full bg-amber-500 rounded-full transition-all duration-1000"
+                                  className="h-full bg-primary rounded-full transition-all duration-1000"
                                   style={{ width: `${80 + i * 5}%` }}
                                 ></div>
                               </div>
@@ -137,11 +137,11 @@ export function HowItWorks() {
                       <div className="space-y-6">
                         <div className="flex items-center justify-between">
                           <span className="text-foreground font-semibold">Perfect match!</span>
-                          <Heart className="w-6 h-6 text-red-500 fill-current" />
+                          <Heart className="w-6 h-6 text-primary fill-current" />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                           {finalOutfitItems.map((item, i) => (
-                            <div key={i} className="aspect-square bg-card rounded-2xl overflow-hidden shadow-sm">
+                            <div key={i} className="aspect-square bg-muted rounded-2xl overflow-hidden shadow-sm">
                               <Image
                                 src={item.src}
                                 alt={item.alt}
@@ -153,7 +153,7 @@ export function HowItWorks() {
                           ))}
                         </div>
                         <div className="text-center">
-                          <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-700 rounded-full text-sm font-medium">
+                          <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/20 border border-secondary/40 text-secondary-foreground rounded-full text-sm font-medium">
                             <Sparkles className="w-4 h-4" />
                             95% compatibility
                           </div>

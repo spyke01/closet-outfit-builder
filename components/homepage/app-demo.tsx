@@ -23,7 +23,7 @@ export function AppDemo() {
 
         <div className="relative max-w-4xl mx-auto">
           {/* Main app mockup */}
-          <div className="relative bg-gradient-to-br from-card to-background from-card to-background rounded-3xl p-8 shadow-2xl">
+          <div className="relative bg-gradient-to-br from-card to-background rounded-3xl p-8 shadow-2xl border border-border">
             <div className="bg-card rounded-2xl p-6 space-y-6">
               {/* Header */}
               <div className="flex items-center justify-between">
@@ -31,7 +31,7 @@ export function AppDemo() {
                   <h3 className="font-display text-2xl font-bold text-foreground">Today&apos;s Outfit</h3>
                   <p className="text-muted-foreground">Perfect for 72°F, partly cloudy</p>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-700 rounded-full text-sm font-medium">
+                <div className="flex items-center gap-2 px-4 py-2 bg-secondary/20 border border-secondary/40 text-secondary-foreground rounded-full text-sm font-medium">
                   <Sparkles className="w-4 h-4" />
                   95% Match
                 </div>
@@ -40,7 +40,7 @@ export function AppDemo() {
               {/* Outfit grid */}
               <div className="grid grid-cols-4 gap-4">
                 <div className="space-y-2">
-                  <div className="aspect-square bg-card rounded-2xl overflow-hidden shadow-sm">
+                  <div className="aspect-square bg-muted rounded-2xl overflow-hidden shadow-sm">
                     <Image
                       src={appDemoOutfit.jacket!.src}
                       alt={appDemoOutfit.jacket!.alt}
@@ -55,7 +55,7 @@ export function AppDemo() {
                 </div>
 
                 <div className="space-y-2">
-                  <div className="aspect-square bg-card rounded-2xl overflow-hidden shadow-sm">
+                  <div className="aspect-square bg-muted rounded-2xl overflow-hidden shadow-sm">
                     <Image
                       src={appDemoOutfit.shirt.src}
                       alt={appDemoOutfit.shirt.alt}
@@ -70,7 +70,7 @@ export function AppDemo() {
                 </div>
 
                 <div className="space-y-2">
-                  <div className="aspect-square bg-card rounded-2xl overflow-hidden shadow-sm">
+                  <div className="aspect-square bg-muted rounded-2xl overflow-hidden shadow-sm">
                     <Image
                       src={appDemoOutfit.pants.src}
                       alt={appDemoOutfit.pants.alt}
@@ -85,7 +85,7 @@ export function AppDemo() {
                 </div>
 
                 <div className="space-y-2">
-                  <div className="aspect-square bg-card rounded-2xl overflow-hidden shadow-sm">
+                  <div className="aspect-square bg-muted rounded-2xl overflow-hidden shadow-sm">
                     <Image
                       src={appDemoOutfit.shoes.src}
                       alt={appDemoOutfit.shoes.alt}
@@ -108,7 +108,7 @@ export function AppDemo() {
                     <span className="text-sm text-muted-foreground">Style Harmony</span>
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
-                        <div className="w-15 h-full bg-amber-500 rounded-full"></div>
+                        <div className="w-15 h-full bg-primary rounded-full"></div>
                       </div>
                       <span className="text-sm font-medium text-foreground">94%</span>
                     </div>
@@ -117,7 +117,7 @@ export function AppDemo() {
                     <span className="text-sm text-muted-foreground">Weather Appropriate</span>
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
-                        <div className="w-full h-full bg-amber-500 rounded-full"></div>
+                        <div className="w-full h-full bg-primary rounded-full"></div>
                       </div>
                       <span className="text-sm font-medium text-foreground">98%</span>
                     </div>
@@ -126,7 +126,7 @@ export function AppDemo() {
                     <span className="text-sm text-muted-foreground">Formality Match</span>
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
-                        <div className="w-14 h-full bg-amber-500 rounded-full"></div>
+                        <div className="w-14 h-full bg-primary rounded-full"></div>
                       </div>
                       <span className="text-sm font-medium text-foreground">92%</span>
                     </div>
@@ -136,7 +136,7 @@ export function AppDemo() {
 
               {/* Action buttons */}
               <div className="flex gap-3">
-                <button className="flex-1 bg-primary  hover:opacity-90  text-white py-3 rounded-xl font-medium transition-colors">
+                <button className="flex-1 bg-primary hover:opacity-90 text-primary-foreground py-3 rounded-xl font-medium transition-colors">
                   Wear This Outfit
                 </button>
                 <button className="px-4 py-3 border-2 border-border rounded-xl hover:bg-muted transition-colors">
@@ -149,10 +149,10 @@ export function AppDemo() {
             </div>
 
             {/* Floating weather widget */}
-            <div className="absolute -top-4 -right-4 bg-white rounded-2xl p-4 shadow-lg border border-border">
+            <div className="absolute -top-4 -right-4 bg-card rounded-2xl p-4 shadow-lg border border-border">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-amber-100 to-amber-200 rounded-xl flex items-center justify-center">
-                  <Thermometer className="w-5 h-5 text-amber-600" />
+                <div className="w-10 h-10 bg-secondary/20 rounded-xl flex items-center justify-center">
+                  <Thermometer className="w-5 h-5 text-secondary-foreground" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-foreground">72°F</p>
@@ -163,11 +163,11 @@ export function AppDemo() {
           </div>
 
           {/* Floating elements */}
-          <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-gradient-to-br from-muted to-muted rounded-3xl flex items-center justify-center shadow-lg">
+          <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-muted rounded-3xl flex items-center justify-center shadow-lg">
             <div className="w-10 h-10 bg-muted rounded-2xl"></div>
           </div>
-          <div className="absolute -top-6 left-1/4 w-16 h-16 bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center shadow-lg">
-            <Sparkles className="w-8 h-8 text-amber-600" />
+          <div className="absolute -top-6 left-1/4 w-16 h-16 bg-secondary/20 rounded-2xl flex items-center justify-center shadow-lg">
+            <Sparkles className="w-8 h-8 text-secondary-foreground" />
           </div>
         </div>
       </div>

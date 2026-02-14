@@ -45,13 +45,13 @@ export function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <div 
               key={testimonial.author}
-              className="bg-gradient-to-br from-muted to-muted rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 animate-slide-up"
+              className="bg-card border border-border rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 animate-slide-up"
               style={{ animationDelay: `${index * 0.2}s` }}
             >
               {/* Rating */}
               <div className="flex items-center gap-1 mb-6">
                 {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 text-amber-500 fill-current" />
+                  <Star key={i} className="w-5 h-5 text-primary fill-current" />
                 ))}
               </div>
               
@@ -62,7 +62,7 @@ export function Testimonials() {
               
               {/* Author */}
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center text-white font-semibold">
+                <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold">
                   {testimonial.avatar}
                 </div>
                 <div>

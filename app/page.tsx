@@ -10,6 +10,7 @@ import { HowItWorks } from "@/components/homepage/how-it-works";
 import { AppDemo } from "@/components/homepage/app-demo";
 import { Testimonials } from "@/components/homepage/testimonials";
 import { FinalCTA } from "@/components/homepage/final-cta";
+import { StaticPageFooter } from "@/components/static-page-footer";
 
 export default function Home() {
   const router = useRouter();
@@ -34,8 +35,8 @@ export default function Home() {
   
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-cream-50 to-navy-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-navy-200 border-t-navy-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-muted border-t-primary"></div>
       </div>
     );
   }
@@ -49,6 +50,7 @@ export default function Home() {
       <AppDemo />
       <Testimonials />
       <FinalCTA />
+      <StaticPageFooter />
     </main>
   );
 }

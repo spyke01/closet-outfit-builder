@@ -9,15 +9,15 @@ const features = [
     icon: Sparkles,
     title: "Smart Outfit Generator",
     description: "Mix and match your actual wardrobe to find the perfect look for any day.",
-    gradient: "from-amber-100 to-amber-200",
-    iconColor: "text-amber-600",
+    tileClass: "bg-secondary/20",
+    iconColor: "text-secondary-foreground",
     image: featureImages.smartGenerator,
   },
   {
     icon: Thermometer,
     title: "Formality & Season Aware",
     description: "The app knows what's casual, office-ready, or evening-appropriate.",
-    gradient: "from-blue-100 to-blue-200",
+    tileClass: "bg-primary/15",
     iconColor: "text-primary",
     image: featureImages.weatherAware,
   },
@@ -25,7 +25,7 @@ const features = [
     icon: Layers,
     title: "Curated Capsules",
     description: "Build refined capsule wardrobes that suit your lifestyle and simplify dressing.",
-    gradient: "from-muted to-muted",
+    tileClass: "bg-muted",
     iconColor: "text-muted-foreground",
     image: featureImages.capsuleWardrobe,
   },
@@ -53,7 +53,7 @@ export function FeatureHighlights() {
                 className="group text-center animate-slide-up"
                 style={{ animationDelay: `${index * 0.2}s` }}
               >
-                <div className={`w-20 h-20 bg-gradient-to-br ${feature.gradient} rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                <div className={`w-20 h-20 ${feature.tileClass} rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
                   <Icon className={`w-10 h-10 ${feature.iconColor}`} />
                 </div>
                 

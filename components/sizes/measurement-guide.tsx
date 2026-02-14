@@ -128,7 +128,7 @@ export function MeasurementGuide({
                 {guide.measurement_fields.map((field, index) => (
                   <div
                     key={field.name}
-                    className="rounded-lg border border-border bg-muted p-4 border-border bg-card/50"
+                    className="rounded-lg border border-border bg-card/50 p-4"
                   >
                     {/* Field label */}
                     <div className="mb-2 flex items-center gap-2">
@@ -177,10 +177,13 @@ export function MeasurementGuide({
                     )}
 
                     {/* Visual diagram - only show if image exists */}
-                    {field.diagram_ref && DIAGRAM_IMAGE_MAP[field.diagram_ref] && (
+                    {(() => {
+                      const diagramSrc = field.diagram_ref ? DIAGRAM_IMAGE_MAP[field.diagram_ref] : undefined;
+                      if (!diagramSrc) return null;
+                      return (
                       <div className="mt-3 rounded-md border border-border bg-background p-4">
                         <Image
-                          src={DIAGRAM_IMAGE_MAP[field.diagram_ref]}
+                          src={diagramSrc}
                           alt={`How to measure ${field.label}`}
                           width={360}
                           height={240}
@@ -188,7 +191,8 @@ export function MeasurementGuide({
                           priority={false}
                         />
                       </div>
-                    )}
+                      );
+                    })()}
                   </div>
                 ))}
               </div>

@@ -13,7 +13,7 @@ export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 bg-background/80 backdrop-blur-lg border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-lg border-b border-border">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -23,13 +23,13 @@ export function Navigation() {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <Link href="#how-it-works" className="text-muted-foreground hover:text-foreground dark:hover:text-muted-foreground transition-colors">
+            <Link href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
               How it works
             </Link>
-            <Link href="/pricing" className="text-muted-foreground hover:text-foreground dark:hover:text-muted-foreground transition-colors">
+            <Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
               Pricing
             </Link>
-            <Link href="/about" className="text-muted-foreground hover:text-foreground dark:hover:text-muted-foreground transition-colors">
+            <Link href="/about" className="text-muted-foreground hover:text-foreground transition-colors">
               About
             </Link>
           </div>
@@ -37,7 +37,7 @@ export function Navigation() {
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-4">
             <Link href="/auth/login">
-              <Button variant="ghost" className="text-muted-foreground hover:text-foreground dark:hover:text-muted-foreground">
+              <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
                 Sign In
               </Button>
             </Link>
@@ -66,23 +66,23 @@ export function Navigation() {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden border-t border-border py-4 space-y-4">
-            <Link 
+              <Link 
               href="#how-it-works" 
-              className="block text-muted-foreground hover:text-foreground dark:hover:text-muted-foreground transition-colors"
+              className="block text-muted-foreground hover:text-foreground transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               How it works
             </Link>
             <Link 
               href="/pricing" 
-              className="block text-muted-foreground hover:text-foreground dark:hover:text-muted-foreground transition-colors"
+              className="block text-muted-foreground hover:text-foreground transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Pricing
             </Link>
             <Link 
               href="/about" 
-              className="block text-muted-foreground hover:text-foreground dark:hover:text-muted-foreground transition-colors"
+              className="block text-muted-foreground hover:text-foreground transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               About

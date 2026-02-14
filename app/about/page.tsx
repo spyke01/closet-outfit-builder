@@ -6,7 +6,7 @@ import { StaticPageFooter } from "@/components/static-page-footer";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-cream-50 to-navy-50 from-background via-card to-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-card to-background">
       <StaticPageNavigation />
       
       <main className="pt-16">
