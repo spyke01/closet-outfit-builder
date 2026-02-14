@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>You're Invited to My AI Outfit</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f1e2c4;color:#231f20;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f1e2c4;">
+    <tr>
+      <td align="center" style="padding:24px 12px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;">
+          <tr>
+            <td style="padding:0 0 12px 0;text-align:center;">
+              <a href="{{ .SiteURL }}" style="text-decoration:none;display:inline-block;"><img src="https://myaioutfit.com/my-ai-outfit-logo-light-bg.png" width="170" alt="My AI Outfit" style="display:block;border:0;outline:none;text-decoration:none;height:auto;max-width:170px;width:100%;"></a>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#ffffff;border:1px solid #c8b895;border-radius:14px;padding:32px 28px;font-family:Inter,Segoe UI,Arial,sans-serif;">
+              <p style="margin:0 0 16px 0;font-size:14px;line-height:20px;color:#5c544b;">Invitation</p>
+              <h1 style="margin:0 0 14px 0;font-size:28px;line-height:34px;color:#231f20;font-weight:700;">You're invited</h1>
+              <p style="margin:0 0 18px 0;font-size:16px;line-height:24px;color:#231f20;">
+                You have been invited to join My AI Outfit. Accept your invitation to create your account and get started.
+              </p>
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px 0;">
+                <tr>
+                  <td align="center" bgcolor="#194957" style="border-radius:10px;">
+                    <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:14px 22px;font-size:16px;line-height:20px;font-family:Inter,Segoe UI,Arial,sans-serif;color:#ffffff;text-decoration:none;font-weight:600;">Accept Invite</a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 8px 0;font-size:13px;line-height:20px;color:#5c544b;">If the button does not work, paste this link into your browser:</p>
+              <p style="margin:0;word-break:break-all;font-size:13px;line-height:20px;">
+                <a href="{{ .ConfirmationURL }}" style="color:#194957;text-decoration:underline;">{{ .ConfirmationURL }}</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
