@@ -290,11 +290,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       // Step 4: Clear session storage since wizard is complete
       clearWizardState();
 
-      // Step 5: Advance to success step
-      setWizardState(prev => ({
-        ...prev,
-        step: 6,
-      }));
+      // Step 5: Redirect directly to wardrobe so users can review imported items.
+      router.push('/wardrobe');
 
       // Call optional completion callback
       if (onComplete) {
@@ -307,7 +304,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [userId, wizardState.generatedItems, wizardState.selectedCategories, queryClient, onComplete]);
+  }, [userId, wizardState.generatedItems, wizardState.selectedCategories, queryClient, onComplete, router]);
 
   /**
    * Handle redirect after success

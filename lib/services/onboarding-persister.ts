@@ -25,6 +25,11 @@ export interface PersistResult {
  */
 const BATCH_SIZE = 50;
 
+type OnboardingWardrobeInsert = CreateWardrobeItemInput & {
+  user_id: string;
+  active: boolean;
+};
+
 /**
  * Persist generated wardrobe items to database
  * 
@@ -56,7 +61,7 @@ export async function persistWardrobeItems(
     // Map generated items to database input format
     const itemsToInsert = items.map(item => 
       mapGeneratedItemToInput(item, userId, categoryMap)
-    ).filter(item => item !== null) as CreateWardrobeItemInput[];
+    ).filter(item => item !== null) as OnboardingWardrobeInsert[];
 
     // Track items that failed mapping
     const mappingFailures = items.length - itemsToInsert.length;
@@ -113,7 +118,7 @@ function mapGeneratedItemToInput(
   item: GeneratedWardrobeItem,
   userId: string,
   categoryMap: Map<CategoryKey, string>
-): CreateWardrobeItemInput | null {
+): OnboardingWardrobeInsert | null {
   const categoryId = categoryMap.get(item.category);
 
   if (!categoryId) {
@@ -122,12 +127,14 @@ function mapGeneratedItemToInput(
   }
 
   return {
+    user_id: userId,
     category_id: categoryId,
     name: item.name,
     color: item.color || undefined,
     formality_score: item.formality_score,
     season: item.season,
     image_url: item.image_url || undefined,
+    active: true,
     // Set source to 'onboarding' to track item origin
     capsule_tags: ['onboarding'],
   };

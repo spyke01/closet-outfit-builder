@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from "@supabase/ssr"
-import { sanitizeInternalRedirectPath } from "@/lib/utils/redirect";
+import { getPostAuthRoute, hasActiveWardrobeItems } from '@/lib/server/wardrobe-readiness';
 
 export const dynamic = 'force-dynamic';
 const DEFAULT_REDIRECT_PATH = '/today';
@@ -11,10 +11,7 @@ export async function GET(request: NextRequest) {
     const code = searchParams.get('code')
     const error = searchParams.get('error')
     const error_description = searchParams.get('error_description')
-    const redirectPath = sanitizeInternalRedirectPath(
-      searchParams.get('next'),
-      DEFAULT_REDIRECT_PATH
-    )
+    const requestedNext = searchParams.get('next');
 
     // Check environment variables
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -37,9 +34,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent('No authorization code received')}`)
     }
 
-    // Create response object first so we can set cookies
-    const redirectUrl = `${origin}${redirectPath}`
-    const response = NextResponse.redirect(redirectUrl)
+    // Create response object first so Supabase can attach cookies during code exchange.
+    const response = NextResponse.redirect(`${origin}${DEFAULT_REDIRECT_PATH}`)
     
     // Create Supabase client with proper cookie handling
     const supabase = createServerClient(
@@ -80,20 +76,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent('No session created. Please try again.')}`)
     }
 
-    // Seed new user data (non-blocking)
-    try {
-      const { error: seedError } = await supabase.functions.invoke('seed-user', {
-        headers: {
-          Authorization: `Bearer ${data.session.access_token}`,
-        },
-      })
-      
-      if (seedError) {
-        console.error('Failed to seed user data:', seedError)
-      }
-    } catch (seedError) {
-      console.error('Error seeding user (non-blocking):', seedError)
-    }
+    const userId = data.user?.id;
+    const hasItems = userId
+      ? await hasActiveWardrobeItems(supabase, userId)
+      : true;
+    const redirectPath = getPostAuthRoute({
+      hasItems,
+      requestedNext,
+      fallback: DEFAULT_REDIRECT_PATH,
+    });
+    response.headers.set('Location', `${origin}${redirectPath}`);
 
     return response
     
