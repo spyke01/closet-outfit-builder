@@ -95,7 +95,7 @@ describe('OnboardingWizard - Theme Support', () => {
     // Check alert message
     const alert = screen.getByRole('alert');
     expect(alert.className).toContain('bg-warning-light');
-    expect(alert.className).toContain('border-warning');
+    expect(alert.className).toContain('border-warning/40');
   });
 
   it('should use theme-aware color classes', () => {

@@ -20,6 +20,7 @@ import {
 import { getCategoryByKey, getSubcategory, type CategoryKey } from '@/lib/data/onboarding-categories';
 import { COLOR_OPTIONS } from '@/lib/data/color-options';
 import type { SubcategoryColorSelection } from '@/lib/types/onboarding';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Icon mapping for subcategories (from @lucide/lab and lucide-react)
 const SUBCATEGORY_ICON_NODES: Record<string, IconNode> = {
@@ -197,11 +198,11 @@ export function StepColorsQuantity({
       </div>
 
       {!hasValidSelection && (
-        <div className="p-4 bg-warning-light border border-warning rounded-lg" role="alert">
-          <p className="text-sm text-warning-dark">
+        <Alert variant="warning">
+          <AlertDescription>
             Please select at least one color for at least one item type to continue.
-          </p>
-        </div>
+          </AlertDescription>
+        </Alert>
       )}
     </div>
   );

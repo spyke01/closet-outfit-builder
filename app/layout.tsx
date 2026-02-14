@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Playfair_Display, Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { QueryProvider } from "@/lib/providers/query-provider";
 import { MonitoringProvider } from "@/lib/providers/monitoring-provider";
@@ -54,24 +53,6 @@ export const viewport: Viewport = {
   ],
 };
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  display: "swap",
-  subsets: ["latin"],
-});
-
-const playfairDisplay = Playfair_Display({
-  variable: "--font-playfair-display",
-  display: "swap",
-  subsets: ["latin"],
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  display: "swap",
-  subsets: ["latin"],
-});
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -79,7 +60,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${playfairDisplay.variable} ${geistSans.variable} font-sans antialiased`}>
+      <body className="font-sans antialiased">
         <MonitoringProvider>
           <QueryProvider>
             <SWRProvider>

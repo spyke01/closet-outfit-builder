@@ -19,6 +19,7 @@ import {
   scarf 
 } from '@lucide/lab';
 import { getCategoryByKey, type CategoryKey } from '@/lib/data/onboarding-categories';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Icon mapping for categories (from main lucide-react)
 const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -234,11 +235,11 @@ export function StepSubcategorySelection({
       </div>
 
       {totalSelected === 0 && (
-        <div className="p-4 bg-warning-light border border-warning rounded-lg" role="alert">
-          <p className="text-sm text-warning-dark">
+        <Alert variant="warning">
+          <AlertDescription>
             Please select at least one subcategory to continue. Expand a category above and check the items you own.
-          </p>
-        </div>
+          </AlertDescription>
+        </Alert>
       )}
     </div>
   );

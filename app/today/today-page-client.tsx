@@ -10,6 +10,8 @@ import TodayOutfitDisplay from '@/components/today-outfit-display';
 import WeatherSnapshot from '@/components/weather-snapshot';
 import OutfitActions from '@/components/outfit-actions';
 import { createOutfit } from '@/lib/actions/outfits';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 interface TodayPageClientProps {
@@ -220,24 +222,26 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
           )}
           
           {saveSuccess && (
-            <div className="mt-4 p-4 bg-secondary/20 border border-secondary/40 rounded-lg">
-              <p className="text-foreground mb-2 text-sm">Outfit saved successfully!</p>
+            <Alert variant="success" className="mt-4">
+              <CheckCircle className="h-4 w-4" />
+              <AlertDescription className="mb-2 text-sm">Outfit saved successfully!</AlertDescription>
               <Link href="/outfits" className="text-primary hover:underline text-sm">
                 View your outfits →
               </Link>
-            </div>
+            </Alert>
           )}
           
           {saveError && (
-            <div className="mt-4 p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
-              <p className="text-destructive mb-2 text-sm">{saveError}</p>
+            <Alert variant="destructive" className="mt-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="mb-2 text-sm">{saveError}</AlertDescription>
               <button
                 onClick={() => handleSave()}
                 className="text-destructive hover:underline text-sm"
               >
                 Try again
               </button>
-            </div>
+            </Alert>
           )}
         </div>
         

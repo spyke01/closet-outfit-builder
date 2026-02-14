@@ -265,7 +265,7 @@ export function AnchorOutfitBuilderClient({ categoryName, anchorItemId }: Anchor
 
         {/* Success/Error Messages */}
         {createOutfitMutation.isSuccess && (
-          <Alert>
+          <Alert variant="success">
             <CheckCircle className="h-4 w-4" />
             <AlertDescription>Outfit saved successfully!</AlertDescription>
           </Alert>

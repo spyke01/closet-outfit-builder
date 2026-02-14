@@ -118,6 +118,13 @@ export class SupabaseErrorBoundary extends Component<Props, State> {
     }
   }
 
+  private getAlertVariant(): 'warning' | 'destructive' {
+    if (this.state.errorType === 'permission' || this.state.errorType === 'auth') {
+      return 'destructive';
+    }
+    return 'warning';
+  }
+
   private getErrorIcon() {
     switch (this.state.errorType) {
       case 'auth':
@@ -157,7 +164,7 @@ export class SupabaseErrorBoundary extends Component<Props, State> {
       return (
         <div className="min-h-screen flex items-center justify-center p-4">
           <div className="max-w-md w-full space-y-4">
-            <Alert>
+            <Alert variant={this.getAlertVariant()}>
               <div className="flex items-center space-x-2">
                 {this.getErrorIcon()}
                 <AlertDescription className="flex-1">
@@ -167,7 +174,7 @@ export class SupabaseErrorBoundary extends Component<Props, State> {
             </Alert>
             
             {process.env.NODE_ENV === 'development' && this.state.error && (
-              <Alert>
+              <Alert variant="info">
                 <AlertDescription>
                   <details className="mt-2">
                     <summary className="cursor-pointer text-sm font-medium">

@@ -167,7 +167,7 @@ export class AuthErrorBoundary extends Component<Props, State> {
       return (
         <div className="min-h-screen flex items-center justify-center p-4">
           <div className="max-w-md w-full space-y-4">
-            <Alert>
+            <Alert variant="warning">
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
                 {this.getAuthErrorMessage()}
@@ -175,7 +175,7 @@ export class AuthErrorBoundary extends Component<Props, State> {
             </Alert>
 
             {this.state.retryCount > 0 && (
-              <Alert>
+              <Alert variant="info">
                 <AlertDescription>
                   Retry attempt {this.state.retryCount} of {this.maxRetries}
                 </AlertDescription>
@@ -183,7 +183,7 @@ export class AuthErrorBoundary extends Component<Props, State> {
             )}
 
             {process.env.NODE_ENV === 'development' && this.state.error && (
-              <Alert>
+              <Alert variant="info">
                 <AlertDescription>
                   <details className="mt-2">
                     <summary className="cursor-pointer text-sm font-medium">

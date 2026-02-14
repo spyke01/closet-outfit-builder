@@ -167,6 +167,12 @@ This project uses a **semantic token-first theming system**. Treat direct color 
 
 - UI tests should assert semantic class usage and user-visible behavior, not legacy palette class names.
 
+### AI icon consistency requirement
+
+- Use `components/ai-icon.tsx` (`AIIcon`) as the single icon for AI-related CTAs and AI-originated alerts.
+- Do not use `AIIcon` on generic submit/save/update buttons or cancel/close/back actions.
+- For full usage rules, see `.kiro/steering/theming.md` section "AI affordance icon standard".
+
 ## Filtering Standard
 
 Filter/search interfaces must follow the project filtering contract in:

@@ -254,7 +254,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
 
         {/* Success/Error Messages */}
         {updateItemMutation.isSuccess && (
-          <Alert>
+          <Alert variant="success">
             <CheckCircle className="h-4 w-4" />
             <AlertDescription>Item updated successfully!</AlertDescription>
           </Alert>

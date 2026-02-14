@@ -345,7 +345,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
 
         {/* Success/Error Messages */}
         {updateOutfitMutation.isSuccess && (
-          <Alert>
+          <Alert variant="success">
             <CheckCircle className="h-4 w-4" />
             <AlertDescription>Outfit updated successfully!</AlertDescription>
           </Alert>

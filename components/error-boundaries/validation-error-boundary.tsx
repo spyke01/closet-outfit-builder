@@ -147,7 +147,7 @@ export class ValidationErrorBoundary extends Component<Props, State> {
     }
 
     return (
-      <Alert>
+      <Alert variant="info">
         <Info className="h-4 w-4" />
         <AlertDescription>
           <div className="space-y-1">
@@ -184,7 +184,7 @@ export class ValidationErrorBoundary extends Component<Props, State> {
 
       return (
         <div className="space-y-4 p-4">
-          <Alert>
+          <Alert variant="warning">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
               {this.getValidationErrorMessage()}
@@ -194,7 +194,7 @@ export class ValidationErrorBoundary extends Component<Props, State> {
           {this.renderFieldErrors()}
 
           {process.env.NODE_ENV === 'development' && this.state.error && (
-            <Alert>
+            <Alert variant="info">
               <AlertDescription>
                 <details className="mt-2">
                   <summary className="cursor-pointer text-sm font-medium">

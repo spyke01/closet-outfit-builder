@@ -70,6 +70,29 @@ const ROUTE_PRELOAD_CONFIGS: RoutePreloadConfig[] = [
     ],
   },
   {
+    route: '/calendar',
+    modules: [
+      {
+        feature: 'weather',
+        importFn: () => import('../hooks/use-calendar-entries'),
+        priority: 'high',
+        delay: 0,
+      },
+      {
+        feature: 'weather',
+        importFn: () => import('../hooks/use-outfits'),
+        priority: 'medium',
+        delay: 100,
+      },
+      {
+        feature: 'weather',
+        importFn: () => import('../hooks/use-weather'),
+        priority: 'medium',
+        delay: 150,
+      },
+    ],
+  },
+  {
     route: '/settings',
     modules: [
       {

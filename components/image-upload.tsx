@@ -352,9 +352,9 @@ export function ImageUpload({
       )}
 
       {uploadState.success && (
-        <Alert className="border-green-200 bg-green-50">
-          <CheckCircle className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-800">
+        <Alert variant="success">
+          <CheckCircle className="h-4 w-4" />
+          <AlertDescription>
             {uploadState.success}
           </AlertDescription>
         </Alert>

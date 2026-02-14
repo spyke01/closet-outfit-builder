@@ -22,6 +22,9 @@
 
 @layer base {
   :root {
+    --font-inter: "Inter", "Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --font-playfair-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+    --font-geist-sans: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     --background: #F1E2C4;
     --foreground: #231F20;
     --card: #FFFFFF;

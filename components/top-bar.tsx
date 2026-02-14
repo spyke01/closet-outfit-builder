@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Settings, Shirt, Grid3X3, Ruler, Calendar, LogOut, Menu, X, Monitor, Moon, Sun } from 'lucide-react';
+import { Settings, Shirt, Grid3X3, Ruler, Calendar, CalendarDays, LogOut, Menu, X, Monitor, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useUpdateUserPreferences, useUserPreferences } from '@/lib/hooks/use-user-preferences';
 
@@ -118,6 +118,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   // Determine current view based on pathname
   const getCurrentView = () => {
     if (pathname?.startsWith('/today')) return 'today';
+    if (pathname?.startsWith('/calendar')) return 'calendar';
     if (pathname?.startsWith('/wardrobe')) return 'wardrobe';
     if (pathname?.startsWith('/outfits')) return 'outfits';
     if (pathname?.startsWith('/sizes')) return 'sizes';
@@ -199,6 +200,20 @@ export const TopBar: React.FC<TopBarProps> = ({
               >
                 <Shirt size={18} />
                 <span>Wardrobe</span>
+              </Link>
+              <Link
+                href="/calendar"
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                  currentView === 'calendar'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                }`}
+                aria-label="View outfit calendar"
+                aria-current={currentView === 'calendar' ? 'page' : undefined}
+                {...getNavigationProps('/calendar')}
+              >
+                <CalendarDays size={18} />
+                <span>Calendar</span>
               </Link>
               <Link
                 href="/outfits"
@@ -366,6 +381,20 @@ export const TopBar: React.FC<TopBarProps> = ({
             >
               <Grid3X3 size={20} />
               <span>Outfits</span>
+            </Link>
+            <Link
+              href="/calendar"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                currentView === 'calendar'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              }`}
+              aria-label="View outfit calendar"
+              aria-current={currentView === 'calendar' ? 'page' : undefined}
+            >
+              <CalendarDays size={20} />
+              <span>Calendar</span>
             </Link>
             <Link
               href="/sizes"

@@ -2,6 +2,7 @@
 
 import { Shirt, Layers, Footprints, Layers2, Sparkles, Watch } from 'lucide-react/dist/esm/icons';
 import { ONBOARDING_CATEGORIES, type CategoryKey } from '@/lib/data/onboarding-categories';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface StepCategoryOwnershipProps {
   selectedCategories: CategoryKey[];
@@ -82,11 +83,11 @@ export function StepCategoryOwnership({ selectedCategories, onChange }: StepCate
     </fieldset>
 
       {selectedCategories.length === 0 && (
-        <div className="p-4 bg-warning-light border border-warning rounded-lg" role="alert">
-          <p className="text-sm text-warning-dark">
+        <Alert variant="warning">
+          <AlertDescription>
             Please select at least one category to continue. Essential categories (Tops, Bottoms, Shoes) are recommended for a complete wardrobe.
-          </p>
-        </div>
+          </AlertDescription>
+        </Alert>
       )}
     </div>
   );

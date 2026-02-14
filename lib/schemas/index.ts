@@ -3,6 +3,10 @@ import { z } from 'zod';
 // Base schemas for reusability
 const UUIDSchema = z.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, 'Invalid UUID format');
 const TimestampSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?$/, 'Invalid datetime format');
+const CalendarDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format (YYYY-MM-DD)');
+const SafeCalendarNotesSchema = z.string()
+  .max(500, 'Notes too long')
+  .regex(/^[A-Za-z0-9\s]*$/, 'Notes can only contain letters, numbers, and spaces');
 
 // Category schema
 export const CategorySchema = z.object({
@@ -53,6 +57,26 @@ export const OutfitItemSchema = z.object({
   outfit_id: UUIDSchema,
   item_id: UUIDSchema,
   category_id: UUIDSchema,
+  created_at: TimestampSchema.optional(),
+});
+
+// Calendar entry schemas
+export const CalendarEntrySchema = z.object({
+  id: UUIDSchema.optional(),
+  user_id: UUIDSchema.optional(),
+  entry_date: CalendarDateSchema,
+  status: z.enum(['planned', 'worn']),
+  outfit_id: UUIDSchema.nullable().optional(),
+  notes: SafeCalendarNotesSchema.nullable().optional(),
+  weather_context: z.record(z.string(), z.unknown()).nullable().optional(),
+  created_at: z.string().nullable().optional(),
+  updated_at: z.string().nullable().optional(),
+});
+
+export const CalendarEntryItemSchema = z.object({
+  id: UUIDSchema.optional(),
+  calendar_entry_id: UUIDSchema,
+  wardrobe_item_id: UUIDSchema,
   created_at: TimestampSchema.optional(),
 });
 
@@ -159,11 +183,27 @@ export const UpdateOutfitFormSchema = CreateOutfitFormSchema.partial().extend({
   id: UUIDSchema,
 });
 
+export const CreateCalendarEntryFormSchema = CalendarEntrySchema.omit({
+  id: true,
+  user_id: true,
+  created_at: true,
+  updated_at: true,
+}).extend({
+  notes: z.union([SafeCalendarNotesSchema, z.null()]).optional(),
+  item_ids: z.array(UUIDSchema).optional(),
+});
+
+export const UpdateCalendarEntryFormSchema = CreateCalendarEntryFormSchema.partial().extend({
+  id: UUIDSchema,
+});
+
 // Type inference from schemas
 export type Category = z.infer<typeof CategorySchema>;
 export type WardrobeItem = z.infer<typeof WardrobeItemSchema>;
 export type Outfit = z.infer<typeof OutfitSchema>;
 export type OutfitItem = z.infer<typeof OutfitItemSchema>;
+export type CalendarEntry = z.infer<typeof CalendarEntrySchema>;
+export type CalendarEntryItem = z.infer<typeof CalendarEntryItemSchema>;
 export type UserPreferences = z.infer<typeof UserPreferencesSchema>;
 export type OutfitSelection = z.infer<typeof OutfitSelectionSchema>;
 export type ImageUpload = z.infer<typeof ImageUploadSchema>;
@@ -176,6 +216,8 @@ export type CreateWardrobeItemForm = z.infer<typeof CreateWardrobeItemFormSchema
 export type UpdateWardrobeItemForm = z.infer<typeof UpdateWardrobeItemFormSchema>;
 export type CreateOutfitForm = z.infer<typeof CreateOutfitFormSchema>;
 export type UpdateOutfitForm = z.infer<typeof UpdateOutfitFormSchema>;
+export type CreateCalendarEntryForm = z.infer<typeof CreateCalendarEntryFormSchema>;
+export type UpdateCalendarEntryForm = z.infer<typeof UpdateCalendarEntryFormSchema>;
 
 // API response types
 export type ApiResponse<T> = z.infer<ReturnType<typeof ApiResponseSchema<T>>>;

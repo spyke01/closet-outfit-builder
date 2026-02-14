@@ -2,6 +2,7 @@
 
 import { Briefcase, Coffee, Shuffle, Sun, Snowflake, CloudSun } from 'lucide-react/dist/esm/icons';
 import type { StyleBaseline } from '@/lib/types/onboarding';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface StepStyleBaselineProps {
   value: StyleBaseline;
@@ -158,25 +159,25 @@ export function StepStyleBaseline({ value, onChange }: StepStyleBaselineProps) {
       </div>
 
       {!value.primaryUse && !value.climate && (
-        <div className="mt-4 p-4 bg-warning-light border border-warning rounded-lg" role="alert">
-          <p className="text-sm text-warning-dark">
+        <Alert variant="warning" className="mt-4">
+          <AlertDescription>
             Please select both your primary clothing use and climate to continue.
-          </p>
-        </div>
+          </AlertDescription>
+        </Alert>
       )}
       {value.primaryUse && !value.climate && (
-        <div className="mt-4 p-4 bg-warning-light border border-warning rounded-lg" role="alert">
-          <p className="text-sm text-warning-dark">
+        <Alert variant="warning" className="mt-4">
+          <AlertDescription>
             Please select your climate preference to continue.
-          </p>
-        </div>
+          </AlertDescription>
+        </Alert>
       )}
       {!value.primaryUse && value.climate && (
-        <div className="mt-4 p-4 bg-warning-light border border-warning rounded-lg" role="alert">
-          <p className="text-sm text-warning-dark">
+        <Alert variant="warning" className="mt-4">
+          <AlertDescription>
             Please select your primary clothing use to continue.
-          </p>
-        </div>
+          </AlertDescription>
+        </Alert>
       )}
     </div>
   );

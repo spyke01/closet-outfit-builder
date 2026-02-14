@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { RefreshCw, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
+import { AIIcon } from './ai-icon';
 
 interface OutfitActionsProps {
   onRegenerate: () => void;
@@ -39,7 +40,7 @@ export default function OutfitActions({ onRegenerate, onSave, disabled }: Outfit
         className="w-full flex items-center justify-center gap-2 px-6 py-3 border border-border rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-foreground bg-card"
         aria-label="Regenerate outfit"
       >
-        <RefreshCw className="w-4 h-4" aria-hidden="true" />
+        <AIIcon className="w-4 h-4" />
         Regenerate
       </button>
     </div>

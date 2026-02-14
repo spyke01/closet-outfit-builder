@@ -58,3 +58,12 @@ export { useAuth } from './use-auth';
 // Advanced pattern hooks
 export { useLatest } from './use-latest';
 export { useEventCallback, useStableCallback } from './use-event-callback';
+
+// Calendar hooks
+export {
+  useCalendarEntriesByMonth,
+  useCreateCalendarEntry,
+  useUpdateCalendarEntry,
+  useDeleteCalendarEntry,
+  sanitizeCalendarNotes,
+} from './use-calendar-entries';

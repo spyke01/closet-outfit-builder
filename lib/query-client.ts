@@ -98,6 +98,12 @@ export const queryKeys = {
     measurements: (categoryId: string) => ['sizes', 'measurements', categoryId] as const,
     pinned: (userId: string) => ['sizes', 'pinned', userId] as const,
   },
+  calendar: {
+    all: ['calendar'] as const,
+    month: (userId: string, month: string) => ['calendar', 'month', userId, month] as const,
+    day: (userId: string, day: string) => ['calendar', 'day', userId, day] as const,
+    stats: (userId: string, month: string) => ['calendar', 'stats', userId, month] as const,
+  },
   // Edge function results caching
   edgeFunctions: {
     scoreOutfit: (selection: Record<string, unknown>) => 

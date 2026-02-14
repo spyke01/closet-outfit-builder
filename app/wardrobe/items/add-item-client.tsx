@@ -179,7 +179,7 @@ export function AddItemPageClient() {
 
         {/* Success/Error Messages */}
         {createItemMutation.isSuccess && (
-          <Alert>
+          <Alert variant="success">
             <CheckCircle className="h-4 w-4" />
             <AlertDescription>Item added successfully!</AlertDescription>
           </Alert>
@@ -195,7 +195,7 @@ export function AddItemPageClient() {
         )}
 
         {categories.length === 0 && (
-          <Alert>
+          <Alert variant="info">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               No categories found. Categories will be created automatically when you add items.

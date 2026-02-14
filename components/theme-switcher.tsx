@@ -4,6 +4,7 @@ import { useTheme } from 'next-themes';
 import { useUpdateUserPreferences, useUserPreferences } from '@/lib/hooks/use-user-preferences';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Monitor, Moon, Sun } from 'lucide-react';
 
 
@@ -123,11 +124,11 @@ export function ThemeSettings() {
         </div>
         
         {updatePreferences.error && (
-          <div className="mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-            <p className="text-sm text-destructive">
+          <Alert variant="destructive" className="mt-4">
+            <AlertDescription className="text-sm">
               Failed to save theme preference. Please try again.
-            </p>
-          </div>
+            </AlertDescription>
+          </Alert>
         )}
       </CardContent>
     </Card>

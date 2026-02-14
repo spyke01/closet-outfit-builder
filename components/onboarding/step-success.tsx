@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { PartyPopper } from 'lucide-react/dist/esm/icons';
+import { AIIcon } from '@/components/ai-icon';
 
 interface StepSuccessProps {
   totalItems: number;
@@ -59,9 +60,10 @@ export function StepSuccess({
         <button
           type="button"
           onClick={handleGenerateOutfits}
-          className="flex-1 px-6 py-3 min-h-[44px] border-2 border-primary text-primary rounded-lg font-semibold hover:bg-muted transition-colors focus:ring-2 focus:ring-ring focus:ring-offset-2 touch-manipulation"
+          className="flex-1 px-6 py-3 min-h-[44px] border-2 border-primary text-primary rounded-lg font-semibold hover:bg-muted transition-colors focus:ring-2 focus:ring-ring focus:ring-offset-2 touch-manipulation inline-flex items-center justify-center gap-2"
           aria-label="Generate outfit recommendations"
         >
+          <AIIcon className="w-4 h-4" />
           Generate Outfits
         </button>
       </div>

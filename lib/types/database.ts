@@ -53,6 +53,28 @@ export interface OutfitItem {
   created_at: string;
 }
 
+export interface CalendarEntry {
+  id: string;
+  user_id: string;
+  entry_date: string; // YYYY-MM-DD
+  status: 'planned' | 'worn';
+  outfit_id?: string | null;
+  notes?: string | null;
+  weather_context?: Record<string, unknown> | null;
+  created_at: string;
+  updated_at: string;
+  // Joined fields
+  outfit?: Outfit | null;
+  items?: WardrobeItem[];
+}
+
+export interface CalendarEntryItem {
+  id: string;
+  calendar_entry_id: string;
+  wardrobe_item_id: string;
+  created_at: string;
+}
+
 export interface UserPreferences {
   id: string;
   user_id: string;
@@ -92,6 +114,19 @@ export interface CreateOutfitInput {
 }
 
 export interface UpdateOutfitInput extends Partial<CreateOutfitInput> {
+  id: string;
+}
+
+export interface CreateCalendarEntryInput {
+  entry_date: string; // YYYY-MM-DD
+  status: 'planned' | 'worn';
+  outfit_id?: string;
+  notes?: string;
+  weather_context?: Record<string, unknown>;
+  item_ids?: string[];
+}
+
+export interface UpdateCalendarEntryInput extends Partial<CreateCalendarEntryInput> {
   id: string;
 }
 

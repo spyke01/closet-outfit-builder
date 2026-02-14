@@ -95,14 +95,35 @@ Any layout `Suspense` fallback that visually replaces themed UI must use the sam
 Required check:
 - No fallback should include `bg-white` for app-shell elements.
 
-## 6) Testing rules for theming
+## 6) AI affordance icon standard
+
+Use one shared icon for AI-specific UI affordances:
+- Component: `components/ai-icon.tsx`
+- API: `<AIIcon className="w-4 h-4" />`
+- Visual meaning: "this action/state is AI-driven"
+
+Use `AIIcon` for:
+- AI generation/regeneration CTAs
+- AI planning buttons
+- AI alerts/messages where the message itself is AI-originated
+
+Do **not** use `AIIcon` for:
+- Generic submit/save/update buttons
+- Generic cancel/close/back actions
+- Non-AI destructive actions (delete/remove)
+
+Implementation rules:
+- Keep icon placement consistent: left of label with `inline-flex items-center gap-2`.
+- Reuse `AIIcon`; do not introduce alternate AI icons (`Wand2`, custom sparkles, etc.) in product UI.
+
+## 7) Testing rules for theming
 
 When testing themed components:
 - Assert semantic classes (`bg-card`, `text-foreground`, `border-border`) where class checks are needed.
 - Prefer behavior and accessibility assertions over exact class chains.
 - Do not assert legacy palette scale classes (`text-blue-*`, `dark:text-gray-*`, etc.) unless explicitly intentional.
 
-## 7) Migration checklist for touched files
+## 8) Migration checklist for touched files
 
 For any modified UI file:
 1. Remove hardcoded neutral scale colors.
@@ -111,3 +132,4 @@ For any modified UI file:
 4. Verify buttons use primary/secondary token recipes.
 5. Verify skeletons/fallbacks use semantic surfaces.
 6. Update tests if they assert obsolete color classes.
+7. If adding AI-specific CTA/alert UI, use `AIIcon` and avoid AI icon usage on generic submit/cancel flows.

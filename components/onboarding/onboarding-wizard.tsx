@@ -14,6 +14,7 @@ import { persistWardrobeItems } from '@/lib/services/onboarding-persister';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-client';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import type { WizardState } from '@/lib/types/onboarding';
 import { INITIAL_WIZARD_STATE } from '@/lib/types/onboarding';
 
@@ -448,14 +449,12 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
 
           {/* Error Display */}
           {error && (
-            <div
-              className="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-lg text-destructive"
-              role="alert"
-              aria-live="assertive"
-            >
-              <p className="font-semibold">Error</p>
-              <p className="text-sm">{error}</p>
-            </div>
+            <Alert variant="destructive" className="mb-6" aria-live="assertive">
+              <AlertDescription>
+                <p className="font-semibold">Error</p>
+                <p className="text-sm">{error}</p>
+              </AlertDescription>
+            </Alert>
           )}
 
           {/* Step Content */}

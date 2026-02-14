@@ -284,7 +284,7 @@ export function CreateOutfitPageClient() {
         )}
 
         {duplicateCheckError && (
-          <Alert>
+          <Alert variant="warning">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               Unable to check for duplicate outfits. You can still create this outfit.
