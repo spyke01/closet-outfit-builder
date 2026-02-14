@@ -44,7 +44,7 @@ export function LoginForm({
       if (error) throw error;
       
       // Only navigate on success
-      router.push("/wardrobe");
+      router.push("/today");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
@@ -59,7 +59,7 @@ export function LoginForm({
     // Log URL configuration for debugging
     logUrlConfig();
 
-    const redirectUrl = getAuthCallbackUrl('/wardrobe');
+    const redirectUrl = getAuthCallbackUrl('/today');
     console.log('OAuth redirect URL:', redirectUrl);
 
     try {

@@ -70,7 +70,7 @@ export function SignUpForm({
     // Log URL configuration for debugging
     logUrlConfig();
     
-    const redirectUrl = getAuthCallbackUrl('/wardrobe');
+    const redirectUrl = getAuthCallbackUrl('/today');
     console.log('OAuth redirect URL:', redirectUrl);
 
     try {

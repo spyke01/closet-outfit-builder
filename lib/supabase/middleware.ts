@@ -48,7 +48,7 @@ export async function updateSession(request: NextRequest) {
   const user = data?.claims;
 
   // Define protected routes that require authentication
-  const protectedRoutes = ['/wardrobe', '/outfits', '/anchor', '/settings'];
+  const protectedRoutes = ['/today', '/wardrobe', '/outfits', '/anchor', '/settings', '/onboarding'];
   const isProtectedRoute = protectedRoutes.some(route => 
     request.nextUrl.pathname.startsWith(route)
   );
@@ -62,13 +62,13 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Redirect authenticated users away from auth pages to wardrobe
+  // Redirect authenticated users away from auth pages to today
   // BUT allow callback and confirm routes to process first
   if (user && request.nextUrl.pathname.startsWith('/auth') && 
       !request.nextUrl.pathname.startsWith('/auth/confirm') &&
       !request.nextUrl.pathname.startsWith('/auth/callback')) {
     const url = request.nextUrl.clone();
-    url.pathname = "/wardrobe";
+    url.pathname = "/today";
     return NextResponse.redirect(url);
   }
 

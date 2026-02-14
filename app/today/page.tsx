@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { hasActiveWardrobeItems } from '@/lib/server/wardrobe-readiness';
 import { redirect } from 'next/navigation';
 import TodayPageClient from './today-page-client';
 import { TopBarWrapper } from '@/components/top-bar-wrapper';
@@ -18,6 +19,11 @@ export default async function TodayPage() {
   
   if (authError || !user) {
     redirect('/auth/login');
+  }
+
+  const hasItems = await hasActiveWardrobeItems(supabase, user.id);
+  if (!hasItems) {
+    redirect('/onboarding');
   }
   
   // Fetch wardrobe items with categories
