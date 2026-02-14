@@ -18,13 +18,17 @@ export default function Home() {
   
   useEffect(() => {
     const checkAuth = async () => {
-      const supabase = createClient();
-      const { data } = await supabase.auth.getUser();
-      
-      // Redirect authenticated users to today page
-      if (data?.user) {
-        router.push("/today");
-        return;
+      try {
+        const supabase = createClient();
+        const { data } = await supabase.auth.getUser();
+        
+        // Redirect authenticated users to today page
+        if (data?.user) {
+          router.push("/today");
+          return;
+        }
+      } catch {
+        // Continue rendering the public home experience if auth bootstrap fails.
       }
       
       setIsLoading(false);
