@@ -118,7 +118,7 @@ npm run typecheck:monitor
 - `.bundle-trends/` - Historical bundle data
 - `.typescript-trends/` - Historical TypeScript data
 - `docs/bundle-size-validation.md` - Bundle analysis report
-- `docs/typescript-errors.md` - TypeScript error report
+- `tmp/typescript-errors.md` - TypeScript error report
 
 ### 5. Accessibility
 

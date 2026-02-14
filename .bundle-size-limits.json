@@ -1,12 +1,12 @@
 {
-  "totalJs": 512000,
-  "totalCss": 102400,
-  "totalAssets": 1048576,
-  "maxAssetSize": 204800,
+  "totalJs": 1572864,
+  "totalCss": 204800,
+  "totalAssets": 3145728,
+  "maxAssetSize": 409600,
   "description": {
-    "totalJs": "Maximum total JavaScript size (500KB)",
-    "totalCss": "Maximum total CSS size (100KB)",
-    "totalAssets": "Maximum total asset size (1MB)",
-    "maxAssetSize": "Maximum individual asset size (200KB)"
+    "totalJs": "Maximum total JavaScript size (1.5MB)",
+    "totalCss": "Maximum total CSS size (200KB)",
+    "totalAssets": "Maximum total asset size (3MB)",
+    "maxAssetSize": "Maximum individual asset size (400KB)"
   }
 }

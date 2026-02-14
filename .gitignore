@@ -60,3 +60,5 @@ tsconfig.tsbuildinfo
 *.local
 .lint-report.json
 .lint-summary.json
+.bundle-trends/
+.typescript-trends/

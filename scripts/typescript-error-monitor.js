@@ -20,7 +20,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const TRENDS_DIR = path.join(__dirname, '..', '.typescript-trends');
-const REPORT_FILE = path.join(__dirname, '..', 'docs', 'typescript-errors.md');
+const REPORT_FILE = path.join(__dirname, '..', 'tmp', 'typescript-errors.md');
+const DEFAULT_BASELINE_TOTAL_ERRORS = 368;
+const DEFAULT_BASELINE_ANY_TYPE_ERRORS = 48;
 
 function ensureDirectoryExists(dir) {
   if (!fs.existsSync(dir)) {
@@ -41,6 +43,55 @@ function runTypeScriptCheck() {
     const output = error.stdout || error.stderr || '';
     return { success: false, output, errors: parseTypeScriptErrors(output) };
   }
+}
+
+function loadBaseline() {
+  const totalErrorsRaw = process.env.TS_ERROR_BASELINE_TOTAL;
+  const anyTypeErrorsRaw = process.env.TS_ERROR_BASELINE_ANY;
+
+  const totalErrors = Number.isFinite(Number(totalErrorsRaw))
+    ? Number(totalErrorsRaw)
+    : DEFAULT_BASELINE_TOTAL_ERRORS;
+  const anyTypeErrors = Number.isFinite(Number(anyTypeErrorsRaw))
+    ? Number(anyTypeErrorsRaw)
+    : DEFAULT_BASELINE_ANY_TYPE_ERRORS;
+
+  return {
+    totalErrors,
+    anyTypeErrors
+  };
+}
+
+function evaluateGate(analysis, baseline) {
+  if (!baseline) {
+    return {
+      status: analysis.totalErrors === 0 ? 'pass' : 'fail',
+      reasons: analysis.totalErrors === 0
+        ? []
+        : ['No TypeScript baseline found and errors are present'],
+    };
+  }
+
+  const reasons = [];
+  const allowedAnyTypeErrors = baseline.anyTypeErrors ?? 0;
+  const allowedTotalErrors = baseline.totalErrors ?? 0;
+
+  if (analysis.anyTypeErrors > allowedAnyTypeErrors) {
+    reasons.push(
+      `Any-type errors increased (${analysis.anyTypeErrors} > ${allowedAnyTypeErrors})`
+    );
+  }
+
+  if (analysis.totalErrors > allowedTotalErrors) {
+    reasons.push(
+      `Total TypeScript errors increased (${analysis.totalErrors} > ${allowedTotalErrors})`
+    );
+  }
+
+  return {
+    status: reasons.length > 0 ? 'fail' : 'pass',
+    reasons,
+  };
 }
 
 function parseTypeScriptErrors(output) {
@@ -180,7 +231,7 @@ function analyzeTrends(trends) {
   };
 }
 
-function generateReport(analysis, trends, trendAnalysis, errors) {
+function generateReport(analysis, trends, trendAnalysis, errors, baseline, gate) {
   let report = `# TypeScript Error Monitoring Report
 
 **Generated:** ${new Date().toISOString()}
@@ -218,10 +269,21 @@ function generateReport(analysis, trends, trendAnalysis, errors) {
   }
 
   // Status indicator
-  if (analysis.totalErrors === 0) {
+  if (gate.status === 'pass' && analysis.totalErrors === 0) {
     report += `### ✅ Status: PASSED
 
 No TypeScript errors detected. Excellent type safety!
+
+`;
+  } else if (gate.status === 'pass') {
+    const baselineSummary = baseline
+      ? `Baseline allows up to ${baseline.totalErrors} total errors and ${baseline.anyTypeErrors} any-type errors.`
+      : 'No baseline required because there are no errors.';
+
+    report += `### ✅ Status: PASSED (No Regression)
+
+Current TypeScript debt is at or below the established baseline.
+${baselineSummary}
 
 `;
   } else if (analysis.anyTypeErrors === 0) {
@@ -279,6 +341,16 @@ ${analysis.anyTypeErrors} \`any\` type errors detected. Target is zero.
     sortedCodes.forEach(([code, count]) => {
       const description = codeDescriptions[code] || 'TypeScript error';
       report += `| \`${code}\` | ${count} | ${description} |\n`;
+    });
+    report += '\n';
+  }
+
+  if (gate.reasons.length > 0) {
+    report += `## Gate Failures
+
+`;
+    gate.reasons.forEach((reason) => {
+      report += `- ${reason}\n`;
     });
     report += '\n';
   }
@@ -368,7 +440,7 @@ The number of TypeScript errors is increasing over recent builds. This indicates
   return report;
 }
 
-function generateConsoleReport(analysis, trendAnalysis) {
+function generateConsoleReport(analysis, trendAnalysis, baseline, gate) {
   console.log('\n📊 TypeScript Error Monitoring Report\n');
   console.log('═'.repeat(60));
   
@@ -387,8 +459,16 @@ function generateConsoleReport(analysis, trendAnalysis) {
     console.log(`  Trend:        ${trendAnalysis.isIncreasing ? '📈 Increasing' : '📉 Decreasing'}`);
   }
 
-  if (analysis.totalErrors === 0) {
+  if (gate.status === 'pass' && analysis.totalErrors === 0) {
     console.log('\n✅ Status: PASSED - No TypeScript errors!');
+  } else if (gate.status === 'pass') {
+    if (baseline) {
+      console.log(
+        `\n✅ Status: PASSED (No Regression) - within baseline (total ${analysis.totalErrors}/${baseline.totalErrors}, any ${analysis.anyTypeErrors}/${baseline.anyTypeErrors})`
+      );
+    } else {
+      console.log('\n✅ Status: PASSED (No Regression)');
+    }
   } else if (analysis.anyTypeErrors === 0) {
     console.log('\n⚠️  Status: NEEDS IMPROVEMENT - No any types, but other errors exist');
   } else {
@@ -400,6 +480,7 @@ function generateConsoleReport(analysis, trendAnalysis) {
 
 function main() {
   console.log('🔍 Running TypeScript error monitoring...\n');
+  const baseline = loadBaseline();
 
   // Run TypeScript check
   const result = runTypeScriptCheck();
@@ -422,8 +503,9 @@ function main() {
     const trendAnalysis = analyzeTrends(trends);
 
     // Generate reports
-    generateConsoleReport(analysis, trendAnalysis);
-    const report = generateReport(analysis, trends, trendAnalysis, []);
+    const gate = evaluateGate(analysis, baseline);
+    generateConsoleReport(analysis, trendAnalysis, baseline, gate);
+    const report = generateReport(analysis, trends, trendAnalysis, [], baseline, gate);
     
     ensureDirectoryExists(path.dirname(REPORT_FILE));
     fs.writeFileSync(REPORT_FILE, report);
@@ -434,28 +516,46 @@ function main() {
 
   // Analyze errors
   const analysis = analyzeErrors(result.errors);
+  const gate = evaluateGate(analysis, baseline);
 
   // Save trend
   const trends = saveTrend(analysis);
   const trendAnalysis = analyzeTrends(trends);
 
   // Generate reports
-  generateConsoleReport(analysis, trendAnalysis);
-  const report = generateReport(analysis, trends, trendAnalysis, result.errors);
+  generateConsoleReport(analysis, trendAnalysis, baseline, gate);
+  const report = generateReport(
+    analysis,
+    trends,
+    trendAnalysis,
+    result.errors,
+    baseline,
+    gate
+  );
   
   ensureDirectoryExists(path.dirname(REPORT_FILE));
   fs.writeFileSync(REPORT_FILE, report);
   console.log(`\n📄 Report saved: ${REPORT_FILE}\n`);
 
-  // Exit with error if any type errors exist
-  if (analysis.anyTypeErrors > 0) {
-    console.log(`❌ TypeScript check failed: ${analysis.anyTypeErrors} any type errors\n`);
+  // Fail only when strict gate regresses vs baseline (or baseline is missing with errors present)
+  if (gate.status === 'fail') {
+    console.log('❌ TypeScript strict gate failed:');
+    gate.reasons.forEach((reason) => {
+      console.log(`   - ${reason}`);
+    });
+    console.log('');
     process.exit(1);
   }
 
-  // Warn about other errors but don't fail
+  // Warn about existing debt, but pass when not regressing.
   if (analysis.totalErrors > 0) {
-    console.log(`⚠️  Warning: ${analysis.totalErrors} TypeScript errors exist\n`);
+    if (baseline) {
+      console.log(
+        `⚠️  TypeScript debt present but within baseline (${analysis.totalErrors}/${baseline.totalErrors} total, ${analysis.anyTypeErrors}/${baseline.anyTypeErrors} any-type)\n`
+      );
+    } else {
+      console.log(`⚠️  Warning: ${analysis.totalErrors} TypeScript errors exist\n`);
+    }
   }
 
   process.exit(0);

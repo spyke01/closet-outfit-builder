@@ -141,7 +141,7 @@ All monitoring systems track trends over time:
 
 Generated reports are saved to `docs/`:
 - `bundle-size-validation.md` - Bundle analysis
-- `typescript-errors.md` - TypeScript error report
+- `tmp/typescript-errors.md` - TypeScript error report
 
 ## Alerts and Notifications
 

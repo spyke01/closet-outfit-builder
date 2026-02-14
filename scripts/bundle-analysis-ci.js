@@ -21,6 +21,12 @@ const __dirname = path.dirname(__filename);
 const TRENDS_DIR = path.join(__dirname, '..', '.bundle-trends');
 const CURRENT_STATS = path.join(__dirname, '..', 'bundle-stats.json');
 const SIZE_LIMIT_CONFIG = path.join(__dirname, '..', '.bundle-size-limits.json');
+const NEXT_DIR = path.join(__dirname, '..', '.next');
+const MANIFEST_CANDIDATES = [
+  path.join(NEXT_DIR, 'build-manifest.json'),
+  path.join(NEXT_DIR, 'app-build-manifest.json'),
+];
+const BUILD_CHUNKS_DIR = path.join(NEXT_DIR, 'build', 'chunks');
 
 // Default size limits (in bytes)
 const DEFAULT_LIMITS = {
@@ -82,6 +88,120 @@ function analyzeBundleStats(statsPath) {
     buildTime: stats.time,
     timestamp: Date.now(),
     builtAt: new Date(stats.builtAt).toISOString()
+  };
+}
+
+function analyzeBundleFromManifest() {
+  const manifestPath = MANIFEST_CANDIDATES.find((candidate) => fs.existsSync(candidate));
+  if (!manifestPath) {
+    throw new Error(
+      `Stats file not found: ${CURRENT_STATS}, and no build manifest found in ${NEXT_DIR}`
+    );
+  }
+
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const files = new Set();
+
+  // Legacy/pages manifest shape.
+  if (manifest.pages && typeof manifest.pages === 'object') {
+    Object.values(manifest.pages).forEach((pageFiles) => {
+      if (Array.isArray(pageFiles)) {
+        pageFiles.forEach((file) => files.add(file));
+      }
+    });
+  }
+
+  // Newer Next.js manifest fields.
+  ['rootMainFiles', 'polyfillFiles', 'lowPriorityFiles'].forEach((key) => {
+    const value = manifest[key];
+    if (Array.isArray(value)) {
+      value.forEach((file) => files.add(file));
+    }
+  });
+
+  let totalJsSize = 0;
+  let totalCssSize = 0;
+  let totalAssetSize = 0;
+  let maxAssetSize = 0;
+  const largeAssets = [];
+  let assetCount = 0;
+
+  files.forEach((assetName) => {
+    const assetPath = path.join(NEXT_DIR, assetName);
+    if (!fs.existsSync(assetPath)) {
+      return;
+    }
+
+    const size = fs.statSync(assetPath).size;
+    assetCount++;
+    totalAssetSize += size;
+    maxAssetSize = Math.max(maxAssetSize, size);
+
+    if (assetName.endsWith('.js')) {
+      totalJsSize += size;
+      if (size > 100 * 1024) {
+        largeAssets.push({ name: assetName, size, type: 'js' });
+      }
+    } else if (assetName.endsWith('.css')) {
+      totalCssSize += size;
+    }
+  });
+
+  return {
+    totalJsSize,
+    totalCssSize,
+    totalAssetSize,
+    maxAssetSize,
+    largeAssets,
+    assetCount,
+    buildTime: 0,
+    timestamp: Date.now(),
+    builtAt: new Date().toISOString(),
+    source: `manifest:${path.basename(manifestPath)}`
+  };
+}
+
+function analyzeBundleFromBuildChunks() {
+  if (!fs.existsSync(BUILD_CHUNKS_DIR)) {
+    throw new Error(`Build chunks directory not found: ${BUILD_CHUNKS_DIR}`);
+  }
+
+  const chunkFiles = fs.readdirSync(BUILD_CHUNKS_DIR)
+    .filter((name) => !name.endsWith('.map'));
+
+  let totalJsSize = 0;
+  let totalCssSize = 0;
+  let totalAssetSize = 0;
+  let maxAssetSize = 0;
+  const largeAssets = [];
+
+  chunkFiles.forEach((assetName) => {
+    const assetPath = path.join(BUILD_CHUNKS_DIR, assetName);
+    const size = fs.statSync(assetPath).size;
+    totalAssetSize += size;
+    maxAssetSize = Math.max(maxAssetSize, size);
+
+    if (assetName.endsWith('.js')) {
+      totalJsSize += size;
+      if (size > 100 * 1024) {
+        largeAssets.push({ name: `build/chunks/${assetName}`, size, type: 'js' });
+      }
+    } else if (assetName.endsWith('.css')) {
+      totalCssSize += size;
+    }
+  });
+
+  return {
+    totalJsSize,
+    totalCssSize,
+    totalAssetSize,
+    maxAssetSize,
+    largeAssets,
+    assetCount: chunkFiles.length,
+    buildTime: 0,
+    timestamp: Date.now(),
+    builtAt: new Date().toISOString(),
+    source: 'build-chunks'
   };
 }
 
@@ -246,7 +366,17 @@ function main() {
     const limits = loadSizeLimits();
 
     // Analyze current bundle
-    const analysis = analyzeBundleStats(CURRENT_STATS);
+    let analysis;
+    if (fs.existsSync(CURRENT_STATS)) {
+      analysis = analyzeBundleStats(CURRENT_STATS);
+    } else {
+      try {
+        analysis = analyzeBundleFromManifest();
+      } catch {
+        analysis = analyzeBundleFromBuildChunks();
+      }
+    }
+    console.log(`📁 Bundle data source: ${analysis.source || 'webpack-stats'}`);
 
     // Save to trends
     const trends = saveTrend(analysis);

@@ -36,7 +36,7 @@ jobs:
           name: typescript-trends
           path: |
             .typescript-trends/
-            docs/typescript-errors.md
+            tmp/typescript-errors.md
           retention-days: 30
       
       - name: Comment PR with TypeScript report
@@ -45,7 +45,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const reportPath = 'docs/typescript-errors.md';
+            const reportPath = 'tmp/typescript-errors.md';
             
             if (fs.existsSync(reportPath)) {
               const report = fs.readFileSync(reportPath, 'utf8');

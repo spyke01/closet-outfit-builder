@@ -154,7 +154,7 @@ jobs:
             .bundle-trends/
             .typescript-trends/
             docs/bundle-size-validation.md
-            docs/typescript-errors.md
+            tmp/typescript-errors.md
           retention-days: 30
       
       - name: Comment PR with performance summary
@@ -175,7 +175,7 @@ jobs:
             }
             
             // TypeScript report
-            const tsReportPath = 'docs/typescript-errors.md';
+            const tsReportPath = 'tmp/typescript-errors.md';
             if (fs.existsSync(tsReportPath)) {
               const tsReport = fs.readFileSync(tsReportPath, 'utf8');
               comment += '### 📝 TypeScript Error Monitoring\n\n';
@@ -231,12 +231,20 @@ jobs:
         run: |
           BUNDLE_FAILED="${{ steps.bundle-analysis.outcome }}"
           TYPECHECK_FAILED="${{ steps.typecheck.outcome }}"
+          STRICT_MODE="${{ vars.PERFORMANCE_CHECKS_STRICT || 'true' }}"
           
           if [ "$BUNDLE_FAILED" = "failure" ] || [ "$TYPECHECK_FAILED" = "failure" ]; then
-            echo "❌ Performance checks failed"
-            echo "Bundle analysis: $BUNDLE_FAILED"
-            echo "TypeScript check: $TYPECHECK_FAILED"
-            exit 1
+            echo "⚠️ Performance checks reported issues"
+            echo "Bundle analysis outcome: $BUNDLE_FAILED"
+            echo "TypeScript check outcome: $TYPECHECK_FAILED"
+
+            if [ "$STRICT_MODE" = "true" ]; then
+              echo "❌ Strict mode enabled (vars.PERFORMANCE_CHECKS_STRICT=true), failing job"
+              exit 1
+            fi
+
+            echo "ℹ️ Strict mode disabled, continuing with warnings only"
+            exit 0
           fi
           
           echo "✅ All performance checks passed"
