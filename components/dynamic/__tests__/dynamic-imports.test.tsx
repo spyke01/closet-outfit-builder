@@ -1,18 +1,20 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import React from 'react';
 
 // Mock Next.js dynamic import
 vi.mock('next/dynamic', () => ({
-  default: (importFn: () => Promise<any>, options?: any) => {
+  default: (importFn: () => Promise<unknown>, options?: unknown) => {
     const DynamicComponent = React.lazy(importFn);
     
     if (options?.loading) {
-      return (props: any) => (
+      const DynamicLoadingWrapper = (props: unknown) => (
         <React.Suspense fallback={options.loading()}>
           <DynamicComponent {...props} />
         </React.Suspense>
       );
+      DynamicLoadingWrapper.displayName = 'DynamicLoadingWrapper';
+      return DynamicLoadingWrapper;
     }
     
     return DynamicComponent;

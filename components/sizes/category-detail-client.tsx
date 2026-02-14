@@ -155,6 +155,8 @@ export function CategoryDetailClient({
     <div 
       className="min-h-screen bg-muted bg-background"
       onKeyDown={handleKeyDown}
+      role="region"
+      tabIndex={0}
     >
       {/* Header with navigation */}
       <header className="sticky top-0 z-10 bg-card border-b border-border shadow-sm">

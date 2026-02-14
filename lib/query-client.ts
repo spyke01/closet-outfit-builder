@@ -100,7 +100,7 @@ export const queryKeys = {
   },
   // Edge function results caching
   edgeFunctions: {
-    scoreOutfit: (selection: Record<string, any>) => 
+    scoreOutfit: (selection: Record<string, unknown>) => 
       ['edge', 'score', JSON.stringify(selection)] as const,
     filterByAnchor: (anchorId: string, userId: string) => 
       ['edge', 'filter', anchorId, userId] as const,
@@ -163,4 +163,3 @@ export const cacheUtils = {
     });
   },
 };
-

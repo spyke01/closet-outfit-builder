@@ -60,10 +60,10 @@ describe('FeatureHighlights - Unit Tests', () => {
       expect(image).toHaveAttribute('height', '128');
     });
 
-    it('should render icon containers with gradient backgrounds', () => {
+    it('should render icon containers with themed backgrounds', () => {
       const { container } = render(<FeatureHighlights />);
       
-      const iconContainers = container.querySelectorAll('.bg-gradient-to-br');
+      const iconContainers = container.querySelectorAll('.rounded-3xl.shadow-lg');
       
       // Should have 3 icon containers
       expect(iconContainers.length).toBeGreaterThanOrEqual(3);
@@ -154,7 +154,7 @@ describe('FeatureHighlights - Unit Tests', () => {
     });
 
     it('should have proper font sizes for hierarchy', () => {
-      const { container } = render(<FeatureHighlights />);
+      render(<FeatureHighlights />);
       
       const mainHeading = screen.getByText('Your wardrobe, reimagined');
       const featureHeading = screen.getByText('Smart Outfit Generator');

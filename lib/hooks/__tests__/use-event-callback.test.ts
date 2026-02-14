@@ -48,7 +48,7 @@ describe('useEventCallback', () => {
     const handler1 = vi.fn()
     const handler2 = vi.fn()
     
-    const { result, rerender } = renderHook(
+    const { rerender } = renderHook(
       ({ handler }) => {
         const stableHandler = useEventCallback(handler)
         
@@ -59,7 +59,7 @@ describe('useEventCallback', () => {
           
           window.addEventListener('test-event', listener)
           return () => window.removeEventListener('test-event', listener)
-        }, []) // Empty deps - stableHandler is stable
+        }, [stableHandler])
         
         return stableHandler
       },
@@ -179,7 +179,7 @@ describe('useEventCallback', () => {
   it('should work with keyboard event handlers', () => {
     const onKeyPress = vi.fn()
     
-    const { result, rerender } = renderHook(
+    const { rerender } = renderHook(
       ({ handler }) => {
         const stableHandler = useEventCallback(handler)
         
@@ -192,7 +192,7 @@ describe('useEventCallback', () => {
           
           window.addEventListener('keydown', listener)
           return () => window.removeEventListener('keydown', listener)
-        }, []) // Empty deps
+        }, [stableHandler])
         
         return stableHandler
       },
@@ -213,7 +213,7 @@ describe('useEventCallback', () => {
   it('should work with scroll handlers', () => {
     const onScroll = vi.fn()
     
-    const { result, rerender } = renderHook(
+    const { rerender } = renderHook(
       ({ handler }) => {
         const stableHandler = useEventCallback(handler)
         
@@ -224,7 +224,7 @@ describe('useEventCallback', () => {
           
           window.addEventListener('scroll', listener, { passive: true })
           return () => window.removeEventListener('scroll', listener)
-        }, []) // Empty deps
+        }, [stableHandler])
         
         return stableHandler
       },

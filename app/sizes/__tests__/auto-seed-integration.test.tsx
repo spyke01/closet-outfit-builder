@@ -12,7 +12,7 @@ describe('Auto-Seed Integration', () => {
   describe('Server Component Logic', () => {
     it('should detect when user needs seeding (no categories)', () => {
       // Simulate server-side check
-      const existingCategories: any[] = [];
+      const existingCategories: unknown[] = [];
       const needsSeeding = existingCategories.length === 0;
 
       expect(needsSeeding).toBe(true);
@@ -131,7 +131,6 @@ describe('Auto-Seed Integration', () => {
   describe('Error Handling Logic', () => {
     it('should prioritize seeding errors', () => {
       const categoriesError = new Error('Categories fetch failed');
-      const seedingError = new Error('Seeding failed');
       const seedingIsError = true;
 
       // Error priority logic
@@ -157,7 +156,7 @@ describe('Auto-Seed Integration', () => {
   describe('Acceptance Criteria Validation', () => {
     it('AC1: New users get categories automatically', () => {
       // Server detects no categories
-      const existingCategories: any[] = [];
+      const existingCategories: unknown[] = [];
       const needsSeeding = existingCategories.length === 0;
       
       // Client triggers seeding

@@ -24,14 +24,12 @@ vi.mock('next/navigation', () => ({
 
 describe('Performance Tests', () => {
   let queryClient: QueryClient;
-  let startTime: number;
 
   beforeEach(() => {
     queryClient = createQueryClient();
-    startTime = Date.now();
     
     // Mock global performance
-    global.performance = mockPerformance as any;
+    global.performance = mockPerformance as unknown;
     
     // Reset mocks
     vi.clearAllMocks();
@@ -107,8 +105,6 @@ describe('Performance Tests', () => {
     });
 
     it('should optimize memory usage', () => {
-      const userId = 'test-user-id';
-      
       // Add multiple queries to cache
       for (let i = 0; i < 50; i++) {
         const queryKey = queryKeys.wardrobe.item(`item-${i}`);
@@ -200,7 +196,9 @@ describe('Performance Tests', () => {
 
     it('should handle retry delays efficiently', () => {
       const client = createQueryClient();
-      const retryDelay = client.getDefaultOptions().queries?.retryDelay as Function;
+      const retryDelay = client.getDefaultOptions().queries?.retryDelay as
+        | ((attemptIndex: number) => number)
+        | undefined;
       
       if (retryDelay) {
         // Test exponential backoff

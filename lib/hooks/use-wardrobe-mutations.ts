@@ -3,7 +3,7 @@ import { produce } from 'immer';
 import { 
   useValidatedMutation, 
   useOptimisticMutation, 
-  createCacheUpdaters 
+  useCacheUpdaters 
 } from '../utils/query-validation';
 import { 
   WardrobeItem, 
@@ -21,7 +21,7 @@ export const wardrobeQueryKeys = {
   items: (userId: string) => ['wardrobe', 'items', userId] as const,
   item: (itemId: string) => ['wardrobe', 'item', itemId] as const,
   categories: (userId: string) => ['wardrobe', 'categories', userId] as const,
-  filteredItems: (userId: string, filters: Record<string, any>) => 
+  filteredItems: (userId: string, filters: Record<string, string | number | boolean | null>) => 
     ['wardrobe', 'filtered', userId, filters] as const,
 };
 
@@ -57,7 +57,7 @@ export function useCreateWardrobeItem(userId: string) {
         draft.push(createOptimisticItem(formData));
       });
     },
-    onSuccess: (newItem, formData) => {
+    onSuccess: (newItem) => {
       // Invalidate related queries
       queryClient.invalidateQueries({ 
         queryKey: wardrobeQueryKeys.filteredItems(userId, {}) 
@@ -69,7 +69,7 @@ export function useCreateWardrobeItem(userId: string) {
         newItem
       );
     },
-    onError: (error, formData, context) => {
+    onError: (error) => {
       console.error('Failed to create wardrobe item:', error);
     },
   });
@@ -109,7 +109,7 @@ export function useUpdateWardrobeItem(userId: string) {
         }
       });
     },
-    onSuccess: (updatedItem, formData) => {
+    onSuccess: (updatedItem) => {
       // Update individual item cache
       queryClient.setQueryData(
         wardrobeQueryKeys.item(updatedItem.id!), 
@@ -233,7 +233,7 @@ export function useBatchUpdateWardrobeItems(userId: string) {
  * Toggle item active status
  */
 export function useToggleItemActive(userId: string) {
-  const cacheUpdaters = createCacheUpdaters<WardrobeItem>([...wardrobeQueryKeys.items(userId)]);
+  const cacheUpdaters = useCacheUpdaters<WardrobeItem>([...wardrobeQueryKeys.items(userId)]);
   
   return useValidatedMutation({
     mutationFn: async ({ itemId, active }: { itemId: string; active: boolean }): Promise<WardrobeItem> => {

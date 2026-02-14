@@ -245,7 +245,7 @@ describe('dependency-parallelization', () => {
 
     it('should type-check dependencies correctly', async () => {
       // This test verifies TypeScript type safety at compile time
-      const result = await createExecutor<{}>()
+      const result = await createExecutor<Record<string, never>>()
         .add('num', async () => 42)
         .addDependent('doubled', async ({ num }: { num: number }) => num * 2)
         .execute();
@@ -261,9 +261,9 @@ describe('dependency-parallelization', () => {
 
       // Sequential execution
       const sequentialStart = Date.now();
-      const seq1 = await new Promise(resolve => setTimeout(() => resolve('a'), delay));
-      const seq2 = await new Promise(resolve => setTimeout(() => resolve('b'), delay));
-      const seq3 = await new Promise(resolve => setTimeout(() => resolve('c'), delay));
+      await new Promise(resolve => setTimeout(() => resolve('a'), delay));
+      await new Promise(resolve => setTimeout(() => resolve('b'), delay));
+      await new Promise(resolve => setTimeout(() => resolve('c'), delay));
       const sequentialTime = Date.now() - sequentialStart;
 
       // Parallel execution with dependencies

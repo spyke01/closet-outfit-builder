@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useSeedCategories, useSizeCategories } from '../use-size-categories';
+import { useSeedCategories } from '../use-size-categories';
 import React, { type ReactNode } from 'react';
 
 /**

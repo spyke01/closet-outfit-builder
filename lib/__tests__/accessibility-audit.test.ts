@@ -17,8 +17,7 @@ import {
   uploadStepItems,
   aiMatchingItems,
   finalOutfitItems,
-  type WardrobeImage,
-  type OutfitCombo
+  type WardrobeImage
 } from '@/lib/data/landing-page-images';
 
 describe('Landing Page Images - Accessibility Audit', () => {
@@ -175,15 +174,6 @@ describe('Landing Page Images - Accessibility Audit', () => {
       ];
 
       allImages.forEach((image) => {
-        const altLower = image.alt.toLowerCase();
-        const hasStyleDescriptor = 
-          altLower.includes('oxford') ||
-          altLower.includes('tweed') ||
-          altLower.includes('leather') ||
-          altLower.includes('suede') ||
-          altLower.includes('button-down') ||
-          altLower.includes('seamaster');
-
         // Most items should have a style descriptor
         // This is a soft check - we expect at least some descriptive words
         expect(image.alt.split(' ').length).toBeGreaterThanOrEqual(3);

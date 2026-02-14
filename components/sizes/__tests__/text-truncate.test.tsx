@@ -6,9 +6,8 @@
  * Requirements: 12.3
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { render, waitFor } from '@testing-library/react';
 import { TextTruncate } from '../text-truncate';
 
 describe('TextTruncate Component', () => {

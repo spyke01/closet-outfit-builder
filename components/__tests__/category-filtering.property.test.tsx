@@ -197,8 +197,7 @@ describe('Category Filtering Properties', () => {
     fc.assert(
       fc.property(
         fc.array(categoryArb, { minLength: 2, maxLength: 7 }),
-        fc.oneof(fc.constant('all'), fc.string()),
-        (categories, selectedCategory) => {
+        (categories) => {
           const mockProps = {
             searchTerm: '',
             selectedTags: new Set<string>(),

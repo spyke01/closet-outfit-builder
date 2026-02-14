@@ -42,7 +42,7 @@ export function useValidatedMutation<TData, TError = Error, TVariables = void, T
  */
 export function useOptimisticMutation<TData, TError = Error, TVariables = void, TContext = unknown>(
   options: ValidatedMutationOptions<TData, TError, TVariables, TContext> & {
-    queryKey: unknown[];
+    queryKey: readonly unknown[];
     optimisticUpdater: (oldData: unknown, variables: TVariables) => unknown;
     rollbackOnError?: boolean;
   }
@@ -67,16 +67,17 @@ export function useOptimisticMutation<TData, TError = Error, TVariables = void, 
       // Return context for rollback
       return { previousData } as TContext & { previousData: unknown };
     },
-    onError: (error, variables, context) => {
+    onError: (_error, _variables, context) => {
       // Rollback on error if enabled
-      if (rollbackOnError && context?.previousData) {
-        queryClient.setQueryData(queryKey, context.previousData);
+      const optimisticContext = context as (TContext & OptimisticMutationContext) | undefined;
+      if (rollbackOnError && optimisticContext?.previousData) {
+        queryClient.setQueryData(queryKey, optimisticContext.previousData);
       }
       
       // Note: Original onError callback not called due to type signature issues
       // This can be addressed in a future update when React Query types are clarified
     },
-    onSettled: (data, error, variables, context) => {
+    onSettled: () => {
       // Refetch to ensure consistency
       queryClient.invalidateQueries({ queryKey });
       
@@ -102,7 +103,7 @@ export function useBatchMutation<TData, TError = Error, TVariables = void>(
     mutationFn: async (variablesArray: TVariables[]) => {
       // Process items in parallel
       const promises = variablesArray.map(variables => 
-        mutationOptions.mutationFn([variables] as any)
+        mutationOptions.mutationFn([variables])
       );
       
       const results = await Promise.allSettled(promises);
@@ -131,7 +132,7 @@ export function useBatchMutation<TData, TError = Error, TVariables = void>(
 /**
  * Create cache update utilities with Immer
  */
-export function createCacheUpdaters<T>(queryKey: unknown[]) {
+export function useCacheUpdaters<T>(queryKey: readonly unknown[]) {
   const queryClient = useQueryClient();
   
   return {
@@ -139,39 +140,30 @@ export function createCacheUpdaters<T>(queryKey: unknown[]) {
      * Add item to cached array
      */
     addItem: (newItem: T) => {
-      queryClient.setQueryData(queryKey, (oldData: T[] | undefined) => 
-        produce(oldData || [], draft => {
-          draft.push(newItem as any);
-        })
-      );
+      queryClient.setQueryData(queryKey, (oldData: T[] | undefined) => [
+        ...(oldData ?? []),
+        newItem,
+      ]);
     },
     
     /**
      * Update item in cached array
      */
     updateItem: (predicate: (item: T) => boolean, updater: (item: T) => T) => {
-      queryClient.setQueryData(queryKey, (oldData: T[] | undefined) => 
-        produce(oldData || [], draft => {
-          const index = draft.findIndex(predicate as any);
-          if (index !== -1) {
-            draft[index] = updater(draft[index] as T) as any;
-          }
-        })
-      );
+      queryClient.setQueryData(queryKey, (oldData: T[] | undefined) => {
+        if (!oldData) return [];
+        return oldData.map(item => (predicate(item) ? updater(item) : item));
+      });
     },
     
     /**
      * Remove item from cached array
      */
     removeItem: (predicate: (item: T) => boolean) => {
-      queryClient.setQueryData(queryKey, (oldData: T[] | undefined) => 
-        produce(oldData || [], draft => {
-          const index = draft.findIndex(predicate as any);
-          if (index !== -1) {
-            draft.splice(index, 1);
-          }
-        })
-      );
+      queryClient.setQueryData(queryKey, (oldData: T[] | undefined) => {
+        if (!oldData) return [];
+        return oldData.filter(item => !predicate(item));
+      });
     },
     
     /**
@@ -185,9 +177,11 @@ export function createCacheUpdaters<T>(queryKey: unknown[]) {
      * Update cache with partial data
      */
     updateCache: (updater: (draft: T[]) => void) => {
-      queryClient.setQueryData(queryKey, (oldData: T[] | undefined) => 
-        produce(oldData || [], updater)
-      );
+      queryClient.setQueryData(queryKey, (oldData: T[] | undefined) => {
+        const nextData = [...(oldData ?? [])];
+        updater(nextData);
+        return nextData;
+      });
     },
   };
 }
@@ -216,22 +210,30 @@ export function createQueryValidation<TInput, TOutput>(
     
     createValidatedQueryFn: (queryFn: (input: TInput) => Promise<unknown>) => {
       return async (input: TInput): Promise<TOutput> => {
-        // Validate input
-        const inputValidation = safeValidate(inputSchema || z.any(), input);
-        if (!inputValidation.success) {
-          throw new Error(`Input validation failed: ${inputValidation.error}`);
-        }
+        const validatedInput = inputSchema
+          ? (() => {
+              const inputValidation = safeValidate(inputSchema, input);
+              if (!inputValidation.success) {
+                throw new Error(`Input validation failed: ${inputValidation.error}`);
+              }
+              return inputValidation.data;
+            })()
+          : input;
         
         // Execute query
-        const result = await queryFn(inputValidation.data);
+        const result = await queryFn(validatedInput);
         
-        // Validate output
-        const outputValidation = safeValidate(outputSchema || z.any(), result);
-        if (!outputValidation.success) {
-          throw new Error(`Output validation failed: ${outputValidation.error}`);
-        }
+        const validatedOutput = outputSchema
+          ? (() => {
+              const outputValidation = safeValidate(outputSchema, result);
+              if (!outputValidation.success) {
+                throw new Error(`Output validation failed: ${outputValidation.error}`);
+              }
+              return outputValidation.data;
+            })()
+          : (result as TOutput);
         
-        return outputValidation.data;
+        return validatedOutput;
       };
     },
   };
@@ -250,19 +252,37 @@ export function useFormMutation<TFormData, TResponse>(
     onError?: (error: Error, formData: TFormData) => void;
   }
 ) {
-  const { validationSchema, queryKey, optimisticUpdater, ...restOptions } = options;
-  
-  if (queryKey && optimisticUpdater) {
-    return useOptimisticMutation({
-      validationSchema,
-      queryKey,
-      optimisticUpdater,
-      ...restOptions,
-    });
-  }
-  
+  const queryClient = useQueryClient();
+  const { validationSchema, queryKey, optimisticUpdater, mutationFn, onSuccess, onError } = options;
+
   return useValidatedMutation({
     validationSchema,
-    ...restOptions,
+    mutationFn,
+    onMutate: async (formData) => {
+      if (!queryKey || !optimisticUpdater) {
+        return undefined;
+      }
+      await queryClient.cancelQueries({ queryKey });
+      const previousData = queryClient.getQueryData(queryKey);
+      queryClient.setQueryData(queryKey, (oldData: unknown) =>
+        produce(oldData, (draft: unknown) => optimisticUpdater(draft, formData))
+      );
+      return { previousData } as OptimisticMutationContext;
+    },
+    onError: (mutationError, formData, context) => {
+      if (queryKey && context?.previousData !== undefined) {
+        queryClient.setQueryData(queryKey, context.previousData);
+      }
+      onError?.(mutationError as Error, formData);
+    },
+    onSettled: async () => {
+      if (queryKey) {
+        await queryClient.invalidateQueries({ queryKey });
+      }
+    },
+    onSuccess: (data, formData) => {
+      onSuccess?.(data, formData);
+    },
   });
 }
+type OptimisticMutationContext = { previousData: unknown };

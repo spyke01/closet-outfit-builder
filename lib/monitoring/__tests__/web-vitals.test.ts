@@ -2,7 +2,7 @@
  * Tests for Core Web Vitals tracking
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { calculatePerformanceScore, getPerformanceMetrics } from '../web-vitals'
 
 describe('Web Vitals Monitoring', () => {

@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import React from 'react'
 import { CategoryDetailClient } from '../category-detail-client'
 import type { SizeCategory, StandardSize, BrandSize, CategoryMeasurements } from '@/lib/types/sizes'
@@ -22,15 +22,15 @@ vi.mock('@/lib/hooks/use-size-categories', () => ({
 
 // Mock next/dynamic
 vi.mock('next/dynamic', () => ({
-  default: (fn: any) => {
+  default: (fn: unknown) => {
     const Component = fn().then ? null : fn
     if (Component) return Component
     
-    return (props: any) => {
-      const [LoadedComponent, setLoadedComponent] = React.useState<any>(null)
+    return (props: unknown) => {
+      const [LoadedComponent, setLoadedComponent] = React.useState<unknown>(null)
       
       React.useEffect(() => {
-        Promise.resolve(fn()).then((mod: any) => {
+        Promise.resolve(fn()).then((mod: unknown) => {
           setLoadedComponent(() => mod.default || mod)
         })
       }, [])
@@ -43,7 +43,7 @@ vi.mock('next/dynamic', () => ({
 
 // Mock section components
 vi.mock('../standard-size-section', () => ({
-  StandardSizeSection: ({ category }: any) => (
+  StandardSizeSection: ({ category }: unknown) => (
     <div data-testid="standard-size-section">
       Standard Size Section for {category.name}
     </div>
@@ -51,7 +51,7 @@ vi.mock('../standard-size-section', () => ({
 }))
 
 vi.mock('../brand-sizes-section', () => ({
-  BrandSizesSection: ({ categoryId }: any) => (
+  BrandSizesSection: ({ categoryId }: unknown) => (
     <div data-testid="brand-sizes-section">
       Brand Sizes Section for {categoryId}
     </div>
@@ -59,7 +59,7 @@ vi.mock('../brand-sizes-section', () => ({
 }))
 
 vi.mock('../measurement-guide-section', () => ({
-  MeasurementGuideSection: ({ categoryId }: any) => (
+  MeasurementGuideSection: ({ categoryId }: unknown) => (
     <div data-testid="measurement-guide-section">
       Measurement Guide Section for {categoryId}
     </div>
@@ -117,19 +117,19 @@ describe('CategoryDetailClient', () => {
       data: mockCategory,
       isLoading: false,
       error: null,
-    } as any)
+    } as unknown)
 
     vi.mocked(useBrandSizes).mockReturnValue({
       data: mockBrandSizes,
       isLoading: false,
       error: null,
-    } as any)
+    } as unknown)
 
     vi.mocked(useMeasurements).mockReturnValue({
       data: mockMeasurements,
       isLoading: false,
       error: null,
-    } as any)
+    } as unknown)
   })
 
   describe('Section Rendering', () => {
@@ -239,7 +239,7 @@ describe('CategoryDetailClient', () => {
         data: undefined,
         isLoading: true,
         error: null,
-      } as any)
+      } as unknown)
 
       render(
         <CategoryDetailClient

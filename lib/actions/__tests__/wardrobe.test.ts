@@ -48,7 +48,7 @@ describe('Wardrobe Server Actions', () => {
       });
 
       const { createClient } = await import('@/lib/supabase/server');
-      vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+      vi.mocked(createClient).mockResolvedValue(mockSupabase as unknown);
 
       const result = await createWardrobeItem({
         name: 'Blue Jacket',
@@ -121,7 +121,7 @@ describe('Wardrobe Server Actions', () => {
       });
 
       const { createClient } = await import('@/lib/supabase/server');
-      vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+      vi.mocked(createClient).mockResolvedValue(mockSupabase as unknown);
 
       const result = await updateWardrobeItem({
         id: itemId,
@@ -150,7 +150,7 @@ describe('Wardrobe Server Actions', () => {
       });
 
       const { createClient } = await import('@/lib/supabase/server');
-      vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+      vi.mocked(createClient).mockResolvedValue(mockSupabase as unknown);
 
       vi.mocked(auth.verifyOwnership).mockRejectedValue(
         new Error('Forbidden: You do not have permission to access this resource')
@@ -193,7 +193,7 @@ describe('Wardrobe Server Actions', () => {
       });
 
       const { createClient } = await import('@/lib/supabase/server');
-      vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+      vi.mocked(createClient).mockResolvedValue(mockSupabase as unknown);
 
       const result = await deleteWardrobeItem({
         id: itemId,

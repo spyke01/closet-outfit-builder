@@ -7,6 +7,11 @@ interface SWRProviderProps {
   children: ReactNode;
 }
 
+type SWRProviderError = Error & {
+  info?: unknown;
+  status?: number;
+};
+
 /**
  * Global SWR configuration provider
  * Configures default options for all SWR hooks in the application
@@ -42,10 +47,10 @@ export function SWRProvider({ children }: SWRProviderProps) {
           const res = await fetch(url);
           
           if (!res.ok) {
-            const error = new Error('An error occurred while fetching the data.');
+            const error: SWRProviderError = new Error('An error occurred while fetching the data.');
             // Attach extra info to the error object
-            (error as any).info = await res.json();
-            (error as any).status = res.status;
+            error.info = await res.json();
+            error.status = res.status;
             throw error;
           }
           

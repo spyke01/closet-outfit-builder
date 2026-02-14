@@ -67,22 +67,6 @@ export const OutfitCard = React.memo<OutfitCardProps>(({
     }
   }, [isFlipped, onFlipChange]);
 
-  // Format item name
-  const formatItemName = (item: any): string => {
-    if (!item) return '';
-    if (item.brand) {
-      return `${item.brand} ${item.name}`;
-    }
-    return item.name;
-  };
-
-  // Get score color
-  const getScoreColor = (score: number): string => {
-    if (score >= 80) return 'text-green-600 dark:text-green-400';
-    if (score >= 60) return 'text-yellow-600 dark:text-yellow-400';
-    return 'text-red-600 dark:text-red-400';
-  };
-
   // Render outfit items
   const renderOutfitItems = () => {
     const items = [

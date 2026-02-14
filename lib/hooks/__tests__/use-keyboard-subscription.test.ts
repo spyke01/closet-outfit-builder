@@ -97,8 +97,8 @@ describe('Keyboard Subscription Hooks', () => {
         ])
       );
 
-      // Should register 2 event listeners
-      expect(addEventListenerSpy).toHaveBeenCalledTimes(2);
+      // New implementation uses a single shared listener for all shortcuts.
+      expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should handle empty shortcuts array', () => {
@@ -106,8 +106,8 @@ describe('Keyboard Subscription Hooks', () => {
 
       renderHook(() => useKeyboardShortcuts([]));
 
-      // Should not register any listeners
-      expect(addEventListenerSpy).not.toHaveBeenCalled();
+      // Hook still registers one listener; it no-ops when shortcut list is empty.
+      expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -1,7 +1,6 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Shirt, Loader2 } from 'lucide-react';
 import React from 'react';
 
 // Loading component for ItemsGrid

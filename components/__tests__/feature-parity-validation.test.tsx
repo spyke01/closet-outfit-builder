@@ -1,7 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Mock Next.js router
 vi.mock('next/navigation', () => ({
@@ -31,32 +28,8 @@ vi.mock('@/lib/hooks', () => ({
   useShowWeather: vi.fn(() => false),
 }));
 
-// Test wrapper
-const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
-    },
-  });
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
-  );
-};
-
 describe('Feature Parity Validation Tests', () => {
-  let queryClient: QueryClient;
-
   beforeEach(() => {
-    queryClient = new QueryClient({
-      defaultOptions: {
-        queries: { retry: false },
-        mutations: { retry: false },
-      },
-    });
     vi.clearAllMocks();
   });
 
@@ -309,7 +282,7 @@ describe('Feature Parity Validation Tests', () => {
 
     it('maintains consistent data validation patterns', () => {
       // Test that data validation follows consistent patterns
-      const validateItem = (item: any): boolean => {
+      const validateItem = (item: unknown): boolean => {
         return (
           typeof item === 'object' &&
           item !== null &&
@@ -336,7 +309,7 @@ describe('Feature Parity Validation Tests', () => {
       // Test that expensive operations are properly memoized
       let computationCount = 0;
       
-      const expensiveComputation = (items: any[]) => {
+      const expensiveComputation = (items: unknown[]) => {
         computationCount++;
         return items.filter(item => item.active);
       };
@@ -405,13 +378,6 @@ describe('Feature Parity Validation Tests', () => {
   describe('Error Boundary Pattern Preservation', () => {
     it('maintains error boundary structure', () => {
       // Test error boundary pattern
-      class TestErrorBoundary extends Error {
-        constructor(message: string, public componentStack?: string) {
-          super(message);
-          this.name = 'TestErrorBoundary';
-        }
-      }
-
       const errorBoundaryConfig = {
         fallback: 'Something went wrong',
         onError: vi.fn(),

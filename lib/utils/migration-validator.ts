@@ -50,6 +50,12 @@ export interface RollbackValidationResult {
   categoriesToRemove: number;
 }
 
+interface CategoryWithDisplayOrder {
+  id: string;
+  name: string;
+  display_order: number;
+}
+
 /**
  * Migration Validator class for comprehensive validation
  */
@@ -133,7 +139,9 @@ export class MigrationValidator {
         return result;
       }
 
-      const categoryMap = new Map((newCategories || []).map((cat: { name: string; id: string }) => [cat.name, cat]));
+      const categoryMap = new Map(
+        ((newCategories || []) as CategoryWithDisplayOrder[]).map((cat) => [cat.name, cat])
+      );
       
       result.details.hasNewCategories.jacket = categoryMap.has('Jacket');
       result.details.hasNewCategories.overshirt = categoryMap.has('Overshirt');
@@ -146,9 +154,7 @@ export class MigrationValidator {
       }
 
       // Count items in new categories and check display orders
-      for (const [categoryName, category] of categoryMap) {
-        const name = categoryName as string;
-        const cat = category as any;
+      for (const [name, cat] of categoryMap) {
         result.details.categoryDisplayOrders[name] = cat.display_order;
 
         const { data: items, error: itemsError } = await this.supabase

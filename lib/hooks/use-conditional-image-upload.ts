@@ -26,12 +26,19 @@ interface UseConditionalImageUploadReturn {
   moduleLoading: boolean;
 }
 
+const DEFAULT_UPLOAD_STATE: ImageUploadState = {
+  isUploading: false,
+  progress: 0,
+  error: null,
+  success: null,
+};
+
 /**
  * Conditionally load image processing functionality
  * Only loads the image upload module when feature is enabled and user is authenticated
  */
 export function useConditionalImageUpload(isAuthenticated: boolean): UseConditionalImageUploadReturn {
-  const [imageModule, setImageModule] = useState<any>(null);
+  const [imageModule, setImageModule] = useState<Record<string, unknown> | null>(null);
   const [moduleLoading, setModuleLoading] = useState(false);
   
   // Determine if image processing should be enabled
@@ -39,14 +46,7 @@ export function useConditionalImageUpload(isAuthenticated: boolean): UseConditio
   const imageProcessingEnabled = isAuthenticated && featureEnabled;
 
   // Default upload state
-  const defaultUploadState: ImageUploadState = {
-    isUploading: false,
-    progress: 0,
-    error: null,
-    success: null,
-  };
-
-  const [uploadState, setUploadState] = useState<ImageUploadState>(defaultUploadState);
+  const [uploadState, setUploadState] = useState<ImageUploadState>(DEFAULT_UPLOAD_STATE);
 
   // Load image upload module conditionally
   useEffect(() => {
@@ -73,6 +73,49 @@ export function useConditionalImageUpload(isAuthenticated: boolean): UseConditio
         setModuleLoading(false);
       });
   }, [imageProcessingEnabled, imageModule]);
+
+  // Direct upload implementation (fallback)
+  const uploadImageDirect = useCallback(async (file: File, options: ImageUploadOptions) => {
+    setUploadState(prev => ({
+      ...prev,
+      isUploading: true,
+      progress: 0,
+      error: null,
+      success: null
+    }));
+
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('removeBackground', (options.removeBackground ?? true).toString());
+    formData.append('quality', (options.quality ?? 85).toString());
+
+    const response = await fetch('/api/upload-image', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.statusText}`);
+    }
+
+    const result = await response.json() as {
+      message?: string;
+      imageUrl?: string;
+      fallbackUrl?: string;
+    };
+
+    setUploadState(prev => ({
+      ...prev,
+      isUploading: false,
+      progress: 100,
+      success: result.message || 'Image uploaded successfully'
+    }));
+
+    const url = result.imageUrl || result.fallbackUrl;
+    if (url) {
+      options.onSuccess?.(url);
+    }
+  }, []);
 
   // Upload image function
   const uploadImage = useCallback(async (file: File, options: ImageUploadOptions = {}) => {
@@ -110,51 +153,11 @@ export function useConditionalImageUpload(isAuthenticated: boolean): UseConditio
       }));
       options.onError?.(error instanceof Error ? error.message : 'Upload failed');
     }
-  }, [imageProcessingEnabled, imageModule]);
-
-  // Direct upload implementation (fallback)
-  const uploadImageDirect = useCallback(async (file: File, options: ImageUploadOptions) => {
-    setUploadState(prev => ({
-      ...prev,
-      isUploading: true,
-      progress: 0,
-      error: null,
-      success: null
-    }));
-
-    try {
-      const formData = new FormData();
-      formData.append('image', file);
-      formData.append('removeBackground', (options.removeBackground ?? true).toString());
-      formData.append('quality', (options.quality ?? 85).toString());
-
-      const response = await fetch('/api/upload-image', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Upload failed: ${response.statusText}`);
-      }
-
-      const result = await response.json();
-
-      setUploadState(prev => ({
-        ...prev,
-        isUploading: false,
-        progress: 100,
-        success: result.message || 'Image uploaded successfully'
-      }));
-
-      options.onSuccess?.(result.imageUrl || result.fallbackUrl);
-    } catch (error) {
-      throw error; // Re-throw to be handled by the caller
-    }
-  }, []);
+  }, [imageProcessingEnabled, imageModule, uploadImageDirect]);
 
   // Reset upload state
   const resetUploadState = useCallback(() => {
-    setUploadState(defaultUploadState);
+    setUploadState(DEFAULT_UPLOAD_STATE);
   }, []);
 
   return {

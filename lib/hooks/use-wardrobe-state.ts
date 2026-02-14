@@ -15,6 +15,21 @@ export interface WardrobeState {
   lastUpdated: string | null;
 }
 
+type OutfitItemSlot = Exclude<keyof OutfitSelection, 'tuck_style' | 'score'>;
+
+function isOutfitItemSlot(key: string): key is OutfitItemSlot {
+  return [
+    'jacket',
+    'overshirt',
+    'shirt',
+    'undershirt',
+    'pants',
+    'shoes',
+    'belt',
+    'watch',
+  ].includes(key);
+}
+
 /**
  * Initial wardrobe state
  */
@@ -75,7 +90,6 @@ export function useWardrobeState() {
       // Remove from items array
       const itemIndex = draft.items.findIndex(item => item.id === itemId);
       if (itemIndex !== -1) {
-        const removedItem = draft.items[itemIndex];
         draft.items.splice(itemIndex, 1);
         
         // Remove from filtered items
@@ -119,11 +133,15 @@ export function useWardrobeState() {
   
   // Selection management
   const selectItem = useCallback((category: string, item: WardrobeItem | null) => {
+    if (!isOutfitItemSlot(category)) {
+      return;
+    }
+
     updateState(draft => {
       if (item) {
-        (draft.selection as any)[category] = item;
+        draft.selection[category] = item;
       } else {
-        delete (draft.selection as any)[category];
+        delete draft.selection[category];
       }
       
       // Recalculate score (placeholder - would use actual scoring logic)

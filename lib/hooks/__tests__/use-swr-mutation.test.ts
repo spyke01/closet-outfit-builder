@@ -18,7 +18,7 @@ describe('SWR Mutation Hooks', () => {
     it('should successfully perform POST mutation', async () => {
       const mockData = { id: '1', name: 'Test Item' };
       const mockResponse = { ok: true, json: async () => mockData };
-      (global.fetch as any).mockResolvedValueOnce(mockResponse);
+      (global.fetch as unknown).mockResolvedValueOnce(mockResponse);
 
       const { result } = renderHook(() => usePostMutation('/api/items'));
 
@@ -48,7 +48,7 @@ describe('SWR Mutation Hooks', () => {
         status: 400,
         json: async () => mockError,
       };
-      (global.fetch as any).mockResolvedValueOnce(mockResponse);
+      (global.fetch as unknown).mockResolvedValueOnce(mockResponse);
 
       const { result } = renderHook(() => usePostMutation('/api/items'));
 
@@ -65,7 +65,7 @@ describe('SWR Mutation Hooks', () => {
     it('should call onSuccess callback', async () => {
       const mockData = { id: '1', name: 'Test Item' };
       const mockResponse = { ok: true, json: async () => mockData };
-      (global.fetch as any).mockResolvedValueOnce(mockResponse);
+      (global.fetch as unknown).mockResolvedValueOnce(mockResponse);
 
       const onSuccess = vi.fn();
       const { result } = renderHook(() =>
@@ -86,7 +86,7 @@ describe('SWR Mutation Hooks', () => {
         status: 500,
         json: async () => mockError,
       };
-      (global.fetch as any).mockResolvedValueOnce(mockResponse);
+      (global.fetch as unknown).mockResolvedValueOnce(mockResponse);
 
       const onError = vi.fn();
       const { result } = renderHook(() =>
@@ -95,7 +95,7 @@ describe('SWR Mutation Hooks', () => {
 
       try {
         await result.current.trigger({ name: 'Test Item' });
-      } catch (error) {
+      } catch {
         await waitFor(() => {
           expect(onError).toHaveBeenCalled();
         });
@@ -107,7 +107,7 @@ describe('SWR Mutation Hooks', () => {
     it('should successfully perform DELETE mutation', async () => {
       const mockData = { success: true };
       const mockResponse = { ok: true, json: async () => mockData };
-      (global.fetch as any).mockResolvedValueOnce(mockResponse);
+      (global.fetch as unknown).mockResolvedValueOnce(mockResponse);
 
       const { result } = renderHook(() => useDeleteMutation('/api/items'));
 
@@ -131,7 +131,7 @@ describe('SWR Mutation Hooks', () => {
         status: 404,
         json: async () => mockError,
       };
-      (global.fetch as any).mockResolvedValueOnce(mockResponse);
+      (global.fetch as unknown).mockResolvedValueOnce(mockResponse);
 
       const { result } = renderHook(() => useDeleteMutation('/api/items'));
 
@@ -149,7 +149,7 @@ describe('SWR Mutation Hooks', () => {
     it('should successfully perform PUT mutation', async () => {
       const mockData = { id: '1', name: 'Updated Item' };
       const mockResponse = { ok: true, json: async () => mockData };
-      (global.fetch as any).mockResolvedValueOnce(mockResponse);
+      (global.fetch as unknown).mockResolvedValueOnce(mockResponse);
 
       const { result } = renderHook(() => useUpdateMutation('/api/items', 'PUT'));
 
@@ -168,7 +168,7 @@ describe('SWR Mutation Hooks', () => {
     it('should successfully perform PATCH mutation', async () => {
       const mockData = { id: '1', name: 'Patched Item' };
       const mockResponse = { ok: true, json: async () => mockData };
-      (global.fetch as any).mockResolvedValueOnce(mockResponse);
+      (global.fetch as unknown).mockResolvedValueOnce(mockResponse);
 
       const { result } = renderHook(() => useUpdateMutation('/api/items', 'PATCH'));
 
@@ -190,7 +190,7 @@ describe('SWR Mutation Hooks', () => {
         status: 401,
         json: async () => mockError,
       };
-      (global.fetch as any).mockResolvedValueOnce(mockResponse);
+      (global.fetch as unknown).mockResolvedValueOnce(mockResponse);
 
       const { result } = renderHook(() => useUpdateMutation('/api/items'));
 

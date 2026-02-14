@@ -78,7 +78,7 @@ describe('Landing Pages Integration Tests', () => {
 
     it('should have proper loading strategy across components', () => {
       const hero = render(<HeroSection />);
-      const heroImages = hero.getAllByRole('img');
+      hero.getAllByRole('img');
       hero.unmount();
       
       const demo = render(<AppDemo />);

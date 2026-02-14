@@ -13,7 +13,7 @@
  * Instead of sequential awaits, this pattern enables parallel execution
  * by starting all promises before awaiting any of them.
  */
-export async function fetchInParallel<T extends Record<string, Promise<any>>>(
+export async function fetchInParallel<T extends Record<string, Promise<unknown>>>(
   promises: T
 ): Promise<{ [K in keyof T]: Awaited<T[K]> }> {
   const keys = Object.keys(promises) as (keyof T)[];
@@ -75,8 +75,12 @@ export async function fetchInParallel<T extends Record<string, Promise<any>>>(
  */
 export function runNonBlocking(operation: () => Promise<void>): void {
   // Check if Next.js after() is available
-  if (typeof (globalThis as any).after === 'function') {
-    (globalThis as any).after(operation);
+  const maybeAfter = globalThis as typeof globalThis & {
+    after?: (op: () => Promise<void>) => void;
+  };
+
+  if (typeof maybeAfter.after === 'function') {
+    maybeAfter.after(operation);
   } else {
     // Fallback: Fire and forget (not recommended for production)
     operation().catch(error => {
@@ -98,7 +102,7 @@ export function logAsync(message: string, data?: unknown): void {
 /**
  * Analytics helper for non-blocking operations
  */
-export function trackEventAsync(event: string, properties?: Record<string, any>): void {
+export function trackEventAsync(event: string, properties?: Record<string, unknown>): void {
   runNonBlocking(async () => {
     // In production, this would send to analytics service
     console.log('Analytics event:', event, properties);

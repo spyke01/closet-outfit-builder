@@ -47,7 +47,7 @@ export const ScoreCircle = React.memo<ScoreCircleProps>(({
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0, placement: 'top' });
-  const circleRef = useRef<HTMLDivElement>(null);
+  const circleRef = useRef<HTMLButtonElement>(null);
   const percentage = Math.min(Math.round((score / maxScore) * 100), 100);
   
   // Validate outfit if provided
@@ -69,7 +69,7 @@ export const ScoreCircle = React.memo<ScoreCircleProps>(({
     // Basic breakdown calculation - this would be enhanced with actual scoring logic
     const items = Object.entries(validatedOutfit)
       .filter(([key, value]) => value && key !== 'tuck_style' && key !== 'loved')
-      .map(([key, item]) => ({ key, item: item as any }));
+      .flatMap(([key, item]) => (item && typeof item === 'object' && 'id' in item ? [{ key, item }] : []));
     
     const formalityScores = items
       .map(({ item }) => item?.formality_score || 5)
@@ -220,14 +220,14 @@ export const ScoreCircle = React.memo<ScoreCircleProps>(({
   return (
     <>
       <div className={`relative flex flex-col items-center gap-1 ${className}`}>
-        <div 
+        <button
+          type="button"
           ref={circleRef}
           className={`relative ${container} ${hasBreakdown ? 'cursor-pointer hover:scale-105 transition-transform duration-200' : ''}`}
-          onMouseEnter={() => hasBreakdown && setShowTooltip(true)}
-          onMouseLeave={() => setShowTooltip(false)}
-          onClick={() => hasBreakdown && setShowTooltip(!showTooltip)}
-          role={hasBreakdown ? 'button' : undefined}
-          tabIndex={hasBreakdown ? 0 : undefined}
+          onMouseEnter={hasBreakdown ? () => setShowTooltip(true) : undefined}
+          onMouseLeave={hasBreakdown ? () => setShowTooltip(false) : undefined}
+          onClick={hasBreakdown ? () => setShowTooltip(!showTooltip) : undefined}
+          disabled={!hasBreakdown}
           aria-label={hasBreakdown ? 'View score breakdown' : undefined}
           onKeyDown={(e) => {
             if (hasBreakdown && (e.key === 'Enter' || e.key === ' ')) {
@@ -265,7 +265,7 @@ export const ScoreCircle = React.memo<ScoreCircleProps>(({
           <div className={`absolute inset-0 flex items-center justify-center ${text} font-semibold ${getColor(percentage)}`}>
             {percentage}%
           </div>
-        </div>
+        </button>
         
         {showLabel && (
           <span className="text-xs text-muted-foreground font-medium">

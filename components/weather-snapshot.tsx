@@ -1,6 +1,7 @@
 'use client';
 
 import { WeatherData } from '@/lib/hooks/use-weather';
+import type { WeatherError } from '@/lib/hooks/use-weather';
 import { Cloud, CloudRain, CloudSnow, CloudSun, Sun } from 'lucide-react';
 
 interface WeatherSnapshotProps {
@@ -11,7 +12,7 @@ interface WeatherSnapshotProps {
   } | null;
   forecast: WeatherData[];
   loading: boolean;
-  error: any;
+  error: WeatherError | null;
 }
 
 // Map weather conditions to icons

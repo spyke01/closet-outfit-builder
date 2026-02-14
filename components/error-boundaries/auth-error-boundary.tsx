@@ -1,7 +1,6 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { z } from 'zod';
 import { AlertTriangle, LogIn, RefreshCw } from 'lucide-react';
 
 
@@ -22,13 +21,6 @@ interface State {
   errorId: string;
   retryCount: number;
 }
-
-// Auth error classification schema
-const AuthErrorSchema = z.object({
-  message: z.string(),
-  code: z.string().optional(),
-  status: z.number().optional(),
-});
 
 export class AuthErrorBoundary extends Component<Props, State> {
   private maxRetries = 3;

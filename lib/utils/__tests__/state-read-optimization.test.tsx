@@ -19,19 +19,12 @@ describe('State Read Optimization', () => {
         const [data, setData] = useState({ value: 0, timestamp: Date.now() });
         
         // Bad: Reading state immediately
-        const badCallback = useCallback(() => {
-          const currentValue = data.value; // Read happens here
-          return () => {
-            console.log(currentValue); // Used later
-          };
-        }, [data]); // Recreated on every data change
-        
         // Good: Defer read to usage point
         const goodCallback = useCallback(() => {
           return () => {
             readSpy(data.value); // Read happens at usage point
           };
-        }, []); // Stable callback
+        }, [data.value]);
         
         return (
           <div>
@@ -68,10 +61,6 @@ describe('State Read Optimization', () => {
         });
         
         // Bad: Subscribing to entire searchParams object
-        const badHandleClick = useCallback(() => {
-          callbackSpy('bad', searchParams);
-        }, [searchParams]); // Recreated on every searchParams change
-        
         // Good: Only subscribe to what's needed
         const query = searchParams.query;
         const goodHandleClick = useCallback(() => {
@@ -206,13 +195,9 @@ describe('State Read Optimization', () => {
       
       const ComponentWithEventHandler: React.FC = () => {
         const [count, setCount] = useState(0);
-        const [data, setData] = useState({ items: [] as string[] });
+        const [, setData] = useState({ items: [] as string[] });
         
         // Bad: Handler depends on state
-        const badHandleClick = useCallback(() => {
-          clickSpy('bad', count, data);
-        }, [count, data]); // Recreated frequently
-        
         // Good: Handler reads state at usage time
         const goodHandleClick = useCallback(() => {
           setCount(prev => {
@@ -284,7 +269,7 @@ describe('State Read Optimization', () => {
       const computeSpy = vi.fn();
       
       const ComponentWithComputedState: React.FC = () => {
-        const [items, setItems] = useState([1, 2, 3, 4, 5]);
+        const [items] = useState([1, 2, 3, 4, 5]);
         const [filter, setFilter] = useState('all');
         
         // Compute derived state with useMemo

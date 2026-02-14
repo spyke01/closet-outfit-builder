@@ -13,6 +13,11 @@ interface MutationOptions<Data, Error, ExtraArg> extends SWRMutationConfiguratio
   onError?: (error: Error) => void;
 }
 
+type ApiMutationError = Error & {
+  info?: unknown;
+  status?: number;
+};
+
 /**
  * Generic mutation fetcher for API routes
  */
@@ -29,9 +34,9 @@ async function mutationFetcher<Data, ExtraArg>(
   });
 
   if (!res.ok) {
-    const error = new Error('Mutation failed');
-    (error as any).info = await res.json();
-    (error as any).status = res.status;
+    const error: ApiMutationError = new Error('Mutation failed');
+    error.info = await res.json();
+    error.status = res.status;
     throw error;
   }
 
@@ -41,7 +46,7 @@ async function mutationFetcher<Data, ExtraArg>(
 /**
  * Hook for POST mutations with optimistic updates
  */
-export function usePostMutation<Data = any, Error = any, ExtraArg = any>(
+export function usePostMutation<Data = unknown, Error = unknown, ExtraArg = unknown>(
   key: string,
   options?: MutationOptions<Data, Error, ExtraArg>
 ) {
@@ -63,7 +68,7 @@ export function usePostMutation<Data = any, Error = any, ExtraArg = any>(
 /**
  * Hook for DELETE mutations
  */
-export function useDeleteMutation<Data = any, Error = any, ExtraArg = any>(
+export function useDeleteMutation<Data = unknown, Error = unknown, ExtraArg = unknown>(
   key: string,
   options?: MutationOptions<Data, Error, ExtraArg>
 ) {
@@ -77,9 +82,9 @@ export function useDeleteMutation<Data = any, Error = any, ExtraArg = any>(
     });
 
     if (!res.ok) {
-      const error = new Error('Delete failed');
-      (error as any).info = await res.json();
-      (error as any).status = res.status;
+      const error: ApiMutationError = new Error('Delete failed');
+      error.info = await res.json();
+      error.status = res.status;
       throw error;
     }
 
@@ -92,7 +97,7 @@ export function useDeleteMutation<Data = any, Error = any, ExtraArg = any>(
 /**
  * Hook for PUT/PATCH mutations
  */
-export function useUpdateMutation<Data = any, Error = any, ExtraArg = any>(
+export function useUpdateMutation<Data = unknown, Error = unknown, ExtraArg = unknown>(
   key: string,
   method: 'PUT' | 'PATCH' = 'PUT',
   options?: MutationOptions<Data, Error, ExtraArg>
@@ -107,9 +112,9 @@ export function useUpdateMutation<Data = any, Error = any, ExtraArg = any>(
     });
 
     if (!res.ok) {
-      const error = new Error('Update failed');
-      (error as any).info = await res.json();
-      (error as any).status = res.status;
+      const error: ApiMutationError = new Error('Update failed');
+      error.info = await res.json();
+      error.status = res.status;
       throw error;
     }
 

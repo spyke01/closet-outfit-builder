@@ -1,4 +1,4 @@
-import { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
+import { Handler, HandlerEvent } from '@netlify/functions';
 
 interface OpenWeatherOneCallResponse {
   current: {
@@ -111,7 +111,7 @@ function checkRateLimit(clientIP: string): boolean {
   return true;
 }
 
-export const handler: Handler = async (event: HandlerEvent, _context: HandlerContext) => {
+export const handler: Handler = async (event: HandlerEvent) => {
   // CORS headers
   const headers = {
     'Access-Control-Allow-Origin': '*',

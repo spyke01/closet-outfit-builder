@@ -93,22 +93,22 @@ export function ConflictResolutionDialog({
     return new Date(timestamp).toLocaleString();
   };
   
-  const formatData = (data: any) => {
+  const formatData = (data: Record<string, unknown> | null | undefined) => {
     if (!data) return {};
     
     // Format common fields for display
-    const fields: Record<string, any> = {};
-    
-    if (data.name) fields['Name'] = data.name;
-    if (data.primary_size) fields['Primary Size'] = data.primary_size;
-    if (data.secondary_size) fields['Secondary Size'] = data.secondary_size;
-    if (data.brand_name) fields['Brand'] = data.brand_name;
-    if (data.size) fields['Size'] = data.size;
-    if (data.fit_scale) fields['Fit Scale'] = data.fit_scale;
-    if (data.notes) fields['Notes'] = data.notes;
+    const fields: Record<string, string> = {};
+
+    if (data.name) fields['Name'] = String(data.name);
+    if (data.primary_size) fields['Primary Size'] = String(data.primary_size);
+    if (data.secondary_size) fields['Secondary Size'] = String(data.secondary_size);
+    if (data.brand_name) fields['Brand'] = String(data.brand_name);
+    if (data.size) fields['Size'] = String(data.size);
+    if (data.fit_scale) fields['Fit Scale'] = String(data.fit_scale);
+    if (data.notes) fields['Notes'] = String(data.notes);
     if (data.measurements) fields['Measurements'] = JSON.stringify(data.measurements, null, 2);
-    if (data.display_mode) fields['Display Mode'] = data.display_mode;
-    if (data.display_order !== undefined) fields['Display Order'] = data.display_order;
+    if (data.display_mode) fields['Display Mode'] = String(data.display_mode);
+    if (data.display_order !== undefined) fields['Display Order'] = String(data.display_order);
     
     return fields;
   };
@@ -132,7 +132,6 @@ export function ConflictResolutionDialog({
       >
         <div
           className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-          onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           <div className="border-b p-6">

@@ -1,7 +1,7 @@
 'use client';
 
 import { Watch, Footprints } from 'lucide-react/dist/esm/icons';
-import { Icon } from 'lucide-react';
+import { Icon, type IconNode } from 'lucide-react';
 import { 
   shirtT, 
   shirtFoldedButtons, 
@@ -22,7 +22,7 @@ import { COLOR_OPTIONS } from '@/lib/data/color-options';
 import type { SubcategoryColorSelection } from '@/lib/types/onboarding';
 
 // Icon mapping for subcategories (from @lucide/lab and lucide-react)
-const SUBCATEGORY_ICON_NODES: Record<string, any> = {
+const SUBCATEGORY_ICON_NODES: Record<string, IconNode> = {
   shirtT,
   shirtFoldedButtons,
   shirtLongSleeve,
@@ -46,7 +46,7 @@ const MAIN_LUCIDE_ICONS: Record<string, React.ComponentType<{ className?: string
 
 interface StepColorsQuantityProps {
   selectedCategories: CategoryKey[];
-  selectedSubcategories: Record<CategoryKey, string[]>;
+  selectedSubcategories: Partial<Record<CategoryKey, string[]>>;
   colorQuantitySelections: Record<string, SubcategoryColorSelection>;
   onChange: (selections: Record<string, SubcategoryColorSelection>) => void;
 }
@@ -95,7 +95,7 @@ export function StepColorsQuantity({
       <header>
         <h2 className="text-2xl font-semibold mb-2 text-foreground">Select colors</h2>
         <p className="text-muted-foreground">
-          For each item type, select the colors you own. We'll create one item per color.
+          For each item type, select the colors you own. We&apos;ll create one item per color.
         </p>
       </header>
 

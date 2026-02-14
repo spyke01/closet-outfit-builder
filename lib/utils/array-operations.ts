@@ -140,7 +140,7 @@ export function immutableSort<T>(
 ): T[] {
   // Use toSorted if available (ES2023)
   if ('toSorted' in Array.prototype) {
-    return (arr as any).toSorted(compareFn)
+    return arr.toSorted(compareFn)
   }
   
   // Fallback: create copy and sort
@@ -160,7 +160,7 @@ export function immutableSort<T>(
 export function immutableReverse<T>(arr: T[]): T[] {
   // Use toReversed if available (ES2023)
   if ('toReversed' in Array.prototype) {
-    return (arr as any).toReversed()
+    return arr.toReversed()
   }
   
   // Fallback: create copy and reverse

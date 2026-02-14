@@ -30,7 +30,7 @@ export function WardrobePageClient() {
   const { data: items = [], isLoading: itemsLoading, error: itemsError } = useWardrobeItems();
 
   const updateQueryParams = useCallback((updates: Record<string, string | null>) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParamsKey);
     Object.entries(updates).forEach(([key, value]) => {
       if (!value) {
         params.delete(key);

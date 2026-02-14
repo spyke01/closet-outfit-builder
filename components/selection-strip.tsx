@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useMemo, useEffect, useRef } from 'react';
-import { z } from 'zod';
 import { produce } from 'immer';
 import { useImmerState } from '@/lib/utils/immer-state';
 import { safeValidate } from '@/lib/utils/validation';
@@ -11,24 +10,22 @@ import {
   type OutfitSelection,
   type WardrobeItem
 } from '@/lib/schemas';
+import { type Outfit } from '@/lib/types/database';
 import { CategoryDropdown } from './category-dropdown';
 import { OutfitList } from './outfit-list';
 
-// Selection strip state schema
-const SelectionStripStateSchema = z.object({
-  selection: OutfitSelectionSchema,
-  loadingCategories: z.set(z.string()),
-  error: z.string().nullable(),
-  debouncedSelection: OutfitSelectionSchema,
-});
-
-type SelectionStripState = z.infer<typeof SelectionStripStateSchema>;
+interface SelectionStripState {
+  selection: OutfitSelection;
+  loadingCategories: Set<string>;
+  error: string | null;
+  debouncedSelection: OutfitSelection;
+}
 
 interface SelectionStripProps {
   selection: OutfitSelection;
   anchorItem: WardrobeItem | null;
   onSelectionChange: (category: string, item: WardrobeItem | null) => void;
-  onOutfitSelect: (outfit: any) => void;
+  onOutfitSelect: (outfit: Outfit) => void;
   // Enhanced props for database integration
   userId?: string;
   onScoreUpdate?: (score: number) => void;
@@ -44,6 +41,9 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
   onScoreUpdate,
   enableRealTimeUpdates = false
 }) => {
+  void userId;
+  void enableRealTimeUpdates;
+
   // Immer-based state management
   const [state, updateState] = useImmerState<SelectionStripState>({
     selection,
@@ -104,13 +104,29 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
   }, [validatedSelection, updateState]);
 
   // Define the five main categories for dropdowns in layering hierarchy order
+  type ItemKey = 'jacket' | 'overshirt' | 'shirt' | 'undershirt' | 'pants' | 'shoes' | 'belt' | 'watch';
+
   const categories = useMemo(() => [
-    { category: 'Jacket/Overshirt', key: 'jacket' as keyof OutfitSelection },
-    { category: 'Shirt', key: 'shirt' as keyof OutfitSelection },
-    { category: 'Undershirt', key: 'undershirt' as keyof OutfitSelection },
-    { category: 'Pants', key: 'pants' as keyof OutfitSelection },
-    { category: 'Shoes', key: 'shoes' as keyof OutfitSelection },
+    { category: 'Jacket/Overshirt', key: 'jacket' as ItemKey },
+    { category: 'Shirt', key: 'shirt' as ItemKey },
+    { category: 'Undershirt', key: 'undershirt' as ItemKey },
+    { category: 'Pants', key: 'pants' as ItemKey },
+    { category: 'Shoes', key: 'shoes' as ItemKey },
   ], []);
+
+  // Calculate outfit score (placeholder implementation)
+  const calculateOutfitScore = useCallback((selection: OutfitSelection): number => {
+    const items = Object.values(selection).filter(Boolean);
+    if (items.length === 0) return 0;
+    
+    let score = items.length * 20;
+    
+    if (selection.shirt && selection.pants && selection.shoes) {
+      score += 20;
+    }
+    
+    return Math.min(score, 100);
+  }, []);
 
   // Enhanced selection change handler with progressive filtering and error handling
   const handleSelectionChange = useCallback(async (category: string, item: WardrobeItem | null) => {
@@ -134,9 +150,9 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
         const key = categories.find(c => c.category === category)?.key;
         if (key) {
           if (item) {
-            (draft as any)[key] = item;
+            draft[key] = item;
           } else {
-            delete (draft as any)[key];
+            delete draft[key];
           }
         }
       });
@@ -172,38 +188,11 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
         });
       }, 200);
     }
-  }, [state.selection, categories, onSelectionChange, onScoreUpdate, updateState]);
-
-  // Calculate outfit score (placeholder implementation)
-  const calculateOutfitScore = useCallback((selection: OutfitSelection): number => {
-    // Basic scoring logic - can be enhanced with actual scoring algorithm
-    const items = Object.values(selection).filter(Boolean);
-    if (items.length === 0) return 0;
-    
-    // Simple scoring based on number of items and formality matching
-    let score = items.length * 20; // Base score
-    
-    // Bonus for complete outfit
-    if (selection.shirt && selection.pants && selection.shoes) {
-      score += 20;
-    }
-    
-    return Math.min(score, 100);
-  }, []);
+  }, [calculateOutfitScore, state.selection, categories, onSelectionChange, onScoreUpdate, updateState]);
 
   // Get filtered outfits based on debounced selection
   const filteredOutfits = useMemo(() => {
     try {
-      // Ensure anchor item is included in the selection for outfit filtering
-      const selectionWithAnchor = produce(state.debouncedSelection, draft => {
-        if (validatedAnchorItem && !Object.values(state.debouncedSelection).some(item => typeof item === 'object' && item && 'id' in item && item.id === validatedAnchorItem.id)) {
-          const anchorKey = categories.find(c => c.category === validatedAnchorItem.category_id)?.key;
-          if (anchorKey) {
-            (draft as any)[anchorKey] = validatedAnchorItem;
-          }
-        }
-      });
-      
       // For now, return empty array - this would be replaced with actual outfit filtering logic
       return [];
     } catch (err) {
@@ -213,22 +202,12 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
       });
       return [];
     }
-  }, [state.debouncedSelection, validatedAnchorItem, categories, updateState]);
+  }, [updateState]);
 
   // Memoize compatible items calculation for each category
   const compatibleItemsCache = useMemo(() => {
     const cache: Record<string, WardrobeItem[]> = {};
-    
-    // Ensure anchor item is included in the selection for compatibility checking
-    const selectionWithAnchor = produce(state.debouncedSelection, draft => {
-      if (validatedAnchorItem && !Object.values(state.debouncedSelection).some(item => typeof item === 'object' && item && 'id' in item && item.id === validatedAnchorItem.id)) {
-        const anchorKey = categories.find(c => c.category === validatedAnchorItem.category_id)?.key;
-        if (anchorKey) {
-          (draft as any)[anchorKey] = validatedAnchorItem;
-        }
-      }
-    });
-    
+
     categories.forEach(({ category }) => {
       try {
         // For now, return empty array - this would be replaced with actual compatibility logic
@@ -239,7 +218,7 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
       }
     });
     return cache;
-  }, [state.debouncedSelection, validatedAnchorItem, categories]);
+  }, [categories]);
 
   // Format item name helper
   const formatItemName = useCallback((item: WardrobeItem, showBrand: boolean = true): string => {

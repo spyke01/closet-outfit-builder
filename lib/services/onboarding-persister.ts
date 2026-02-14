@@ -149,23 +149,3 @@ function chunkArray<T>(array: T[], size: number): T[][] {
   
   return chunks;
 }
-
-/**
- * Validate wardrobe item input before insertion
- * 
- * @param input - Wardrobe item input
- * @returns True if valid, false otherwise
- */
-function validateItemInput(input: CreateWardrobeItemInput): boolean {
-  if (!input.category_id || !input.name) {
-    return false;
-  }
-
-  if (input.formality_score !== undefined) {
-    if (input.formality_score < 1 || input.formality_score > 10) {
-      return false;
-    }
-  }
-
-  return true;
-}

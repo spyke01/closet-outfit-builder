@@ -43,7 +43,10 @@ export function AddItemPageClient() {
   // Mutations
   const createItemMutation = useCreateWardrobeItem();
 
-  const handleInputChange = (field: keyof CreateWardrobeItemForm, value: any) => {
+  const handleInputChange = <K extends keyof CreateWardrobeItemForm>(
+    field: K,
+    value: CreateWardrobeItemForm[K]
+  ) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -237,9 +240,9 @@ export function AddItemPageClient() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
+                <p className="block text-sm font-medium text-muted-foreground mb-1">
                   Name *
-                </label>
+                </p>
                 <input
                   type="text"
                   value={formData.name}
@@ -251,9 +254,9 @@ export function AddItemPageClient() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
+                <p className="block text-sm font-medium text-muted-foreground mb-1">
                   Category *
-                </label>
+                </p>
                 <select
                   value={formData.category_id}
                   onChange={(e) => handleInputChange('category_id', e.target.value)}
@@ -270,9 +273,9 @@ export function AddItemPageClient() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
+                <p className="block text-sm font-medium text-muted-foreground mb-1">
                   Brand
-                </label>
+                </p>
                 <input
                   type="text"
                   value={formData.brand || ''}
@@ -284,9 +287,9 @@ export function AddItemPageClient() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-1">
+                  <p className="block text-sm font-medium text-muted-foreground mb-1">
                     Color
-                  </label>
+                  </p>
                   <div className="relative">
                     <select
                       value={formData.color || ''}
@@ -317,9 +320,9 @@ export function AddItemPageClient() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-1">
+                  <p className="block text-sm font-medium text-muted-foreground mb-1">
                     Material
-                  </label>
+                  </p>
                   <input
                     type="text"
                     value={formData.material || ''}
@@ -331,9 +334,9 @@ export function AddItemPageClient() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
+                <p className="block text-sm font-medium text-muted-foreground mb-1">
                   Formality Score (1-10)
-                </label>
+                </p>
                 <input
                   type="number"
                   min="1"

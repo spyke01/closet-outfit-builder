@@ -7,18 +7,18 @@ import type { SWRConfiguration } from 'swr';
  * Hook for fetching immutable/static content that never changes
  * Uses useSWRImmutable which disables all automatic revalidations
  */
-export function useImmutableSWR<Data = any, Error = any>(
+export function useImmutableSWR<Data = unknown, Error = unknown>(
   key: string | null,
   fetcher?: ((key: string) => Promise<Data>) | null,
   options?: SWRConfiguration<Data, Error>
 ) {
-  return useSWRImmutable<Data, Error>(key, fetcher as any, options);
+  return useSWRImmutable<Data, Error>(key, fetcher ?? null, options);
 }
 
 /**
  * Hook for fetching static configuration data
  */
-export function useStaticConfig<T = any>(configKey: string) {
+export function useStaticConfig<T = unknown>(configKey: string) {
   return useImmutableSWR<T>(
     `/api/config/${configKey}`,
     async (url: string) => {
@@ -32,7 +32,7 @@ export function useStaticConfig<T = any>(configKey: string) {
 /**
  * Hook for fetching static reference data (categories, tags, etc.)
  */
-export function useStaticReference<T = any>(referenceType: string) {
+export function useStaticReference<T = unknown>(referenceType: string) {
   return useImmutableSWR<T>(
     `/api/reference/${referenceType}`,
     async (url: string) => {

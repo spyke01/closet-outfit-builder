@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { NextResponse } from 'next/server';
+import type { Mock } from 'vitest';
+import type { SecureRequest } from '@/lib/middleware/security-middleware';
 
 // Mock dependencies
 vi.mock('@/lib/supabase/server', () => ({
@@ -11,7 +12,7 @@ vi.mock('@/lib/utils/error-logging', () => ({
 }));
 
 vi.mock('@/lib/middleware/security-middleware', () => ({
-  withSecurity: vi.fn((config) => (handler) => handler),
+  withSecurity: vi.fn(() => (handler: (request: SecureRequest) => Promise<Response>) => handler),
   SecurityConfigs: {
     authenticated: {},
   },
@@ -20,13 +21,20 @@ vi.mock('@/lib/middleware/security-middleware', () => ({
 import { createClient } from '@/lib/supabase/server';
 import { logError } from '@/lib/utils/error-logging';
 
+type MockRequest = Partial<SecureRequest>;
+
+interface MockSupabaseClient {
+  rpc: Mock;
+  from: Mock;
+}
+
 describe('Seed Categories API Route', () => {
-  let mockSupabase: any;
-  let mockRpc: any;
-  let mockFrom: any;
-  let mockSelect: any;
-  let mockEq: any;
-  let mockOrder: any;
+  let mockSupabase: MockSupabaseClient;
+  let mockRpc: Mock;
+  let mockFrom: Mock;
+  let mockSelect: Mock;
+  let mockEq: Mock;
+  let mockOrder: Mock;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -47,7 +55,7 @@ describe('Seed Categories API Route', () => {
       from: mockFrom,
     };
 
-    (createClient as any).mockResolvedValue(mockSupabase);
+    (createClient as unknown as Mock).mockResolvedValue(mockSupabase);
   });
 
   describe('POST /api/sizes/seed-categories', () => {
@@ -55,11 +63,11 @@ describe('Seed Categories API Route', () => {
       // Import the handler directly for testing
       const { POST } = await import('../route');
       
-      const mockRequest = {
+      const mockRequest: MockRequest = {
         user: null,
-      } as any;
+      };
 
-      const response = await POST(mockRequest);
+      const response = await POST(mockRequest as SecureRequest);
       const data = await response.json();
 
       expect(response.status).toBe(401);
@@ -90,11 +98,11 @@ describe('Seed Categories API Route', () => {
 
       mockOrder.mockResolvedValue({ data: mockCategories, error: null });
 
-      const mockRequest = {
+      const mockRequest: MockRequest = {
         user: { id: 'user-123' },
-      } as any;
+      };
 
-      const response = await POST(mockRequest);
+      const response = await POST(mockRequest as SecureRequest);
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -113,11 +121,11 @@ describe('Seed Categories API Route', () => {
       const seedError = new Error('Database connection failed');
       mockRpc.mockResolvedValue({ error: seedError });
 
-      const mockRequest = {
+      const mockRequest: MockRequest = {
         user: { id: 'user-123' },
-      } as any;
+      };
 
-      const response = await POST(mockRequest);
+      const response = await POST(mockRequest as SecureRequest);
       const data = await response.json();
 
       expect(response.status).toBe(500);
@@ -140,11 +148,11 @@ describe('Seed Categories API Route', () => {
       const fetchError = new Error('Fetch failed');
       mockOrder.mockResolvedValue({ data: null, error: fetchError });
 
-      const mockRequest = {
+      const mockRequest: MockRequest = {
         user: { id: 'user-123' },
-      } as any;
+      };
 
-      const response = await POST(mockRequest);
+      const response = await POST(mockRequest as SecureRequest);
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -179,15 +187,15 @@ describe('Seed Categories API Route', () => {
 
       mockOrder.mockResolvedValue({ data: mockCategories, error: null });
 
-      const mockRequest = {
+      const mockRequest: MockRequest = {
         user: { id: 'user-123' },
-      } as any;
+      };
 
       // Call twice
-      const response1 = await POST(mockRequest);
+      const response1 = await POST(mockRequest as SecureRequest);
       const data1 = await response1.json();
 
-      const response2 = await POST(mockRequest);
+      const response2 = await POST(mockRequest as SecureRequest);
       const data2 = await response2.json();
 
       expect(response1.status).toBe(200);
@@ -203,11 +211,11 @@ describe('Seed Categories API Route', () => {
       // Force an unexpected error
       mockRpc.mockRejectedValue(new Error('Unexpected error'));
 
-      const mockRequest = {
+      const mockRequest: MockRequest = {
         user: { id: 'user-123' },
-      } as any;
+      };
 
-      const response = await POST(mockRequest);
+      const response = await POST(mockRequest as SecureRequest);
       const data = await response.json();
 
       expect(response.status).toBe(500);

@@ -3,7 +3,6 @@ import { z } from 'zod';
 import {
   ErrorLogger,
   errorLogger,
-  logError,
   logAuthError,
   logValidationError,
   logSecurityEvent,
@@ -80,7 +79,7 @@ describe('Error Logging System', () => {
       } catch (error) {
         if (error instanceof z.ZodError) {
           const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-          const errorId = errorLogger.logError(error, 'validation', 'medium');
+          errorLogger.logError(error, 'validation', 'medium');
           
           const logs = errorLogger.getRecentLogs(1);
           expect(logs[0].error?.name).toBe('ZodError');
@@ -163,7 +162,7 @@ describe('Error Logging System', () => {
     it('should log authentication errors', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       
-      const errorId = logAuthError('Invalid credentials', { userId: 'user123' });
+      logAuthError('Invalid credentials', { userId: 'user123' });
       
       const logs = errorLogger.getRecentLogs(1);
       expect(logs[0].category).toBe('authentication');
@@ -183,7 +182,7 @@ describe('Error Logging System', () => {
         if (error instanceof z.ZodError) {
           const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
           
-          const errorId = logValidationError(error, { component: 'form' });
+          logValidationError(error, { component: 'form' });
           
           const logs = errorLogger.getRecentLogs(1);
           expect(logs[0].category).toBe('validation');
@@ -199,7 +198,7 @@ describe('Error Logging System', () => {
     it('should log security events', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       
-      const errorId = logSecurityEvent('Suspicious activity detected', 'high', {
+      logSecurityEvent('Suspicious activity detected', 'high', {
         ipAddress: '192.168.1.1',
         userAgent: 'Malicious Bot',
       });
@@ -215,11 +214,11 @@ describe('Error Logging System', () => {
 
     it('should log database errors', () => {
       const dbError = new Error('Connection timeout');
-      (dbError as any).code = 'ECONNRESET';
+      (dbError as unknown).code = 'ECONNRESET';
       
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       
-      const errorId = logDatabaseError(dbError, { 
+      logDatabaseError(dbError, { 
         component: 'supabase',
         action: 'query_wardrobe_items',
       });
@@ -237,7 +236,7 @@ describe('Error Logging System', () => {
     it('should log file upload errors', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       
-      const errorId = logFileUploadError('File size exceeds limit', {
+      logFileUploadError('File size exceeds limit', {
         component: 'image_upload',
         metadata: { fileSize: 10485760, maxSize: 5242880 },
       });

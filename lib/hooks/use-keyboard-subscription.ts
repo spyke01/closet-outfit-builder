@@ -1,7 +1,6 @@
 'use client';
 
 import useSWRSubscription from 'swr/subscription';
-import type { SWRSubscription } from 'swr/subscription';
 
 interface KeyboardShortcut {
   key: string;
@@ -53,9 +52,32 @@ export function useKeyboardShortcut(shortcut: KeyboardShortcut) {
  * Hook for multiple keyboard shortcuts
  */
 export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
-  shortcuts.forEach((shortcut) => {
-    useKeyboardShortcut(shortcut);
-  });
+  useSWRSubscription(
+    `keyboard-multi:${shortcuts.map((s) => s.key).join(',')}`,
+    (_subscriptionKey, { next }: { next: (error?: Error, data?: KeyboardEvent) => void }) => {
+      const handler = (event: KeyboardEvent) => {
+        for (const shortcut of shortcuts) {
+          const modifiersMatch =
+            (shortcut.metaKey === undefined || event.metaKey === shortcut.metaKey) &&
+            (shortcut.ctrlKey === undefined || event.ctrlKey === shortcut.ctrlKey) &&
+            (shortcut.shiftKey === undefined || event.shiftKey === shortcut.shiftKey) &&
+            (shortcut.altKey === undefined || event.altKey === shortcut.altKey);
+
+          if (event.key === shortcut.key && modifiersMatch) {
+            event.preventDefault();
+            shortcut.callback(event);
+            next(undefined, event);
+            break;
+          }
+        }
+      };
+
+      window.addEventListener('keydown', handler);
+      return () => {
+        window.removeEventListener('keydown', handler);
+      };
+    }
+  );
 }
 
 /**

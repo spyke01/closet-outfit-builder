@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Search, Filter, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import React from 'react';
 
 // Loading component for WardrobeSearchFilters

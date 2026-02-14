@@ -170,7 +170,7 @@ export async function GET() {
 }
 
 // Example function to send to external monitoring services (deferred)
-async function sendToMonitoringService(type: string, data: any) {
+async function sendToMonitoringService(type: string, data: Record<string, unknown>) {
   // Only run in production to avoid unnecessary processing
   if (process.env.NODE_ENV !== 'production') return;
 
@@ -184,14 +184,15 @@ async function sendToMonitoringService(type: string, data: any) {
         const sentryModule = await importSentry().catch(() => null);
         
         if (sentryModule) {
-          sentryModule.captureException(new Error(data.message), { 
+          const errorMessage = typeof data.message === 'string' ? data.message : 'Unknown monitoring error';
+          sentryModule.captureException(new Error(errorMessage), { 
             extra: data,
             tags: {
               source: 'monitoring-api'
             }
           });
         }
-      } catch (error) {
+      } catch {
         console.warn('Sentry not available for error tracking');
       }
     }

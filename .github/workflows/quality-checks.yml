@@ -26,6 +26,18 @@ jobs:
       
       - name: Run ESLint
         run: npm run lint
+
+      - name: Generate lint summary report
+        run: npm run lint:report
+
+      - name: Upload lint artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: |
+            .lint-report.json
+            .lint-summary.json
+          retention-days: 14
       
       - name: Run accessibility linting
         run: npm run lint:a11y

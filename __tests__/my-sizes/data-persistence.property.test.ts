@@ -15,9 +15,9 @@ import fc from 'fast-check';
 
 // Simple in-memory database simulator
 class InMemoryDatabase {
-  private data: Map<string, Map<string, any>> = new Map();
+  private data: Map<string, Map<string, Record<string, unknown>>> = new Map();
 
-  async insert(table: string, record: any): Promise<any> {
+  async insert(table: string, record: Record<string, unknown>): Promise<Record<string, unknown>> {
     if (!this.data.has(table)) {
       this.data.set(table, new Map());
     }
@@ -33,7 +33,7 @@ class InMemoryDatabase {
     return fullRecord;
   }
 
-  async query(table: string, field: string, value: any): Promise<any | null> {
+  async query(table: string, field: string, value: unknown): Promise<Record<string, unknown> | null> {
     const tableData = this.data.get(table);
     if (!tableData) return null;
     
@@ -45,7 +45,12 @@ class InMemoryDatabase {
     return null;
   }
 
-  async update(table: string, field: string, value: any, updates: any): Promise<any | null> {
+  async update(
+    table: string,
+    field: string,
+    value: unknown,
+    updates: Record<string, unknown>
+  ): Promise<Record<string, unknown> | null> {
     const tableData = this.data.get(table);
     if (!tableData) return null;
     

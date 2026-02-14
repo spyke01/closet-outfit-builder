@@ -14,8 +14,8 @@
  * Requirements: US-2
  */
 
-import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MeasurementGuide } from '../measurement-guide'
 import type { MeasurementGuide as MeasurementGuideType } from '@/lib/data/measurement-guides'

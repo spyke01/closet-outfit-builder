@@ -37,7 +37,7 @@ export function Testimonials() {
             Loved by style enthusiasts
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Join thousands who've transformed their daily outfit selection.
+            Join thousands who&apos;ve transformed their daily outfit selection.
           </p>
         </div>
         

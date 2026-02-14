@@ -203,7 +203,7 @@ export function BrandSizeForm({
           placeholder="e.g., Jeans, Dress Shirt, Sneakers"
         />
         <span id="item-type-hint" className="block mt-1 text-xs text-muted-foreground">
-          Specify the type of item (e.g., "Jeans", "Dress Shirt")
+          Specify the type of item (e.g., Jeans, Dress Shirt)
         </span>
       </div>
       
@@ -242,9 +242,9 @@ export function BrandSizeForm({
       
       {/* Fit Scale Selector */}
       <div className="form-field">
-        <label className="block text-sm font-medium text-muted-foreground mb-3">
+        <p className="block text-sm font-medium text-muted-foreground mb-3">
           Fit Scale <span className="text-red-500" aria-label="required">*</span>
-        </label>
+        </p>
         <div 
           role="radiogroup" 
           aria-label="Fit scale selector"

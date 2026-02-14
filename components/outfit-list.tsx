@@ -4,6 +4,7 @@ import React from 'react';
 import { ScoreCircle } from './score-circle';
 import { convertOutfitToSelection, canGenerateScoreBreakdown } from '@/lib/utils/outfit-conversion';
 import { type Outfit } from '@/lib/types/database';
+import { type OutfitSelection as ScoreOutfitSelection } from '@/lib/schemas';
 
 interface OutfitListProps {
   outfits: Outfit[];
@@ -15,9 +16,11 @@ interface OutfitListProps {
 export const OutfitList: React.FC<OutfitListProps> = ({
   outfits,
   onOutfitSelect,
-  enableErrorBoundary = false,
+  enableErrorBoundary: _enableErrorBoundary = false,
   onError
 }) => {
+  void _enableErrorBoundary;
+
   // Use outfits directly since they're already typed
   const validatedOutfits = React.useMemo(() => {
     return outfits || [];
@@ -75,10 +78,10 @@ export const OutfitList: React.FC<OutfitListProps> = ({
                   showLabel={false}
                   outfit={canGenerateScoreBreakdown(outfit) ? (() => {
                     const selection = convertOutfitToSelection(outfit);
-                    return selection ? {
+                    return selection ? ({
                       ...selection,
                       tuck_style: selection.tuck_style || 'Untucked'
-                    } as any : undefined;
+                    } as unknown as ScoreOutfitSelection) : undefined;
                   })() : undefined}
                 />
               )}

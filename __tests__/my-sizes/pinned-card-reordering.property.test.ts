@@ -23,7 +23,7 @@ const mockSupabase = {
     if (table === 'pinned_preferences') {
       return {
         delete: vi.fn(() => ({
-          eq: vi.fn((column: string, value: string) => {
+          eq: vi.fn((column: string) => {
             if (column === 'user_id') {
               mockDataStore = [];
             }
@@ -82,17 +82,6 @@ async function reorderAndSavePinnedCards(
   }
 
   return updatedPreferences;
-}
-
-// Simulate fetching pinned cards from database
-async function fetchPinnedCards(userId: string): Promise<PinnedPreference[]> {
-  const { data } = await mockSupabase
-    .from('pinned_preferences')
-    .select('*')
-    .eq('user_id', userId)
-    .order('display_order');
-
-  return data || [];
 }
 
 describe('Property 12: Pinned card reordering persistence', () => {

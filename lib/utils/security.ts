@@ -213,7 +213,7 @@ export function checkRateLimit(
 /**
  * Secure credential handling
  */
-export function sanitizeCredentials(obj: Record<string, any>): Record<string, any> {
+export function sanitizeCredentials(obj: Record<string, unknown>): Record<string, unknown> {
   const sensitiveKeys = [
     'password',
     'token',
@@ -285,7 +285,7 @@ export async function validateFileUploadSecurity(file: File): Promise<{
     if (!isValidImage) {
       errors.push('File content does not match declared type');
     }
-  } catch (error) {
+  } catch {
     errors.push('Failed to validate file content');
   }
 
@@ -301,8 +301,7 @@ export async function validateFileUploadSecurity(file: File): Promise<{
 export async function validateUserPermissions(
   userId: string,
   resourceType: 'wardrobe_item' | 'outfit' | 'category',
-  resourceId: string,
-  action: 'read' | 'write' | 'delete'
+  resourceId: string
 ): Promise<{ allowed: boolean; reason?: string }> {
   try {
     const supabase = await createClient();
@@ -340,7 +339,7 @@ export async function validateUserPermissions(
     }
 
     return { allowed: true };
-  } catch (error) {
+  } catch {
     return { allowed: false, reason: 'Permission check failed' };
   }
 }
@@ -355,7 +354,7 @@ export interface SecurityAuditEntry {
   userAgent?: string;
   resource?: string;
   action?: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   timestamp: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
 }

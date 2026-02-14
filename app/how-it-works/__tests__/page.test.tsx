@@ -45,7 +45,7 @@ describe('HowItWorksPage - Redirect Tests', () => {
     });
 
     it('should have proper text styling', () => {
-      const { container } = render(<HowItWorksPage />);
+      render(<HowItWorksPage />);
       
       const text = screen.getByText(/redirecting to how it works/i);
       expect(text.className).toContain('text-muted-foreground');

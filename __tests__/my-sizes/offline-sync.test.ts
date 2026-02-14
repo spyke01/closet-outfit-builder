@@ -22,8 +22,6 @@ import {
   createConflict,
   isOnline,
   setupOnlineListeners,
-  type QueuedMutation,
-  type SyncStatus,
 } from '@/lib/utils/offline-sync';
 
 describe('Offline Sync Utilities', () => {
@@ -440,9 +438,6 @@ describe('Offline Sync Utilities', () => {
         userId: 'user-123',
       });
 
-      // Small delay to ensure different timestamps
-      const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-      
       queueMutation({
         type: 'update',
         entity: 'category',

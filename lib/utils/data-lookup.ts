@@ -153,7 +153,7 @@ export function createPropertyCache<T, V>(
  * )
  * // Returns [{ id: '1', categoryId: 'A', active: true }]
  */
-export function findWithIndex<T extends Record<string, any>>(
+export function findWithIndex<T extends Record<string, unknown>>(
   items: T[],
   criteria: Partial<T>
 ): T[] {

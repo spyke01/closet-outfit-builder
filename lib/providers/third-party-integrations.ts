@@ -3,6 +3,22 @@
  * This module handles optional dependencies gracefully
  */
 
+interface SentryEventLike {
+  exception?: {
+    values?: Array<{
+      value?: string;
+    }>;
+  };
+}
+
+type GtagArgs = [string, ...unknown[]];
+
+interface WebVitalsMetric {
+  name: string;
+  id: string;
+  value: number;
+}
+
 /**
  * Initialize error tracking services (Sentry, Bugsnag, etc.)
  */
@@ -23,7 +39,7 @@ export async function initializeErrorTracking() {
             dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
             environment: process.env.NODE_ENV,
             tracesSampleRate: 0.1, // Low sample rate for performance
-            beforeSend(event: any) {
+            beforeSend(event: SentryEventLike) {
               // Filter out noise
               if (event.exception) {
                 const error = event.exception.values?.[0];
@@ -35,7 +51,7 @@ export async function initializeErrorTracking() {
             },
           });
         }
-      } catch (error) {
+      } catch {
         // Sentry is optional, silently skip if not available
         console.warn('Sentry not available, skipping error tracking setup');
       }
@@ -77,9 +93,9 @@ export async function initializeAnalytics() {
       document.head.appendChild(script);
 
       // Initialize gtag
-      (window as any).dataLayer = (window as any).dataLayer || [];
-      function gtag(...args: any[]) {
-        (window as any).dataLayer.push(args);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(...args: GtagArgs) {
+        window.dataLayer.push(args);
       }
       gtag('js', new Date());
       gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID, {
@@ -88,7 +104,7 @@ export async function initializeAnalytics() {
       });
 
       // Make gtag available globally for tracking
-      (window as any).gtag = gtag;
+      window.gtag = gtag;
     }
 
     // Example: Initialize Mixpanel (if configured)
@@ -144,10 +160,10 @@ export async function initializePerformanceMonitoring() {
       ]);
       
       // Send metrics to analytics service
-      const sendToAnalytics = (metric: any) => {
+      const sendToAnalytics = (metric: WebVitalsMetric) => {
         // Send to Google Analytics if available
-        if ((window as any).gtag) {
-          (window as any).gtag('event', metric.name, {
+        if (window.gtag) {
+          window.gtag('event', metric.name, {
             event_category: 'Web Vitals',
             event_label: metric.id,
             value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
@@ -187,7 +203,7 @@ export async function initializePerformanceMonitoring() {
 // Extend Window interface for TypeScript
 declare global {
   interface Window {
-    dataLayer: any[];
-    gtag: (...args: any[]) => void;
+    dataLayer: GtagArgs[];
+    gtag: (...args: GtagArgs) => void;
   }
 }

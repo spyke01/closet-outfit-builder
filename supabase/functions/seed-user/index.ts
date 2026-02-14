@@ -273,7 +273,11 @@ serve(async (req) => {
     }
 
     // Insert outfit items (linking outfits to wardrobe items)
-    const outfitItemsToInsert: any[] = []
+    const outfitItemsToInsert: Array<{
+      outfit_id: string;
+      item_id: string;
+      category_id: string;
+    }> = []
     for (let i = 0; i < outfits.length; i++) {
       const outfit = outfits[i]
       const outfitData_item = outfitData[i]

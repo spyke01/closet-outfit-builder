@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect, startTransition } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useOutfits, useDeleteOutfit } from '@/lib/hooks/use-outfits';
 import { OutfitList } from '@/components/outfit-list';
 import { OutfitSimpleLayout } from '@/components/outfit-simple-layout';
@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { Outfit } from '@/lib/types/database';
+import { type OutfitSelection as ScoreOutfitSelection } from '@/lib/schemas';
 import { convertOutfitToSelection, canGenerateScoreBreakdown } from '@/lib/utils/outfit-conversion';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
@@ -54,7 +55,7 @@ export function OutfitsPageClient() {
   const hasActiveFilters = Boolean(searchTerm || filterBy !== 'all' || sortBy !== 'newest');
 
   const updateQueryParams = useCallback((updates: Record<string, string | null>) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParamsKey);
     Object.entries(updates).forEach(([key, value]) => {
       if (!value) {
         params.delete(key);
@@ -473,6 +474,14 @@ export function OutfitsPageClient() {
                 key={outfit.id}
                 className="border border-border rounded-lg bg-card shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-all duration-200"
                 onClick={() => handleOutfitSelect(outfit)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    handleOutfitSelect(outfit);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
               >
                 {/* Card Header */}
                 <div className="p-3 border-b border-border">
@@ -489,10 +498,10 @@ export function OutfitsPageClient() {
                           showLabel={false}
                           outfit={canGenerateScoreBreakdown(outfit) ? (() => {
                             const selection = convertOutfitToSelection(outfit);
-                            return selection ? {
+                            return selection ? ({
                               ...selection,
                               tuck_style: selection.tuck_style || 'Untucked'
-                            } as any : undefined;
+                            } as unknown as ScoreOutfitSelection) : undefined;
                           })() : undefined}
                           className="scale-75 -m-2"
                         />

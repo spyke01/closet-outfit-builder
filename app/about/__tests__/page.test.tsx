@@ -166,7 +166,7 @@ describe('AboutPage - Unit Tests', () => {
     it('should have dark mode background gradient', () => {
       const { container } = render(<AboutPage />);
       
-      const mainContainer = container.querySelector('.bg-background');
+      const mainContainer = container.querySelector('.min-h-screen.bg-gradient-to-br');
       
       expect(mainContainer).toBeInTheDocument();
     });

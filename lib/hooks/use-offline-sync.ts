@@ -24,6 +24,7 @@ import {
   type SyncStatus,
   type SyncConflict,
   type QueuedMutation,
+  type SyncEntityData,
 } from '@/lib/utils/offline-sync';
 
 export interface UseOfflineSyncOptions {
@@ -31,7 +32,7 @@ export interface UseOfflineSyncOptions {
    * Callback to execute a queued mutation
    * Should return the result or throw an error
    */
-  executeMutation?: (mutation: QueuedMutation) => Promise<any>;
+  executeMutation?: (mutation: QueuedMutation) => Promise<{ conflict?: boolean; serverData?: SyncEntityData }>;
   
   /**
    * Callback when conflicts are detected

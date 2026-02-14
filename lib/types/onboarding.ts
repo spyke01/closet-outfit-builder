@@ -6,6 +6,7 @@
  */
 
 import type { CategoryKey, Season } from '@/lib/data/onboarding-categories';
+export type { CategoryKey, Season } from '@/lib/data/onboarding-categories';
 
 /**
  * Style baseline data collected in Step 1
@@ -64,7 +65,7 @@ export interface WizardState {
   step: number;
   styleBaseline: StyleBaseline;
   selectedCategories: CategoryKey[];
-  selectedSubcategories: Record<CategoryKey, string[]>;
+  selectedSubcategories: Partial<Record<CategoryKey, string[]>>;
   colorQuantitySelections: Record<string, SubcategoryColorSelection>;
   generatedItems: GeneratedWardrobeItem[];
   itemCapEnabled: boolean;
@@ -81,7 +82,7 @@ export const INITIAL_WIZARD_STATE: WizardState = {
     climate: null,
   },
   selectedCategories: [],
-  selectedSubcategories: {} as Record<CategoryKey, string[]>,
+  selectedSubcategories: {},
   colorQuantitySelections: {},
   generatedItems: [],
   itemCapEnabled: true,

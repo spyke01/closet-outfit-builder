@@ -6,7 +6,7 @@ import { queryKeys } from '@/lib/query-client';
 import { 
   useValidatedMutation, 
   useOptimisticMutation,
-  createCacheUpdaters 
+  useCacheUpdaters 
 } from '@/lib/utils/query-validation';
 import { useImmerState } from '@/lib/utils/immer-state';
 import { safeValidate } from '@/lib/utils/validation';
@@ -14,7 +14,6 @@ import {
   WardrobeItemSchema,
   CreateWardrobeItemFormSchema,
   UpdateWardrobeItemFormSchema,
-  CategorySchema,
   OutfitSelectionSchema,
   type WardrobeItem,
   type Category,
@@ -23,6 +22,28 @@ import {
   type CreateWardrobeItemForm,
   type UpdateWardrobeItemForm,
 } from '@/lib/schemas';
+
+type QueryKey = readonly unknown[];
+type WardrobeFilters = {
+  season: string[];
+  formality: number | null;
+  brand: string | null;
+};
+
+type OutfitItemSlot = Exclude<keyof OutfitSelection, 'tuck_style' | 'score'>;
+
+function isOutfitItemSlot(category: string): category is OutfitItemSlot {
+  return [
+    'jacket',
+    'overshirt',
+    'shirt',
+    'undershirt',
+    'pants',
+    'shoes',
+    'belt',
+    'watch',
+  ].includes(category);
+}
 
 // Get current user ID (this would typically come from auth context)
 function getCurrentUserId(): string {
@@ -54,17 +75,17 @@ export function useWardrobeData() {
   });
 
   // Cache updaters for optimistic updates
-  const itemsCacheUpdaters = createCacheUpdaters<WardrobeItem>(
-    queryKeys.wardrobe.items(userId) as unknown as any[]
+  const itemsCacheUpdaters = useCacheUpdaters<WardrobeItem>(
+    [...queryKeys.wardrobe.items(userId)]
   );
-  const categoriesCacheUpdaters = createCacheUpdaters<Category>(
-    queryKeys.wardrobe.categories(userId) as unknown as any[]
+  const categoriesCacheUpdaters = useCacheUpdaters<Category>(
+    [...queryKeys.wardrobe.categories(userId)]
   );
 
   // Validated item creation with optimistic updates
   const createItem = useOptimisticMutation({
     validationSchema: CreateWardrobeItemFormSchema,
-    queryKey: queryKeys.wardrobe.items(userId) as unknown as any[],
+    queryKey: queryKeys.wardrobe.items(userId) as unknown as QueryKey,
     mutationFn: async (formData: CreateWardrobeItemForm): Promise<WardrobeItem> => {
       const { data, error } = await supabase
         .from('wardrobe_items')
@@ -118,7 +139,7 @@ export function useWardrobeData() {
   // Validated item update with optimistic updates
   const updateItem = useOptimisticMutation({
     validationSchema: UpdateWardrobeItemFormSchema,
-    queryKey: queryKeys.wardrobe.items(userId) as unknown as any[],
+    queryKey: queryKeys.wardrobe.items(userId) as unknown as QueryKey,
     mutationFn: async (formData: UpdateWardrobeItemForm): Promise<WardrobeItem> => {
       const { id, ...updateData } = formData;
       
@@ -206,7 +227,7 @@ export function useWardrobeData() {
       return Promise.all(updatePromises);
     },
     onMutate: async (updates) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.wardrobe.items(userId) as unknown as any[] });
+      await queryClient.cancelQueries({ queryKey: queryKeys.wardrobe.items(userId) as unknown as QueryKey });
       const previousData = queryClient.getQueryData(queryKeys.wardrobe.items(userId));
 
       // Optimistic batch update
@@ -253,7 +274,7 @@ export function useWardrobeData() {
       });
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.wardrobe.items(userId) as unknown as any[] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.wardrobe.items(userId) as unknown as QueryKey });
     },
   });
 
@@ -270,7 +291,7 @@ export function useWardrobeData() {
     });
   }, [updateUiState]);
 
-  const updateFilters = useCallback((filters: Partial<typeof uiState.filters>) => {
+  const updateFilters = useCallback((filters: Partial<WardrobeFilters>) => {
     updateUiState(draft => {
       Object.assign(draft.filters, filters);
     });
@@ -282,14 +303,14 @@ export function useWardrobeData() {
         // Validate the item before adding to selection
         const validation = safeValidate(WardrobeItemSchema, item);
         if (validation.success) {
-          (draft.selection as any)[category] = validation.data;
+          (draft.selection as unknown as Record<string, WardrobeItem | undefined>)[category] = validation.data;
         } else {
           // For testing purposes, still add the item but log the validation error
           console.warn('Item validation failed:', validation.error);
-          (draft.selection as any)[category] = item;
+          (draft.selection as unknown as Record<string, WardrobeItem | undefined>)[category] = item;
         }
       } else {
-        delete (draft.selection as any)[category];
+        delete (draft.selection as unknown as Record<string, WardrobeItem | undefined>)[category];
       }
       
       // Recalculate outfit score
@@ -328,12 +349,12 @@ export function useWardrobeData() {
 
   // Cache management utilities
   const invalidateAllData = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.wardrobe.all as unknown as any[] });
+    queryClient.invalidateQueries({ queryKey: queryKeys.wardrobe.all as unknown as QueryKey });
   }, [queryClient]);
 
   const prefetchItem = useCallback((itemId: string) => {
     queryClient.prefetchQuery({
-      queryKey: queryKeys.wardrobe.item(itemId) as unknown as any[],
+      queryKey: queryKeys.wardrobe.item(itemId) as unknown as QueryKey,
       queryFn: async () => {
         const { data, error } = await supabase
           .from('wardrobe_items')
@@ -411,7 +432,6 @@ function calculateOutfitScore(items: WardrobeItem[]): number {
  * Hook for managing outfit creation with validation and caching
  */
 export function useOutfitCreation() {
-  const queryClient = useQueryClient();
   const supabase = createClient();
   const userId = getCurrentUserId();
   
@@ -424,8 +444,8 @@ export function useOutfitCreation() {
   });
 
   const createOutfitFromSelection = useOptimisticMutation({
-    queryKey: queryKeys.outfits.list(userId) as unknown as any[],
-    mutationFn: async (selection: OutfitSelection): Promise<any> => {
+    queryKey: queryKeys.outfits.list(userId) as unknown as QueryKey,
+    mutationFn: async (selection: OutfitSelection): Promise<Outfit & { items: WardrobeItem[] }> => {
       // Validate selection
       const validation = safeValidate(OutfitSelectionSchema, selection);
       if (!validation.success) {
@@ -538,11 +558,15 @@ export function useOutfitCreation() {
   });
 
   const updateSelection = useCallback((category: string, item: WardrobeItem | null) => {
+    if (!isOutfitItemSlot(category)) {
+      return;
+    }
+
     updateCreationState(draft => {
       if (item) {
-        (draft.currentSelection as any)[category] = item;
+        draft.currentSelection[category] = item;
       } else {
-        delete (draft.currentSelection as any)[category];
+        delete draft.currentSelection[category];
       }
       
       // Recalculate score

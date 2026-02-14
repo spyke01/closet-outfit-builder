@@ -1,7 +1,6 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { z } from 'zod';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 
 
@@ -22,13 +21,7 @@ interface State {
   errorId: string;
 }
 
-// Error classification schema
-const SupabaseErrorSchema = z.object({
-  message: z.string(),
-  code: z.string().optional(),
-  details: z.string().optional(),
-  hint: z.string().optional(),
-});
+type ErrorReportContext = Record<string, string | number | boolean | null | undefined>;
 
 export class SupabaseErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
@@ -212,7 +205,7 @@ export class SupabaseErrorBoundary extends Component<Props, State> {
 
 // Hook for programmatic error reporting
 export function useErrorReporting() {
-  const reportError = React.useCallback((error: Error, context?: Record<string, any>) => {
+  const reportError = React.useCallback((error: Error, context?: ErrorReportContext) => {
     const errorId = `err_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
     // Sanitize error

@@ -11,7 +11,7 @@
  * Pick only specified fields from an object
  * Useful for passing minimal data across RSC boundaries
  */
-export function pickFields<T extends Record<string, any>, K extends keyof T>(
+export function pickFields<T extends Record<string, unknown>, K extends keyof T>(
   obj: T,
   fields: K[]
 ): Pick<T, K> {
@@ -28,7 +28,7 @@ export function pickFields<T extends Record<string, any>, K extends keyof T>(
  * Pick fields from an array of objects
  * Useful for minimizing serialization of lists
  */
-export function pickFieldsFromArray<T extends Record<string, any>, K extends keyof T>(
+export function pickFieldsFromArray<T extends Record<string, unknown>, K extends keyof T>(
   arr: T[],
   fields: K[]
 ): Pick<T, K>[] {
@@ -44,9 +44,10 @@ export function prepareForClient<T>(data: T): T {
   if (typeof data === 'object' && data !== null) {
     const cleaned = { ...data };
     // Remove common server-only fields
-    delete (cleaned as any).password;
-    delete (cleaned as any).password_hash;
-    delete (cleaned as any).internal_notes;
+    const cleanRecord = cleaned as Record<string, unknown>;
+    delete cleanRecord.password;
+    delete cleanRecord.password_hash;
+    delete cleanRecord.internal_notes;
     return cleaned;
   }
   return data;

@@ -5,8 +5,6 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Test utilities and mock data
 const createMockCategory = (overrides = {}) => ({
@@ -110,21 +108,6 @@ const mockOutfits = [
     ]
   })
 ];
-
-const renderWithProviders = (ui: React.ReactElement) => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false }
-    }
-  });
-
-  return render(
-    <QueryClientProvider client={queryClient}>
-      {ui}
-    </QueryClientProvider>
-  );
-};
 
 describe('Category Workflow Integration Tests', () => {
   beforeEach(() => {

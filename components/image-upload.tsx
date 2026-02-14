@@ -15,7 +15,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ImageProcessingResponse, FileValidationSchema } from '@/lib/schemas';
 import { z } from 'zod';
 
-interface ImageUploadProps {
+export interface ImageUploadProps {
   onUpload: (imageUrl: string) => void;
   onError?: (error: string) => void;
   maxSize?: number;
@@ -256,6 +256,14 @@ export function ImageUpload({
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onClick={() => !disabled && !uploadState.isUploading && fileInputRef.current?.click()}
+            onKeyDown={(event) => {
+              if ((event.key === 'Enter' || event.key === ' ') && !disabled && !uploadState.isUploading) {
+                event.preventDefault();
+                fileInputRef.current?.click();
+              }
+            }}
+            role="button"
+            tabIndex={disabled || uploadState.isUploading ? -1 : 0}
           >
             <input
               ref={fileInputRef}

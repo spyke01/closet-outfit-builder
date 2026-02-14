@@ -168,13 +168,6 @@ export function CreateOutfitPageClient() {
     }
   };
 
-  const handleItemRemove = (categoryName: string) => {
-    setSelection(prev => ({
-      ...prev,
-      [categoryName]: null
-    }));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -330,9 +323,9 @@ export function CreateOutfitPageClient() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-muted-foreground mb-2">
+                    <p className="block text-sm font-medium text-muted-foreground mb-2">
                       Tuck Style
-                    </label>
+                    </p>
                     <div className="flex gap-2">
                       <Button
                         type="button"

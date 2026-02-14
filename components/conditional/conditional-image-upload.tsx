@@ -3,6 +3,7 @@
 import React from 'react';
 import { withConditionalLoading } from './conditional-component-loader';
 import { Upload, Loader2 } from 'lucide-react';
+import type { ImageUploadProps } from '../image-upload';
 
 // Loading component for image upload
 const ImageUploadLoading: React.FC = () => (
@@ -34,9 +35,9 @@ const ImageUploadError: React.FC = () => (
  * Conditionally loaded image upload component
  * Only loads when imageProcessing feature is enabled and user is authenticated
  */
-export const ConditionalImageUpload = withConditionalLoading<typeof import('../image-upload').ImageUpload>(
+export const ConditionalImageUpload = withConditionalLoading<ImageUploadProps>(
   'imageProcessing',
-  () => import('../image-upload').then(mod => ({ default: mod.ImageUpload })) as any,
+  () => import('../image-upload').then(mod => ({ default: mod.ImageUpload })),
   {
     fallback: <ImageUploadFallback />,
     loadingComponent: <ImageUploadLoading />,

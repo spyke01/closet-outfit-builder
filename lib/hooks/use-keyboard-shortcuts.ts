@@ -3,7 +3,6 @@
  * Provides global keyboard shortcuts for common actions
  */
 
-import { useEffect, useCallback } from 'react';
 import useSWRSubscription from 'swr/subscription';
 
 export interface KeyboardShortcut {
@@ -20,7 +19,7 @@ export interface KeyboardShortcut {
  * Hook for registering global keyboard shortcuts
  */
 export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
-  useSWRSubscription('global-keyboard-shortcuts', (key, { next }) => {
+  useSWRSubscription('global-keyboard-shortcuts', () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       for (const shortcut of shortcuts) {
         const ctrlMatch = shortcut.ctrlKey === undefined || shortcut.ctrlKey === e.ctrlKey;

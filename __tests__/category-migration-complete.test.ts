@@ -194,7 +194,7 @@ describe('Category Migration Complete Property Tests', () => {
           ).map(items => {
             // Ensure unique IDs by adding index suffix if needed
             const seenIds = new Set<string>();
-            return items.map((item, index) => {
+            return items.map((item) => {
               let uniqueId = item.id;
               let counter = 0;
               while (seenIds.has(uniqueId)) {
@@ -303,7 +303,7 @@ describe('Category Migration Complete Property Tests', () => {
                 formality_score: originalItem.formality_score,
                 capsule_tags: originalItem.capsule_tags,
                 season: originalItem.season
-              } as any;
+              } as unknown;
               
               const expectedCategory = classifier.classifyItem(mockItem);
               expect(classification.newCategory).toBe(expectedCategory);
@@ -444,7 +444,7 @@ describe('Category Migration Complete Property Tests', () => {
       name: 'Leather Jacket',
       formality_score: 7,
       brand: 'Test Brand'
-    } as any;
+    } as unknown;
 
     // Classify the same item multiple times
     const classifications = Array.from({ length: 10 }, () => classifier.classifyItem(testItem));

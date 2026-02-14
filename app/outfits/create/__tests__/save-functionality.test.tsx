@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { QueryClient } from '@tanstack/react-query';
@@ -115,14 +115,6 @@ function renderPage() {
   const rendered = renderWithQuery(<CreateOutfitPageClient />);
   activeQueryClient = rendered.queryClient;
   return rendered;
-}
-
-async function selectMinimumOutfit(user: ReturnType<typeof userEvent.setup>) {
-  await user.click(screen.getAllByRole('button', { name: 'Shirts' })[0]);
-  await user.click(await screen.findByText(/white shirt/i));
-
-  await user.click(screen.getAllByRole('button', { name: 'Pants' })[0]);
-  await user.click(await screen.findByText(/black pants/i));
 }
 
 describe('Outfit Save Functionality', () => {

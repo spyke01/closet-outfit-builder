@@ -30,7 +30,7 @@ describe('RSC Serialization Utilities', () => {
         name: 'John Doe',
       };
 
-      const result = pickFields(user, ['id', 'name', 'email' as any]);
+      const result = pickFields(user, ['id', 'name', 'email' as unknown]);
 
       expect(result).toEqual({
         id: '123',

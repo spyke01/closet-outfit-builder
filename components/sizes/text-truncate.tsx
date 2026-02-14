@@ -29,9 +29,10 @@ export function TextTruncate({
   text,
   className = '',
   maxLines = 1,
-  tooltipClassName = '',
+  tooltipClassName: _tooltipClassName = '',
 }: TextTruncateProps) {
-  const [showTooltip, setShowTooltip] = useState(false);
+  void _tooltipClassName;
+
   const [isTruncated, setIsTruncated] = useState(false);
   const textRef = useRef<HTMLSpanElement>(null);
 
@@ -60,44 +61,6 @@ export function TextTruncate({
     return () => window.removeEventListener('resize', checkTruncation);
   }, [text, maxLines]);
 
-  // Handle mouse enter/leave for desktop
-  const handleMouseEnter = () => {
-    if (isTruncated) {
-      setShowTooltip(true);
-    }
-  };
-
-  const handleMouseLeave = () => {
-    setShowTooltip(false);
-  };
-
-  // Handle tap for mobile
-  const handleTap = (e: React.TouchEvent) => {
-    if (isTruncated) {
-      e.preventDefault();
-      setShowTooltip((prev) => !prev);
-    }
-  };
-
-  // Close tooltip when clicking outside
-  useEffect(() => {
-    if (!showTooltip) return;
-
-    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
-      if (textRef.current && !textRef.current.contains(e.target as Node)) {
-        setShowTooltip(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('touchstart', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
-    };
-  }, [showTooltip]);
-
   const truncateStyle =
     maxLines === 1
       ? {
@@ -114,12 +77,7 @@ export function TextTruncate({
         };
 
   return (
-    <span
-      className={`relative inline-block ${className}`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onTouchEnd={handleTap}
-    >
+    <span className={`relative inline-block ${className}`}>
       <span
         ref={textRef}
         className={`block ${isTruncated ? 'cursor-help' : ''}`}
@@ -129,21 +87,6 @@ export function TextTruncate({
       >
         {text}
       </span>
-
-      {/* Tooltip */}
-      {showTooltip && isTruncated && (
-        <span
-          className={`absolute z-50 px-3 py-2 text-sm font-normal text-white bg-background bg-card rounded-lg shadow-lg whitespace-normal break-words max-w-xs left-0 top-full mt-2 animate-in fade-in slide-in-from-top-1 duration-150 ${tooltipClassName}`}
-          role="tooltip"
-        >
-          {text}
-          {/* Tooltip arrow */}
-          <span
-            className="absolute w-2 h-2 bg-background bg-card transform rotate-45 -top-1 left-4"
-            aria-hidden="true"
-          />
-        </span>
-      )}
     </span>
   );
 }

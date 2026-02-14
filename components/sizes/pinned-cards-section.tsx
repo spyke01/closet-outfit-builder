@@ -55,11 +55,11 @@ export function PinnedCardsSection({
     if (!element) return;
 
     // Track touch start for momentum scrolling
-    const handleTouchStart = (_e: TouchEvent) => {
+    const handleTouchStart = () => {
       // Touch start tracking for custom scroll behavior if needed
     };
 
-    const handleTouchMove = (_e: TouchEvent) => {
+    const handleTouchMove = () => {
       // Handle custom scroll behavior if needed
     };
 

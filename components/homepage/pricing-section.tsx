@@ -55,7 +55,7 @@ export function PricingSection() {
             Simple, transparent pricing
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Start with a free trial and upgrade when you're ready. No hidden fees, no surprises.
+            Start with a free trial and upgrade when you&apos;re ready. No hidden fees, no surprises.
           </p>
         </div>
 

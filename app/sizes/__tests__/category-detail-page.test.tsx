@@ -66,7 +66,7 @@ function renderWithProviders(ui: React.ReactElement) {
 }
 
 describe('CategoryDetailClient with Measurement Guide', () => {
-  const mockCategory: SizeCategory & { standard_sizes?: any[] } = {
+  const mockCategory: SizeCategory & { standard_sizes?: unknown[] } = {
     id: 'test-category-id',
     user_id: 'test-user-id',
     name: 'Dress Shirt',
@@ -158,9 +158,6 @@ describe('CategoryDetailClient with Measurement Guide', () => {
       expect(screen.getByText('Dress Shirt')).toBeInTheDocument()
     })
 
-    // Get measurement guide section
-    const measurementGuideSection = screen.getByText('Learn how to measure for Dress Shirt').closest('div')
-    
     // Get the main content area
     const mainContent = screen.getByLabelText('Dress Shirt size details')
     const sections = Array.from(mainContent.children)
@@ -270,7 +267,7 @@ describe('CategoryDetailClient with Measurement Guide', () => {
   })
 
   it('should match category being viewed', async () => {
-    const pantsCategory: SizeCategory & { standard_sizes?: any[] } = {
+    const pantsCategory: SizeCategory & { standard_sizes?: unknown[] } = {
       ...mockCategory,
       name: 'Pants',
       icon: 'ruler',

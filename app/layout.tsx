@@ -13,6 +13,7 @@ const defaultUrl = process.env.NETLIFY_URL
     ? `https://${process.env.NETLIFY_URL}`
     : "http://localhost:3000";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "My AI Outfit – Your Personal AI Wardrobe Stylist",
@@ -45,6 +46,7 @@ export const metadata: Metadata = {
   },
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#fefefe" },

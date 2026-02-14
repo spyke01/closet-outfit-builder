@@ -70,14 +70,17 @@ function getApproximateLocation(latitude: number, longitude: number): string {
 /**
  * Generate seasonal weather estimates
  */
-function getSeasonalWeatherEstimate(season: string, latitude: number): Omit<FallbackWeatherData, 'location'> {
+function getSeasonalWeatherEstimate(
+  season: FallbackWeatherData['season'],
+  latitude: number
+): Omit<FallbackWeatherData, 'location'> {
   const isNorthernHemisphere = latitude >= 0;
   const isTropical = Math.abs(latitude) < 23.5;
   
   if (isTropical) {
     // Tropical regions have less seasonal variation
     return {
-      season: season as any,
+      season,
       temperature: 80,
       condition: 'partly cloudy',
       icon: '02d',
@@ -132,7 +135,7 @@ export function useWeatherFallback() {
 
   const generateFallbackWeather = useCallback(async (latitude: number, longitude: number): Promise<WeatherResponse> => {
     try {
-      const location = getApproximateLocation(latitude, longitude);
+      getApproximateLocation(latitude, longitude);
       const season = getCurrentSeason(latitude);
       const weatherEstimate = getSeasonalWeatherEstimate(season, latitude);
 

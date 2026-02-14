@@ -75,7 +75,7 @@ export function HeroSection() {
               {/* Mock app interface */}
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-foreground">Today's Outfit</h3>
+                  <h3 className="font-semibold text-foreground">Today&apos;s Outfit</h3>
                   <div className="w-8 h-8 bg-secondary/20 rounded-full flex items-center justify-center">
                     <Sparkles className="w-4 h-4 text-secondary-foreground" />
                   </div>

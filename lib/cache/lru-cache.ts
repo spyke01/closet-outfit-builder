@@ -10,7 +10,7 @@ import { LRUCache } from 'lru-cache';
  */
 
 // User data cache with 5-minute TTL
-export const userCache = new LRUCache<string, any>({
+export const userCache = new LRUCache<string, object>({
   max: 500, // Maximum 500 users in cache
   ttl: 1000 * 60 * 5, // 5 minutes
   updateAgeOnGet: true, // Reset TTL on access
@@ -18,7 +18,7 @@ export const userCache = new LRUCache<string, any>({
 });
 
 // Category data cache with 10-minute TTL (changes less frequently)
-export const categoryCache = new LRUCache<string, any>({
+export const categoryCache = new LRUCache<string, object>({
   max: 1000, // Maximum 1000 category entries
   ttl: 1000 * 60 * 10, // 10 minutes
   updateAgeOnGet: true,
@@ -26,7 +26,7 @@ export const categoryCache = new LRUCache<string, any>({
 });
 
 // Wardrobe items cache with 5-minute TTL
-export const wardrobeItemsCache = new LRUCache<string, any>({
+export const wardrobeItemsCache = new LRUCache<string, object>({
   max: 1000, // Maximum 1000 wardrobe item lists
   ttl: 1000 * 60 * 5, // 5 minutes
   updateAgeOnGet: true,
@@ -70,7 +70,7 @@ export const invalidateCache = {
 /**
  * Cached data fetcher with automatic caching
  */
-export async function getCached<T extends {}>(
+export async function getCached<T extends object>(
   cache: LRUCache<string, T>,
   key: string,
   fetcher: () => Promise<T>
@@ -113,7 +113,7 @@ export async function getCached<T extends {}>(
 // Example 2: Cache with invalidation
 // import { wardrobeItemsCache, cacheKeys, invalidateCache } from '@/lib/cache/lru-cache';
 // 
-// async function updateWardrobeItem(userId: string, itemId: string, updates: any) {
+// async function updateWardrobeItem(userId: string, itemId: string, updates: unknown) {
 //   const supabase = await createClient();
 //   await supabase
 //     .from('wardrobe_items')

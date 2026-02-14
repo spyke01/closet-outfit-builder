@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import { WardrobeItem } from '@/lib/types/database';
 import { Shirt, Watch, Zap } from 'lucide-react';
@@ -32,37 +32,6 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
     large: 'w-full h-full'
   };
 
-  // Organize items by category for structured layout
-  const organizedItems = useMemo(() => {
-    const categorized = {
-      tops: [] as WardrobeItem[],
-      bottoms: [] as WardrobeItem[],
-      shoes: [] as WardrobeItem[],
-      accessories: [] as WardrobeItem[]
-    };
-    
-    items.forEach(item => {
-      if (!item.category?.name) return;
-      
-      const categoryKey = item.category.name.toLowerCase();
-      
-      if (categoryKey.includes('jacket') || categoryKey.includes('overshirt') || 
-          categoryKey.includes('shirt') || categoryKey.includes('blazer')) {
-        categorized.tops.push(item);
-      } else if (categoryKey.includes('pants') || categoryKey.includes('trouser') || 
-                 categoryKey.includes('jean') || categoryKey.includes('short')) {
-        categorized.bottoms.push(item);
-      } else if (categoryKey.includes('shoe') || categoryKey.includes('boot') || 
-                 categoryKey.includes('sneaker')) {
-        categorized.shoes.push(item);
-      } else {
-        categorized.accessories.push(item);
-      }
-    });
-    
-    return categorized;
-  }, [items]);
-
   // Get placeholder icon for category
   const getCategoryIcon = (categoryName: string) => {
     const name = categoryName.toLowerCase();
@@ -72,12 +41,13 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
   };
 
   // Render item with image or placeholder - fixed sizing
-  const renderItem = (item: WardrobeItem, index: number) => {
+  const renderItem = (item: WardrobeItem) => {
     const IconComponent = getCategoryIcon(item.category?.name || '');
     const isClickable = interactive && onItemClick;
     
     return (
-      <div
+      <button
+        type="button"
         key={item.id}
         className={`
           relative bg-card rounded-lg
@@ -87,6 +57,14 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
         `}
         style={{ aspectRatio: '1' }}
         onClick={() => isClickable && onItemClick(item)}
+        onKeyDown={(event) => {
+          if (!isClickable) return;
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            onItemClick(item);
+          }
+        }}
+        disabled={!isClickable}
       >
         {item.image_url ? (
           <div className="relative w-full h-full">
@@ -113,23 +91,8 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
             </p>
           </div>
         )}
-      </div>
+      </button>
     );
-  };
-
-  // Calculate grid layout based on item count and size
-  const getGridLayout = () => {
-    const totalItems = items.length;
-    
-    if (totalItems <= 2) {
-      return 'grid-cols-2';
-    } else if (totalItems <= 4) {
-      return 'grid-cols-2';
-    } else if (totalItems <= 6) {
-      return 'grid-cols-3';
-    } else {
-      return 'grid-cols-4';
-    }
   };
 
   return (
@@ -144,7 +107,7 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
                            items.length <= 6 ? 'repeat(2, 1fr)' :
                            'repeat(3, 1fr)'
         }}>
-          {items.map((item, index) => renderItem(item, index))}
+          {items.map((item) => renderItem(item))}
         </div>
       </div>
     </div>

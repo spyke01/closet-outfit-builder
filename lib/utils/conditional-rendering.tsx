@@ -1,4 +1,4 @@
-'use client';
+/* eslint-disable react-refresh/only-export-components */
 
 /**
  * Conditional Rendering Optimization Utilities
@@ -183,7 +183,7 @@ export function Activity({
  * - NaN (renders as "NaN")
  * - Empty strings (renders nothing but takes up space)
  */
-export function isSafeToRender(value: any): boolean {
+export function isSafeToRender(value: unknown): boolean {
   // Null and undefined are safe (render nothing)
   if (value === null || value === undefined) {
     return false;
@@ -223,7 +223,7 @@ export function isSafeToRender(value: any): boolean {
  * ```
  */
 export function safeRender(
-  condition: any,
+  condition: unknown,
   element: React.ReactNode
 ): React.ReactNode {
   return isSafeToRender(condition) ? element : null;

@@ -141,7 +141,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
   }, [wardrobeItems, weatherContext, currentOutfit]);
   
   // Handle save outfit
-  const handleSave = useCallback(async (loved: boolean = false) => {
+  const handleSave = useCallback(async () => {
     if (!currentOutfit) return;
     
     setSaving(true);
@@ -232,7 +232,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
             <div className="mt-4 p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
               <p className="text-destructive mb-2 text-sm">{saveError}</p>
               <button
-                onClick={() => handleSave(false)}
+                onClick={() => handleSave()}
                 className="text-destructive hover:underline text-sm"
               >
                 Try again

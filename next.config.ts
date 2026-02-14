@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 
 const nextConfig: NextConfig = {
   // Enable Turbopack with empty config to silence warning
@@ -25,7 +26,6 @@ const nextConfig: NextConfig = {
   // Bundle analysis configuration
   webpack: (config, { isServer, dev }) => {
     if (process.env.ANALYZE === 'true' && !isServer && !dev) {
-      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
       config.plugins.push(
         new BundleAnalyzerPlugin({
           analyzerMode: 'static',

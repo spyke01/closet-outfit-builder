@@ -15,17 +15,18 @@
 
 import { Cloud, CloudOff, RefreshCw, AlertCircle, Check } from 'lucide-react';
 import { useOfflineSync } from '@/lib/hooks/use-offline-sync';
+import type { QueuedMutation, SyncConflict, SyncEntityData } from '@/lib/utils/offline-sync';
 
 export interface SyncStatusIndicatorProps {
   /**
    * Callback to execute a queued mutation
    */
-  executeMutation?: (mutation: any) => Promise<any>;
+  executeMutation?: (mutation: QueuedMutation) => Promise<{ conflict?: boolean; serverData?: SyncEntityData }>;
   
   /**
    * Callback when conflicts are detected
    */
-  onConflicts?: (conflicts: any[]) => void;
+  onConflicts?: (conflicts: SyncConflict[]) => void;
   
   /**
    * Whether to show detailed status (default: false)
@@ -111,7 +112,7 @@ export function SyncStatusIndicator({
         <div className="flex gap-3 p-4 bg-secondary/20 border border-secondary/40 rounded-lg">
           <CloudOff className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" aria-hidden="true" />
           <div className="text-sm text-foreground">
-            You're offline. Your changes will sync automatically when you're back online.
+            You&apos;re offline. Your changes will sync automatically when you&apos;re back online.
           </div>
         </div>
       )}

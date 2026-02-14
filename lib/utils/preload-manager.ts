@@ -8,7 +8,7 @@ import { conditionalImport, isFeatureEnabled, type FeatureFlags } from './featur
 
 interface PreloadConfig {
   feature: keyof FeatureFlags;
-  importFn: () => Promise<any>;
+  importFn: () => Promise<unknown>;
   priority: 'high' | 'medium' | 'low';
   delay?: number; // Delay in milliseconds before preloading
 }
@@ -49,7 +49,7 @@ class PreloadManager {
   /**
    * Preload a specific module immediately
    */
-  async preload(feature: keyof FeatureFlags, importFn: () => Promise<any>): Promise<boolean> {
+  async preload(feature: keyof FeatureFlags, importFn: () => Promise<unknown>): Promise<boolean> {
     const key = feature;
 
     // Skip if already loaded or loading
@@ -75,9 +75,9 @@ class PreloadManager {
     this.preloadState[key].error = false;
 
     try {
-      const module = await conditionalImport(feature, importFn);
+      const loadedModule = await conditionalImport(feature, importFn);
       
-      if (module) {
+      if (loadedModule) {
         this.preloadState[key].loaded = true;
         return true;
       } else {
@@ -136,7 +136,7 @@ class PreloadManager {
   /**
    * Preload based on user interaction (hover, focus)
    */
-  preloadOnInteraction(feature: keyof FeatureFlags, importFn: () => Promise<any>): void {
+  preloadOnInteraction(feature: keyof FeatureFlags, importFn: () => Promise<unknown>): void {
     // Use requestIdleCallback for non-blocking preload
     if ('requestIdleCallback' in window) {
       window.requestIdleCallback(() => {
@@ -156,7 +156,7 @@ class PreloadManager {
   preloadOnIntersection(
     element: Element,
     feature: keyof FeatureFlags,
-    importFn: () => Promise<any>,
+    importFn: () => Promise<unknown>,
     options: IntersectionObserverInit = {}
   ): () => void {
     if (!('IntersectionObserver' in window)) {
@@ -227,7 +227,7 @@ export function usePreloadOnMount(configs: PreloadConfig[]): void {
     setTimeout(() => {
       preloadManager.processQueue();
     }, 100);
-  }, []);
+  }, [configs]);
 }
 
 /**
@@ -235,7 +235,7 @@ export function usePreloadOnMount(configs: PreloadConfig[]): void {
  */
 export function usePreloadOnInteraction(
   feature: keyof FeatureFlags,
-  importFn: () => Promise<any>
+  importFn: () => Promise<unknown>
 ): {
   onMouseEnter: () => void;
   onFocus: () => void;
@@ -255,7 +255,7 @@ export function usePreloadOnInteraction(
  */
 export function usePreloadOnIntersection(
   feature: keyof FeatureFlags,
-  importFn: () => Promise<any>,
+  importFn: () => Promise<unknown>,
   options?: IntersectionObserverInit
 ): React.RefCallback<Element> {
   const [element, setElement] = React.useState<Element | null>(null);
@@ -276,7 +276,7 @@ export function usePreloadOnIntersection(
  */
 export function useIntelligentPreloading(): {
   preloadRoute: (route: string) => void;
-  preloadComponent: (feature: keyof FeatureFlags, importFn: () => Promise<any>) => void;
+  preloadComponent: (feature: keyof FeatureFlags, importFn: () => Promise<unknown>) => void;
 } {
   const preloadRoute = React.useCallback((route: string) => {
     // Preload route-specific modules based on the target route
@@ -332,7 +332,7 @@ export function useIntelligentPreloading(): {
     }
   }, []);
 
-  const preloadComponent = React.useCallback((feature: keyof FeatureFlags, importFn: () => Promise<any>) => {
+  const preloadComponent = React.useCallback((feature: keyof FeatureFlags, importFn: () => Promise<unknown>) => {
     preloadManager.preloadOnInteraction(feature, importFn);
   }, []);
 
@@ -345,7 +345,7 @@ export function useIntelligentPreloading(): {
 export function useViewportPreloading(
   configs: Array<{
     feature: keyof FeatureFlags;
-    importFn: () => Promise<any>;
+    importFn: () => Promise<unknown>;
     rootMargin?: string;
     threshold?: number;
   }>
@@ -399,13 +399,13 @@ export function useViewportPreloading(
  * Hook for preloading based on user interaction patterns
  */
 export function useInteractionPreloading(): {
-  getPreloadProps: (feature: keyof FeatureFlags, importFn: () => Promise<any>) => {
+  getPreloadProps: (feature: keyof FeatureFlags, importFn: () => Promise<unknown>) => {
     onMouseEnter: () => void;
     onFocus: () => void;
     onTouchStart: () => void;
   };
 } {
-  const getPreloadProps = React.useCallback((feature: keyof FeatureFlags, importFn: () => Promise<any>) => {
+  const getPreloadProps = React.useCallback((feature: keyof FeatureFlags, importFn: () => Promise<unknown>) => {
     const preload = () => {
       preloadManager.preloadOnInteraction(feature, importFn);
     };
@@ -426,7 +426,7 @@ export function useInteractionPreloading(): {
 export function preloadByFeatureFlags(): void {
   const featureModules: Array<{
     feature: keyof FeatureFlags;
-    importFn: () => Promise<any>;
+    importFn: () => Promise<unknown>;
     priority: 'high' | 'medium' | 'low';
   }> = [
     {

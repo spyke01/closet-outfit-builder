@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
-  default: ({ src, alt, onLoad, onError, ...props }: any) => {
+  default: ({ src, alt, onLoad, onError, ...props }: unknown) => {
     // Simulate image loading
     setTimeout(() => {
       if (src.includes('error')) {

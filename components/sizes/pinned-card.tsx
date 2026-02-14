@@ -132,15 +132,15 @@ export function PinnedCard({
     const element = cardRef.current;
     if (!element) return;
 
-    const handleTouchStartPassive = (_e: TouchEvent) => {
+    const handleTouchStartPassive = () => {
       longPressHandlers.onTouchStart();
     };
 
-    const handleTouchMovePassive = (_e: TouchEvent) => {
+    const handleTouchMovePassive = () => {
       longPressHandlers.onTouchMove();
     };
 
-    const handleTouchEndPassive = (_e: TouchEvent) => {
+    const handleTouchEndPassive = () => {
       longPressHandlers.onTouchEnd();
     };
 

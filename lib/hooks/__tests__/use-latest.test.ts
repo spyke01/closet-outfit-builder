@@ -44,7 +44,7 @@ describe('useLatest', () => {
   it('should prevent stale closures in callbacks', () => {
     const callback = vi.fn()
     
-    const { result, rerender } = renderHook(
+    const { rerender } = renderHook(
       ({ onCallback }) => {
         const callbackRef = useLatest(onCallback)
         
@@ -53,7 +53,7 @@ describe('useLatest', () => {
             callbackRef.current('test')
           }, 100)
           return () => clearTimeout(timeout)
-        }, []) // Empty deps - callback not included
+        }, [callbackRef])
         
         return callbackRef
       },
@@ -89,7 +89,7 @@ describe('useLatest', () => {
             }
           }, 300)
           return () => clearTimeout(timeout)
-        }, [query]) // searchFn not in deps
+        }, [query, onSearchRef])
         
         return { setQuery, onSearchRef }
       },
@@ -150,7 +150,7 @@ describe('useLatest', () => {
     const handler1 = vi.fn()
     const handler2 = vi.fn()
     
-    const { result, rerender } = renderHook(
+    const { rerender } = renderHook(
       ({ handler }) => {
         const handlerRef = useLatest(handler)
         
@@ -161,7 +161,7 @@ describe('useLatest', () => {
           
           window.addEventListener('custom-event', listener)
           return () => window.removeEventListener('custom-event', listener)
-        }, []) // Empty deps - handler not included
+        }, [handlerRef])
         
         return handlerRef
       },

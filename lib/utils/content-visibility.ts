@@ -72,7 +72,7 @@ export function getContentVisibilityStyles(
   };
   
   return {
-    contentVisibility: 'auto' as any,
+    contentVisibility: 'auto' as React.CSSProperties['contentVisibility'],
     containIntrinsicSize: `0 ${itemHeight}px`,
   };
 }

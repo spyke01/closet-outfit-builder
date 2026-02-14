@@ -28,11 +28,6 @@ const styleBaselineArb: fc.Arbitrary<StyleBaseline> = fc.record({
   climate: climateArb,
 });
 
-const colorArb = fc.oneof(
-  fc.constantFrom('navy', 'white', 'black', 'grey', 'blue', 'brown', 'green', 'red'),
-  fc.constant(''), // Empty color
-);
-
 // Generate valid subcategory selections
 const subcategorySelectionArb = fc.tuple(categoryKeyArb).chain(([categoryKey]) => {
   const subcategories = getSubcategoriesForCategory(categoryKey);
@@ -45,33 +40,6 @@ const subcategorySelectionArb = fc.tuple(categoryKeyArb).chain(([categoryKey]) =
     subcategories: selected,
   }));
 });
-
-// Generate color selections for subcategories
-const colorQuantitySelectionsArb = (
-  selectedCategories: CategoryKey[],
-  selectedSubcategories: Record<CategoryKey, string[]>
-): fc.Arbitrary<Record<string, SubcategoryColorSelection>> => {
-  const entries: fc.Arbitrary<[string, SubcategoryColorSelection]>[] = [];
-  
-  for (const categoryKey of selectedCategories) {
-    const subcats = selectedSubcategories[categoryKey] || [];
-    for (const subcategory of subcats) {
-      const key = `${categoryKey}-${subcategory}`;
-      entries.push(
-        fc.array(colorArb, { minLength: 1, maxLength: 5 }).map(colors => [
-          key,
-          { subcategory, colors },
-        ])
-      );
-    }
-  }
-  
-  if (entries.length === 0) {
-    return fc.constant({});
-  }
-  
-  return fc.tuple(...entries).map(arr => Object.fromEntries(arr));
-};
 
 describe('Property-Based Tests: generateWardrobeItems', () => {
   /**

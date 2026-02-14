@@ -59,7 +59,7 @@ export const OutfitVisualLayout: React.FC<OutfitVisualLayoutProps> = ({
   // Get items that have valid images
   const validItems = React.useMemo(() => {
     const valid = Object.entries(itemsByCategory)
-      .filter(([_, item]) => item && item.image_url && item.image_url.trim() !== '')
+      .filter(([, item]) => item && item.image_url && item.image_url.trim() !== '')
       .map(([category, item]) => ({ category, item }));
     
     // Debug logging

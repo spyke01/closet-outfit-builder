@@ -45,19 +45,30 @@ console.warn = (...args: unknown[]) => {
 
 // Create a chainable mock for Supabase client that properly implements promises
 const createChainableMock = () => {
+  type ChainablePromise = Promise<{ data: unknown[]; error: null }> & {
+    select: ReturnType<typeof vi.fn>;
+    insert: ReturnType<typeof vi.fn>;
+    update: ReturnType<typeof vi.fn>;
+    delete: ReturnType<typeof vi.fn>;
+    eq: ReturnType<typeof vi.fn>;
+    order: ReturnType<typeof vi.fn>;
+    limit: ReturnType<typeof vi.fn>;
+    single: ReturnType<typeof vi.fn>;
+  };
+
   // Create a promise-like object that can be chained
-  const createPromiseMock = (defaultData: any = []) => {
-    const promiseMock = Promise.resolve({ data: defaultData, error: null });
+  const createPromiseMock = (defaultData: unknown[] = []): ChainablePromise => {
+    const promiseMock = Promise.resolve({ data: defaultData, error: null }) as ChainablePromise;
     
     // Add chainable methods to the promise
-    (promiseMock as any).select = vi.fn(() => createPromiseMock(defaultData));
-    (promiseMock as any).insert = vi.fn(() => createPromiseMock(defaultData));
-    (promiseMock as any).update = vi.fn(() => createPromiseMock(defaultData));
-    (promiseMock as any).delete = vi.fn(() => createPromiseMock(defaultData));
-    (promiseMock as any).eq = vi.fn(() => createPromiseMock(defaultData));
-    (promiseMock as any).order = vi.fn(() => createPromiseMock(defaultData));
-    (promiseMock as any).limit = vi.fn(() => createPromiseMock(defaultData));
-    (promiseMock as any).single = vi.fn(() => Promise.resolve({ data: defaultData[0] || null, error: null }));
+    promiseMock.select = vi.fn(() => createPromiseMock(defaultData));
+    promiseMock.insert = vi.fn(() => createPromiseMock(defaultData));
+    promiseMock.update = vi.fn(() => createPromiseMock(defaultData));
+    promiseMock.delete = vi.fn(() => createPromiseMock(defaultData));
+    promiseMock.eq = vi.fn(() => createPromiseMock(defaultData));
+    promiseMock.order = vi.fn(() => createPromiseMock(defaultData));
+    promiseMock.limit = vi.fn(() => createPromiseMock(defaultData));
+    promiseMock.single = vi.fn(() => Promise.resolve({ data: defaultData[0] || null, error: null }));
     
     return promiseMock;
   };
@@ -104,7 +115,18 @@ vi.mock('@/lib/hooks/use-auth', () => ({
 // Mock next/image globally to avoid Next runtime config warnings in unit tests.
 // We keep key behavior defaults (lazy loading + async decoding) that tests assert.
 vi.mock('next/image', () => ({
-  default: ({ priority, loading, fill, ...props }: any) =>
+  default: ({
+    priority,
+    loading,
+    ...props
+  }: {
+    priority?: boolean;
+    loading?: 'eager' | 'lazy';
+    fill?: boolean;
+    decoding?: 'async' | 'auto' | 'sync';
+    fetchPriority?: 'high' | 'low' | 'auto';
+    [key: string]: unknown;
+  }) =>
     createElement('img', {
       ...props,
       loading: priority ? 'eager' : (loading ?? 'lazy'),

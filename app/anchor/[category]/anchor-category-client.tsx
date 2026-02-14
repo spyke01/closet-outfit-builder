@@ -179,9 +179,9 @@ export function AnchorCategoryPageClient({ categoryName }: AnchorCategoryPageCli
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Search */}
                 <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-2">
+                  <p className="block text-sm font-medium text-muted-foreground mb-2">
                     Search Items
-                  </label>
+                  </p>
                   <div className="relative">
                     <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
                     <input
@@ -196,9 +196,9 @@ export function AnchorCategoryPageClient({ categoryName }: AnchorCategoryPageCli
 
                 {/* Sort */}
                 <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-2">
+                  <p className="block text-sm font-medium text-muted-foreground mb-2">
                     Sort By
-                  </label>
+                  </p>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as 'newest' | 'oldest' | 'name' | 'brand')}

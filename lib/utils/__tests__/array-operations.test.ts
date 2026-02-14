@@ -144,7 +144,7 @@ describe('Array Operations Utilities', () => {
     })
     
     it('should return false for empty array', () => {
-      expect(hasAny([], x => true)).toBe(false)
+      expect(hasAny([], () => true)).toBe(false)
     })
   })
   
@@ -158,7 +158,7 @@ describe('Array Operations Utilities', () => {
     })
     
     it('should return true for empty array', () => {
-      expect(hasAll([], x => false)).toBe(true)
+      expect(hasAll([], () => false)).toBe(true)
     })
   })
   
@@ -181,14 +181,14 @@ describe('Array Operations Utilities', () => {
     })
     
     it('should handle all pass', () => {
-      const result = partition([1, 2, 3], x => true)
+      const result = partition([1, 2, 3], () => true)
       
       expect(result.pass).toEqual([1, 2, 3])
       expect(result.fail).toEqual([])
     })
     
     it('should handle all fail', () => {
-      const result = partition([1, 2, 3], x => false)
+      const result = partition([1, 2, 3], () => false)
       
       expect(result.pass).toEqual([])
       expect(result.fail).toEqual([1, 2, 3])

@@ -31,7 +31,7 @@ import { normalizeColor } from '@/lib/data/color-options';
  */
 export function generateWardrobeItems(
   selectedCategories: CategoryKey[],
-  selectedSubcategories: Record<CategoryKey, string[]>,
+  selectedSubcategories: Partial<Record<CategoryKey, string[]>>,
   colorQuantitySelections: Record<string, SubcategoryColorSelection>,
   styleBaseline: StyleBaseline,
   itemCapEnabled: boolean = true,

@@ -365,9 +365,9 @@ export function AnchorOutfitBuilderClient({ categoryName, anchorItemId }: Anchor
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-1">
+                  <p className="block text-sm font-medium text-muted-foreground mb-1">
                     Outfit Name (Optional)
-                  </label>
+                  </p>
                   <input
                     type="text"
                     value={outfitName}
@@ -378,9 +378,9 @@ export function AnchorOutfitBuilderClient({ categoryName, anchorItemId }: Anchor
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-2">
+                  <p className="block text-sm font-medium text-muted-foreground mb-2">
                     Tuck Style
-                  </label>
+                  </p>
                   <div className="flex gap-2">
                     <Button
                       type="button"

@@ -57,6 +57,7 @@ describe('Component Memoization', () => {
         renderSpy();
         return <div data-testid="value">{value}</div>;
       });
+      MemoizedComponent.displayName = 'MemoizedComponentNoChange';
 
       const ParentComponent = () => {
         const [count, setCount] = useState(0);
@@ -88,6 +89,7 @@ describe('Component Memoization', () => {
         renderSpy();
         return <div data-testid="value">{value}</div>;
       });
+      MemoizedComponent.displayName = 'MemoizedComponentPropChange';
 
       const { rerender } = render(<MemoizedComponent value={10} />);
       expect(renderSpy).toHaveBeenCalledTimes(1);
@@ -113,6 +115,7 @@ describe('Component Memoization', () => {
           return prevProps.user.id === nextProps.user.id;
         }
       );
+      MemoizedComponent.displayName = 'MemoizedComponentCustomCompare';
 
       const user1 = { id: '1', name: 'John' };
       const user2 = { id: '1', name: 'Jane' }; // Same ID, different name

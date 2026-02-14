@@ -36,7 +36,7 @@ describe('Weather Function', () => {
     multiValueHeaders: {},
     multiValueQueryStringParameters: {},
     pathParameters: {},
-    requestContext: {} as any,
+    requestContext: {} as unknown,
     resource: '',
     stageVariables: {},
   });

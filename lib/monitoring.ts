@@ -96,7 +96,7 @@ class ProductionMonitoring {
   /**
    * Log error to monitoring service
    */
-  logError(error: Error, context?: Record<string, any>) {
+  logError(error: Error, context?: Record<string, unknown>) {
     if (!this.isProduction) {
       console.error('Error:', error, context);
       return;
@@ -208,7 +208,7 @@ class ProductionMonitoring {
           // Silently fail
         });
       }
-    } catch (error) {
+    } catch {
       // Silently fail if navigation timing is not supported
     }
   }
@@ -264,7 +264,7 @@ class ProductionMonitoring {
   /**
    * Log user interaction events (deferred)
    */
-  logUserEvent(eventName: string, properties?: Record<string, any>) {
+  logUserEvent(eventName: string, properties?: Record<string, unknown>) {
     if (!this.isProduction) return;
 
     // Use requestIdleCallback to defer non-critical tracking
@@ -311,7 +311,7 @@ class ProductionMonitoring {
 export const monitoring = new ProductionMonitoring();
 
 // Error boundary helper (lightweight, no deferred loading needed)
-export function withErrorBoundary<T extends Record<string, any>>(
+export function withErrorBoundary<T extends Record<string, unknown>>(
   Component: React.ComponentType<T>
 ): React.ComponentType<T> {
   return function ErrorBoundaryWrapper(props: T) {
@@ -350,7 +350,7 @@ export function withErrorBoundary<T extends Record<string, any>>(
 
 // Hook for tracking user interactions (deferred)
 export function useAnalytics() {
-  const trackEvent = React.useCallback((eventName: string, properties?: Record<string, any>) => {
+  const trackEvent = React.useCallback((eventName: string, properties?: Record<string, unknown>) => {
     monitoring.logUserEvent(eventName, properties);
   }, []);
 

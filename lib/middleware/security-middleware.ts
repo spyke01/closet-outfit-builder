@@ -5,8 +5,7 @@ import {
   validateAndSanitizeInput, 
   checkRateLimit, 
   logSecurityEvent, 
-  detectMaliciousInput,
-  sanitizeCredentials 
+  detectMaliciousInput
 } from '@/lib/utils/security';
 
 /**
@@ -19,7 +18,7 @@ export interface SecurityConfig {
     maxRequests: number;
     windowMs: number;
   };
-  validateInput?: z.ZodSchema<any>;
+  validateInput?: z.ZodSchema<unknown>;
   allowedMethods?: readonly string[];
   requirePermissions?: {
     resource: string;
@@ -32,7 +31,7 @@ export interface SecureRequest extends NextRequest {
     id: string;
     email: string;
   };
-  validatedData?: any;
+  validatedData?: unknown;
 }
 
 /**
@@ -98,7 +97,7 @@ export function createSecurityMiddleware(config: SecurityConfig = {}) {
 
       // Authentication
       if (config.requireAuth) {
-        const authResult = await validateAuthentication(request);
+        const authResult = await validateAuthentication();
         if (!authResult.success) {
           logSecurityEvent({
             eventType: 'auth_failure',
@@ -117,7 +116,7 @@ export function createSecurityMiddleware(config: SecurityConfig = {}) {
       }
 
       // Input validation and sanitization
-      let validatedData: any;
+      let validatedData: unknown;
       if (config.validateInput) {
         const inputValidationResult = await validateRequestInput(request, config.validateInput);
         if (!inputValidationResult.success) {
@@ -207,7 +206,7 @@ export function createSecurityMiddleware(config: SecurityConfig = {}) {
 /**
  * Validate authentication from request
  */
-async function validateAuthentication(request: NextRequest): Promise<
+async function validateAuthentication(): Promise<
   | { success: true; user: { id: string; email: string } }
   | { success: false; error: string }
 > {
@@ -226,7 +225,7 @@ async function validateAuthentication(request: NextRequest): Promise<
         email: user.email || '',
       },
     };
-  } catch (error) {
+  } catch {
     return { success: false, error: 'Authentication validation failed' };
   }
 }
@@ -236,13 +235,13 @@ async function validateAuthentication(request: NextRequest): Promise<
  */
 async function validateRequestInput(
   request: NextRequest,
-  schema: z.ZodSchema<any>
+  schema: z.ZodSchema<unknown>
 ): Promise<
-  | { success: true; data: any }
+  | { success: true; data: unknown }
   | { success: false; error: string }
 > {
   try {
-    let inputData: any;
+    let inputData: unknown;
 
     const contentType = request.headers.get('content-type') || '';
     
@@ -300,7 +299,7 @@ async function validateRequestInput(
 async function validatePermissions(
   userId: string,
   resource: string,
-  action: 'read' | 'write' | 'delete',
+  _action: 'read' | 'write' | 'delete',
   request: NextRequest
 ): Promise<{ allowed: boolean; reason?: string }> {
   try {
@@ -344,7 +343,7 @@ async function validatePermissions(
     }
 
     return { allowed: true };
-  } catch (error) {
+  } catch {
     return { allowed: false, reason: 'Permission validation failed' };
   }
 }

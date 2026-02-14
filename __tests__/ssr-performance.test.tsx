@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { ImgHTMLAttributes } from 'react';
 import { createQueryClient } from '../lib/query-client';
 
 // Mock Next.js components and hooks
@@ -15,7 +16,10 @@ vi.mock('next/navigation', () => ({
 }));
 
 vi.mock('next/image', () => ({
-  default: ({ src, alt, ...props }: any) => <img src={src} alt={alt} {...props} />,
+  default: ({ src, alt, ...props }: { src: string; alt: string } & ImgHTMLAttributes<HTMLImageElement>) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt={alt} {...props} />
+  ),
 }));
 
 // Mock Supabase
@@ -34,7 +38,7 @@ vi.mock('../lib/supabase/client', () => ({
 }));
 
 // Test component that simulates SSR behavior
-function TestSSRComponent({ initialData }: { initialData?: any }) {
+function TestSSRComponent({ initialData }: { initialData?: unknown }) {
   return (
     <div data-testid="ssr-component">
       <h1>SSR Test Component</h1>
@@ -157,7 +161,7 @@ describe('SSR Performance Tests', () => {
       const concurrentTime = concurrentEnd - concurrentStart;
       
       expect(results).toHaveLength(10);
-      expect(results.every((result, i) => result && (result as any).id === i)).toBe(true);
+      expect(results.every((result, i) => result && (result as unknown).id === i)).toBe(true);
       expect(concurrentTime).toBeLessThan(50); // Should handle concurrent operations efficiently
     });
   });

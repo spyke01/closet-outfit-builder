@@ -4,22 +4,24 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { conditionalImport, isFeatureEnabled, type FeatureFlags } from '@/lib/utils/feature-flags';
 import { Loader2 } from 'lucide-react';
 
-interface ConditionalComponentLoaderProps {
+interface ConditionalComponentLoaderBaseProps<P extends object> {
   feature: keyof FeatureFlags;
-  importFn: () => Promise<{ default: React.ComponentType<any> }>;
+  importFn: () => Promise<{ default: React.ComponentType<P> }>;
   fallback?: React.ReactNode;
   loadingComponent?: React.ReactNode;
   errorComponent?: React.ReactNode;
   preloadOnHover?: boolean;
   children?: React.ReactNode;
-  [key: string]: any; // Props to pass to the loaded component
 }
+
+type ConditionalComponentLoaderProps<P extends object> =
+  ConditionalComponentLoaderBaseProps<P> & P;
 
 /**
  * Generic conditional component loader
  * Only loads and renders components when the associated feature is enabled
  */
-export const ConditionalComponentLoader: React.FC<ConditionalComponentLoaderProps> = ({
+export function ConditionalComponentLoader<P extends object>({
   feature,
   importFn,
   fallback = null,
@@ -28,8 +30,8 @@ export const ConditionalComponentLoader: React.FC<ConditionalComponentLoaderProp
   preloadOnHover = true,
   children,
   ...componentProps
-}) => {
-  const [Component, setComponent] = useState<React.ComponentType<any> | null>(null);
+}: ConditionalComponentLoaderProps<P>) {
+  const [Component, setComponent] = useState<React.ComponentType<P> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [preloaded, setPreloaded] = useState(false);
@@ -42,15 +44,6 @@ export const ConditionalComponentLoader: React.FC<ConditionalComponentLoaderProp
       isMountedRef.current = false;
     };
   }, []);
-
-  // Load component when feature is enabled
-  useEffect(() => {
-    if (!featureEnabled || Component) {
-      return;
-    }
-
-    loadComponent();
-  }, [featureEnabled, Component]);
 
   const loadComponent = useCallback(async () => {
     if (loading || Component) {
@@ -88,6 +81,15 @@ export const ConditionalComponentLoader: React.FC<ConditionalComponentLoaderProp
       }
     }
   }, [feature, importFn, loading, Component]);
+
+  // Load component when feature is enabled
+  useEffect(() => {
+    if (!featureEnabled || Component) {
+      return;
+    }
+
+    loadComponent();
+  }, [featureEnabled, Component, loadComponent]);
 
   // Preload component on hover/focus with intelligent timing
   const preloadComponent = useCallback(() => {
@@ -147,7 +149,7 @@ export const ConditionalComponentLoader: React.FC<ConditionalComponentLoaderProp
   // Show loaded component
   if (Component) {
     return (
-      <Component {...componentProps}>
+      <Component {...(componentProps as unknown as P)}>
         {children}
       </Component>
     );
@@ -159,16 +161,25 @@ export const ConditionalComponentLoader: React.FC<ConditionalComponentLoaderProp
       onMouseEnter={preloadComponent}
       onFocus={preloadComponent}
       onTouchStart={preloadComponent} // Add touch support for mobile
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          preloadComponent();
+        }
+      }}
+      role="button"
+      tabIndex={0}
     >
       {fallback}
     </div>
   );
-};
+}
 
 /**
  * Higher-order component for conditional loading
  */
-export function withConditionalLoading<P extends Record<string, any>>(
+// eslint-disable-next-line react-refresh/only-export-components
+export function withConditionalLoading<P extends object>(
   feature: keyof FeatureFlags,
   importFn: () => Promise<{ default: React.ComponentType<P> }>,
   options: {
@@ -193,9 +204,10 @@ export function withConditionalLoading<P extends Record<string, any>>(
 /**
  * Preload multiple components based on feature flags with intelligent batching
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function preloadConditionalComponents(features: Array<{
   feature: keyof FeatureFlags;
-  importFn: () => Promise<any>;
+  importFn: () => Promise<unknown>;
   priority?: 'high' | 'medium' | 'low';
 }>): void {
   if (typeof window === 'undefined') {

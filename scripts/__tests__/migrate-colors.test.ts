@@ -136,19 +136,19 @@ describe('Migration Script Business Logic', () => {
 
     describe('Edge cases and error handling', () => {
       it('handles null input gracefully', () => {
-        const result = extractColorFromName(null as any);
+        const result = extractColorFromName(null as unknown);
         expect(result.color).toBeNull();
         expect(result.cleanedName).toBeNull();
       });
 
       it('handles undefined input gracefully', () => {
-        const result = extractColorFromName(undefined as any);
+        const result = extractColorFromName(undefined as unknown);
         expect(result.color).toBeNull();
         expect(result.cleanedName).toBeUndefined();
       });
 
       it('handles non-string input gracefully', () => {
-        const result = extractColorFromName(123 as any);
+        const result = extractColorFromName(123 as unknown);
         expect(result.color).toBeNull();
         expect(result.cleanedName).toBe(123);
       });
@@ -235,7 +235,7 @@ describe('Migration Script Business Logic', () => {
       });
 
       it('returns original name when color is null', () => {
-        const result = removeColorFromName('Blue Shirt', null as any);
+        const result = removeColorFromName('Blue Shirt', null as unknown);
         expect(result).toBe('Blue Shirt');
       });
 
@@ -245,7 +245,7 @@ describe('Migration Script Business Logic', () => {
       });
 
       it('returns original name when name is null', () => {
-        const result = removeColorFromName(null as any, 'blue');
+        const result = removeColorFromName(null as unknown, 'blue');
         expect(result).toBeNull();
       });
 

@@ -13,7 +13,7 @@ export function FinalCTA() {
             Ready to transform your wardrobe?
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Join thousands who've already simplified their daily outfit selection with AI-powered styling.
+            Join thousands who&apos;ve already simplified their daily outfit selection with AI-powered styling.
           </p>
           
           <Link href="/auth/sign-up">

@@ -174,7 +174,7 @@ describe('Empty States', () => {
       )
       
       const customizeButton = screen.getByRole('button', { name: /customize/i })
-      const styles = window.getComputedStyle(customizeButton)
+      window.getComputedStyle(customizeButton)
       
       // Check for minHeight style (44px touch target)
       expect(customizeButton.style.minHeight).toBe('44px')
@@ -217,17 +217,6 @@ describe('Empty States', () => {
     })
 
     it('should open form when "Add Standard Size" button is clicked', () => {
-      const mockCategory = {
-        id: 'test-category-id',
-        user_id: 'test-user-id',
-        name: 'Test Category',
-        supported_formats: ['letter' as const],
-        is_system_category: false,
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z',
-        standard_sizes: []
-      }
-      
       // Skip this test as it requires QueryClientProvider setup
       // The functionality is tested in integration tests
       expect(true).toBe(true)

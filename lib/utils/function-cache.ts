@@ -23,7 +23,7 @@
  * memoized(5) // Calculates
  * memoized(5) // Returns cached result
  */
-export function memoize<TArgs extends any[], TResult>(
+export function memoize<TArgs extends unknown[], TResult>(
   fn: (...args: TArgs) => TResult,
   keyGenerator?: (...args: TArgs) => string
 ): (...args: TArgs) => TResult {
@@ -53,7 +53,7 @@ export function memoize<TArgs extends any[], TResult>(
  *   { maxSize: 100 }
  * )
  */
-export function memoizeLRU<TArgs extends any[], TResult>(
+export function memoizeLRU<TArgs extends unknown[], TResult>(
   fn: (...args: TArgs) => TResult,
   options: {
     maxSize?: number
@@ -100,7 +100,7 @@ export function memoizeLRU<TArgs extends any[], TResult>(
  *   { ttl: 5 * 60 * 1000 } // 5 minutes
  * )
  */
-export function memoizeWithTTL<TArgs extends any[], TResult>(
+export function memoizeWithTTL<TArgs extends unknown[], TResult>(
   fn: (...args: TArgs) => TResult,
   options: {
     ttl: number // milliseconds
@@ -136,7 +136,7 @@ export function memoizeWithTTL<TArgs extends any[], TResult>(
  * const user = storage.get('user') // Cached, no localStorage read
  */
 export function createStorageCache(storageType: 'localStorage' | 'sessionStorage') {
-  const cache = new Map<string, any>()
+  const cache = new Map<string, unknown>()
   const storage = typeof window !== 'undefined' 
     ? storageType === 'localStorage' ? window.localStorage : window.sessionStorage
     : null
@@ -145,7 +145,7 @@ export function createStorageCache(storageType: 'localStorage' | 'sessionStorage
     get<T>(key: string): T | null {
       // Check memory cache first
       if (cache.has(key)) {
-        return cache.get(key)
+        return (cache.get(key) as T | undefined) ?? null
       }
       
       // Read from storage and cache
@@ -207,7 +207,7 @@ export function createStorageCache(storageType: 'localStorage' | 'sessionStorage
  *   // Expensive search operation
  * }, 300)
  */
-export function debounce<TArgs extends any[]>(
+export function debounce<TArgs extends unknown[]>(
   fn: (...args: TArgs) => void,
   wait: number
 ): (...args: TArgs) => void {
@@ -234,7 +234,7 @@ export function debounce<TArgs extends any[]>(
  *   // Expensive scroll handler
  * }, 100)
  */
-export function throttle<TArgs extends any[]>(
+export function throttle<TArgs extends unknown[]>(
   fn: (...args: TArgs) => void,
   interval: number
 ): (...args: TArgs) => void {
@@ -262,7 +262,7 @@ export function throttle<TArgs extends any[]>(
  * // Both calls will use the same pending request
  * Promise.all([fetchUser('1'), fetchUser('1')])
  */
-export function cacheAsync<TArgs extends any[], TResult>(
+export function cacheAsync<TArgs extends unknown[], TResult>(
   fn: (...args: TArgs) => Promise<TResult>,
   keyGenerator?: (...args: TArgs) => string
 ): (...args: TArgs) => Promise<TResult> {
@@ -308,7 +308,7 @@ export function cacheAsync<TArgs extends any[], TResult>(
  * // Later, when user data changes
  * invalidate('user-123')
  */
-export function createInvalidatableCache<TArgs extends any[], TResult>(
+export function createInvalidatableCache<TArgs extends unknown[], TResult>(
   fn: (...args: TArgs) => TResult,
   keyGenerator?: (...args: TArgs) => string
 ): {

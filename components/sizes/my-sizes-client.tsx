@@ -36,7 +36,7 @@ export interface MySizesClientProps {
   initialPinnedPreferences: PinnedPreference[];
   initialStandardSizes: StandardSize[];
   initialBrandSizes: BrandSize[];
-  needsSeeding: boolean;
+  needsSeeding?: boolean;
 }
 
 /**
@@ -57,7 +57,7 @@ export function MySizesClient({
   initialPinnedPreferences,
   initialStandardSizes,
   initialBrandSizes,
-  needsSeeding,
+  needsSeeding = false,
 }: MySizesClientProps) {
   // State for customize modal
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);

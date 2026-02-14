@@ -79,7 +79,7 @@ export function useWardrobeItem(id: string) {
 export function useCreateWardrobeItem() {
   const queryClient = useQueryClient();
   const supabase = createClient();
-  const { userId, isAuthenticated } = useAuth();
+  const { userId } = useAuth();
 
   return useMutation({
     mutationFn: async (input: CreateWardrobeItemInput): Promise<WardrobeItem> => {
@@ -157,7 +157,7 @@ export function useCreateWardrobeItem() {
 export function useUpdateWardrobeItem() {
   const queryClient = useQueryClient();
   const supabase = createClient();
-  const { userId, isAuthenticated } = useAuth();
+  const { userId } = useAuth();
 
   return useMutation({
     mutationFn: async (input: UpdateWardrobeItemInput): Promise<WardrobeItem> => {
@@ -246,7 +246,7 @@ export function useUpdateWardrobeItem() {
 export function useDeleteWardrobeItem() {
   const queryClient = useQueryClient();
   const supabase = createClient();
-  const { userId, isAuthenticated } = useAuth();
+  const { userId } = useAuth();
 
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {

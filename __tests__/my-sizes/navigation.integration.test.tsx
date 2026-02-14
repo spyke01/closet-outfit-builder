@@ -37,10 +37,10 @@ vi.mock('next/navigation', () => ({
 
 // Prevent JSDOM navigation warnings when clicking Next.js links in tests.
 vi.mock('next/link', () => ({
-  default: ({ children, href, ...props }: any) => (
+  default: ({ children, href, ...props }: unknown) => (
     <a
       href={href}
-      onClick={(e: any) => e.preventDefault()}
+      onClick={(e: unknown) => e.preventDefault()}
       {...props}
     >
       {children}
@@ -209,35 +209,35 @@ describe('My Sizes Navigation Integration', () => {
       isLoading: false,
       error: null,
       refetch: vi.fn(),
-    } as any);
+    } as unknown);
 
     vi.mocked(usePinnedPreferences).mockReturnValue({
       data: mockPinnedPreferences,
       isLoading: false,
       error: null,
       refetch: vi.fn(),
-    } as any);
+    } as unknown);
 
     vi.mocked(useSizeCategory).mockReturnValue({
       data: mockCategoryWithStandardSize,
       isLoading: false,
       error: null,
       refetch: vi.fn(),
-    } as any);
+    } as unknown);
 
     vi.mocked(useBrandSizes).mockReturnValue({
       data: mockBrandSizes,
       isLoading: false,
       error: null,
       refetch: vi.fn(),
-    } as any);
+    } as unknown);
 
     vi.mocked(useMeasurements).mockReturnValue({
       data: mockMeasurements,
       isLoading: false,
       error: null,
       refetch: vi.fn(),
-    } as any);
+    } as unknown);
   });
 
   describe('Navigation from Main Page to Detail View', () => {
@@ -536,7 +536,7 @@ describe('My Sizes Navigation Integration', () => {
         isLoading: false,
         error: new Error('Category not found'),
         refetch: vi.fn(),
-      } as any);
+      } as unknown);
 
       render(
         <QueryClientProvider client={queryClient}>

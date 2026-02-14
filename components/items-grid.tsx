@@ -1,16 +1,15 @@
 'use client';
 
 import React, { useState, useMemo, useCallback, startTransition, useDeferredValue, useEffect } from 'react';
-import { Search, Tag, Plus, Shirt } from 'lucide-react';
+import { Search, Tag, Plus } from 'lucide-react';
 import { useContentVisibility } from '@/lib/utils/content-visibility';
 
 
 
 
 import Image from 'next/image';
-import { z } from 'zod';
 import { useImmerState } from '@/lib/utils/immer-state';
-import { safeValidate, validateFileUpload } from '@/lib/utils/validation';
+import { safeValidate } from '@/lib/utils/validation';
 import { 
   WardrobeItemSchema
 } from '@/lib/schemas';
@@ -19,24 +18,17 @@ import { type WardrobeItem } from '@/lib/types/database';
 import { ImageUploadWithErrorBoundary as ImageUpload } from './dynamic/image-upload-dynamic';
 
 // Hoist static JSX elements outside component for performance
-const EMPTY_STATE_ICON = <Shirt size={48} className="text-muted-foreground mx-auto mb-4" />;
 const SEARCH_ICON = <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />;
 const TAG_ICON = <Tag size={16} className="text-muted-foreground flex-shrink-0" />;
 
-// Items grid state schema
-const ItemsGridStateSchema = z.object({
-  searchTerm: z.string(),
-  selectedTags: z.set(z.string()),
-  showAddForm: z.boolean(),
-  isUploading: z.boolean(),
-  uploadError: z.string().nullable(),
-});
+type CapsuleTagType = 'Refined' | 'Adventurer' | 'Crossover' | 'Shorts';
 
-type ItemsGridState = z.infer<typeof ItemsGridStateSchema>;
-
-// Capsule tags enum
-const CapsuleTag = z.enum(['Refined', 'Adventurer', 'Crossover', 'Shorts']);
-type CapsuleTagType = z.infer<typeof CapsuleTag>;
+interface ItemsGridState {
+  searchTerm: string;
+  selectedTags: Set<string>;
+  showAddForm: boolean;
+  uploadError: string | null;
+}
 
 const capsuleTags: CapsuleTagType[] = ['Refined', 'Adventurer', 'Crossover', 'Shorts'];
 
@@ -61,12 +53,13 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
   enableImageUpload = false,
   userId
 }) => {
+  void userId;
+
   // Immer-based state management
   const [state, updateState] = useImmerState<ItemsGridState>({
     searchTerm: '',
     selectedTags: new Set(),
     showAddForm: false,
-    isUploading: false,
     uploadError: null,
   });
 
@@ -76,12 +69,12 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
 
   // Validate items with Zod (with better error handling)
   const validatedItems = useMemo(() => {
-    return items.filter(item => {
+    return items.filter(() => {
       // For now, skip validation and just return all items
       // We can add validation back once we fix all schema issues
       return true;
     });
-  }, [items, category]);
+  }, [items]);
 
   // Validate selected item
   const validatedSelectedItem = useMemo(() => {
@@ -165,60 +158,6 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
     return item.name;
   }, [showBrand]);
 
-  // Handle image upload (currently unused but kept for future functionality)
-  const handleImageUpload = useCallback(async (file: File): Promise<string> => {
-    updateState(draft => {
-      draft.isUploading = true;
-      draft.uploadError = null;
-    });
-
-    try {
-      // Validate file
-      const fileValidation = validateFileUpload(
-        file, 
-        ['image/jpeg', 'image/png', 'image/webp'], 
-        5 * 1024 * 1024 // 5MB
-      );
-
-      if (!fileValidation.success) {
-        throw new Error(fileValidation.error);
-      }
-
-      // Create form data for upload
-      const formData = new FormData();
-      formData.append('image', file);
-      formData.append('userId', userId || '');
-
-      // Upload to API
-      const response = await fetch('/api/upload-image', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to upload image');
-      }
-
-      const result = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Upload failed');
-      }
-
-      return result.data.imageUrl;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Upload failed';
-      updateState(draft => {
-        draft.uploadError = errorMessage;
-      });
-      throw error;
-    } finally {
-      updateState(draft => {
-        draft.isUploading = false;
-      });
-    }
-  }, [userId, updateState]);
-
   // Handle adding new item
   const handleAddItem = useCallback(async (itemData: {
     name: string;
@@ -300,7 +239,6 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
                 onSubmit={handleAddItem}
                 onCancel={() => updateState(draft => { draft.showAddForm = false; })}
                 onImageUpload={enableImageUpload}
-                isUploading={state.isUploading}
                 uploadError={state.uploadError}
               />
             </div>
@@ -472,7 +410,6 @@ interface AddItemFormProps {
   }) => Promise<void>;
   onCancel: () => void;
   onImageUpload?: boolean;
-  isUploading?: boolean;
   uploadError?: string | null;
 }
 
@@ -480,7 +417,6 @@ const AddItemForm: React.FC<AddItemFormProps> = ({
   onSubmit,
   onCancel,
   onImageUpload,
-  isUploading = false,
   uploadError
 }) => {
   const [formData, updateFormData] = useImmerState({

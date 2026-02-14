@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Cloud, Sun, CloudRain, RefreshCw, AlertCircle } from 'lucide-react';
 import { SpinningIcon } from '@/components/ui/animated-icon';
 
@@ -11,17 +11,21 @@ import { SpinningIcon } from '@/components/ui/animated-icon';
 import { useConditionalWeather, preloadWeatherModule } from '@/lib/hooks/use-conditional-weather';
 import { useAuth } from '@/lib/hooks/use-auth';
 
-export const WeatherWidget: React.FC<{ className?: string }> = ({
+export interface WeatherWidgetProps {
+  className?: string;
+}
+
+export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
   className = ""
 }) => {
   // ✅ Call all hooks first (Rules of Hooks)
   const { user } = useAuth();
   const { current, loading, error, retry, usingFallback, weatherEnabled } = useConditionalWeather(!!user);
 
-  // Preload weather module on hover for better UX
-  const handleMouseEnter = () => {
+  // Preload weather module after mount to keep interactions snappy.
+  useEffect(() => {
     preloadWeatherModule();
-  };
+  }, []);
 
   // ✅ Early returns after all hooks are called
   // Don't render if weather is not enabled
@@ -96,10 +100,7 @@ export const WeatherWidget: React.FC<{ className?: string }> = ({
   }
 
   return (
-    <div 
-      className={`flex items-center gap-2 ${className}`}
-      onMouseEnter={handleMouseEnter}
-    >
+    <div className={`flex items-center gap-2 ${className}`}>
       {getWeatherIcon(current.condition)}
       <span className="text-muted-foreground text-sm font-medium">
         {Math.round(current.temperature)}°

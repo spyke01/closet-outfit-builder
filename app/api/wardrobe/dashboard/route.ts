@@ -7,14 +7,37 @@
  * **Validates: Requirements 4.6, 4.7**
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { executeWithDependencies } from '@/lib/utils/dependency-parallelization';
 import { WardrobeItem, Category, Outfit } from '@/lib/types/database';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
+interface DashboardAuthContext {
+  supabase: Awaited<ReturnType<typeof createClient>>;
+  user: {
+    id: string;
+    email?: string | null;
+  };
+}
+
+interface DashboardStats {
+  totalItems: number;
+  totalCategories: number;
+  totalOutfits: number;
+  categoryBreakdown: Array<{ id: string; name: string; itemCount: number }>;
+  averageItemsPerCategory: number;
+}
+
+interface DashboardActivity {
+  type: 'item_added' | 'outfit_created';
+  id: string;
+  name: string;
+  timestamp: string;
+}
+
+export async function GET() {
   try {
     const result = await executeWithDependencies({
       // Level 1: Authentication (no dependencies)
@@ -30,7 +53,8 @@ export async function GET(request: NextRequest) {
       },
       
       // Level 2: Fetch data in parallel (all depend on auth)
-      items: async ({ auth }) => {
+      items: async ({ auth }: { auth?: DashboardAuthContext }) => {
+        if (!auth) throw new Error('Auth context missing');
         const { data, error } = await auth.supabase
           .from('wardrobe_items')
           .select('*')
@@ -41,7 +65,8 @@ export async function GET(request: NextRequest) {
         return data || [];
       },
       
-      categories: async ({ auth }) => {
+      categories: async ({ auth }: { auth?: DashboardAuthContext }) => {
+        if (!auth) throw new Error('Auth context missing');
         const { data, error } = await auth.supabase
           .from('categories')
           .select('*')
@@ -52,7 +77,8 @@ export async function GET(request: NextRequest) {
         return data || [];
       },
       
-      outfits: async ({ auth }) => {
+      outfits: async ({ auth }: { auth?: DashboardAuthContext }) => {
+        if (!auth) throw new Error('Auth context missing');
         const { data, error } = await auth.supabase
           .from('outfits')
           .select('*')
@@ -64,8 +90,9 @@ export async function GET(request: NextRequest) {
         return data || [];
       },
       
-      preferences: async ({ auth }) => {
-        const { data, error } = await auth.supabase
+      preferences: async ({ auth }: { auth?: DashboardAuthContext }) => {
+        if (!auth) throw new Error('Auth context missing');
+        const { data } = await auth.supabase
           .from('user_preferences')
           .select('*')
           .eq('user_id', auth.user.id)
@@ -76,9 +103,21 @@ export async function GET(request: NextRequest) {
       },
       
       // Level 3: Calculate statistics (depends on items, categories, outfits)
-      stats: async ({ items, categories, outfits }) => {
+      stats: async ({
+        items,
+        categories,
+        outfits,
+      }: {
+        items?: WardrobeItem[];
+        categories?: Category[];
+        outfits?: Outfit[];
+      }): Promise<DashboardStats> => {
+        const safeItems = items ?? [];
+        const safeCategories = categories ?? [];
+        const safeOutfits = outfits ?? [];
+
         // Group items by category
-        const itemsByCategory = items.reduce((acc: Record<string, WardrobeItem[]>, item: WardrobeItem) => {
+        const itemsByCategory = safeItems.reduce((acc: Record<string, WardrobeItem[]>, item: WardrobeItem) => {
           const categoryId = item.category_id;
           if (!acc[categoryId]) {
             acc[categoryId] = [];
@@ -88,26 +127,34 @@ export async function GET(request: NextRequest) {
         }, {} as Record<string, WardrobeItem[]>);
         
         // Calculate category statistics
-        const categoryStats = categories.map((category: Category) => ({
+        const categoryStats = safeCategories.map((category: Category) => ({
           id: category.id,
           name: category.name,
           itemCount: itemsByCategory[category.id]?.length || 0,
         }));
         
         return {
-          totalItems: items.length,
-          totalCategories: categories.length,
-          totalOutfits: outfits.length,
+          totalItems: safeItems.length,
+          totalCategories: safeCategories.length,
+          totalOutfits: safeOutfits.length,
           categoryBreakdown: categoryStats,
-          averageItemsPerCategory: categories.length > 0 
-            ? Math.round(items.length / categories.length) 
+          averageItemsPerCategory: safeCategories.length > 0 
+            ? Math.round(safeItems.length / safeCategories.length) 
             : 0,
         };
       },
       
       // Level 3: Get recent activity (depends on items, outfits)
-      recentActivity: async ({ items, outfits }) => {
-        const recentItems = items
+      recentActivity: async ({
+        items,
+        outfits,
+      }: {
+        items?: WardrobeItem[];
+        outfits?: Outfit[];
+      }): Promise<DashboardActivity[]> => {
+        const safeItems = items ?? [];
+        const safeOutfits = outfits ?? [];
+        const recentItems = safeItems
           .sort((a: WardrobeItem, b: WardrobeItem) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
           .slice(0, 5)
           .map((item: WardrobeItem) => ({
@@ -117,7 +164,7 @@ export async function GET(request: NextRequest) {
             timestamp: item.created_at,
           }));
         
-        const recentOutfits = outfits
+        const recentOutfits = safeOutfits
           .slice(0, 5)
           .map((outfit: Outfit) => ({
             type: 'outfit_created' as const,

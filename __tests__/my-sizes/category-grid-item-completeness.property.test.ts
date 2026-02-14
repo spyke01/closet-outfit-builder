@@ -13,7 +13,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as fc from 'fast-check';
 import { createClient } from '@/lib/supabase/client';
-import type { SizeCategory, StandardSize, BrandSize, CategoryGridItem } from '@/lib/types/sizes';
+import type { SizeCategory, CategoryGridItem } from '@/lib/types/sizes';
 
 // Mock Supabase client
 vi.mock('@/lib/supabase/client', () => ({
@@ -26,7 +26,7 @@ vi.mock('@/lib/hooks/use-auth', () => ({
 }));
 
 describe('Property 4: Category Grid Item Completeness', () => {
-  let mockSupabase: any;
+  let mockSupabase: unknown;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -44,7 +44,7 @@ describe('Property 4: Category Grid Item Completeness', () => {
       single: vi.fn()
     };
 
-    (createClient as any).mockReturnValue(mockSupabase);
+    (createClient as unknown).mockReturnValue(mockSupabase);
   });
 
   /**
@@ -76,32 +76,6 @@ describe('Property 4: Category Grid Item Completeness', () => {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           };
-
-          // Create standard size if applicable
-          const standardSize: StandardSize | undefined = testData.hasStandardSize ? {
-            id: 'standard-size-id',
-            category_id: testData.categoryId,
-            user_id: 'test-user-id',
-            primary_size: 'M',
-            secondary_size: undefined,
-            notes: undefined,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          } : undefined;
-
-          // Create brand sizes
-          const brandSizes: BrandSize[] = Array.from({ length: testData.brandSizeCount }, (_, i) => ({
-            id: `brand-size-${i}`,
-            category_id: testData.categoryId,
-            user_id: 'test-user-id',
-            brand_name: `Brand ${i}`,
-            item_type: undefined,
-            size: 'L',
-            fit_scale: 3,
-            notes: undefined,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          }));
 
           // Calculate size count
           const sizeCount = (testData.hasStandardSize ? 1 : 0) + testData.brandSizeCount;
@@ -237,18 +211,7 @@ describe('Property 4: Category Grid Item Completeness', () => {
             updated_at: new Date().toISOString()
           };
 
-          const standardSize: StandardSize = {
-            id: 'standard-size-id',
-            category_id: testData.categoryId,
-            user_id: 'test-user-id',
-            primary_size: testData.standardSize,
-            secondary_size: undefined,
-            notes: undefined,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          };
-
-          const brandSizes: BrandSize[] = testData.brandSizes.map((bs, i) => ({
+          const brandSizes = testData.brandSizes.map((bs, i) => ({
             id: `brand-size-${i}`,
             category_id: testData.categoryId,
             user_id: 'test-user-id',
@@ -262,7 +225,7 @@ describe('Property 4: Category Grid Item Completeness', () => {
           }));
 
           // Check if any brand size differs from standard size
-          const hasDifferentSizes = brandSizes.some(bs => bs.size !== standardSize.primary_size);
+          const hasDifferentSizes = brandSizes.some(bs => bs.size !== testData.standardSize);
 
           const gridItem: CategoryGridItem = {
             category: category,
@@ -276,7 +239,7 @@ describe('Property 4: Category Grid Item Completeness', () => {
           }
 
           // Property 2: If all brand sizes match standard, hasVariations should be false
-          const allMatch = brandSizes.every(bs => bs.size === standardSize.primary_size);
+          const allMatch = brandSizes.every(bs => bs.size === testData.standardSize);
           if (allMatch && brandSizes.length > 0) {
             expect(gridItem.hasVariations).toBe(false);
           }
@@ -322,20 +285,6 @@ describe('Property 4: Category Grid Item Completeness', () => {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           };
-
-          const standardSize: StandardSize = {
-            id: 'standard-size-id',
-            category_id: testData.categoryId,
-            user_id: 'test-user-id',
-            primary_size: testData.standardSize,
-            secondary_size: undefined,
-            notes: undefined,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          };
-
-          // No brand sizes
-          const brandSizes: BrandSize[] = [];
 
           const gridItem: CategoryGridItem = {
             category: category,
@@ -384,23 +333,6 @@ describe('Property 4: Category Grid Item Completeness', () => {
             updated_at: new Date().toISOString()
           };
 
-          // No standard size
-          const standardSize: StandardSize | undefined = undefined;
-
-          // Multiple brand sizes
-          const brandSizes: BrandSize[] = Array.from({ length: testData.brandSizeCount }, (_, i) => ({
-            id: `brand-size-${i}`,
-            category_id: testData.categoryId,
-            user_id: 'test-user-id',
-            brand_name: `Brand ${i}`,
-            item_type: undefined,
-            size: ['S', 'M', 'L'][i % 3],
-            fit_scale: 3,
-            notes: undefined,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          }));
-
           const gridItem: CategoryGridItem = {
             category: category,
             sizeCount: testData.brandSizeCount, // Only brand sizes
@@ -445,15 +377,11 @@ describe('Property 4: Category Grid Item Completeness', () => {
             user_id: 'test-user-id',
             name: testData.categoryName,
             icon: undefined,
-            supported_formats: testData.supportedFormats as any,
+            supported_formats: testData.supportedFormats as unknown,
             is_system_category: false,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           };
-
-          // No sizes at all
-          const standardSize: StandardSize | undefined = undefined;
-          const brandSizes: BrandSize[] = [];
 
           const gridItem: CategoryGridItem = {
             category: category,

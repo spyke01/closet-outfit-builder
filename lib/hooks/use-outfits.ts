@@ -198,7 +198,7 @@ export function useScoreOutfit(itemIds: string[]) {
 export function useCreateOutfit() {
   const queryClient = useQueryClient();
   const supabase = createClient();
-  const { userId, isAuthenticated } = useAuth();
+  const { userId } = useAuth();
 
   return useMutation({
     mutationFn: async (input: CreateOutfitInput): Promise<Outfit> => {
@@ -372,7 +372,7 @@ export function useCreateOutfit() {
 export function useUpdateOutfit() {
   const queryClient = useQueryClient();
   const supabase = createClient();
-  const { userId, isAuthenticated } = useAuth();
+  const { userId } = useAuth();
 
   return useMutation({
     mutationFn: async (input: UpdateOutfitInput): Promise<Outfit> => {
@@ -415,7 +415,7 @@ export function useUpdateOutfit() {
       }
 
       // Update the outfit
-      const { data: outfit, error: outfitError } = await supabase
+      const { error: outfitError } = await supabase
         .from('outfits')
         .update({
           ...updateData,
@@ -557,7 +557,7 @@ export function useUpdateOutfit() {
 export function useDeleteOutfit() {
   const queryClient = useQueryClient();
   const supabase = createClient();
-  const { userId, isAuthenticated } = useAuth();
+  const { userId } = useAuth();
 
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {

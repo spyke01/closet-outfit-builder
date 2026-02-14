@@ -58,7 +58,7 @@ export default function TermsPage() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold text-foreground mb-4">Disclaimer</h2>
                 <p className="text-muted-foreground mb-4">
-                  The materials on My AI Outfit are provided on an 'as is' basis. My AI Outfit makes 
+                  The materials on My AI Outfit are provided on an &apos;as is&apos; basis. My AI Outfit makes 
                   no warranties, expressed or implied, and hereby disclaims and negates all other warranties 
                   including without limitation, implied warranties or conditions of merchantability, 
                   fitness for a particular purpose, or non-infringement of intellectual property or 

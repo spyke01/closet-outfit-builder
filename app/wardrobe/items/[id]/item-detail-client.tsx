@@ -343,9 +343,9 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
               {isEditing ? (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-muted-foreground mb-1">
+                    <p className="block text-sm font-medium text-muted-foreground mb-1">
                       Name *
-                    </label>
+                    </p>
                     <input
                       type="text"
                       value={editForm.name || ''}
@@ -356,9 +356,9 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-muted-foreground mb-1">
+                    <p className="block text-sm font-medium text-muted-foreground mb-1">
                       Brand
-                    </label>
+                    </p>
                     <input
                       type="text"
                       value={editForm.brand || ''}
@@ -369,9 +369,9 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-muted-foreground mb-1">
+                      <p className="block text-sm font-medium text-muted-foreground mb-1">
                         Color
-                      </label>
+                      </p>
                       <div className="relative">
                         <select
                           value={editForm.color || ''}
@@ -402,9 +402,9 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-muted-foreground mb-1">
+                      <p className="block text-sm font-medium text-muted-foreground mb-1">
                         Material
-                      </label>
+                      </p>
                       <input
                         type="text"
                         value={editForm.material || ''}
@@ -415,9 +415,9 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-muted-foreground mb-1">
+                    <p className="block text-sm font-medium text-muted-foreground mb-1">
                       Formality Score (1-10)
-                    </label>
+                    </p>
                     <input
                       type="number"
                       min="1"
@@ -429,9 +429,9 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-muted-foreground mb-2">
+                    <p className="block text-sm font-medium text-muted-foreground mb-2">
                       Category
-                    </label>
+                    </p>
                     <select
                       value={editForm.category_id || ''}
                       onChange={(e) => setEditForm(prev => ({ ...prev, category_id: e.target.value }))}

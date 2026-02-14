@@ -64,7 +64,6 @@ function calculateColorHarmony(selection: OutfitSelection): number {
   // Define color harmony rules
   const neutrals = ['white', 'black', 'grey', 'gray', 'navy', 'cream', 'beige', 'khaki', 'brown'];
   const earthTones = ['brown', 'tan', 'khaki', 'olive', 'cream', 'beige'];
-  const blues = ['navy', 'blue', 'light blue', 'dark blue'];
   
   let harmonyScore = 60; // Base score
   

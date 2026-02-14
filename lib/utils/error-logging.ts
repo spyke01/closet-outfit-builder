@@ -32,7 +32,7 @@ export interface ErrorContext {
   method?: string;
   component?: string;
   action?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 // Structured error log entry
@@ -110,12 +110,13 @@ export class ErrorLogger {
         zodErrorDetails: zodDetails,
       };
     } else if (error instanceof Error) {
+      const errorWithCode = error as Error & { code?: string };
       message = error.message;
       errorDetails = {
         name: error.name,
         message: error.message,
         stack: this.sanitizeStackTrace(error.stack),
-        code: (error as any).code,
+        code: errorWithCode.code,
       };
     } else {
       message = String(error);
@@ -334,7 +335,7 @@ export class ErrorLogger {
     return lines
       .map(line => {
         // Remove absolute paths, keep relative paths
-        return line.replace(/\/[^\/\s]+\/[^\/\s]+\/[^\/\s]+/g, '[PATH_REDACTED]');
+        return line.replace(/\/[^/\s]+\/[^/\s]+\/[^/\s]+/g, '[PATH_REDACTED]');
       })
       .join('\n');
   }
@@ -386,19 +387,19 @@ export class ErrorLogger {
     const logMethod = this.getConsoleMethod(entry.severity);
     
     console.group(`🚨 ${entry.severity.toUpperCase()} ERROR [${entry.category}]`);
-    console.log(`ID: ${entry.id}`);
-    console.log(`Time: ${entry.timestamp}`);
-    console.log(`Message: ${entry.message}`);
+    console[logMethod](`ID: ${entry.id}`);
+    console[logMethod](`Time: ${entry.timestamp}`);
+    console[logMethod](`Message: ${entry.message}`);
     
     if (entry.error) {
-      console.log(`Error: ${entry.error.name} - ${entry.error.message}`);
+      console[logMethod](`Error: ${entry.error.name} - ${entry.error.message}`);
       if (entry.error.stack) {
-        console.log(`Stack: ${entry.error.stack}`);
+        console[logMethod](`Stack: ${entry.error.stack}`);
       }
     }
     
     if (Object.keys(entry.context).length > 0) {
-      console.log('Context:', entry.context);
+      console[logMethod]('Context:', entry.context);
     }
     
     console.groupEnd();

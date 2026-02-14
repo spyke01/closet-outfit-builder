@@ -17,7 +17,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useSizeCategories, usePinnedPreferences, useUpdatePinnedPreferences } from '@/lib/hooks/use-size-categories';
-import type { DisplayMode, PinnedPreference } from '@/lib/types/sizes';
+import type { DisplayMode } from '@/lib/types/sizes';
 import { X, GripVertical, Check } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -281,6 +281,8 @@ export function CustomizePinnedCardsView({
                       onDragLeave={handleDragLeave}
                       onDrop={(e) => handleDrop(e, index)}
                       onDragEnd={handleDragEnd}
+                      role="button"
+                      tabIndex={0}
                       className={`bg-muted border rounded-lg p-3 transition-all ${
                         isDraggedOver
                           ? 'border-ring border-2 bg-secondary/10'

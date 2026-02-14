@@ -26,7 +26,7 @@ vi.mock('@/lib/hooks/use-auth', () => ({
 }));
 
 describe('Property 1: Pinned Card Data Integrity', () => {
-  let mockSupabase: any;
+  let mockSupabase: unknown;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -44,7 +44,7 @@ describe('Property 1: Pinned Card Data Integrity', () => {
       single: vi.fn()
     };
 
-    (createClient as any).mockReturnValue(mockSupabase);
+    (createClient as unknown).mockReturnValue(mockSupabase);
   });
 
   /**

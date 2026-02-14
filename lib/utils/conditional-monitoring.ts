@@ -9,13 +9,13 @@ import { conditionalImport, isFeatureEnabled } from './feature-flags';
 // Type definitions for monitoring functionality
 export interface MonitoringInstance {
   initialize: () => void;
-  logError: (error: Error, context?: Record<string, any>) => void;
-  logUserEvent: (eventName: string, properties?: Record<string, any>) => void;
+  logError: (error: Error, context?: Record<string, unknown>) => void;
+  logUserEvent: (eventName: string, properties?: Record<string, unknown>) => void;
   logApiCall: (endpoint: string, method: string, duration: number, status: number) => void;
 }
 
 export interface AnalyticsHooks {
-  trackEvent: (eventName: string, properties?: Record<string, any>) => void;
+  trackEvent: (eventName: string, properties?: Record<string, unknown>) => void;
   trackPageView: (pageName: string) => void;
   trackApiCall: (endpoint: string, method: string, duration: number, status: number) => void;
 }
@@ -83,7 +83,7 @@ export function getMonitoringInstance(): MonitoringInstance | null {
 /**
  * Conditionally log error (no-op if monitoring disabled)
  */
-export function conditionalLogError(error: Error, context?: Record<string, any>): void {
+export function conditionalLogError(error: Error, context?: Record<string, unknown>): void {
   if (monitoringInstance) {
     monitoringInstance.logError(error, context);
   }
@@ -92,7 +92,7 @@ export function conditionalLogError(error: Error, context?: Record<string, any>)
 /**
  * Conditionally log user event (no-op if monitoring disabled)
  */
-export function conditionalLogUserEvent(eventName: string, properties?: Record<string, any>): void {
+export function conditionalLogUserEvent(eventName: string, properties?: Record<string, unknown>): void {
   if (monitoringInstance) {
     monitoringInstance.logUserEvent(eventName, properties);
   }
@@ -124,7 +124,7 @@ export function useConditionalAnalytics(): AnalyticsHooks {
   }
 
   return {
-    trackEvent: (eventName: string, properties?: Record<string, any>) => {
+    trackEvent: (eventName: string, properties?: Record<string, unknown>) => {
       conditionalLogUserEvent(eventName, properties);
     },
     trackPageView: (pageName: string) => {
@@ -164,7 +164,7 @@ export function preloadMonitoringModule(): void {
 /**
  * Error boundary helper with conditional monitoring
  */
-export function withConditionalErrorBoundary<T extends Record<string, any>>(
+export function withConditionalErrorBoundary<T extends Record<string, unknown>>(
   Component: React.ComponentType<T>
 ) {
   return function ConditionalErrorBoundaryWrapper(props: T) {

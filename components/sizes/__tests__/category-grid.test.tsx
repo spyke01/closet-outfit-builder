@@ -5,7 +5,7 @@ import type { SizeCategory, StandardSize, BrandSize } from '@/lib/types/sizes';
 
 // Mock Next.js Link component
 vi.mock('next/link', () => ({
-  default: ({ children, href, ...props }: any) => (
+  default: ({ children, href, ...props }: unknown) => (
     <a href={href} {...props}>
       {children}
     </a>

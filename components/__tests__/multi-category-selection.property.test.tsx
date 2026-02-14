@@ -26,7 +26,7 @@ const categoryArb = fc.record({
 const categorySetArb = fc.array(uuidArb, { minLength: 0, maxLength: 3 }).map(ids => new Set(ids));
 
 // Helper function to simulate multi-category filtering logic
-function filterItemsByCategories(items: any[], selectedCategories: Set<string>): any[] {
+function filterItemsByCategories(items: unknown[], selectedCategories: Set<string>): unknown[] {
   if (selectedCategories.size === 0) {
     return items; // Show all items when no categories selected
   }

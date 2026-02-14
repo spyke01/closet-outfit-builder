@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, Shirt, Layers, Footprints, Layers2, Sparkles, Watch } from 'lucide-react/dist/esm/icons';
-import { Icon } from 'lucide-react';
+import { Icon, type IconNode } from 'lucide-react';
 import { 
   shirtT, 
   shirtFoldedButtons, 
@@ -31,7 +31,7 @@ const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>
 };
 
 // Icon mapping for subcategories (from @lucide/lab)
-const SUBCATEGORY_ICON_NODES: Record<string, any> = {
+const SUBCATEGORY_ICON_NODES: Record<string, IconNode> = {
   shirtT,
   shirtFoldedButtons,
   shirtLongSleeve,
@@ -55,8 +55,8 @@ const MAIN_LUCIDE_ICONS: Record<string, React.ComponentType<{ className?: string
 
 interface StepSubcategorySelectionProps {
   selectedCategories: CategoryKey[];
-  selectedSubcategories: Record<CategoryKey, string[]>;
-  onChange: (subcategories: Record<CategoryKey, string[]>) => void;
+  selectedSubcategories: Partial<Record<CategoryKey, string[]>>;
+  onChange: (subcategories: Partial<Record<CategoryKey, string[]>>) => void;
 }
 
 export function StepSubcategorySelection({

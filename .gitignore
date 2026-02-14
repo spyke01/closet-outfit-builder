@@ -56,3 +56,5 @@ tsconfig.tsbuildinfo
 .env.test.local
 .env.production.local
 *.local
+.lint-report.json
+.lint-summary.json

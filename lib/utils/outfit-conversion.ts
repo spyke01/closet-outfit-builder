@@ -1,5 +1,5 @@
 import { type OutfitSelection } from '@/lib/types/database';
-import { type Outfit, type WardrobeItem } from '@/lib/types/database';
+import { type Outfit } from '@/lib/types/database';
 
 /**
  * Convert a database Outfit with items to an OutfitSelection format

@@ -40,7 +40,7 @@ describe('HowItWorks - Unit Tests', () => {
     });
 
     it('should display upload icon', () => {
-      const { container } = render(<HowItWorks />);
+      render(<HowItWorks />);
       
       // Check for Upload icon in step 1
       const uploadText = screen.getByText(/drag & drop your photos/i);
@@ -164,7 +164,7 @@ describe('HowItWorks - Unit Tests', () => {
     it('should display Heart icon', () => {
       const { container } = render(<HowItWorks />);
       
-      const heartIcons = container.querySelectorAll('.text-red-500.fill-current');
+      const heartIcons = container.querySelectorAll('.text-primary.fill-current');
       
       expect(heartIcons.length).toBeGreaterThanOrEqual(1);
     });
@@ -182,7 +182,7 @@ describe('HowItWorks - Unit Tests', () => {
     it('should have icon containers for each step', () => {
       const { container } = render(<HowItWorks />);
       
-      const iconContainers = container.querySelectorAll('.bg-gradient-to-br.rounded-2xl');
+      const iconContainers = container.querySelectorAll('.rounded-2xl.bg-secondary\\/20');
       
       // Should have 3 icon containers
       expect(iconContainers.length).toBeGreaterThanOrEqual(3);

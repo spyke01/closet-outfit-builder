@@ -10,28 +10,6 @@ import fc from 'fast-check';
  * **Validates: Requirements 8.1, 8.2, 8.4, 8.5**
  */
 
-// Mock Supabase client for testing
-const mockSupabaseClient = {
-  from: vi.fn(() => ({
-    select: vi.fn(() => ({
-      eq: vi.fn(() => ({
-        data: [],
-        error: null
-      })),
-      in: vi.fn(() => ({
-        data: [],
-        error: null
-      })),
-      not: vi.fn(() => ({
-        in: vi.fn(() => ({
-          data: [],
-          error: null
-        }))
-      }))
-    }))
-  }))
-};
-
 // Mock category data generators with correct display orders
 const validCategoryArb = fc.oneof(
   fc.constant({
@@ -123,21 +101,21 @@ const wardrobeItemArb = fc.record({
 });
 
 // Mock validation functions
-function validateNoLegacyCategories(categories: any[]): boolean {
+function validateNoLegacyCategories(categories: unknown[]): boolean {
   return !categories.some(cat => cat.name === 'Jacket/Overshirt');
 }
 
-function validateNewCategoriesExist(categories: any[]): boolean {
+function validateNewCategoriesExist(categories: unknown[]): boolean {
   const categoryNames = new Set(categories.map(cat => cat.name));
   return categoryNames.has('Jacket') && categoryNames.has('Overshirt');
 }
 
-function validateItemCategoryReferences(items: any[], categories: any[]): boolean {
+function validateItemCategoryReferences(items: unknown[], categories: unknown[]): boolean {
   const validCategoryIds = new Set(categories.map(cat => cat.id));
   return items.every(item => validCategoryIds.has(item.category_id));
 }
 
-function validateCategoryDisplayOrder(categories: any[]): boolean {
+function validateCategoryDisplayOrder(categories: unknown[]): boolean {
   const categoryOrder = {
     'Jacket': 1,
     'Overshirt': 2,
@@ -155,7 +133,7 @@ function validateCategoryDisplayOrder(categories: any[]): boolean {
   });
 }
 
-function validateSystemFunctionality(categories: any[], items: any[]): boolean {
+function validateSystemFunctionality(categories: unknown[], items: unknown[]): boolean {
   // Simulate system functionality checks
   
   // 1. Category filtering should work
@@ -167,9 +145,6 @@ function validateSystemFunctionality(categories: any[], items: any[]): boolean {
   }
 
   // 2. Items should be properly categorized
-  const jacketItems = items.filter(item => item.category_id === jacketCategory.id);
-  const overshirtItems = items.filter(item => item.category_id === overshirtCategory.id);
-  
   // 3. No items should reference non-existent categories
   const validCategoryIds = new Set(categories.map(cat => cat.id));
   const allItemsHaveValidCategories = items.every(item => 
@@ -328,8 +303,8 @@ describe('Clean Migration Validation Property Tests', () => {
 
   describe('Property 8 Edge Cases: Clean Migration Validation', () => {
     it('should handle empty database state correctly', () => {
-      const emptyCategories: any[] = [];
-      const emptyItems: any[] = [];
+      const emptyCategories: unknown[] = [];
+      const emptyItems: unknown[] = [];
 
       // Property: Empty state should not have legacy categories
       const noLegacyCategories = validateNoLegacyCategories(emptyCategories);

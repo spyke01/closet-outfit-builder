@@ -30,12 +30,23 @@ interface UserPreferences {
   updated_at: string;
 }
 
-const defaultPreferences = {
-  theme: 'system' as const,
+const defaultPreferences: Pick<
+  UserPreferences,
+  'theme' | 'show_brands' | 'weather_enabled' | 'default_tuck_style'
+> = {
+  theme: 'system',
   show_brands: true,
   weather_enabled: true,
-  default_tuck_style: 'Untucked' as const,
+  default_tuck_style: 'Untucked',
 };
+
+type PreferenceKey = keyof typeof defaultPreferences;
+type PreferenceValue<K extends PreferenceKey> = (typeof defaultPreferences)[K];
+const themeOptions = [
+  { value: 'light', label: 'Light', icon: Sun, description: 'Light mode for bright environments' },
+  { value: 'dark', label: 'Dark', icon: Moon, description: 'Dark mode for low-light environments' },
+  { value: 'system', label: 'System', icon: Monitor, description: 'Follow your system preference' },
+] as const;
 
 export function SettingsPageClient() {
   const { userId } = useAuth();
@@ -90,7 +101,7 @@ export function SettingsPageClient() {
         }
         
         setLoading(false);
-      } catch (err) {
+      } catch {
         if (mounted) {
           setError('Failed to load preferences');
           setLoading(false);
@@ -107,7 +118,10 @@ export function SettingsPageClient() {
 
   const { setTheme } = useTheme();
 
-  const updatePreference = async (key: keyof typeof defaultPreferences, value: any) => {
+  const updatePreference = async <K extends PreferenceKey>(
+    key: K,
+    value: PreferenceValue<K>
+  ) => {
     if (!userId || !preferences) return;
 
     setUpdating(true);
@@ -129,10 +143,10 @@ export function SettingsPageClient() {
         
         // If updating theme, also update next-themes immediately
         if (key === 'theme') {
-          setTheme(value);
+          setTheme(value as UserPreferences['theme']);
         }
       }
-    } catch (err) {
+    } catch {
       setError('Failed to update preference');
     } finally {
       setUpdating(false);
@@ -197,11 +211,7 @@ export function SettingsPageClient() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-3 gap-3">
-                {[
-                  { value: 'light', label: 'Light', icon: Sun, description: 'Light mode for bright environments' },
-                  { value: 'dark', label: 'Dark', icon: Moon, description: 'Dark mode for low-light environments' },
-                  { value: 'system', label: 'System', icon: Monitor, description: 'Follow your system preference' },
-                ].map((themeOption) => {
+                {themeOptions.map((themeOption) => {
                   const Icon = themeOption.icon;
                   const isSelected = preferences.theme === themeOption.value;
 

@@ -3,6 +3,7 @@
 import React from 'react';
 import { withConditionalLoading } from './conditional-component-loader';
 import { Cloud, Loader2 } from 'lucide-react';
+import type { WeatherWidgetProps } from '../weather-widget';
 
 // Loading component for weather widget
 const WeatherWidgetLoading: React.FC<{ className?: string }> = ({ className = "" }) => (
@@ -32,9 +33,13 @@ const WeatherWidgetError: React.FC<{ className?: string }> = ({ className = "" }
  * Conditionally loaded weather widget component
  * Only loads when weather feature is enabled and user is authenticated
  */
-export const ConditionalWeatherWidget = withConditionalLoading(
+export const ConditionalWeatherWidget = withConditionalLoading<WeatherWidgetProps>(
+  // Explicit props type avoids inference to never from lazy import unions.
   'weather',
-  () => import('../weather-widget').then(mod => ({ default: mod.WeatherWidget })) as any,
+  () =>
+    import('../weather-widget').then(
+      (mod): { default: React.ComponentType<WeatherWidgetProps> } => ({ default: mod.WeatherWidget })
+    ),
   {
     fallback: <WeatherWidgetFallback />,
     loadingComponent: <WeatherWidgetLoading />,

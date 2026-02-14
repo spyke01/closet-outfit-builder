@@ -37,7 +37,7 @@ export default async function AuthCodeError({
           ) : null}
           
           <p className="mb-2">
-            Sorry, we couldn't complete your sign-in process. This could be due to:
+            Sorry, we couldn&apos;t complete your sign-in process. This could be due to:
           </p>
           <ul className="list-disc list-inside space-y-1 text-sm">
             <li>An expired or invalid authentication link</li>

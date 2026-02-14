@@ -234,23 +234,6 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
     }
   };
 
-  const handleRemoveItem = async (itemId: string) => {
-    if (!outfit || !isEditing) return;
-
-    // Remove item from current selection
-    const updatedSelection = { ...selection };
-    Object.keys(updatedSelection).forEach(key => {
-      if (key !== 'tuck_style' && key !== 'score') {
-        const item = updatedSelection[key] as WardrobeItem;
-        if (item && item.id === itemId) {
-          updatedSelection[key] = undefined;
-        }
-      }
-    });
-    
-    setSelection(updatedSelection);
-  };
-
   // Convert outfit items to selection format for display components
   const displaySelection = React.useMemo(() => {
     if (!outfit) return undefined;
@@ -407,9 +390,9 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
             {isEditing ? (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-1">
+                  <p className="block text-sm font-medium text-muted-foreground mb-1">
                     Outfit Name
-                  </label>
+                  </p>
                   <input
                     type="text"
                     value={editForm.name || ''}
@@ -420,9 +403,9 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-2">
+                  <p className="block text-sm font-medium text-muted-foreground mb-2">
                     Tuck Style
-                  </label>
+                  </p>
                   <div className="flex gap-2">
                     <Button
                       type="button"

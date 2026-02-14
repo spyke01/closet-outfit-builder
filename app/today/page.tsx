@@ -4,6 +4,7 @@ import TodayPageClient from './today-page-client';
 import { TopBarWrapper } from '@/components/top-bar-wrapper';
 import type { Metadata } from 'next';
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const metadata: Metadata = {
   title: "Today's Outfit",
   description: 'Get personalized outfit recommendations based on weather and your wardrobe',

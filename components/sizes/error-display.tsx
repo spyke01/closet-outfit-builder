@@ -112,21 +112,17 @@ export function ErrorDisplay({
   onDismiss,
   className = '',
 }: ErrorDisplayProps) {
-  if (!error) return null
-
-  const { type, userMessage } = parseError(error)
-
   const handleRetry = useCallback(() => {
-    if (onRetry) {
-      onRetry()
-    }
+    onRetry?.()
   }, [onRetry])
 
   const handleDismiss = useCallback(() => {
-    if (onDismiss) {
-      onDismiss()
-    }
+    onDismiss?.()
   }, [onDismiss])
+
+  if (!error) return null
+
+  const { type, userMessage } = parseError(error)
 
   return (
     <div

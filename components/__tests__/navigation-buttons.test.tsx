@@ -4,7 +4,7 @@ import { NavigationButtons } from '../navigation-buttons';
 
 // Mock Next.js Link component
 vi.mock('next/link', () => ({
-  default: function MockLink({ children, href, className }: any) {
+  default: function MockLink({ children, href, className }: unknown) {
     return (
       <a href={href} className={className}>
         {children}

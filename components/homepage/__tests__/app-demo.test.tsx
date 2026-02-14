@@ -200,13 +200,13 @@ describe('AppDemo - Unit Tests', () => {
   });
 
   describe('Dark Mode Support', () => {
-    it('should have dark mode classes on image containers', () => {
+    it('should have themed classes on image containers', () => {
       const { container } = render(<AppDemo />);
       
       const imageContainers = container.querySelectorAll('.aspect-square');
       
       imageContainers.forEach((containerEl) => {
-        expect(containerEl.className).toContain('bg-card');
+        expect(containerEl.className).toContain('bg-muted');
       });
     });
 

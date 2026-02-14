@@ -4,6 +4,7 @@ import { AuthBoundary } from '@/components/auth-boundary';
 import { OnboardingWizard } from '@/components/onboarding/onboarding-wizard';
 import { TopBarWrapper } from '@/components/top-bar-wrapper';
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const metadata: Metadata = {
   title: 'Wardrobe Setup – My AI Outfit',
   description: 'Set up your wardrobe by selecting categories, items, colors, and quantities to get started with personalized outfit recommendations.',

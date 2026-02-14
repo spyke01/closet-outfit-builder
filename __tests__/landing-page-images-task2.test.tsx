@@ -125,12 +125,12 @@ describe('Task 2: Feature Highlights and About Page Images', () => {
   });
 
   describe('Layout preservation', () => {
-    it('should maintain existing gradient and icon elements', () => {
+    it('should maintain icon tile styling', () => {
       render(<FeatureHighlights />);
       
-      // Check that gradients are still present (via class names)
+      // Check that icon tile styling is still present
       const container = screen.getByText('Smart Outfit Generator').closest('div');
-      expect(container?.parentElement?.innerHTML).toContain('bg-gradient-to-br');
+      expect(container?.parentElement?.innerHTML).toContain('rounded-3xl');
     });
 
     it('should preserve section heading and description', () => {

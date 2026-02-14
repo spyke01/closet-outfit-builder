@@ -13,7 +13,7 @@ export interface QueuedMutation {
   id: string;
   type: 'create' | 'update' | 'delete';
   entity: 'category' | 'standard_size' | 'brand_size' | 'measurements' | 'pinned_preference';
-  data: any;
+  data: SyncEntityData;
   timestamp: number;
   userId: string;
 }
@@ -21,8 +21,8 @@ export interface QueuedMutation {
 export interface SyncConflict {
   id: string;
   entity: string;
-  localData: any;
-  serverData: any;
+  localData: SyncEntityData;
+  serverData: SyncEntityData;
   localTimestamp: number;
   serverTimestamp: number;
 }
@@ -152,11 +152,12 @@ export function updateSyncStatus(updates: Partial<SyncStatus>): void {
  * Detect conflicts by comparing timestamps
  */
 export function detectConflict(
-  localData: any,
-  serverData: any
+  localData: SyncEntityData | null,
+  serverData: SyncEntityData | null
 ): boolean {
-  if (!localData || !serverData) return false;
-  
+  if (!localData || !serverData || !localData.updated_at || !serverData.updated_at) {
+    return false;
+  }
   const localTimestamp = new Date(localData.updated_at).getTime();
   const serverTimestamp = new Date(serverData.updated_at).getTime();
   
@@ -169,16 +170,16 @@ export function detectConflict(
  */
 export function createConflict(
   entity: string,
-  localData: any,
-  serverData: any
+  localData: SyncEntityData,
+  serverData: SyncEntityData
 ): SyncConflict {
   return {
-    id: localData.id || serverData.id,
+    id: localData.id || serverData.id || '',
     entity,
     localData,
     serverData,
-    localTimestamp: new Date(localData.updated_at).getTime(),
-    serverTimestamp: new Date(serverData.updated_at).getTime(),
+    localTimestamp: localData.updated_at ? new Date(localData.updated_at).getTime() : 0,
+    serverTimestamp: serverData.updated_at ? new Date(serverData.updated_at).getTime() : 0,
   };
 }
 
@@ -188,7 +189,7 @@ export function createConflict(
  */
 export async function syncQueuedMutations(
   queryClient: QueryClient,
-  executeMutation: (mutation: QueuedMutation) => Promise<any>
+  executeMutation: (mutation: QueuedMutation) => Promise<{ conflict?: boolean; serverData?: SyncEntityData }>
 ): Promise<SyncConflict[]> {
   const queue = getOfflineQueue();
   
@@ -208,7 +209,7 @@ export async function syncQueuedMutations(
         const result = await executeMutation(mutation);
         
         // Check for conflicts (server data newer than local)
-        if (mutation.type === 'update' && result.conflict) {
+        if (mutation.type === 'update' && result.conflict && result.serverData) {
           conflicts.push(createConflict(mutation.entity, mutation.data, result.serverData));
         }
         
@@ -264,4 +265,9 @@ export function setupOnlineListeners(
     window.removeEventListener('online', onOnline);
     window.removeEventListener('offline', onOffline);
   };
+}
+export interface SyncEntityData {
+  id?: string;
+  updated_at?: string;
+  [key: string]: unknown;
 }

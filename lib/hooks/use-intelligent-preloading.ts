@@ -13,7 +13,7 @@ interface RoutePreloadConfig {
   route: string;
   modules: Array<{
     feature: keyof FeatureFlags;
-    importFn: () => Promise<any>;
+    importFn: () => Promise<unknown>;
     priority: 'high' | 'medium' | 'low';
     delay?: number;
   }>;
@@ -133,7 +133,7 @@ const ROUTE_PRELOAD_CONFIGS: RoutePreloadConfig[] = [
  */
 export function useIntelligentPreloading(): {
   preloadForRoute: (targetRoute: string) => void;
-  preloadOnUserIntent: (feature: keyof FeatureFlags, importFn: () => Promise<any>) => void;
+  preloadOnUserIntent: (feature: keyof FeatureFlags, importFn: () => Promise<unknown>) => void;
 } {
   const pathname = usePathname();
 
@@ -164,7 +164,7 @@ export function useIntelligentPreloading(): {
     }
   }, []);
 
-  const preloadOnUserIntent = useCallback((feature: keyof FeatureFlags, importFn: () => Promise<any>) => {
+  const preloadOnUserIntent = useCallback((feature: keyof FeatureFlags, importFn: () => Promise<unknown>) => {
     preloadManager.preloadOnInteraction(feature, importFn);
   }, []);
 
@@ -236,7 +236,7 @@ export function useNavigationPreloading(): {
  */
 export function useComponentPreloading(
   feature: keyof FeatureFlags,
-  importFn: () => Promise<any>
+  importFn: () => Promise<unknown>
 ): {
   preloadProps: {
     onMouseEnter: () => void;

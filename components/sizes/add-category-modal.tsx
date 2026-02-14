@@ -66,14 +66,19 @@ export function AddCategoryModal({ isOpen, onClose, onSave }: AddCategoryModalPr
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm md:items-center md:p-4"
       onClick={handleBackdropClick}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape') {
+          onClose();
+        }
+      }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="add-category-title"
+      tabIndex={-1}
     >
       {/* Modal Content */}
       <div
         className="relative w-full max-h-[90vh] overflow-y-auto bg-background shadow-xl md:max-w-2xl md:rounded-lg"
-        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-background px-6 py-4 border-border">

@@ -7,27 +7,24 @@ import { SpinningIcon } from '@/components/ui/animated-icon';
 
 
 
-import { z } from 'zod';
 import { useImmerState } from '@/lib/utils/immer-state';
 import { safeValidate } from '@/lib/utils/validation';
 import { useLatest } from '@/lib/hooks/use-latest';
 import { 
   OutfitSelectionSchema, 
-  OutfitSchema
+  OutfitSchema,
+  type OutfitSelection as SchemaOutfitSelection
 } from '@/lib/schemas';
 import { type OutfitSelection, type Outfit } from '@/lib/types/database';
 import { OutfitCard } from './outfit-card';
 import { type ScoreBreakdownData } from './score-circle';
 
-// Outfit display state schema
-const OutfitDisplayStateSchema = z.object({
-  isTransitioning: z.boolean(),
-  isSaving: z.boolean(),
-  saveError: z.string().nullable(),
-  isInMockupView: z.boolean(),
-});
-
-type OutfitDisplayState = z.infer<typeof OutfitDisplayStateSchema>;
+interface OutfitDisplayState {
+  isTransitioning: boolean;
+  isSaving: boolean;
+  saveError: string | null;
+  isInMockupView: boolean;
+}
 
 // Memoized score calculator component for performance
 const OutfitScoreCalculator = memo<{
@@ -41,7 +38,7 @@ const OutfitScoreCalculator = memo<{
     // Basic scoring logic - can be enhanced with actual scoring algorithm
     const items = Object.entries(selection)
       .filter(([key, value]) => value && key !== 'tuck_style' && key !== 'loved')
-      .map(([key, item]) => ({ key, item: item as any }));
+      .flatMap(([key, item]) => (item && typeof item === 'object' && 'id' in item ? [{ key, item }] : []));
     
     let score = items.length * 15; // Base score per item
     
@@ -115,7 +112,6 @@ interface OutfitDisplayProps {
   onRandomize: () => void;
   // Enhanced error handling props
   onError?: (error: Error) => void;
-  onRetry?: () => void;
   onShowAlternatives?: () => void;
   onTryDifferentAnchor?: () => void;
   // Enhanced functionality props
@@ -136,7 +132,6 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
   selection, 
   onRandomize,
   onError,
-  onRetry,
   onShowAlternatives,
   onTryDifferentAnchor,
   enableErrorBoundary = false,
@@ -175,6 +170,19 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
     
     return validation.data as OutfitSelection;
   }, [selection]);
+
+  // OutfitCard expects schema-level selection where tuck_style is always defined.
+  const cardSelection = useMemo<SchemaOutfitSelection>(() => {
+    const normalized = {
+      ...validatedSelection,
+      tuck_style: validatedSelection.tuck_style ?? 'Untucked',
+    };
+    const validation = safeValidate(OutfitSelectionSchema, normalized);
+    if (!validation.success) {
+      return { tuck_style: 'Untucked' };
+    }
+    return validation.data;
+  }, [validatedSelection]);
 
   // Check if outfit is complete
   const hasCompleteOutfit = useMemo(() => {
@@ -233,7 +241,7 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
         window.dispatchEvent(new CustomEvent('tryDifferentAnchor'));
       }
     }
-  }, [onRandomize, onError, onShowAlternatives, onTryDifferentAnchor, updateState]);
+  }, [latestOnError, latestOnShowAlternatives, latestOnTryDifferentAnchor, onRandomize, updateState]);
 
   // Handle saving outfit to database
   const handleSaveOutfit = useCallback(async () => {
@@ -293,7 +301,7 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
         latestOnError.current(error as Error);
       }
     }
-  }, [onSaveOutfit, hasCompleteOutfit, userId, outfitScore, validatedSelection, updateState, onError]);
+  }, [latestOnError, onSaveOutfit, hasCompleteOutfit, userId, outfitScore, validatedSelection, updateState]);
 
   // Handle mockup view toggle
   const handleMockupViewChange = useCallback((isInMockup: boolean) => {
@@ -305,17 +313,6 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
       onMockupViewChange(isInMockup);
     }
   }, [onMockupViewChange, updateState]);
-
-  // Enhanced error handling functions
-  const handleError = useCallback((error: Error, feature: string) => {
-    console.error(`Outfit display error in ${feature}:`, error);
-    latestOnError.current?.(error);
-  }, [latestOnError]);
-
-  const handleRetry = useCallback((feature: string) => {
-    console.log(`Retrying ${feature} feature`);
-    onRetry?.();
-  }, [onRetry]);
 
   // Create a unique key based on selection to reset error boundary when selection changes
   const selectionKey = useMemo(() => {
@@ -386,7 +383,7 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
               </div>
             )}
             <OutfitCard
-              outfit={validatedSelection as any}
+              outfit={cardSelection}
               variant="detailed"
               showScore={hasAnyItems}
               score={outfitScore}

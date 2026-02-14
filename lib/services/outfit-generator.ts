@@ -341,7 +341,7 @@ function calculateOverallScore(
     calculateCompatibilityScore(item, {
       weatherContext,
       selectedItems: Object.fromEntries(
-        Array.from(selectedItems.entries()).filter(([_, i]) => i.id !== item.id)
+        Array.from(selectedItems.entries()).filter(([, selected]) => selected.id !== item.id)
       ),
     })
   );
@@ -377,7 +377,7 @@ function determineSwappable(
 ): Record<string, boolean> {
   const swappable: Record<string, boolean> = {};
   
-  for (const [slot, selectedItem] of selectedItems.entries()) {
+  for (const [slot] of selectedItems.entries()) {
     const availableItems = itemsBySlot.get(slot) || [];
     // Swappable if there are other items besides the selected one
     swappable[slot] = availableItems.length > 1;

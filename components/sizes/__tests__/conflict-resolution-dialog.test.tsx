@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { ConflictResolutionDialog } from '../conflict-resolution-dialog';
 import type { SyncConflict } from '@/lib/utils/offline-sync';
 
