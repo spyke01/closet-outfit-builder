@@ -86,14 +86,18 @@
     "lucide-react": "^0.544.0",
     "next": "^16.1.6",
     "next-themes": "^0.4.6",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
     "react-hook-form": "^7.71.1",
     "swr": "^2.4.0",
     "tailwind-merge": "^3.3.0",
     "web-vitals": "^5.1.0",
     "yargs": "^18.0.0",
     "zod": "^4.1.12"
+  },
+  "overrides": {
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
   },
   "devDependencies": {
     "@axe-core/react": "^4.10.2",
