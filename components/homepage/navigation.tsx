@@ -23,7 +23,11 @@ export function Navigation() {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <Link href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="#how-it-works"
+              aria-label="Jump to How it works section"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               How it works
             </Link>
             <Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -67,8 +71,9 @@ export function Navigation() {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden border-t border-border py-4 space-y-4">
-              <Link 
+            <Link 
               href="#how-it-works" 
+              aria-label="Jump to How it works section"
               className="block text-muted-foreground hover:text-foreground transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >

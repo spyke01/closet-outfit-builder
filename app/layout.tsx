@@ -4,6 +4,7 @@ import { QueryProvider } from "@/lib/providers/query-provider";
 import { MonitoringProvider } from "@/lib/providers/monitoring-provider";
 import { SWRProvider } from "@/lib/providers/swr-config";
 import { PreloadInitializer } from "@/components/preload-initializer";
+import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
 import "./globals.css";
 
 const defaultUrl = process.env.NETLIFY_URL
@@ -61,6 +62,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="font-sans antialiased">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-card focus:px-4 focus:py-2 focus:text-foreground focus:shadow-md"
+        >
+          Skip to main content
+        </a>
         <MonitoringProvider>
           <QueryProvider>
             <SWRProvider>
@@ -70,6 +77,7 @@ export default function RootLayout({
                 enableSystem
               >
                 <PreloadInitializer />
+                <ServiceWorkerRegistration />
                 {children}
               </ThemeProvider>
             </SWRProvider>

@@ -46,7 +46,7 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen">
+    <main id="main-content" className="min-h-screen">
       <Navigation />
       <HeroSection />
       <FeatureHighlights />
