@@ -6,7 +6,7 @@ This directory contains serverless functions for the My AI Outfit app that provi
 
 ### Weather Function (`/api/weather`)
 
-Proxies requests to the OpenWeatherMap API to fetch weather forecast data with comprehensive error handling and rate limiting.
+Proxies requests to the OpenWeatherMap One Call API 3.0 to fetch current, hourly, daily, and alert data with comprehensive error handling and rate limiting.
 
 **Endpoint:** `GET /.netlify/functions/weather`  
 **Alias:** `GET /api/weather`
@@ -14,6 +14,10 @@ Proxies requests to the OpenWeatherMap API to fetch weather forecast data with c
 **Parameters:**
 - `lat` (required): Latitude coordinate (-90 to 90)
 - `lon` (required): Longitude coordinate (-180 to 180)
+
+**Forecast coverage:**
+- `forecast`: Up to 8 daily entries
+- `hourly`: Up to 48 hourly entries
 
 **Example:**
 ```
@@ -24,7 +28,12 @@ GET /api/weather?lat=40.7128&lon=-74.0060
 ```json
 {
   "current": {
+    "observationTime": "2024-01-01T14:00:00.000Z",
     "temperature": 32,
+    "feelsLike": 30,
+    "humidity": 75,
+    "windSpeed": 9,
+    "pressure": 1018,
     "condition": "clear sky",
     "icon": "01d"
   },
@@ -37,9 +46,20 @@ GET /api/weather?lat=40.7128&lon=-74.0060
       },
       "condition": "clear sky",
       "icon": "01d",
-      "precipitationProbability": 10
+      "precipitationProbability": 0.1
     }
-  ]
+  ],
+  "hourly": [
+    {
+      "time": "2024-01-01T15:00:00.000Z",
+      "temperature": 33,
+      "feelsLike": 31,
+      "condition": "clear sky",
+      "icon": "01d",
+      "precipitationProbability": 0.0
+    }
+  ],
+  "alerts": []
 }
 ```
 
@@ -114,9 +134,9 @@ Functions are automatically deployed when pushing to the main branch. Ensure env
 
 ### OpenWeatherMap API
 1. Go to [OpenWeatherMap](https://openweathermap.org/api)
-2. Sign up for a free account
+2. Sign up for an account
 3. Generate an API key
-4. Use the free tier for development (1000 calls/day)
+4. Enable/subscribe to One Call API 3.0 for the key
 
 ## Error Codes
 

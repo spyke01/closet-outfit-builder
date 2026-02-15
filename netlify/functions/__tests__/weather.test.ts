@@ -116,17 +116,45 @@ describe('Weather Function', () => {
 
     const mockWeatherResponse = {
       current: {
+        dt: 1640995200,
         temp: 75,
+        feels_like: 73,
+        pressure: 1012,
+        humidity: 52,
+        wind_speed: 8.9,
+        visibility: 10000,
+        uvi: 3.2,
+        sunrise: 1640970000,
+        sunset: 1641006000,
         weather: [{ main: 'Clear', description: 'clear sky', icon: '01d' }],
       },
-      daily: [
+      hourly: Array.from({ length: 50 }, (_, i) => ({
+        dt: 1640998800 + i * 3600,
+        temp: 76 + (i % 3),
+        feels_like: 74 + (i % 3),
+        pop: 0.2,
+        weather: [{ main: 'Clear', description: 'clear sky', icon: '01d' }],
+      })),
+      daily: Array.from({ length: 10 }, (_, i) => ({
+        dt: 1640995200 + i * 86400,
+        sunrise: 1640970000 + i * 86400,
+        sunset: 1641006000 + i * 86400,
+        temp: { max: 80 + i, min: 65 + i },
+        weather: [{ main: 'Clear', description: 'clear sky', icon: '01d' }],
+        pop: 0.1,
+      })),
+      alerts: [
         {
-          dt: 1640995200,
-          temp: { max: 80, min: 65 },
-          weather: [{ main: 'Clear', description: 'clear sky', icon: '01d' }],
-          pop: 0.1,
+          sender_name: 'NWS',
+          event: 'Heat Advisory',
+          start: 1640995200,
+          end: 1641024000,
+          description: 'Hot temperatures expected.',
+          tags: ['Extreme temperature value'],
         },
       ],
+      timezone: 'America/New_York',
+      timezone_offset: -18000,
     };
 
     mockFetch.mockResolvedValueOnce({
@@ -142,23 +170,21 @@ describe('Weather Function', () => {
     
     expect(body).toHaveProperty('current');
     expect(body).toHaveProperty('forecast');
+    expect(body).toHaveProperty('hourly');
+    expect(body).toHaveProperty('alerts');
     expect(body.current.temperature).toBe(75);
+    expect(body.current.feelsLike).toBe(73);
     expect(body.current.condition).toBe('clear sky');
+    expect(body.forecast[0].temperature.high).toBe(80);
+    expect(body.forecast).toHaveLength(8);
+    expect(body.hourly[0].temperature).toBe(76);
+    expect(body.hourly).toHaveLength(48);
+    expect(body.alerts[0].event).toBe('Heat Advisory');
   });
 
   it('should handle API authentication errors', async () => {
     process.env.OPENWEATHER_API_KEY = 'invalid-key';
 
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      status: 401,
-    });
-
-    // Mock the fallback API calls to also fail with 401
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      status: 401,
-    });
     mockFetch.mockResolvedValueOnce({
       ok: false,
       status: 401,
@@ -190,40 +216,30 @@ describe('Weather Function', () => {
     expect(body.error).toContain('Rate limit exceeded');
   });
 
-  it('should handle fallback to free tier API', async () => {
+  it('should map One Call response without alerts/hourly', async () => {
     process.env.OPENWEATHER_API_KEY = 'test-api-key';
 
-    // Mock One Call API failure
     mockFetch.mockResolvedValueOnce({
-      ok: false,
-      status: 403,
-    });
-
-    // Mock successful free tier responses
-    const currentWeatherResponse = {
-      main: { temp: 75, temp_max: 80, temp_min: 65 },
-      weather: [{ main: 'Clear', description: 'clear sky', icon: '01d' }],
-    };
-
-    const forecastResponse = {
-      list: [
-        {
+      ok: true,
+      json: () => Promise.resolve({
+        current: {
           dt: 1640995200,
-          main: { temp: 75, temp_max: 80, temp_min: 65 },
-          weather: [{ main: 'Clear', description: 'clear sky', icon: '01d' }],
-          pop: 0.1,
+          temp: 72,
+          feels_like: 71,
+          pressure: 1009,
+          humidity: 60,
+          wind_speed: 6,
+          weather: [{ main: 'Clouds', description: 'few clouds', icon: '02d' }],
         },
-      ],
-    };
-
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(currentWeatherResponse),
-    });
-
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(forecastResponse),
+        daily: [
+          {
+            dt: 1640995200,
+            temp: { max: 78, min: 66 },
+            weather: [{ main: 'Clouds', description: 'few clouds', icon: '02d' }],
+            pop: 0,
+          },
+        ],
+      }),
     });
 
     // Use a different IP to avoid rate limiting from previous tests
@@ -234,5 +250,7 @@ describe('Weather Function', () => {
     const body = JSON.parse(result?.body || '{}');
     expect(body).toHaveProperty('current');
     expect(body).toHaveProperty('forecast');
+    expect(body.hourly).toEqual([]);
+    expect(body.alerts).toEqual([]);
   });
 });

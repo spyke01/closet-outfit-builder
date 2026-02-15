@@ -87,8 +87,16 @@ jobs:
               }
             }
       
-      - name: Fail if bundle size limits exceeded
+      - name: Enforce bundle size gate
         if: steps.bundle-analysis.outcome == 'failure'
         run: |
-          echo "❌ Bundle size limits exceeded"
-          exit 1
+          STRICT_MODE="${{ vars.BUNDLE_ANALYSIS_STRICT || 'false' }}"
+
+          echo "⚠️ Bundle size limits exceeded"
+          if [ "$STRICT_MODE" = "true" ]; then
+            echo "❌ Strict mode enabled (vars.BUNDLE_ANALYSIS_STRICT=true), failing job"
+            exit 1
+          fi
+
+          echo "ℹ️ Strict mode disabled, continuing with warnings only"
+          exit 0

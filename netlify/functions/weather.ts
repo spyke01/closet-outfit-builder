@@ -1,16 +1,40 @@
 import { Handler, HandlerEvent } from '@netlify/functions';
 
 interface OpenWeatherOneCallResponse {
+  timezone?: string;
+  timezone_offset?: number;
   current: {
+    dt: number;
     temp: number;
+    feels_like: number;
+    pressure: number;
+    humidity: number;
+    wind_speed: number;
+    visibility?: number;
+    uvi?: number;
+    sunrise?: number;
+    sunset?: number;
     weather: Array<{
       main: string;
       description: string;
       icon: string;
     }>;
   };
+  hourly?: Array<{
+    dt: number;
+    temp: number;
+    feels_like: number;
+    pop?: number;
+    weather: Array<{
+      main: string;
+      description: string;
+      icon: string;
+    }>;
+  }>;
   daily: Array<{
     dt: number;
+    sunrise?: number;
+    sunset?: number;
     temp: {
       max: number;
       min: number;
@@ -22,51 +46,14 @@ interface OpenWeatherOneCallResponse {
     }>;
     pop: number; // Probability of precipitation
   }>;
-}
-
-interface OpenWeatherCurrentResponse {
-  main: {
-    temp: number;
-    temp_max: number;
-    temp_min: number;
-  };
-  weather: Array<{
-    main: string;
+  alerts?: Array<{
+    sender_name?: string;
+    event: string;
+    start: number;
+    end: number;
     description: string;
-    icon: string;
+    tags?: string[];
   }>;
-}
-
-interface OpenWeatherForecastResponse {
-  list: Array<{
-    dt: number;
-    main: {
-      temp: number;
-      temp_max: number;
-      temp_min: number;
-    };
-    weather: Array<{
-      main: string;
-      description: string;
-      icon: string;
-    }>;
-    pop: number;
-  }>;
-}
-
-interface ForecastItem {
-  dt: number;
-  main: {
-    temp: number;
-    temp_max: number;
-    temp_min: number;
-  };
-  weather: Array<{
-    main: string;
-    description: string;
-    icon: string;
-  }>;
-  pop: number;
 }
 
 interface WeatherForecast {
@@ -77,16 +64,49 @@ interface WeatherForecast {
   };
   condition: string;
   icon: string;
+  sunrise?: string;
+  sunset?: string;
   precipitationProbability?: number;
+}
+
+interface WeatherHourly {
+  time: string;
+  temperature: number;
+  feelsLike: number;
+  condition: string;
+  icon: string;
+  precipitationProbability?: number;
+}
+
+interface WeatherAlert {
+  senderName?: string;
+  event: string;
+  start: string;
+  end: string;
+  description: string;
+  tags?: string[];
 }
 
 interface WeatherResponse {
   current: {
+    observationTime: string;
     temperature: number;
+    feelsLike: number;
+    humidity: number;
+    windSpeed: number;
+    pressure: number;
+    visibility?: number;
+    uvIndex?: number;
+    sunrise?: string;
+    sunset?: string;
     condition: string;
     icon: string;
   };
   forecast: WeatherForecast[];
+  hourly: WeatherHourly[];
+  alerts: WeatherAlert[];
+  timezone?: string;
+  timezoneOffset?: number;
 }
 
 // Rate limiting store (in production, use Redis or similar)
@@ -243,86 +263,24 @@ export const handler: Handler = async (event: HandlerEvent) => {
       };
     }
 
-    // Try One Call API 3.0 first, fall back to free tier if needed
-    const weatherUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial&exclude=minutely,hourly,alerts`;
+    // One Call API 3.0 provides current + hourly + daily + alerts in a single request
+    const weatherUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial&exclude=minutely`;
     
     const response = await fetch(weatherUrl);
     
-    // If One Call API fails with 401/403, try the free tier APIs
-    if (!response.ok && (response.status === 401 || response.status === 403)) {
-      
-      // Use current weather + 5-day forecast (free tier)
-      const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial`;
-      const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial&cnt=24`;
-      
-      const [currentResponse, forecastResponse] = await Promise.all([
-        fetch(currentWeatherUrl),
-        fetch(forecastUrl)
-      ]);
-      
-      if (!currentResponse.ok || !forecastResponse.ok) {
-        if (currentResponse.status === 401 || forecastResponse.status === 401) {
-          console.error('Invalid API key for OpenWeather API. Key:', apiKey ? `${apiKey.substring(0, 8)}...` : 'undefined');
-          return {
-            statusCode: 500,
-            headers,
-            body: JSON.stringify({ 
-              error: 'Weather service authentication failed - API key is invalid or not activated. Please check your OpenWeather API key.',
-              details: 'Visit https://home.openweathermap.org/api_keys to verify your API key'
-            }),
-          };
-        }
-        
-        if (currentResponse.status === 429 || forecastResponse.status === 429) {
-          return {
-            statusCode: 429,
-            headers,
-            body: JSON.stringify({ error: 'Weather service rate limit exceeded' }),
-          };
-        }
-        
-        throw new Error(`Weather API responded with status: ${currentResponse.status}/${forecastResponse.status}`);
-      }
-      
-      const [currentData, forecastData] = await Promise.all([
-        currentResponse.json() as Promise<OpenWeatherCurrentResponse>,
-        forecastResponse.json() as Promise<OpenWeatherForecastResponse>
-      ]);
-      
-      // Transform free tier response to our format
-      const transformedData: WeatherResponse = {
-        current: {
-          temperature: Math.round(currentData.main.temp),
-          condition: currentData.weather[0].description,
-          icon: currentData.weather[0].icon,
-        },
-        forecast: forecastData.list.slice(0, 24).reduce((acc: WeatherForecast[], item: ForecastItem, index: number) => {
-          // Group by day (every 8 items = 1 day with 3-hour intervals)
-          if (index % 8 === 0) {
-            const date = new Date(item.dt * 1000);
-            acc.push({
-              date: date.toISOString().split('T')[0],
-              temperature: {
-                high: Math.round(item.main.temp_max),
-                low: Math.round(item.main.temp_min),
-              },
-              condition: item.weather[0].description,
-              icon: item.weather[0].icon,
-              precipitationProbability: item.pop,
-            });
-          }
-          return acc;
-        }, []).slice(0, 3),
-      };
-      
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify(transformedData),
-      };
-    }
-    
     if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        console.error('Invalid API key or One Call API 3.0 not enabled. Key:', apiKey ? `${apiKey.substring(0, 8)}...` : 'undefined');
+        return {
+          statusCode: 500,
+          headers,
+          body: JSON.stringify({
+            error: 'Weather service authentication failed - API key is invalid or One Call API 3.0 is not enabled for this key.',
+            details: 'Visit https://home.openweathermap.org/subscriptions to verify your One Call API 3.0 plan and key activation',
+          }),
+        };
+      }
+
       if (response.status === 429) {
         return {
           statusCode: 429,
@@ -339,11 +297,21 @@ export const handler: Handler = async (event: HandlerEvent) => {
     // Transform the response to match our expected format
     const transformedData: WeatherResponse = {
       current: {
+        observationTime: new Date(weatherData.current.dt * 1000).toISOString(),
         temperature: Math.round(weatherData.current.temp),
+        feelsLike: Math.round(weatherData.current.feels_like),
+        humidity: weatherData.current.humidity,
+        windSpeed: Math.round(weatherData.current.wind_speed),
+        pressure: weatherData.current.pressure,
+        visibility: weatherData.current.visibility,
+        uvIndex: weatherData.current.uvi,
+        sunrise: weatherData.current.sunrise ? new Date(weatherData.current.sunrise * 1000).toISOString() : undefined,
+        sunset: weatherData.current.sunset ? new Date(weatherData.current.sunset * 1000).toISOString() : undefined,
         condition: weatherData.current.weather[0].description,
         icon: weatherData.current.weather[0].icon,
       },
-      forecast: weatherData.daily.slice(0, 3).map(day => {
+      // One Call 3.0 provides up to 8 daily forecast points and 48 hourly points.
+      forecast: weatherData.daily.slice(0, 8).map(day => {
         const date = new Date(day.dt * 1000);
         return {
           date: date.toISOString().split('T')[0],
@@ -353,9 +321,29 @@ export const handler: Handler = async (event: HandlerEvent) => {
           },
           condition: day.weather[0].description,
           icon: day.weather[0].icon,
+          sunrise: day.sunrise ? new Date(day.sunrise * 1000).toISOString() : undefined,
+          sunset: day.sunset ? new Date(day.sunset * 1000).toISOString() : undefined,
           precipitationProbability: day.pop,
         };
       }),
+      hourly: (weatherData.hourly ?? []).slice(0, 48).map(hour => ({
+        time: new Date(hour.dt * 1000).toISOString(),
+        temperature: Math.round(hour.temp),
+        feelsLike: Math.round(hour.feels_like),
+        condition: hour.weather[0].description,
+        icon: hour.weather[0].icon,
+        precipitationProbability: hour.pop,
+      })),
+      alerts: (weatherData.alerts ?? []).map(alert => ({
+        senderName: alert.sender_name,
+        event: alert.event,
+        start: new Date(alert.start * 1000).toISOString(),
+        end: new Date(alert.end * 1000).toISOString(),
+        description: alert.description,
+        tags: alert.tags,
+      })),
+      timezone: weatherData.timezone,
+      timezoneOffset: weatherData.timezone_offset,
     };
 
     return {

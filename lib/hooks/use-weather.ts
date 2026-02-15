@@ -19,11 +19,42 @@ const WeatherDataSchema = z.object({
 
 const WeatherResponseSchema = z.object({
   current: z.object({
+    observationTime: z.string().optional(),
     temperature: z.number(),
+    feelsLike: z.number().optional(),
+    humidity: z.number().optional(),
+    windSpeed: z.number().optional(),
+    pressure: z.number().optional(),
+    visibility: z.number().optional(),
+    uvIndex: z.number().optional(),
+    sunrise: z.string().optional(),
+    sunset: z.string().optional(),
     condition: z.string(),
     icon: z.string(),
   }),
   forecast: z.array(WeatherDataSchema),
+  hourly: z.array(
+    z.object({
+      time: z.string(),
+      temperature: z.number(),
+      feelsLike: z.number(),
+      condition: z.string(),
+      icon: z.string(),
+      precipitationProbability: z.number().optional(),
+    })
+  ).optional(),
+  alerts: z.array(
+    z.object({
+      senderName: z.string().optional(),
+      event: z.string(),
+      start: z.string(),
+      end: z.string(),
+      description: z.string(),
+      tags: z.array(z.string()).optional(),
+    })
+  ).optional(),
+  timezone: z.string().optional(),
+  timezoneOffset: z.number().optional(),
 });
 
 const WeatherErrorSchema = z.object({
@@ -38,6 +69,8 @@ export type WeatherError = z.infer<typeof WeatherErrorSchema>;
 interface UseWeatherReturn {
   forecast: WeatherData[];
   current: WeatherResponse['current'] | null;
+  hourly: NonNullable<WeatherResponse['hourly']>;
+  alerts: NonNullable<WeatherResponse['alerts']>;
   loading: boolean;
   error: WeatherError | null;
   retry: () => void;
@@ -223,6 +256,8 @@ function getErrorMessageForStatus(status: number): string {
 export function useWeather(enabled: boolean = true): UseWeatherReturn {
   const [forecast, setForecast] = useState<WeatherData[]>([]);
   const [current, setCurrent] = useState<WeatherResponse['current'] | null>(null);
+  const [hourly, setHourly] = useState<NonNullable<WeatherResponse['hourly']>>([]);
+  const [alerts, setAlerts] = useState<NonNullable<WeatherResponse['alerts']>>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<WeatherError | null>(null);
   const [retryCount, setRetryCount] = useState(0);
@@ -267,6 +302,8 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
         
         setForecast(weatherData.forecast);
         setCurrent(weatherData.current);
+        setHourly(weatherData.hourly ?? []);
+        setAlerts(weatherData.alerts ?? []);
         setRetryCount(0); // Reset retry count on success
         setUsingFallback(false);
       } catch (weatherError) {
@@ -277,6 +314,8 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
             const fallbackData = await generateFallbackWeather(location.latitude, location.longitude);
             setForecast(fallbackData.forecast);
             setCurrent(fallbackData.current);
+            setHourly([]);
+            setAlerts([]);
             setUsingFallback(true);
             setError({
               error: 'Using estimated weather data. Actual weather service is temporarily unavailable.',
@@ -332,6 +371,8 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
       if (retryCount >= 2) {
         setForecast([]);
         setCurrent(null);
+        setHourly([]);
+        setAlerts([]);
       }
 
       // Increment retry count for rate limiting
@@ -381,6 +422,8 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
       // Clear data when disabled
       setForecast([]);
       setCurrent(null);
+      setHourly([]);
+      setAlerts([]);
       setError(null);
       setLoading(false);
     }
@@ -389,6 +432,8 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
   return {
     forecast,
     current,
+    hourly,
+    alerts,
     loading,
     error,
     retry,

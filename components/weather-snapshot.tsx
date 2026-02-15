@@ -7,6 +7,7 @@ import { Cloud, CloudRain, CloudSnow, CloudSun, Sun } from 'lucide-react';
 interface WeatherSnapshotProps {
   current: {
     temperature: number;
+    feelsLike?: number;
     condition: string;
     icon: string;
   } | null;
@@ -78,24 +79,32 @@ export default function WeatherSnapshot({ current, forecast, loading, error }: W
         </div>
       </div>
       
-      {today && (
-        <div className="space-y-1 text-sm border-t border-border pt-4">
+      <div className="space-y-1 text-sm border-t border-border pt-4">
+        {current.feelsLike !== undefined && (
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Feels like:</span>
+            <span className="text-foreground font-medium">{Math.round(current.feelsLike)}°F</span>
+          </div>
+        )}
+        {today && (
           <div className="flex justify-between">
             <span className="text-muted-foreground">High:</span>
             <span className="text-foreground font-medium">{Math.round(today.temperature.high)}°F</span>
           </div>
+        )}
+        {today && (
           <div className="flex justify-between">
             <span className="text-muted-foreground">Low:</span>
             <span className="text-foreground font-medium">{Math.round(today.temperature.low)}°F</span>
           </div>
-          {today.precipitationProbability !== undefined && (
+        )}
+        {today?.precipitationProbability !== undefined && (
             <div className="flex justify-between">
               <span className="text-muted-foreground">Rain:</span>
               <span className="text-foreground font-medium">{Math.round(today.precipitationProbability * 100)}%</span>
             </div>
-          )}
-        </div>
-      )}
+        )}
+      </div>
       
       <p className="text-xs text-muted-foreground mt-4 italic">
         A {current.condition.toLowerCase()} day calls for versatile layering.

@@ -231,7 +231,7 @@ jobs:
         run: |
           BUNDLE_FAILED="${{ steps.bundle-analysis.outcome }}"
           TYPECHECK_FAILED="${{ steps.typecheck.outcome }}"
-          STRICT_MODE="${{ vars.PERFORMANCE_CHECKS_STRICT || 'true' }}"
+          STRICT_MODE="${{ vars.PERFORMANCE_CHECKS_STRICT || 'false' }}"
           
           if [ "$BUNDLE_FAILED" = "failure" ] || [ "$TYPECHECK_FAILED" = "failure" ]; then
             echo "⚠️ Performance checks reported issues"

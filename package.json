@@ -36,7 +36,7 @@
     "lint": "eslint .",
     "lint:report": "eslint . -f json -o .lint-report.json || true && node scripts/lint-summary.js .lint-report.json",
     "lint:strict": "eslint . --max-warnings=0",
-    "lint:a11y": "eslint . --ext .tsx,.ts --no-eslintrc --config eslint.config.js | grep jsx-a11y || echo 'No accessibility violations found'",
+    "lint:a11y": "eslint . --ext .tsx,.ts --config eslint.config.js | grep jsx-a11y || echo 'No accessibility violations found'",
     "test": "vitest --pool=threads",
     "test:run": "vitest --run --pool=threads --maxWorkers=50%",
     "test:coverage": "vitest --coverage",
