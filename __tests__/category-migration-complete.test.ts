@@ -29,6 +29,9 @@ interface MockWardrobeItem {
   capsule_tags?: string[];
   season?: string[];
   active: boolean;
+  bg_removal_status: 'pending' | 'processing' | 'completed' | 'failed';
+  created_at: string;
+  updated_at: string;
 }
 
 interface MockDatabaseState {
@@ -188,7 +191,10 @@ describe('Category Migration Complete Property Tests', () => {
               color: fc.option(fc.string({ minLength: 1, maxLength: 20 }).filter(s => s.trim().length > 0)),
               formality_score: fc.option(fc.integer({ min: 1, max: 10 })),
               capsule_tags: fc.option(fc.array(fc.string({ minLength: 1, maxLength: 20 }).filter(s => s.trim().length > 0), { maxLength: 5 })),
-              season: fc.option(fc.array(fc.constantFrom('Spring', 'Summer', 'Fall', 'Winter'), { maxLength: 4 }))
+              season: fc.option(fc.array(fc.constantFrom('Spring', 'Summer', 'Fall', 'Winter'), { maxLength: 4 })),
+              bg_removal_status: fc.constantFrom('pending', 'processing', 'completed', 'failed'),
+              created_at: fc.constant(new Date().toISOString()),
+              updated_at: fc.constant(new Date().toISOString())
             }),
             { minLength: 0, maxLength: 20 }
           ).map(items => {
@@ -231,7 +237,10 @@ describe('Category Migration Complete Property Tests', () => {
               formality_score: itemData.formality_score || undefined,
               capsule_tags: itemData.capsule_tags || undefined,
               season: itemData.season || undefined,
-              active: true
+              active: true,
+              bg_removal_status: itemData.bg_removal_status,
+              created_at: itemData.created_at,
+              updated_at: itemData.updated_at
             }))
           };
 
@@ -405,7 +414,10 @@ describe('Category Migration Complete Property Tests', () => {
         color: itemData.color,
         formality_score: itemData.formality_score,
         capsule_tags: itemData.capsule_tags,
-        active: true
+        active: true,
+        bg_removal_status: 'completed' as const,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }))
     };
 

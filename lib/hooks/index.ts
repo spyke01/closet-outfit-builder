@@ -55,6 +55,9 @@ export {
 // Authentication hooks
 export { useAuth } from './use-auth';
 
+// Realtime subscription hooks
+export { useWardrobeRealtime } from './use-realtime-wardrobe';
+
 // Advanced pattern hooks
 export { useLatest } from './use-latest';
 export { useEventCallback, useStableCallback } from './use-event-callback';

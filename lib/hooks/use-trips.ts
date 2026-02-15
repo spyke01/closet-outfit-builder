@@ -401,7 +401,10 @@ export function useUpdateTripDay() {
         slot_label: sanitizeSlotLabel(input.slot_label),
       });
 
-      const { id, item_ids, ...updatePayload } = validated;
+      const { id, item_ids, ...parsedPayload } = validated;
+      const updatePayload = Object.fromEntries(
+        Object.entries(parsedPayload).filter(([key]) => key in input)
+      );
 
       const { data, error } = await supabase
         .from('trip_days')

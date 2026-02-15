@@ -34,6 +34,8 @@ interface UploadState {
   previewUrl: string | null;
 }
 
+// Specific image types to avoid HEIC/HEIF issues on iOS
+// iOS devices can convert HEIC to JPEG automatically when using these MIME types
 const DEFAULT_ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const DEFAULT_MAX_SIZE = 5 * 1024 * 1024; // 5MB
 

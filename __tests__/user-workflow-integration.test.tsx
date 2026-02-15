@@ -71,6 +71,7 @@ vi.mock('@/lib/hooks/use-wardrobe-items', () => ({
     isLoading: false,
     error: null
   }),
+  useWardrobeRealtime: () => undefined,
   useCreateWardrobeItem: () => ({
     mutateAsync: vi.fn(),
     isPending: false

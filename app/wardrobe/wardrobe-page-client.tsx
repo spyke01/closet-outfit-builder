@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useCallback, startTransition, useEffect } from 'react';
 import Image from 'next/image';
 import { useCategories } from '@/lib/hooks/use-categories';
-import { useWardrobeItems } from '@/lib/hooks/use-wardrobe-items';
+import { useWardrobeItems, useWardrobeRealtime } from '@/lib/hooks/use-wardrobe-items';
 import { ItemsList } from '@/components/items-list';
 import { WardrobeSearchFiltersWithErrorBoundary as WardrobeSearchFilters } from '@/components/dynamic/wardrobe-search-filters-dynamic';
 import { Button } from '@/components/ui/button';
@@ -28,6 +28,9 @@ export function WardrobePageClient() {
   // Fetch data using hooks
   const { data: categories = [], isLoading: categoriesLoading, error: categoriesError } = useCategories();
   const { data: items = [], isLoading: itemsLoading, error: itemsError } = useWardrobeItems();
+
+  // Enable real-time updates for background removal status and image_url changes
+  useWardrobeRealtime();
 
   const updateQueryParams = useCallback((updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParamsKey);

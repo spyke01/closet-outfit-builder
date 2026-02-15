@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { ImageProcessingResponse, FileValidationSchema } from '@/lib/schemas';
+import { ImageProcessingResponse, FileValidationSchema, BgRemovalStatus } from '@/lib/schemas';
 import { z } from 'zod';
 
 interface UseImageUploadOptions {
@@ -17,8 +17,11 @@ interface UploadProgress {
   isUploading: boolean;
   error: string | null;
   success: string | null;
+  bgRemovalStatus?: BgRemovalStatus;
 }
 
+// Specific image types to avoid HEIC/HEIF issues on iOS
+// iOS devices can convert HEIC to JPEG automatically when using these MIME types
 const DEFAULT_ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const DEFAULT_MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -35,6 +38,7 @@ export function useImageUpload({
     isUploading: false,
     error: null,
     success: null,
+    bgRemovalStatus: undefined,
   });
 
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -122,6 +126,7 @@ export function useImageUpload({
         isUploading: true,
         error: null,
         success: null,
+        bgRemovalStatus: undefined,
       });
     },
     onSuccess: (result) => {
@@ -130,6 +135,7 @@ export function useImageUpload({
           ...prev,
           isUploading: false,
           success: result.message || 'Image uploaded successfully',
+          bgRemovalStatus: result.bgRemovalStatus,
         }));
         onSuccess?.(result.imageUrl);
       } else if (result.fallbackUrl) {
@@ -137,6 +143,7 @@ export function useImageUpload({
           ...prev,
           isUploading: false,
           success: result.message || 'Image uploaded (background removal failed)',
+          bgRemovalStatus: result.bgRemovalStatus,
         }));
         onSuccess?.(result.fallbackUrl);
       } else {
@@ -169,6 +176,7 @@ export function useImageUpload({
       isUploading: false,
       error: null,
       success: null,
+      bgRemovalStatus: undefined,
     });
   }, [uploadMutation]);
 
@@ -179,6 +187,7 @@ export function useImageUpload({
       isUploading: false,
       error: null,
       success: null,
+      bgRemovalStatus: undefined,
     });
   }, [uploadMutation]);
 

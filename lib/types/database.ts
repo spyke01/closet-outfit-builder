@@ -1,4 +1,8 @@
 // Database types based on Supabase schema
+
+// Background removal processing status
+export type BgRemovalStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
 export interface Category {
   id: string;
   user_id: string;
@@ -23,6 +27,9 @@ export interface WardrobeItem {
   image_url?: string;
   active: boolean;
   external_id?: string; // Original ID from seed data for duplicate detection
+  bg_removal_status: BgRemovalStatus;
+  bg_removal_started_at?: string | null;
+  bg_removal_completed_at?: string | null;
   created_at: string;
   updated_at: string;
   // Joined fields

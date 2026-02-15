@@ -8,6 +8,17 @@ const SafeCalendarNotesSchema = z.string()
   .max(500, 'Notes too long')
   .regex(/^[A-Za-z0-9\s]*$/, 'Notes can only contain letters, numbers, and spaces');
 
+// Background removal schemas
+export const BgRemovalStatusSchema = z.enum(['pending', 'processing', 'completed', 'failed']);
+
+export const ReplicateResponseSchema = z.object({
+  id: z.string(),
+  status: z.enum(['starting', 'processing', 'succeeded', 'failed', 'canceled']),
+  output: z.string().url().nullable().optional(), // URL to processed image
+  error: z.string().nullable().optional(),
+  logs: z.string().nullable().optional(),
+});
+
 // Category schema
 export const CategorySchema = z.object({
   id: UUIDSchema.optional(),
@@ -33,6 +44,9 @@ export const WardrobeItemSchema = z.object({
   season: z.array(z.enum(['All', 'Summer', 'Winter', 'Spring', 'Fall'])).nullable().default(['All']),
   image_url: z.string().nullable().optional(), // Allow any string format for image URLs (relative or absolute)
   active: z.boolean().default(true),
+  bg_removal_status: BgRemovalStatusSchema.default('pending'),
+  bg_removal_started_at: z.string().nullable().optional(),
+  bg_removal_completed_at: z.string().nullable().optional(),
   created_at: z.string().nullable().optional(), // More flexible datetime handling
   updated_at: z.string().nullable().optional(), // More flexible datetime handling
 });
@@ -147,6 +161,7 @@ export const ImageProcessingResponseSchema = z.object({
   success: z.boolean(),
   imageUrl: z.string().optional(), // Allow any string format for image URLs
   fallbackUrl: z.string().optional(), // Allow any string format for image URLs
+  bgRemovalStatus: BgRemovalStatusSchema.optional(),
   error: z.string().optional(),
   message: z.string().optional(),
   processingTime: z.number().optional(),
@@ -298,6 +313,7 @@ export const CreateTripDayFormSchema = TripDaySchema.omit({
 
 export const UpdateTripDayFormSchema = CreateTripDayFormSchema.partial().extend({
   id: UUIDSchema,
+  slot_number: z.number().int().min(1).max(5).optional(),
 });
 
 export const CreateTripPackItemFormSchema = TripPackItemSchema.omit({

@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useCallback, startTransition, useDeferredValue, useEffect } from 'react';
 import { Search, Tag, Plus } from 'lucide-react';
 import { useContentVisibility } from '@/lib/utils/content-visibility';
+import { ProcessingIndicator } from './processing-indicator';
 
 
 
@@ -340,6 +341,8 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
                     sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
                     quality={85}
                   />
+                  {/* Background removal processing indicator */}
+                  <ProcessingIndicator status={item.bg_removal_status} />
                 </div>
               )}
               

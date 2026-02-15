@@ -30,6 +30,7 @@ interface MockWardrobeItem {
   capsule_tags?: string[];
   season?: string[];
   active: boolean;
+  bg_removal_status: 'pending' | 'processing' | 'completed' | 'failed';
   created_at: string;
   updated_at: string;
 }
@@ -298,6 +299,7 @@ describe('Database Integrity After Migration Property Tests', () => {
                   name: `${randomName} ${i}`,
                   formality_score: Math.floor(Math.random() * 10) + 1,
                   active: true,
+                  bg_removal_status: 'completed' as const,
                   created_at: new Date().toISOString(),
                   updated_at: new Date().toISOString()
                 });
@@ -438,6 +440,7 @@ describe('Database Integrity After Migration Property Tests', () => {
           name: 'Leather Jacket', // This will be classified as Jacket
           formality_score: 7,
           active: true,
+          bg_removal_status: 'completed' as const,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         }
@@ -496,6 +499,7 @@ describe('Database Integrity After Migration Property Tests', () => {
           name: 'Leather Jacket',
           formality_score: 7,
           active: true,
+          bg_removal_status: 'completed' as const,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         },
@@ -506,6 +510,7 @@ describe('Database Integrity After Migration Property Tests', () => {
           name: 'Blazer',
           formality_score: 8,
           active: true,
+          bg_removal_status: 'completed' as const,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         }
@@ -563,6 +568,7 @@ describe('Database Integrity After Migration Property Tests', () => {
         name: item.name,
         formality_score: item.formality_score,
         active: true,
+        bg_removal_status: 'completed' as const,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }))
