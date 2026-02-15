@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { FileValidationSchema } from '@/lib/schemas';
 import type { ImageProcessingResponse } from '@/lib/schemas';
 import type { BgRemovalStatus } from '@/lib/types/database';
+import { resizeImageFileForUpload } from '@/lib/utils/image-resize';
 import { z } from 'zod';
 
 interface UseImageUploadOptions {
@@ -74,8 +75,19 @@ export function useImageUpload({
 
   const uploadMutation = useMutation({
     mutationFn: async (file: File): Promise<ImageProcessingResponse> => {
+      if (!acceptedTypes.includes(file.type)) {
+        throw new Error(`File type ${file.type} is not supported. Allowed types: ${acceptedTypes.join(', ')}`);
+      }
+
+      let fileForUpload = file;
+      try {
+        fileForUpload = await resizeImageFileForUpload(file, { maxDimension: 1024, quality });
+      } catch (resizeError) {
+        console.warn('Image resize failed; using original file', resizeError);
+      }
+
       // Validate file
-      const validationError = validateFile(file);
+      const validationError = validateFile(fileForUpload);
       if (validationError) {
         throw new Error(validationError);
       }
@@ -85,7 +97,7 @@ export function useImageUpload({
 
       // Prepare form data
       const formData = new FormData();
-      formData.append('image', file);
+      formData.append('image', fileForUpload);
       formData.append('removeBackground', removeBackground.toString());
       formData.append('quality', quality.toString());
 

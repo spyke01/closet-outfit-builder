@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { conditionalImport, isFeatureEnabled } from '@/lib/utils/feature-flags';
+import { resizeImageFileForUpload } from '@/lib/utils/image-resize';
 
 // Type definitions for image upload functionality
 export interface ImageUploadState {
@@ -84,10 +85,20 @@ export function useConditionalImageUpload(isAuthenticated: boolean): UseConditio
       success: null
     }));
 
+    let fileForUpload = file;
+    try {
+      fileForUpload = await resizeImageFileForUpload(file, {
+        maxDimension: 1024,
+        quality: options.quality ?? 0.9,
+      });
+    } catch (resizeError) {
+      console.warn('Image resize failed; using original file', resizeError);
+    }
+
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('image', fileForUpload);
     formData.append('removeBackground', (options.removeBackground ?? true).toString());
-    formData.append('quality', (options.quality ?? 85).toString());
+    formData.append('quality', (options.quality ?? 0.9).toString());
 
     const response = await fetch('/api/upload-image', {
       method: 'POST',

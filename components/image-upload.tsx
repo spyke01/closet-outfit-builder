@@ -1,18 +1,15 @@
 'use client';
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Upload, X, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 
 
-
-
-
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ImageProcessingResponse, FileValidationSchema } from '@/lib/schemas';
+import { resizeImageFileForUpload } from '@/lib/utils/image-resize';
 import { z } from 'zod';
 
 export interface ImageUploadProps {
@@ -59,6 +56,7 @@ export function ImageUpload({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const previewUrlRef = useRef<string | null>(null);
 
   const resetState = useCallback(() => {
     setUploadState({
@@ -98,16 +96,37 @@ export function ImageUpload({
   }, [maxSize, acceptedTypes]);
 
   const uploadFile = useCallback(async (file: File) => {
+    if (!acceptedTypes.includes(file.type)) {
+      const typeError = `File type ${file.type} is not supported. Allowed types: ${acceptedTypes.join(', ')}`;
+      setUploadState(prev => ({ ...prev, error: typeError }));
+      onError?.(typeError);
+      return;
+    }
+
+    let fileForUpload = file;
+    try {
+      fileForUpload = await resizeImageFileForUpload(file, { maxDimension: 1024, quality });
+    } catch (resizeError) {
+      console.warn('Image resize failed; using original file', resizeError);
+    }
+
     // Validate file
-    const validationError = validateFile(file);
+    const validationError = validateFile(fileForUpload);
     if (validationError) {
       setUploadState(prev => ({ ...prev, error: validationError }));
       onError?.(validationError);
       return;
     }
 
+    // Replace prior local preview URL to avoid leaking blob URLs
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = null;
+    }
+
     // Create preview URL
-    const previewUrl = URL.createObjectURL(file);
+    const previewUrl = URL.createObjectURL(fileForUpload);
+    previewUrlRef.current = previewUrl;
     setUploadState(prev => ({ 
       ...prev, 
       isUploading: true, 
@@ -123,7 +142,7 @@ export function ImageUpload({
     try {
       // Prepare form data
       const formData = new FormData();
-      formData.append('image', file);
+      formData.append('image', fileForUpload);
       formData.append('removeBackground', removeBackground.toString());
       formData.append('quality', quality.toString());
 
@@ -194,13 +213,9 @@ export function ImageUpload({
       }));
       onError?.(errorMessage);
     } finally {
-      // Clean up preview URL
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
       abortControllerRef.current = null;
     }
-  }, [validateFile, removeBackground, quality, onUpload, onError]);
+  }, [acceptedTypes, validateFile, removeBackground, quality, onUpload, onError]);
 
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -237,14 +252,24 @@ export function ImageUpload({
   }, []);
 
   const clearPreview = useCallback(() => {
-    if (uploadState.previewUrl) {
-      URL.revokeObjectURL(uploadState.previewUrl);
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = null;
     }
     resetState();
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-  }, [uploadState.previewUrl, resetState]);
+  }, [resetState]);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+        previewUrlRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <div className={`space-y-4 ${className}`}>
@@ -280,14 +305,11 @@ export function ImageUpload({
             {uploadState.previewUrl ? (
               <div className="space-y-4">
                 <div className="relative inline-block">
-                  <Image
+                  {/* eslint-disable-next-line @next/next/no-img-element -- local blob/object URL preview should bypass next/image optimization */}
+                  <img
                     src={uploadState.previewUrl}
                     alt="Image upload preview"
-                    width={300}
-                    height={192}
                     className="max-w-xs max-h-48 rounded-lg shadow-md object-contain"
-                    priority
-                    quality={90}
                   />
                   {!uploadState.isUploading && (
                     <Button

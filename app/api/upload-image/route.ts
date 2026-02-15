@@ -55,6 +55,43 @@ function validateFileType(buffer: Uint8Array, expectedType: string): boolean {
 
 export const dynamic = 'force-dynamic';
 
+async function extractFunctionErrorDetails(
+  edgeFunctionError: unknown,
+  edgeFunctionResponse: unknown
+): Promise<{ status: number; error: string; message?: string }> {
+  let status = 500;
+  let error = 'Image processing failed';
+  let message: string | undefined;
+
+  if (edgeFunctionResponse && typeof edgeFunctionResponse === 'object') {
+    const maybeError = (edgeFunctionResponse as { error?: unknown }).error;
+    const maybeMessage = (edgeFunctionResponse as { message?: unknown }).message;
+    if (typeof maybeError === 'string' && maybeError.trim()) error = maybeError;
+    if (typeof maybeMessage === 'string' && maybeMessage.trim()) message = maybeMessage;
+  }
+
+  if (edgeFunctionError && typeof edgeFunctionError === 'object') {
+    const maybeMessage = (edgeFunctionError as { message?: unknown }).message;
+    if (typeof maybeMessage === 'string' && maybeMessage.trim()) {
+      message = maybeMessage;
+    }
+
+    const maybeContext = (edgeFunctionError as { context?: unknown }).context;
+    if (maybeContext instanceof Response) {
+      status = maybeContext.status || status;
+      try {
+        const payload = await maybeContext.clone().json() as { error?: unknown; message?: unknown };
+        if (typeof payload.error === 'string' && payload.error.trim()) error = payload.error;
+        if (typeof payload.message === 'string' && payload.message.trim()) message = payload.message;
+      } catch {
+        // Ignore non-JSON edge function responses
+      }
+    }
+  }
+
+  return { status, error, message };
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Start operations in parallel to avoid waterfalls
@@ -146,29 +183,46 @@ export async function POST(request: NextRequest) {
     edgeFunctionFormData.append('removeBackground', requestData.removeBackground.toString());
     edgeFunctionFormData.append('quality', requestData.quality.toString());
 
+    const invokeProcessImage = async (accessToken: string) => {
+      return supabase.functions.invoke(
+        'process-image',
+        {
+          body: edgeFunctionFormData,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            apikey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '',
+          },
+        }
+      );
+    };
+
     // Call Supabase Edge Function
     const startTime = Date.now();
-    const { data: edgeFunctionResponse, error: edgeFunctionError } = await supabase.functions.invoke(
-      'process-image',
-      {
-        body: edgeFunctionFormData,
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
+    let { data: edgeFunctionResponse, error: edgeFunctionError } = await invokeProcessImage(session.access_token);
+
+    if (edgeFunctionError) {
+      const initialDetails = await extractFunctionErrorDetails(edgeFunctionError, edgeFunctionResponse);
+      if (initialDetails.status === 401) {
+        const { data: refreshData } = await supabase.auth.refreshSession();
+        const refreshedToken = refreshData.session?.access_token;
+        if (refreshedToken && refreshedToken !== session.access_token) {
+          ({ data: edgeFunctionResponse, error: edgeFunctionError } = await invokeProcessImage(refreshedToken));
+        }
       }
-    );
+    }
 
     const processingTime = Date.now() - startTime;
 
     if (edgeFunctionError) {
-      console.error('Edge Function error:', edgeFunctionError);
+      const details = await extractFunctionErrorDetails(edgeFunctionError, edgeFunctionResponse);
+      console.error('Edge Function error:', edgeFunctionError, details);
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Image processing failed',
-          message: edgeFunctionError.message 
+        {
+          success: false,
+          error: details.error,
+          message: details.message || 'Image processing failed'
         },
-        { status: 500 }
+        { status: details.status }
       );
     }
 
