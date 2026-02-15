@@ -344,6 +344,90 @@ describe('generateOutfit', () => {
 
       expect(outfit.items.watch).toBeDefined();
     });
+
+    it('should not select a brown belt with black shoes', () => {
+      const wardrobe = [
+        createMockItem({
+          id: 'shirt-1',
+          name: 'White Shirt',
+          category: mockCategories.shirt,
+          formality_score: 6,
+          color: 'white',
+        }),
+        createMockItem({
+          id: 'pants-1',
+          name: 'Grey Trousers',
+          category: mockCategories.pants,
+          formality_score: 6,
+          color: 'grey',
+        }),
+        createMockItem({
+          id: 'shoes-1',
+          name: 'Black Loafers',
+          category: mockCategories.shoes,
+          formality_score: 8,
+          color: 'black',
+        }),
+        createMockItem({
+          id: 'belt-brown',
+          name: 'Brown Belt',
+          category: mockCategories.belt,
+          color: 'brown',
+        }),
+      ];
+
+      const outfit = generateOutfit({
+        wardrobeItems: wardrobe,
+        weatherContext: mildWeather,
+      });
+
+      expect(outfit.items.belt).toBeUndefined();
+    });
+
+    it('should select a matching black belt when black shoes are selected', () => {
+      const wardrobe = [
+        createMockItem({
+          id: 'shirt-1',
+          name: 'White Shirt',
+          category: mockCategories.shirt,
+          formality_score: 6,
+          color: 'white',
+        }),
+        createMockItem({
+          id: 'pants-1',
+          name: 'Grey Trousers',
+          category: mockCategories.pants,
+          formality_score: 6,
+          color: 'grey',
+        }),
+        createMockItem({
+          id: 'shoes-1',
+          name: 'Black Loafers',
+          category: mockCategories.shoes,
+          formality_score: 8,
+          color: 'black',
+        }),
+        createMockItem({
+          id: 'belt-brown',
+          name: 'Brown Belt',
+          category: mockCategories.belt,
+          color: 'brown',
+        }),
+        createMockItem({
+          id: 'belt-black',
+          name: 'Black Belt',
+          category: mockCategories.belt,
+          color: 'black',
+        }),
+      ];
+
+      const outfit = generateOutfit({
+        wardrobeItems: wardrobe,
+        weatherContext: mildWeather,
+      });
+
+      expect(outfit.items.belt?.id).toBe('belt-black');
+    });
   });
 
   describe('Item Selection Strategy', () => {
@@ -620,6 +704,64 @@ describe('swapItem', () => {
     // Other items should be the same
     expect(swappedOutfit.items.pants.id).toBe(originalOutfit.items.pants.id);
     expect(swappedOutfit.items.shoes.id).toBe(originalOutfit.items.shoes.id);
+  });
+
+  it('should keep belt and shoes in the same color family when swapping belt', () => {
+    const wardrobe = [
+      createMockItem({
+        id: 'shirt-1',
+        name: 'White Shirt',
+        category: mockCategories.shirt,
+        formality_score: 6,
+        color: 'white',
+      }),
+      createMockItem({
+        id: 'pants-1',
+        name: 'Grey Pants',
+        category: mockCategories.pants,
+        formality_score: 6,
+        color: 'grey',
+      }),
+      createMockItem({
+        id: 'shoes-1',
+        name: 'Black Shoes',
+        category: mockCategories.shoes,
+        formality_score: 8,
+        color: 'black',
+      }),
+      createMockItem({
+        id: 'belt-black-1',
+        name: 'Black Belt 1',
+        category: mockCategories.belt,
+        color: 'black',
+      }),
+      createMockItem({
+        id: 'belt-black-2',
+        name: 'Black Belt 2',
+        category: mockCategories.belt,
+        color: 'black',
+      }),
+      createMockItem({
+        id: 'belt-brown',
+        name: 'Brown Belt',
+        category: mockCategories.belt,
+        color: 'brown',
+      }),
+    ];
+
+    const originalOutfit = generateOutfit({
+      wardrobeItems: wardrobe,
+      weatherContext: mildWeather,
+    });
+
+    const swappedOutfit = swapItem({
+      currentOutfit: originalOutfit,
+      category: 'belt',
+      wardrobeItems: wardrobe,
+      weatherContext: mildWeather,
+    });
+
+    expect(swappedOutfit.items.belt?.color).toBe('black');
   });
 
   it('should throw error when category not in outfit', () => {

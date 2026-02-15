@@ -15,6 +15,7 @@ import {
   EnrichedItem,
   WeatherContext,
   CompatibilityScore,
+  ColorCategory,
 } from '@/lib/types/generation';
 import { enrichItems } from '@/lib/utils/item-enrichment';
 import { calculateCompatibilityScore } from '@/lib/utils/compatibility-scoring';
@@ -54,6 +55,57 @@ const CATEGORY_TO_SLOT: Record<string, string> = {
   'Belt': 'belt',
   'Watch': 'watch',
 };
+
+type AccessoryColorFamily = 'black' | 'brown' | 'other';
+
+function getAccessoryColorFamily(color: ColorCategory): AccessoryColorFamily {
+  if (color === 'black' || color === 'charcoal' || color === 'grey') {
+    return 'black';
+  }
+  if (
+    color === 'brown' ||
+    color === 'tan' ||
+    color === 'khaki' ||
+    color === 'camel' ||
+    color === 'chocolate' ||
+    color === 'beige' ||
+    color === 'taupe' ||
+    color === 'stone' ||
+    color === 'cream'
+  ) {
+    return 'brown';
+  }
+  return 'other';
+}
+
+function isBeltShoeColorCompatible(belt: EnrichedItem, shoes: EnrichedItem): boolean {
+  const beltFamily = getAccessoryColorFamily(belt.color);
+  const shoeFamily = getAccessoryColorFamily(shoes.color);
+  return !(beltFamily === 'black' && shoeFamily === 'brown') &&
+    !(beltFamily === 'brown' && shoeFamily === 'black');
+}
+
+function applyBeltShoeColorConstraint(
+  candidates: EnrichedItem[],
+  selectedItems: Partial<Record<string, EnrichedItem>>,
+  slot?: string
+): EnrichedItem[] {
+  if (!slot) return candidates;
+
+  if (slot === 'belt') {
+    const selectedShoes = selectedItems.shoes;
+    if (!selectedShoes) return candidates;
+    return candidates.filter(candidate => isBeltShoeColorCompatible(candidate, selectedShoes));
+  }
+
+  if (slot === 'shoes') {
+    const selectedBelt = selectedItems.belt;
+    if (!selectedBelt) return candidates;
+    return candidates.filter(candidate => isBeltShoeColorCompatible(selectedBelt, candidate));
+  }
+
+  return candidates;
+}
 
 /**
  * Check if wardrobe has all required categories
@@ -175,22 +227,26 @@ function selectBestItem(
     weatherContext: WeatherContext;
     selectedItems: Partial<Record<string, EnrichedItem>>;
     excludeItems: Set<string>;
+    slot?: string;
   },
   options: {
     preferShorts?: boolean;
   } = {}
 ): EnrichedItem | null {
   if (candidates.length === 0) return null;
-  if (candidates.length === 1) return candidates[0];
   
-  const { weatherContext, selectedItems, excludeItems } = context;
+  const { weatherContext, selectedItems, excludeItems, slot } = context;
   const { preferShorts = false } = options;
+
+  const constrainedCandidates = applyBeltShoeColorConstraint(candidates, selectedItems, slot);
+  if (constrainedCandidates.length === 0) return null;
+  if (constrainedCandidates.length === 1) return constrainedCandidates[0];
   
   // Filter out excluded items (recently used)
-  const availableCandidates = candidates.filter(item => !excludeItems.has(item.id));
+  const availableCandidates = constrainedCandidates.filter(item => !excludeItems.has(item.id));
   
   // If all items are excluded, fall back to all candidates
-  const candidatesToScore = availableCandidates.length > 0 ? availableCandidates : candidates;
+  const candidatesToScore = availableCandidates.length > 0 ? availableCandidates : constrainedCandidates;
   
   // Score all candidates
   const scoredCandidates = candidatesToScore.map(item => {
@@ -264,7 +320,7 @@ function selectItems(
     // Select best item for this slot
     const selected = selectBestItem(
       candidates,
-      { weatherContext, selectedItems, excludeItems },
+      { weatherContext, selectedItems, excludeItems, slot },
       { preferShorts }
     );
     
@@ -445,7 +501,7 @@ export function generateOutfit(options: GenerationOptions): GeneratedOutfit {
     
     const selected = selectBestItem(
       candidates,
-      { weatherContext, selectedItems: coreItems, excludeItems: excludeSet },
+      { weatherContext, selectedItems: coreItems, excludeItems: excludeSet, slot },
       { preferShorts }
     );
     
@@ -574,7 +630,7 @@ export function swapItem(options: SwapOptions): GeneratedOutfit {
   // Select best alternative
   const newItem = selectBestItem(
     candidates,
-    { weatherContext, selectedItems: fixedItems, excludeItems: excludeSet },
+    { weatherContext, selectedItems: fixedItems, excludeItems: excludeSet, slot: category },
     { preferShorts: category === 'pants' && weatherContext.isHot }
   );
   
