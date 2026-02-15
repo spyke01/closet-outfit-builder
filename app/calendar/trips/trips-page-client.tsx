@@ -119,22 +119,39 @@ const BUTTON_INLINE_PRIMARY =
 const BUTTON_DANGER =
   'px-3 py-2 rounded-lg border border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/20 disabled:opacity-50 inline-flex items-center justify-center gap-2 transition-colors';
 
-function OutfitThumbs({ items }: { items: WardrobeItem[] }) {
+function OutfitThumbs({ items, outfitId }: { items: WardrobeItem[]; outfitId?: string }) {
   if (items.length === 0) return <div className="text-xs text-muted-foreground">No preview</div>;
 
   return (
     <div className="flex items-center gap-2 overflow-x-auto">
-      {items.slice(0, 4).map((item) => (
-        <div key={item.id} className="w-12 h-12 rounded bg-card border border-border overflow-hidden flex-shrink-0">
-          {item.image_url ? (
-            <Image src={item.image_url} alt={item.name} width={48} height={48} className="w-full h-full object-contain" />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-[10px] text-muted-foreground px-1 text-center">
-              {(item.category?.name || item.name).slice(0, 7)}
-            </div>
-          )}
-        </div>
-      ))}
+      {items.map((item) => {
+        const thumb = (
+          <div className="w-12 h-12 rounded bg-card border border-border overflow-hidden flex-shrink-0">
+            {item.image_url ? (
+              <Image src={item.image_url} alt={item.name} width={48} height={48} className="w-full h-full object-contain" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-[10px] text-muted-foreground px-1 text-center">
+                {(item.category?.name || item.name).slice(0, 7)}
+              </div>
+            )}
+          </div>
+        );
+
+        if (!outfitId) {
+          return <div key={item.id}>{thumb}</div>;
+        }
+
+        return (
+          <Link
+            key={item.id}
+            href={`/outfits/${outfitId}/`}
+            className="rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label={`View outfit ${outfitId}`}
+          >
+            {thumb}
+          </Link>
+        );
+      })}
     </div>
   );
 }
@@ -1013,7 +1030,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                               </div>
 
                               <p className="text-sm font-medium text-foreground">{day.outfit?.name || 'No outfit selected'}</p>
-                              <OutfitThumbs items={day.items || []} />
+                              <OutfitThumbs items={day.items || []} outfitId={day.outfit_id || undefined} />
 
                               <div className="flex flex-wrap gap-1.5">
                                 {(day.items || []).map((item) => (

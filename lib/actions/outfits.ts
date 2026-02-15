@@ -181,7 +181,28 @@ export async function deleteOutfit(data: unknown) {
     
     await verifyOwnership(user.id, existingOutfit.user_id);
     
-    // 5. Delete outfit
+    // 5. Delete linked calendar entries for this outfit
+    const { error: calendarError } = await supabase
+      .from('calendar_entries')
+      .delete()
+      .eq('outfit_id', validated.id)
+      .eq('user_id', user.id);
+
+    if (calendarError) {
+      throw new Error(`Failed to delete linked calendar entries: ${calendarError.message}`);
+    }
+
+    // 6. Delete linked trip day slots for this outfit
+    const { error: tripDaysError } = await supabase
+      .from('trip_days')
+      .delete()
+      .eq('outfit_id', validated.id);
+
+    if (tripDaysError) {
+      throw new Error(`Failed to delete linked trip days: ${tripDaysError.message}`);
+    }
+
+    // 7. Delete outfit
     const { error } = await supabase
       .from('outfits')
       .delete()
@@ -192,8 +213,10 @@ export async function deleteOutfit(data: unknown) {
       throw new Error(`Failed to delete outfit: ${error.message}`);
     }
     
-    // 6. Revalidate outfits page
+    // 8. Revalidate affected pages
     revalidatePath('/outfits');
+    revalidatePath('/calendar');
+    revalidatePath('/calendar/trips');
     
     return { success: true };
   } catch (error) {

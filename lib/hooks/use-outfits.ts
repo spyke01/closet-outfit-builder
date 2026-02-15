@@ -561,10 +561,34 @@ export function useDeleteOutfit() {
 
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+
+      const { error: calendarError } = await supabase
+        .from('calendar_entries')
+        .delete()
+        .eq('outfit_id', id)
+        .eq('user_id', userId);
+
+      if (calendarError) {
+        throw new Error(`Failed to delete linked calendar entries: ${calendarError.message}`);
+      }
+
+      const { error: tripDaysError } = await supabase
+        .from('trip_days')
+        .delete()
+        .eq('outfit_id', id);
+
+      if (tripDaysError) {
+        throw new Error(`Failed to delete linked trip days: ${tripDaysError.message}`);
+      }
+
       const { error } = await supabase
         .from('outfits')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .eq('user_id', userId);
 
       if (error) {
         throw new Error(`Failed to delete outfit: ${error.message}`);
@@ -601,6 +625,8 @@ export function useDeleteOutfit() {
     onSettled: () => {
       // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: queryKeys.outfits.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.calendar.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.trips.all });
     },
   });
 }

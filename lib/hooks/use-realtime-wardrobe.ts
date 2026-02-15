@@ -26,6 +26,9 @@ export function useWardrobeRealtime() {
     }
 
     const supabase = createClient();
+    if (typeof supabase.channel !== 'function') {
+      return;
+    }
 
     // Create a unique channel for this user's wardrobe items
     const channel = supabase
@@ -77,7 +80,9 @@ export function useWardrobeRealtime() {
     // Cleanup function: unsubscribe when component unmounts
     return () => {
       console.log('[Realtime] Unsubscribing from wardrobe changes');
-      supabase.removeChannel(channel);
+      if (typeof supabase.removeChannel === 'function') {
+        supabase.removeChannel(channel);
+      }
       channelRef.current = null;
     };
   }, [userId, isAuthenticated, queryClient]);

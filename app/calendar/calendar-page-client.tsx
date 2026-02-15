@@ -207,7 +207,15 @@ function isCalendarGeneratedOutfit(outfit: Outfit): boolean {
   return name.startsWith('AI Week Plan ') || name.startsWith('Calendar ');
 }
 
-function OutfitThumbs({ items, size = 'md' }: { items: WardrobeItem[]; size?: 'sm' | 'md' }) {
+function OutfitThumbs({
+  items,
+  size = 'md',
+  outfitId,
+}: {
+  items: WardrobeItem[];
+  size?: 'sm' | 'md';
+  outfitId?: string;
+}) {
   if (items.length === 0) {
     return <div className="text-xs text-muted-foreground">No preview</div>;
   }
@@ -216,24 +224,41 @@ function OutfitThumbs({ items, size = 'md' }: { items: WardrobeItem[]; size?: 's
   const thumbSizePx = size === 'sm' ? 56 : 64;
 
   return (
-    <div className="flex items-center gap-2 overflow-hidden">
-      {items.slice(0, 4).map((item) => (
-        <div key={item.id} className={`${thumbSizeClass} rounded-md bg-card overflow-hidden flex-shrink-0`}>
-          {item.image_url ? (
-            <Image
-              src={item.image_url}
-              alt={item.name}
-              width={thumbSizePx}
-              height={thumbSizePx}
-              className="w-full h-full object-contain"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-[10px] text-muted-foreground px-1 text-center leading-tight">
-              {(item.category?.name || item.name).slice(0, 8)}
-            </div>
-          )}
-        </div>
-      ))}
+    <div className="flex items-center gap-2 overflow-x-auto">
+      {items.map((item) => {
+        const thumb = (
+          <div className={`${thumbSizeClass} rounded-md bg-card overflow-hidden flex-shrink-0`}>
+            {item.image_url ? (
+              <Image
+                src={item.image_url}
+                alt={item.name}
+                width={thumbSizePx}
+                height={thumbSizePx}
+                className="w-full h-full object-contain"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-[10px] text-muted-foreground px-1 text-center leading-tight">
+                {(item.category?.name || item.name).slice(0, 8)}
+              </div>
+            )}
+          </div>
+        );
+
+        if (!outfitId) {
+          return <div key={item.id}>{thumb}</div>;
+        }
+
+        return (
+          <Link
+            key={item.id}
+            href={`/outfits/${outfitId}/`}
+            className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label={`View outfit ${outfitId}`}
+          >
+            {thumb}
+          </Link>
+        );
+      })}
     </div>
   );
 }
@@ -901,7 +926,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                     </div>
 
                     <p className="text-sm font-medium text-foreground">{entry.outfit?.name || `${entry.items?.length || 0} item entry`}</p>
-                    <OutfitThumbs items={entry.items || []} />
+                    <OutfitThumbs items={entry.items || []} outfitId={entry.outfit_id || undefined} />
                     {entry.notes && <p className="text-xs text-muted-foreground">{entry.notes}</p>}
                   </div>
                 ))}
