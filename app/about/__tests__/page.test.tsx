@@ -247,7 +247,8 @@ describe('AboutPage - Unit Tests', () => {
       
       const button = screen.getByRole('link', { name: /get started today/i });
       
-      expect(button.className).toContain('bg-primary');
+      expect(button.className).toContain('bg-[#D49E7C]');
+      expect(button.className).toContain('text-[#1A2830]');
     });
 
     it('should have dark mode button styling', () => {
@@ -255,7 +256,7 @@ describe('AboutPage - Unit Tests', () => {
       
       const button = screen.getByRole('link', { name: /get started today/i });
       
-      expect(button.className).toContain('');
+      expect(button.className).toContain('hover:bg-[#e1b08f]');
     });
   });
 

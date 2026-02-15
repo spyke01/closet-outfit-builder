@@ -54,7 +54,7 @@ export function PricingSection() {
           <h2 className="font-display text-4xl lg:text-5xl font-bold text-foreground mb-6">
             Simple, transparent pricing
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground text-foreground/85 max-w-3xl mx-auto">
             Start with a free trial and upgrade when you&apos;re ready. No hidden fees, no surprises.
           </p>
         </div>
@@ -92,7 +92,7 @@ export function PricingSection() {
                     {plan.name}
                   </h3>
 
-                  <p className="text-muted-foreground mb-6">
+                  <p className="text-muted-foreground text-foreground/80 mb-6">
                     {plan.description}
                   </p>
 
@@ -101,7 +101,7 @@ export function PricingSection() {
                       {plan.price}
                     </span>
                     {plan.period && (
-                      <span className="text-muted-foreground ml-2">
+                      <span className="text-muted-foreground text-foreground/75 ml-2">
                         {plan.period}
                       </span>
                     )}
@@ -120,8 +120,8 @@ export function PricingSection() {
                 <Link href={plan.href} className="block">
                   <Button
                     className={`w-full py-4 text-lg font-semibold rounded-2xl transition-all duration-300 ${plan.popular
-                      ? 'bg-primary hover:opacity-90 text-primary-foreground shadow-lg hover:shadow-xl'
-                      : 'bg-card border border-border text-foreground hover:bg-secondary/70 hover:border-foreground/25'
+                      ? 'bg-[#D49E7C] hover:bg-[#e1b08f] text-[#1A2830] shadow-lg hover:shadow-xl'
+                      : 'bg-[#23414d] border border-[#2f5664] text-[#E8F0F2] hover:bg-[#2b4b57]'
                       }`}
                   >
                     {plan.cta}
@@ -133,7 +133,7 @@ export function PricingSection() {
         </div>
 
         <div className="text-center mt-12">
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-foreground/80">
             Questions? <a href="mailto:hello@myaioutfit.app" className="text-primary hover:underline font-medium">Get in touch</a>
           </p>
         </div>

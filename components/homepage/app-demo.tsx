@@ -16,7 +16,7 @@ export function AppDemo() {
           <h2 className="font-display text-4xl lg:text-5xl font-bold text-foreground mb-6">
             Built for your closet. Designed for your life.
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground text-foreground/85 max-w-3xl mx-auto">
             See how My AI Outfit transforms your daily outfit selection with intelligent recommendations.
           </p>
         </div>
@@ -29,9 +29,9 @@ export function AppDemo() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-display text-2xl font-bold text-foreground">Today&apos;s Outfit</h3>
-                  <p className="text-muted-foreground">Perfect for 72°F, partly cloudy</p>
+                  <p className="text-muted-foreground text-foreground/80">Perfect for 72°F, partly cloudy</p>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-secondary/20 border border-secondary/40 text-secondary-foreground rounded-full text-sm font-medium">
+                <div className="flex items-center gap-2 px-4 py-2 bg-[#294653] border border-[#3b6270] text-[#E8F0F2] rounded-full text-sm font-medium">
                   <Sparkles className="w-4 h-4" />
                   95% Match
                 </div>
@@ -51,7 +51,7 @@ export function AppDemo() {
                       quality={85}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground text-center">Brown Tweed Blazer</p>
+                  <p className="text-xs text-muted-foreground text-foreground/80 text-center">Brown Tweed Blazer</p>
                 </div>
 
                 <div className="space-y-2">
@@ -66,7 +66,7 @@ export function AppDemo() {
                       quality={85}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground text-center">Blue Oxford Shirt</p>
+                  <p className="text-xs text-muted-foreground text-foreground/80 text-center">Blue Oxford Shirt</p>
                 </div>
 
                 <div className="space-y-2">
@@ -81,7 +81,7 @@ export function AppDemo() {
                       quality={85}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground text-center">Khaki Chinos</p>
+                  <p className="text-xs text-muted-foreground text-foreground/80 text-center">Khaki Chinos</p>
                 </div>
 
                 <div className="space-y-2">
@@ -96,7 +96,7 @@ export function AppDemo() {
                       quality={85}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground text-center">Tan Suede Loafers</p>
+                  <p className="text-xs text-muted-foreground text-foreground/80 text-center">Tan Suede Loafers</p>
                 </div>
               </div>
 
@@ -105,30 +105,30 @@ export function AppDemo() {
                 <h4 className="font-semibold text-foreground">Compatibility Breakdown</h4>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Style Harmony</span>
+                    <span className="text-sm text-muted-foreground text-foreground/85">Style Harmony</span>
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
                         <div className="w-15 h-full bg-primary rounded-full"></div>
                       </div>
-                      <span className="text-sm font-medium text-foreground">94%</span>
+                      <span className="text-sm font-semibold text-foreground">94%</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Weather Appropriate</span>
+                    <span className="text-sm text-muted-foreground text-foreground/85">Weather Appropriate</span>
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
                         <div className="w-full h-full bg-primary rounded-full"></div>
                       </div>
-                      <span className="text-sm font-medium text-foreground">98%</span>
+                      <span className="text-sm font-semibold text-foreground">98%</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Formality Match</span>
+                    <span className="text-sm text-muted-foreground text-foreground/85">Formality Match</span>
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
                         <div className="w-14 h-full bg-primary rounded-full"></div>
                       </div>
-                      <span className="text-sm font-medium text-foreground">92%</span>
+                      <span className="text-sm font-semibold text-foreground">92%</span>
                     </div>
                   </div>
                 </div>
@@ -136,14 +136,22 @@ export function AppDemo() {
 
               {/* Action buttons */}
               <div className="flex gap-3">
-                <button className="flex-1 bg-primary hover:opacity-90 text-primary-foreground py-3 rounded-xl font-medium transition-colors">
+                <button className="flex-1 bg-[#D49E7C] hover:bg-[#e1b08f] text-[#1A2830] py-3 rounded-xl font-semibold transition-colors">
                   Wear This Outfit
                 </button>
-                <button className="px-4 py-3 border-2 border-border rounded-xl hover:bg-muted transition-colors">
-                  <Heart className="w-5 h-5 text-muted-foreground" />
+                <button
+                  type="button"
+                  aria-label="Save outfit to favorites"
+                  className="px-4 py-3 border-2 border-[#2f5664] bg-[#23414d] rounded-xl hover:bg-[#2b4b57] transition-colors"
+                >
+                  <Heart className="w-5 h-5 text-[#E8F0F2]" />
                 </button>
-                <button className="px-4 py-3 border-2 border-border rounded-xl hover:bg-muted transition-colors">
-                  <Sparkles className="w-5 h-5 text-muted-foreground" />
+                <button
+                  type="button"
+                  aria-label="Regenerate outfit suggestion"
+                  className="px-4 py-3 border-2 border-[#2f5664] bg-[#23414d] rounded-xl hover:bg-[#2b4b57] transition-colors"
+                >
+                  <Sparkles className="w-5 h-5 text-[#E8F0F2]" />
                 </button>
               </div>
             </div>
@@ -151,23 +159,20 @@ export function AppDemo() {
             {/* Floating weather widget */}
             <div className="absolute -top-4 -right-4 bg-card rounded-2xl p-4 shadow-lg border border-border">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-secondary/20 rounded-xl flex items-center justify-center">
-                  <Thermometer className="w-5 h-5 text-secondary-foreground" />
+                <div className="w-10 h-10 rounded-xl bg-[#294653] border border-[#3b6270] flex items-center justify-center">
+                  <Thermometer className="w-5 h-5 text-[#E8F0F2]" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-foreground">72°F</p>
-                  <p className="text-xs text-muted-foreground">Partly Cloudy</p>
+                  <p className="text-xs text-muted-foreground text-foreground/80">Partly Cloudy</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Floating elements */}
-          <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-muted rounded-3xl flex items-center justify-center shadow-lg">
-            <div className="w-10 h-10 bg-muted rounded-2xl"></div>
-          </div>
-          <div className="absolute -top-6 left-1/4 w-16 h-16 bg-secondary/20 rounded-2xl flex items-center justify-center shadow-lg">
-            <Sparkles className="w-8 h-8 text-secondary-foreground" />
+          <div className="absolute -top-6 left-1/4 w-16 h-16 rounded-2xl bg-[#294653] border border-[#3b6270] flex items-center justify-center shadow-lg">
+            <Sparkles className="w-8 h-8 text-[#E8F0F2]" />
           </div>
         </div>
       </div>

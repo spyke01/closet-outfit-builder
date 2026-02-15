@@ -42,7 +42,7 @@ export function StaticPageNavigation() {
               </Button>
             </Link>
             <Link href="/auth/sign-up">
-              <Button className="bg-primary text-primary-foreground hover:opacity-90 rounded-xl">
+              <Button className="bg-[#D49E7C] text-[#1A2830] hover:bg-[#e1b08f] rounded-xl">
                 Get Started
               </Button>
             </Link>
@@ -94,7 +94,7 @@ export function StaticPageNavigation() {
                 </Button>
               </Link>
               <Link href="/auth/sign-up" onClick={() => setIsMenuOpen(false)}>
-                <Button className="w-full bg-primary text-primary-foreground hover:opacity-90">
+                <Button className="w-full bg-[#D49E7C] text-[#1A2830] hover:bg-[#e1b08f]">
                   Get Started
                 </Button>
               </Link>

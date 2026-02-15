@@ -200,12 +200,14 @@ describe('Landing Pages Integration Tests', () => {
     it('should have consistent CTA styling in components', () => {
       const hero = render(<HeroSection />);
       const heroButton = hero.getByRole('link', { name: /get started free/i });
-      expect(heroButton.querySelector('button')?.className).toContain('bg-primary');
+      expect(heroButton.querySelector('button')?.className).toContain('bg-[#D49E7C]');
+      expect(heroButton.querySelector('button')?.className).toContain('text-[#1A2830]');
       hero.unmount();
       
       const about = render(<AboutPage />);
       const aboutButton = about.getByRole('link', { name: /get started today/i });
-      expect(aboutButton.className).toContain('bg-primary');
+      expect(aboutButton.className).toContain('bg-[#D49E7C]');
+      expect(aboutButton.className).toContain('text-[#1A2830]');
       about.unmount();
     });
   });

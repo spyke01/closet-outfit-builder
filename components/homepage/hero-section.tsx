@@ -28,7 +28,7 @@ export function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left side - Content */}
           <div className="text-center lg:text-left animate-fade-in">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/20 border border-secondary/40 text-secondary-foreground rounded-full text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#294653] border border-[#3b6270] text-[#E8F0F2] rounded-full text-sm font-medium mb-6">
               <Sparkles className="w-4 h-4" />
               Start your free trial
             </div>
@@ -47,7 +47,7 @@ export function HeroSection() {
               <Link href="/auth/sign-up">
                 <Button 
                   size="lg" 
-                  className="bg-primary text-primary-foreground hover:opacity-90 px-8 py-4 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group"
+                  className="bg-[#D49E7C] text-[#1A2830] hover:bg-[#e1b08f] px-8 py-4 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group"
                 >
                   Get Started Free
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -58,7 +58,7 @@ export function HeroSection() {
                 variant="outline" 
                 size="lg"
                 onClick={scrollToDemo}
-                className="border-2 border-border text-foreground hover:bg-muted px-8 py-4 text-lg font-semibold rounded-2xl transition-all duration-300"
+                className="border-2 border-[#2f5664] bg-[#23414d] text-[#E8F0F2] hover:bg-[#2b4b57] px-8 py-4 text-lg font-semibold rounded-2xl transition-all duration-300"
               >
                 See How It Works
               </Button>
@@ -75,7 +75,7 @@ export function HeroSection() {
               {/* Mock app interface */}
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-foreground">Today&apos;s Outfit</h3>
+                  <p className="font-semibold text-foreground">Today&apos;s Outfit</p>
                   <div className="w-8 h-8 bg-secondary/20 rounded-full flex items-center justify-center">
                     <Sparkles className="w-4 h-4 text-secondary-foreground" />
                   </div>
@@ -138,14 +138,6 @@ export function HeroSection() {
                   </div>
                 </div>
               </div>
-            </div>
-            
-            {/* Floating elements */}
-            <div className="absolute -top-4 -right-4 w-16 h-16 bg-secondary/20 rounded-2xl flex items-center justify-center shadow-lg">
-              <Sparkles className="w-8 h-8 text-secondary-foreground" />
-            </div>
-            <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-secondary/20 rounded-xl flex items-center justify-center shadow-lg">
-              <div className="w-6 h-6 bg-primary rounded-full"></div>
             </div>
           </div>
         </div>

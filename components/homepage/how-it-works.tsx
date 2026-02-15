@@ -38,7 +38,7 @@ export function HowItWorks() {
           <h2 className="font-display text-4xl lg:text-5xl font-bold text-foreground mb-6">
             How it works
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground text-foreground/85 max-w-3xl mx-auto">
             Getting started is effortless. Three simple steps to transform your daily outfit selection.
           </p>
         </div>
@@ -61,8 +61,8 @@ export function HowItWorks() {
                     <span className="font-display text-6xl font-bold text-primary">
                       {step.number}
                     </span>
-                    <div className="w-16 h-16 bg-secondary/20 rounded-2xl flex items-center justify-center">
-                      <Icon className="w-8 h-8 text-secondary-foreground" />
+                    <div className="w-16 h-16 rounded-2xl bg-secondary/20 border border-[#3b6270] bg-[#294653] flex items-center justify-center">
+                      <Icon className="w-8 h-8 text-[#E8F0F2]" />
                     </div>
                   </div>
                   
@@ -70,7 +70,7 @@ export function HowItWorks() {
                     {step.title}
                   </h3>
                   
-                  <p className="text-xl text-muted-foreground leading-relaxed mb-8">
+                  <p className="text-xl text-muted-foreground text-foreground/80 leading-relaxed mb-8">
                     {step.description}
                   </p>
                 </div>
@@ -82,10 +82,10 @@ export function HowItWorks() {
                     {step.image === 'upload' && (
                       <div className="space-y-6">
                         <div className="text-center">
-                          <div className="w-24 h-24 bg-secondary/20 rounded-3xl flex items-center justify-center mx-auto mb-4">
-                            <Upload className="w-12 h-12 text-secondary-foreground" />
+                          <div className="w-24 h-24 rounded-3xl border border-[#3b6270] bg-[#294653] flex items-center justify-center mx-auto mb-4">
+                            <Upload className="w-12 h-12 text-[#E8F0F2]" />
                           </div>
-                          <p className="text-muted-foreground">Drag & drop your photos</p>
+                          <p className="text-muted-foreground text-foreground/80">Drag & drop your photos</p>
                         </div>
                         <div className="grid grid-cols-3 gap-3">
                           {uploadStepItems.map((item, i) => (
@@ -141,7 +141,7 @@ export function HowItWorks() {
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                           {finalOutfitItems.map((item, i) => (
-                            <div key={i} className="aspect-square bg-muted rounded-2xl overflow-hidden shadow-sm">
+                            <div key={i} className="aspect-square rounded-2xl overflow-hidden shadow-sm border border-[#2b4f5d] bg-[#1e3641]">
                               <Image
                                 src={item.src}
                                 alt={item.alt}
@@ -153,8 +153,8 @@ export function HowItWorks() {
                           ))}
                         </div>
                         <div className="text-center">
-                          <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/20 border border-secondary/40 text-secondary-foreground rounded-full text-sm font-medium">
-                            <Sparkles className="w-4 h-4" />
+                          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border border-[#4f8092] bg-[#2d5563] text-[#EAF4F7]">
+                            <Sparkles className="w-4 h-4 text-[#EAF4F7]" />
                             95% compatibility
                           </div>
                         </div>
