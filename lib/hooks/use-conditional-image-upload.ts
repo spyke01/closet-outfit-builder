@@ -92,6 +92,7 @@ export function useConditionalImageUpload(isAuthenticated: boolean): UseConditio
     const response = await fetch('/api/upload-image', {
       method: 'POST',
       body: formData,
+      credentials: 'include',
     });
 
     if (!response.ok) {

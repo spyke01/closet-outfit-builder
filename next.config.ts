@@ -1,6 +1,19 @@
 import type { NextConfig } from "next";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 
+const enforcedCsp = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: https: *.supabase.co",
+  "font-src 'self' data:",
+  "connect-src 'self' https://api.openweathermap.org https://maps.googleapis.com https://*.supabase.co wss://*.supabase.co https://ahjwzpyammiqelloazvn.supabase.co",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+  "object-src 'none'",
+].join("; ");
+
 const nextConfig: NextConfig = {
   // Enable Turbopack with empty config to silence warning
   turbopack: {},
@@ -83,6 +96,8 @@ const nextConfig: NextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Permissions-Policy', value: 'geolocation=(self), camera=(), microphone=(), payment=()' },
+          { key: 'Content-Security-Policy', value: enforcedCsp },
         ],
       },
     ];

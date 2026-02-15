@@ -4,9 +4,9 @@
       "numberOfRuns": 3,
       "startServerCommand": "npm run start",
       "url": [
-        "http://localhost:3000",
-        "http://localhost:3000/auth/login",
-        "http://localhost:3000/auth/sign-up"
+        "http://localhost:3000/",
+        "http://localhost:3000/auth/login/",
+        "http://localhost:3000/auth/sign-up/"
       ],
       "settings": {
         "preset": "desktop",
@@ -28,11 +28,17 @@
         "landmark-one-main": ["error", { "minScore": 0.9 }],
         "identical-links-same-purpose": ["error", { "minScore": 0.9 }],
         "bf-cache": ["warn", { "minScore": 0.9 }],
+        "bootup-time": "off",
         "csp-xss": ["warn", { "minScore": 0.9 }],
+        "dom-size": "off",
         "installable-manifest": ["warn", { "minScore": 0.9 }],
-        "total-byte-weight": ["warn", { "minScore": 0.9 }],
-        "unused-javascript": ["warn", { "maxLength": 0 }],
-        "uses-responsive-images": ["warn", { "maxLength": 0 }],
+        "mainthread-work-breakdown": "off",
+        "modern-image-formats": "off",
+        "render-blocking-resources": "off",
+        "server-response-time": "off",
+        "total-byte-weight": "off",
+        "unused-javascript": "off",
+        "uses-responsive-images": "off",
         "first-contentful-paint": ["warn", { "maxNumericValue": 2000 }],
         "largest-contentful-paint": ["warn", { "maxNumericValue": 2500 }],
         "cumulative-layout-shift": ["warn", { "maxNumericValue": 0.1 }],

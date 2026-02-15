@@ -102,6 +102,7 @@ export function useImageUpload({
         const response = await fetch('/api/upload-image', {
           method: 'POST',
           body: formData,
+          credentials: 'include',
           signal: abortControllerRef.current.signal,
         });
 
