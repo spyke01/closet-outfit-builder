@@ -889,7 +889,9 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                       </span>
                       <div
                         className={`flex items-center gap-1 transition-opacity ${
-                          editingEntryId === entry.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100'
+                          editingEntryId === entry.id
+                            ? 'opacity-100'
+                            : 'opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100'
                         }`}
                       >
                         {entry.status === 'planned' && (

@@ -66,7 +66,10 @@ Do not add redundant `dark:*` color overrides unless there is a true, intentiona
 - Visual: ghost or icon-only; no persistent heavy fill
 - Class baseline: `text-foreground hover:bg-muted` (destructive can shift red on hover only)
 - For destructive tertiary actions: neutral default, `text-destructive`/destructive background on hover
-- In dense rows/cards, tertiary edit/delete controls should appear on hover/focus/selection
+- In dense rows/cards, mobile-first visibility is required:
+  - On touch/small screens, tertiary edit/delete controls must be visible by default.
+  - Hover-reveal behavior is allowed only at `md` and up, and must include keyboard focus parity.
+  - Recommended pattern: `opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100`
 
 #### Segmented controls (required for mode/state toggles)
 - Use shared segmented container + equal-size segments for mode/state switches

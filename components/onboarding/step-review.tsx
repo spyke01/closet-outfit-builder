@@ -100,7 +100,7 @@ export function StepReview({
                   <button
                     type="button"
                     onClick={() => handleRemoveItem(item.id)}
-                    className="absolute top-2 right-2 z-10 p-1.5 min-w-[32px] min-h-[32px] bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700 touch-manipulation"
+                    className="absolute top-2 right-2 z-10 p-1.5 min-w-[32px] min-h-[32px] bg-red-600 text-white rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition-opacity hover:bg-red-700 touch-manipulation"
                     aria-label={`Remove ${item.name}`}
                   >
                     <X className="w-4 h-4" aria-hidden="true" />
