@@ -49,7 +49,9 @@ export function useWardrobeRealtime() {
 
           // Also invalidate the specific item if it's an UPDATE/DELETE
           if (payload.eventType === 'UPDATE' || payload.eventType === 'DELETE') {
-            const itemId = (payload.new?.id || payload.old?.id) as string;
+            const nextRow = payload.new as { id?: string } | null;
+            const prevRow = payload.old as { id?: string } | null;
+            const itemId = nextRow?.id || prevRow?.id;
             if (itemId) {
               queryClient.invalidateQueries({
                 queryKey: queryKeys.wardrobe.item(itemId),

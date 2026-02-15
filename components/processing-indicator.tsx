@@ -1,6 +1,6 @@
 import React from 'react';
 import { Loader2 } from 'lucide-react';
-import { BgRemovalStatus } from '@/lib/schemas';
+import type { BgRemovalStatus } from '@/lib/types/database';
 
 export interface ProcessingIndicatorProps {
   status?: BgRemovalStatus;

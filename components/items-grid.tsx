@@ -183,6 +183,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
         image_url: itemData.image_url,
         active: true,
         season: ['All'] as ('All' | 'Summer' | 'Winter' | 'Spring' | 'Fall')[],
+        bg_removal_status: 'pending' as const,
       };
 
       await onItemAdd(newItem);

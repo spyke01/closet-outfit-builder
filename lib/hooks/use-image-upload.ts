@@ -1,6 +1,8 @@
 import { useState, useCallback, useRef } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { ImageProcessingResponse, FileValidationSchema, BgRemovalStatus } from '@/lib/schemas';
+import { FileValidationSchema } from '@/lib/schemas';
+import type { ImageProcessingResponse } from '@/lib/schemas';
+import type { BgRemovalStatus } from '@/lib/types/database';
 import { z } from 'zod';
 
 interface UseImageUploadOptions {

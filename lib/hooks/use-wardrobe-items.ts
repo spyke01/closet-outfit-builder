@@ -125,6 +125,7 @@ export function useCreateWardrobeItem() {
           user_id: userId,
           ...newItem,
           active: true,
+          bg_removal_status: newItem.bg_removal_status ?? 'pending',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };

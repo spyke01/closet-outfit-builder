@@ -155,6 +155,8 @@ export interface CreateWardrobeItemInput {
   capsule_tags?: string[];
   season?: string[];
   image_url?: string;
+  active?: boolean;
+  bg_removal_status?: BgRemovalStatus;
 }
 
 export interface UpdateWardrobeItemInput extends Partial<CreateWardrobeItemInput> {

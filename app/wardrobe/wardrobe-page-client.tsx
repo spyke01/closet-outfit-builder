@@ -3,7 +3,8 @@
 import React, { useState, useMemo, useCallback, startTransition, useEffect } from 'react';
 import Image from 'next/image';
 import { useCategories } from '@/lib/hooks/use-categories';
-import { useWardrobeItems, useWardrobeRealtime } from '@/lib/hooks/use-wardrobe-items';
+import { useWardrobeItems } from '@/lib/hooks/use-wardrobe-items';
+import { useWardrobeRealtime } from '@/lib/hooks/use-realtime-wardrobe';
 import { ItemsList } from '@/components/items-list';
 import { WardrobeSearchFiltersWithErrorBoundary as WardrobeSearchFilters } from '@/components/dynamic/wardrobe-search-filters-dynamic';
 import { Button } from '@/components/ui/button';

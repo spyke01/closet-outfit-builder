@@ -35,6 +35,7 @@ export function AddItemPageClient() {
     season: ['All'],
     image_url: '',
     active: true,
+    bg_removal_status: 'pending',
   });
 
   // Fetch data
