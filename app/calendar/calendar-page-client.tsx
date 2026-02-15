@@ -811,19 +811,19 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                     key={dayKey}
                     type="button"
                     onClick={() => setSelectedDate(day)}
-                    className={`min-h-20 sm:min-h-24 rounded-lg border p-1.5 sm:p-2 text-left transition-colors ${
+                    className={`relative min-h-20 sm:min-h-24 rounded-lg border p-1.5 sm:p-2 text-left transition-colors ${
                       isSelected ? 'border-primary bg-primary/10' : 'border-border hover:bg-muted/50'
                     } ${inCurrentMonth ? 'text-foreground' : 'text-muted-foreground/50'}`}
                   >
-                    <div className="flex items-start justify-between">
-                      <span className="text-sm font-medium">{day.getDate()}</span>
-                      {forecastDay && (
-                        <span className="text-[9px] sm:text-[10px] font-semibold px-1 sm:px-1.5 py-0.5 rounded border border-border bg-card/90 text-foreground shadow-sm">
-                          {Math.round(forecastDay.temperature.high)}F
-                        </span>
-                      )}
-                    </div>
-                    <div className="mt-2 space-y-1">
+                    <span className="absolute top-1.5 left-1.5 text-sm font-medium">
+                      {day.getDate()}
+                    </span>
+                    {forecastDay && (
+                      <span className="absolute top-1.5 right-1.5 text-[9px] sm:text-[10px] font-semibold px-1 sm:px-1.5 py-0.5 rounded border border-border bg-card/90 text-foreground shadow-sm">
+                        {Math.round(forecastDay.temperature.high)}F
+                      </span>
+                    )}
+                    <div className="mt-6 sm:mt-7 space-y-1">
                       {plannedCount > 0 && (
                         <div className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-700 dark:text-blue-300">
                           <span className="sm:hidden">{plannedCount}P</span>
