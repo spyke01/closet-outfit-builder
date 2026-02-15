@@ -280,7 +280,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
                   className={`px-3 py-2 rounded-lg text-sm font-medium transition-[background-color,color,box-shadow] duration-200 min-h-[44px] flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                     state.selectedTags.has(tag)
                       ? 'bg-card bg-muted text-white shadow-sm'
-                      : 'bg-card text-muted-foreground border border-border hover:bg-muted dark:hover:bg-muted hover:shadow-sm'
+                      : 'bg-card text-muted-foreground border border-border hover:bg-secondary/70 hover:border-foreground/25 hover:shadow-sm'
                   } ${isFiltering ? 'opacity-75' : 'opacity-100'}`}
                   aria-label={`Filter by ${tag}`}
                   aria-pressed={state.selectedTags.has(tag)}
@@ -535,7 +535,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 border border-border text-muted-foreground rounded-lg hover:bg-muted transition-colors"
+          className="px-4 py-2 border border-border text-muted-foreground rounded-lg hover:bg-secondary/70 hover:border-foreground/25 transition-colors"
         >
           Cancel
         </button>

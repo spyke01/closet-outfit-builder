@@ -169,7 +169,7 @@ export function StepSubcategorySelection({
                     <button
                       type="button"
                       onClick={() => handleSelectAll(categoryKey)}
-                      className="text-sm px-3 py-2 min-h-[44px] rounded border border-border hover:bg-muted transition-colors touch-manipulation"
+                      className="text-sm px-3 py-2 min-h-[44px] rounded border border-border hover:bg-secondary/70 hover:border-foreground/25 transition-colors touch-manipulation"
                       aria-label={`Select all ${category.name} items`}
                     >
                       Select All
@@ -177,7 +177,7 @@ export function StepSubcategorySelection({
                     <button
                       type="button"
                       onClick={() => handleSelectNone(categoryKey)}
-                      className="text-sm px-3 py-2 min-h-[44px] rounded border border-border hover:bg-muted transition-colors touch-manipulation"
+                      className="text-sm px-3 py-2 min-h-[44px] rounded border border-border hover:bg-secondary/70 hover:border-foreground/25 transition-colors touch-manipulation"
                       aria-label={`Deselect all ${category.name} items`}
                     >
                       Select None

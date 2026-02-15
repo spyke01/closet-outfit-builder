@@ -17,6 +17,7 @@ import { X } from 'lucide-react'
 import { standardSizeInputSchema, type StandardSizeInput } from '@/lib/schemas/sizes'
 import type { StandardSize, SizingFormat } from '@/lib/types/sizes'
 import { useUpdateStandardSize } from '@/lib/hooks/use-size-categories'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export interface StandardSizeFormProps {
   categoryId: string
@@ -196,14 +197,14 @@ export function StandardSizeForm({
           type="button"
           onClick={onCancel}
           disabled={updateStandardSize.isPending}
-          className="px-4 py-2 text-sm font-medium text-muted-foreground text-foreground bg-card border border-border rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="h-10 px-4 text-sm font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={updateStandardSize.isPending}
-          className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="h-10 px-4 text-sm font-medium text-primary-foreground bg-primary rounded-lg hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {updateStandardSize.isPending ? 'Saving...' : 'Save'}
         </button>
@@ -211,12 +212,9 @@ export function StandardSizeForm({
 
       {/* Error Display */}
       {updateStandardSize.isError && (
-        <div 
-          role="alert" 
-          className="p-3 text-sm text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md"
-        >
-          Failed to save standard size. Please try again.
-        </div>
+        <Alert variant="destructive">
+          <AlertDescription>Failed to save standard size. Please try again.</AlertDescription>
+        </Alert>
       )}
     </form>
   )

@@ -16,6 +16,7 @@
 import { Cloud, CloudOff, RefreshCw, AlertCircle, Check } from 'lucide-react';
 import { useOfflineSync } from '@/lib/hooks/use-offline-sync';
 import type { QueuedMutation, SyncConflict, SyncEntityData } from '@/lib/utils/offline-sync';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export interface SyncStatusIndicatorProps {
   /**
@@ -99,12 +100,12 @@ export function SyncStatusIndicator({
       
       {/* Sync error alert */}
       {syncError && (
-        <div className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
-          <div className="text-sm text-red-800">
+        <Alert variant="destructive" className="flex gap-3 p-4">
+          <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <AlertDescription className="text-sm">
             <strong>Sync failed:</strong> {syncError}
-          </div>
-        </div>
+          </AlertDescription>
+        </Alert>
       )}
       
       {/* Offline notice */}
@@ -122,7 +123,7 @@ export function SyncStatusIndicator({
         <button
           type="button"
           onClick={sync}
-          className="px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors text-sm w-full sm:w-auto"
+          className="px-4 py-2 border border-border rounded-md hover:bg-secondary/70 hover:border-foreground/25 transition-colors text-sm w-full sm:w-auto"
         >
           <RefreshCw className="inline mr-2 h-4 w-4" aria-hidden="true" />
           Sync Now

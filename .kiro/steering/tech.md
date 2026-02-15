@@ -173,6 +173,15 @@ This project uses a **semantic token-first theming system**. Treat direct color 
 - Do not use `AIIcon` on generic submit/save/update buttons or cancel/close/back actions.
 - For full usage rules, see `.kiro/steering/theming.md` section "AI affordance icon standard".
 
+### Button-system consistency requirement
+
+- All product views must follow the hierarchy in `.kiro/steering/theming.md`:
+  - primary (state-changing),
+  - secondary (supporting),
+  - tertiary (contextual/icon-only).
+- State/mode toggles must use segmented controls (shared container with active/inactive segments).
+- Save/commit actions should be disabled until changes are detected (dirty state), then enabled with clear feedback.
+
 ## Filtering Standard
 
 Filter/search interfaces must follow the project filtering contract in:

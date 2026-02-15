@@ -351,7 +351,7 @@ export function OutfitsPageClient() {
                 {searchTerm && (
                   <button
                     onClick={() => handleSearchChange('')}
-                    className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-muted transition-colors"
+                    className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-secondary/70 hover:border-foreground/25 transition-colors"
                     aria-label="Clear search filter"
                   >
                     Search: {searchTerm}
@@ -361,7 +361,7 @@ export function OutfitsPageClient() {
                 {filterBy !== 'all' && (
                   <button
                     onClick={() => handleFilterChange('all')}
-                    className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-muted transition-colors"
+                    className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-secondary/70 hover:border-foreground/25 transition-colors"
                     aria-label="Clear type filter"
                   >
                     Type: {filterBy}
@@ -371,7 +371,7 @@ export function OutfitsPageClient() {
                 {sortBy !== 'newest' && (
                   <button
                     onClick={() => handleSortChange('newest')}
-                    className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-muted transition-colors"
+                    className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-secondary/70 hover:border-foreground/25 transition-colors"
                     aria-label="Reset sort order"
                   >
                     Sort: {sortBy}

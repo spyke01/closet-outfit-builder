@@ -24,6 +24,7 @@ Located in `.kiro/steering/` - these define how we build:
 - **[Property-Based Testing](../.kiro/steering/property-based-testing-patterns.md)** - PBT patterns and examples
 - **[Test Failure Resolution](../.kiro/steering/test-failure-resolution.md)** - Debugging test failures
 - **[Codebase Maintenance](../.kiro/steering/codebase-maintenance.md)** - Keeping the codebase clean
+- **[Theming + Button System](../.kiro/steering/theming.md)** - Semantic colors, alert rules, and button hierarchy/segmented controls
 
 ## Quick Start
 

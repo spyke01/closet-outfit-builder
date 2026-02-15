@@ -104,6 +104,11 @@ export const queryKeys = {
     day: (userId: string, day: string) => ['calendar', 'day', userId, day] as const,
     stats: (userId: string, month: string) => ['calendar', 'stats', userId, month] as const,
   },
+  trips: {
+    all: ['trips'] as const,
+    list: (userId: string) => ['trips', 'list', userId] as const,
+    detail: (tripId: string) => ['trips', 'detail', tripId] as const,
+  },
   // Edge function results caching
   edgeFunctions: {
     scoreOutfit: (selection: Record<string, unknown>) => 

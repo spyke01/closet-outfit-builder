@@ -121,7 +121,7 @@ export function PricingSection() {
                   <Button
                     className={`w-full py-4 text-lg font-semibold rounded-2xl transition-all duration-300 ${plan.popular
                       ? 'bg-primary hover:opacity-90 text-primary-foreground shadow-lg hover:shadow-xl'
-                      : 'bg-card border border-border text-foreground hover:bg-muted'
+                      : 'bg-card border border-border text-foreground hover:bg-secondary/70 hover:border-foreground/25'
                       }`}
                   >
                     {plan.cta}

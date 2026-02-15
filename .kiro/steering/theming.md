@@ -47,12 +47,53 @@ Do not add redundant `dark:*` color overrides unless there is a true, intentiona
 - Use `bg-muted` (not `bg-card` + `bg-muted` together)
 
 ### Buttons
-- Primary CTA:
-  - `bg-primary text-primary-foreground hover:opacity-90`
-- Secondary/neutral:
-  - `bg-card border border-border text-foreground hover:bg-muted`
-- Inline action link:
-  - `text-primary hover:underline`
+- Use this hierarchy in all product UI:
+  - `primary`: high-importance, state-changing actions (for example `Save Changes`, `Generate New`)
+  - `secondary`: supportive non-destructive actions (for example `Close`, `Existing Outfit`)
+  - `tertiary`: low-emphasis contextual actions (for example per-row `Edit`, `Delete`)
+
+#### Primary
+- Visual: solid fill, strongest contrast
+- Class baseline: `bg-primary text-primary-foreground hover:opacity-90`
+- May include icon + label
+
+#### Secondary
+- Visual: outline/subtle fill, lower contrast than primary
+- Class baseline: `bg-card border border-border text-foreground hover:bg-muted`
+- Must use same base dimensions as primary
+
+#### Tertiary
+- Visual: ghost or icon-only; no persistent heavy fill
+- Class baseline: `text-foreground hover:bg-muted` (destructive can shift red on hover only)
+- For destructive tertiary actions: neutral default, `text-destructive`/destructive background on hover
+- In dense rows/cards, tertiary edit/delete controls should appear on hover/focus/selection
+
+#### Segmented controls (required for mode/state toggles)
+- Use shared segmented container + equal-size segments for mode/state switches
+- Required examples:
+  - `Planned | Worn`
+  - `Existing Outfit | Generate New`
+- Active segment: filled
+- Inactive segment: subtle/outline
+
+#### Dimension consistency (required)
+- Within the same view, button variants must share:
+  - height
+  - border radius
+  - font size
+  - padding scale
+- Variation allowed only by emphasis (fill/outline/ghost and color intensity)
+
+#### Icon consistency (required)
+- Primary: label + optional icon
+- Secondary: label with optional icon
+- Tertiary: icon-only preferred
+- Do not mix icon-only and labeled buttons at the same emphasis level in the same control group
+
+#### Save behavior (required where applicable)
+- Save/commit buttons should be disabled until user has changes (dirty state)
+- Enable with clear state transition when form becomes valid + dirty
+- Show explicit confirmation feedback on successful save
 
 ### Inputs/selects/textarea
 - Match this baseline:

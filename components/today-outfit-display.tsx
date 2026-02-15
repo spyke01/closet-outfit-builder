@@ -40,7 +40,7 @@ export default function TodayOutfitDisplay({ outfit, onSwap, generating }: Today
                 <button
                   onClick={() => onSwap(category)}
                   disabled={generating}
-                  className="absolute top-2 right-2 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-card border border-border rounded-md shadow-sm hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-foreground"
+                  className="absolute top-2 right-2 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-card border border-border rounded-md shadow-sm hover:bg-secondary/70 hover:border-foreground/25 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-foreground"
                   aria-label={`Swap ${category}`}
                 >
                   <RefreshCw className="w-3 h-3" aria-hidden="true" />

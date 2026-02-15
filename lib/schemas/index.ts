@@ -80,6 +80,42 @@ export const CalendarEntryItemSchema = z.object({
   created_at: TimestampSchema.optional(),
 });
 
+export const TripSchema = z.object({
+  id: UUIDSchema.optional(),
+  user_id: UUIDSchema.optional(),
+  name: z.string().min(1).max(100),
+  destination_text: z.string().min(1).max(120),
+  destination_lat: z.number().min(-90).max(90).nullable().optional(),
+  destination_lon: z.number().min(-180).max(180).nullable().optional(),
+  start_date: CalendarDateSchema,
+  end_date: CalendarDateSchema,
+  created_at: z.string().nullable().optional(),
+  updated_at: z.string().nullable().optional(),
+});
+
+export const TripDaySchema = z.object({
+  id: UUIDSchema.optional(),
+  trip_id: UUIDSchema,
+  day_date: CalendarDateSchema,
+  slot_number: z.number().int().min(1).max(5).default(1),
+  slot_label: z.string().max(40).nullable().optional(),
+  weather_context: z.record(z.string(), z.unknown()).nullable().optional(),
+  outfit_id: UUIDSchema.nullable().optional(),
+  created_at: z.string().nullable().optional(),
+  updated_at: z.string().nullable().optional(),
+});
+
+export const TripPackItemSchema = z.object({
+  id: UUIDSchema.optional(),
+  trip_id: UUIDSchema,
+  wardrobe_item_id: UUIDSchema.nullable().optional(),
+  label: z.string().min(1).max(120).regex(/^[A-Za-z0-9\s]*$/, 'Label can only contain letters, numbers, and spaces'),
+  packed: z.boolean().default(false),
+  source: z.enum(['from_outfit', 'manual']),
+  created_at: z.string().nullable().optional(),
+  updated_at: z.string().nullable().optional(),
+});
+
 // User preferences schema
 export const UserPreferencesSchema = z.object({
   id: UUIDSchema.optional(),
@@ -197,6 +233,83 @@ export const UpdateCalendarEntryFormSchema = CreateCalendarEntryFormSchema.parti
   id: UUIDSchema,
 });
 
+const TripFormBaseSchema = TripSchema.omit({
+  id: true,
+  user_id: true,
+  created_at: true,
+  updated_at: true,
+});
+
+export const CreateTripFormSchema = TripFormBaseSchema.superRefine((trip, context) => {
+  const start = new Date(`${trip.start_date}T12:00:00`);
+  const end = new Date(`${trip.end_date}T12:00:00`);
+  if (end.getTime() < start.getTime()) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'End date must be on or after start date',
+      path: ['end_date'],
+    });
+    return;
+  }
+
+  const diffDays = Math.floor((end.getTime() - start.getTime()) / 86400000) + 1;
+  if (diffDays > 30) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Trip length cannot exceed 30 days',
+      path: ['end_date'],
+    });
+  }
+});
+
+export const UpdateTripFormSchema = TripFormBaseSchema.partial().extend({
+  id: UUIDSchema,
+}).superRefine((trip, context) => {
+  if (!trip.start_date || !trip.end_date) return;
+
+  const start = new Date(`${trip.start_date}T12:00:00`);
+  const end = new Date(`${trip.end_date}T12:00:00`);
+  if (end.getTime() < start.getTime()) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'End date must be on or after start date',
+      path: ['end_date'],
+    });
+    return;
+  }
+
+  const diffDays = Math.floor((end.getTime() - start.getTime()) / 86400000) + 1;
+  if (diffDays > 30) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Trip length cannot exceed 30 days',
+      path: ['end_date'],
+    });
+  }
+});
+
+export const CreateTripDayFormSchema = TripDaySchema.omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+}).extend({
+  item_ids: z.array(UUIDSchema).optional(),
+});
+
+export const UpdateTripDayFormSchema = CreateTripDayFormSchema.partial().extend({
+  id: UUIDSchema,
+});
+
+export const CreateTripPackItemFormSchema = TripPackItemSchema.omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+});
+
+export const UpdateTripPackItemFormSchema = CreateTripPackItemFormSchema.partial().extend({
+  id: UUIDSchema,
+});
+
 // Type inference from schemas
 export type Category = z.infer<typeof CategorySchema>;
 export type WardrobeItem = z.infer<typeof WardrobeItemSchema>;
@@ -204,6 +317,9 @@ export type Outfit = z.infer<typeof OutfitSchema>;
 export type OutfitItem = z.infer<typeof OutfitItemSchema>;
 export type CalendarEntry = z.infer<typeof CalendarEntrySchema>;
 export type CalendarEntryItem = z.infer<typeof CalendarEntryItemSchema>;
+export type Trip = z.infer<typeof TripSchema>;
+export type TripDay = z.infer<typeof TripDaySchema>;
+export type TripPackItem = z.infer<typeof TripPackItemSchema>;
 export type UserPreferences = z.infer<typeof UserPreferencesSchema>;
 export type OutfitSelection = z.infer<typeof OutfitSelectionSchema>;
 export type ImageUpload = z.infer<typeof ImageUploadSchema>;
@@ -218,6 +334,12 @@ export type CreateOutfitForm = z.infer<typeof CreateOutfitFormSchema>;
 export type UpdateOutfitForm = z.infer<typeof UpdateOutfitFormSchema>;
 export type CreateCalendarEntryForm = z.infer<typeof CreateCalendarEntryFormSchema>;
 export type UpdateCalendarEntryForm = z.infer<typeof UpdateCalendarEntryFormSchema>;
+export type CreateTripForm = z.infer<typeof CreateTripFormSchema>;
+export type UpdateTripForm = z.infer<typeof UpdateTripFormSchema>;
+export type CreateTripDayForm = z.infer<typeof CreateTripDayFormSchema>;
+export type UpdateTripDayForm = z.infer<typeof UpdateTripDayFormSchema>;
+export type CreateTripPackItemForm = z.infer<typeof CreateTripPackItemFormSchema>;
+export type UpdateTripPackItemForm = z.infer<typeof UpdateTripPackItemFormSchema>;
 
 // API response types
 export type ApiResponse<T> = z.infer<ReturnType<typeof ApiResponseSchema<T>>>;

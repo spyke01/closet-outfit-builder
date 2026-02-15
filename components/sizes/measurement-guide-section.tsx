@@ -243,7 +243,7 @@ export function MeasurementGuideSection({
             type="button"
             onClick={handleUnitToggle}
             disabled={isEditing}
-            className="px-3 py-2 text-sm font-medium rounded-md border border-border bg-card hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 py-2 text-sm font-medium rounded-md border border-border bg-card hover:bg-secondary/70 hover:border-foreground/25 disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label={`Switch to ${currentUnit === 'imperial' ? 'metric' : 'imperial'} units`}
           >
             {currentUnit === 'imperial' ? 'in' : 'cm'}
@@ -254,7 +254,7 @@ export function MeasurementGuideSection({
             <button
               type="button"
               onClick={() => setIsEditing(true)}
-              className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-md hover:bg-secondary/70 hover:border-foreground/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               aria-label="Edit measurements"
             >
               <Edit className="h-4 w-4" aria-hidden="true" />
@@ -276,7 +276,7 @@ export function MeasurementGuideSection({
                 type="button"
                 onClick={handleCancel}
                 disabled={updateMeasurements.isPending}
-                className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-md hover:bg-secondary/70 hover:border-foreground/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
                 aria-label="Cancel editing"
               >
                 <X className="h-4 w-4" aria-hidden="true" />

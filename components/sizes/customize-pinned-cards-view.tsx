@@ -397,7 +397,7 @@ export function CustomizePinnedCardsView({
         <div className="flex gap-3 p-4 border-t border-border">
           <button
             onClick={handleCancel}
-            className="flex-1 px-4 py-2 bg-card border border-border hover:bg-muted text-foreground font-medium rounded-lg transition-colors"
+            className="flex-1 px-4 py-2 bg-card border border-border hover:bg-secondary/70 hover:border-foreground/25 text-foreground font-medium rounded-lg transition-colors"
             style={{ minHeight: '44px' }} // ✅ 44x44px touch target
             type="button"
           >

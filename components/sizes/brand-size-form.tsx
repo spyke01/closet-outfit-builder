@@ -321,7 +321,7 @@ export function BrandSizeForm({
         <button
           type="button"
           onClick={onCancel}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground text-foreground bg-card border border-border rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="h-10 inline-flex items-center gap-2 px-4 text-sm font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           aria-label="Cancel adding brand size"
         >
           <X className="h-4 w-4" aria-hidden="true" />
@@ -330,7 +330,7 @@ export function BrandSizeForm({
         <button
           type="submit"
           disabled={form.formState.isSubmitting || createBrandSize.isPending}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="h-10 inline-flex items-center gap-2 px-4 text-sm font-medium text-primary-foreground bg-primary rounded-lg hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Save brand size"
         >
           <Check className="h-4 w-4" aria-hidden="true" />

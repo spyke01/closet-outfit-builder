@@ -75,6 +75,57 @@ export interface CalendarEntryItem {
   created_at: string;
 }
 
+export interface Trip {
+  id: string;
+  user_id: string;
+  name: string;
+  destination_text: string;
+  destination_lat?: number | null;
+  destination_lon?: number | null;
+  start_date: string; // YYYY-MM-DD
+  end_date: string; // YYYY-MM-DD
+  created_at: string;
+  updated_at: string;
+  // Joined fields
+  days?: TripDay[];
+  pack_items?: TripPackItem[];
+}
+
+export interface TripDay {
+  id: string;
+  trip_id: string;
+  day_date: string; // YYYY-MM-DD
+  slot_number: number;
+  slot_label?: string | null;
+  weather_context?: Record<string, unknown> | null;
+  outfit_id?: string | null;
+  created_at: string;
+  updated_at: string;
+  // Joined fields
+  outfit?: Outfit | null;
+  items?: WardrobeItem[];
+}
+
+export interface TripDayItem {
+  id: string;
+  trip_day_id: string;
+  wardrobe_item_id: string;
+  created_at: string;
+}
+
+export interface TripPackItem {
+  id: string;
+  trip_id: string;
+  wardrobe_item_id?: string | null;
+  label: string;
+  packed: boolean;
+  source: 'from_outfit' | 'manual';
+  created_at: string;
+  updated_at: string;
+  // Joined fields
+  wardrobe_item?: WardrobeItem | null;
+}
+
 export interface UserPreferences {
   id: string;
   user_id: string;
@@ -127,6 +178,45 @@ export interface CreateCalendarEntryInput {
 }
 
 export interface UpdateCalendarEntryInput extends Partial<CreateCalendarEntryInput> {
+  id: string;
+}
+
+export interface CreateTripInput {
+  name: string;
+  destination_text: string;
+  destination_lat?: number;
+  destination_lon?: number;
+  start_date: string; // YYYY-MM-DD
+  end_date: string; // YYYY-MM-DD
+}
+
+export interface UpdateTripInput extends Partial<CreateTripInput> {
+  id: string;
+}
+
+export interface CreateTripDayInput {
+  trip_id: string;
+  day_date: string; // YYYY-MM-DD
+  slot_number?: number;
+  slot_label?: string;
+  weather_context?: Record<string, unknown>;
+  outfit_id?: string;
+  item_ids?: string[];
+}
+
+export interface UpdateTripDayInput extends Partial<CreateTripDayInput> {
+  id: string;
+}
+
+export interface CreateTripPackItemInput {
+  trip_id: string;
+  wardrobe_item_id?: string;
+  label: string;
+  source: 'from_outfit' | 'manual';
+  packed?: boolean;
+}
+
+export interface UpdateTripPackItemInput extends Partial<CreateTripPackItemInput> {
   id: string;
 }
 

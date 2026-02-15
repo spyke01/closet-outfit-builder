@@ -53,6 +53,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   const router = useRouter();
   const { getNavigationProps } = useNavigationPreloading();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const userMenuTriggerId = 'user-menu-trigger';
   const { theme, setTheme } = useTheme();
   const { data: preferences } = useUserPreferences();
   const updatePreferences = useUpdateUserPreferences();
@@ -256,6 +257,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
+                    id={userMenuTriggerId}
                     className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     aria-label="User menu"
                   >

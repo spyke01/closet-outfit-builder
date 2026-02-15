@@ -150,7 +150,7 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-[background-color,color,box-shadow] duration-200 min-h-[44px] flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                   selectedTags.has(tag)
                     ? 'bg-primary text-primary-foreground border border-primary shadow-sm'
-                    : 'bg-card text-muted-foreground border border-border hover:bg-muted hover:shadow-sm'
+                    : 'bg-card text-muted-foreground border border-border hover:bg-secondary/70 hover:border-foreground/25 hover:shadow-sm'
                 } ${isFiltering ? 'opacity-75' : 'opacity-100'}`}
                 disabled={isFiltering}
                 aria-label={`Filter by ${tag}`}
@@ -168,7 +168,7 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
             {searchTerm && (
               <button
                 onClick={() => handleSearchChange('')}
-                className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-muted transition-colors"
+                className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-secondary/70 hover:border-foreground/25 transition-colors"
                 aria-label="Clear search filter"
               >
                 Search: {searchTerm}
@@ -179,7 +179,7 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
               <button
                 key={tag}
                 onClick={() => toggleTag(tag as CapsuleTagType)}
-                className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-muted transition-colors"
+                className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-secondary/70 hover:border-foreground/25 transition-colors"
                 aria-label={`Remove ${tag} tag filter`}
               >
                 Tag: {tag}
@@ -193,7 +193,7 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
                   const category = categories.find(c => c.name === name);
                   if (category) onCategoryToggle(category.id);
                 }}
-                className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-muted transition-colors"
+                className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-secondary/70 hover:border-foreground/25 transition-colors"
                 aria-label={`Remove ${name} category filter`}
               >
                 Category: {name}
@@ -203,7 +203,7 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
             {sortBy !== 'default' && (
               <button
                 onClick={() => onSortChange?.('default')}
-                className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-muted transition-colors"
+                className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-secondary/70 hover:border-foreground/25 transition-colors"
                 aria-label="Reset sort order"
               >
                 Sort: {sortBy === 'name-asc' ? 'Name A-Z' : 'Name Z-A'}

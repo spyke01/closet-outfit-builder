@@ -14,6 +14,7 @@
 import { useState, useEffect } from 'react';
 import { AlertCircle, Check, X, Eye } from 'lucide-react';
 import type { SyncConflict, ConflictResolution } from '@/lib/utils/offline-sync';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export interface ConflictResolutionDialogProps {
   /**
@@ -131,7 +132,7 @@ export function ConflictResolutionDialog({
         className="fixed inset-0 z-50 flex items-center justify-center p-4"
       >
         <div
-          className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+          className="bg-card border border-border rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
         >
           {/* Header */}
           <div className="border-b p-6">
@@ -152,12 +153,12 @@ export function ConflictResolutionDialog({
           {/* Content */}
           <div className="p-6 space-y-4">
             {/* Alert */}
-            <div className="flex gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <AlertCircle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
-              <p className="text-sm text-yellow-800">
+            <Alert variant="warning" className="flex gap-3 p-4">
+              <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" aria-hidden="true" />
+              <AlertDescription className="text-sm">
                 <strong>{currentConflict.entity}</strong> was modified both locally and on the server.
-              </p>
-            </div>
+              </AlertDescription>
+            </Alert>
             
             {!viewingBoth ? (
               <div className="space-y-4">
@@ -203,7 +204,7 @@ export function ConflictResolutionDialog({
                   <button
                     type="button"
                     onClick={() => handleResolve('view-both')}
-                    className="px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors w-full sm:w-auto"
+                    className="px-4 py-2 border border-border rounded-md hover:bg-secondary/70 hover:border-foreground/25 transition-colors w-full sm:w-auto"
                   >
                     <Eye className="inline mr-2 h-4 w-4" aria-hidden="true" />
                     View Both
@@ -211,7 +212,7 @@ export function ConflictResolutionDialog({
                   <button
                     type="button"
                     onClick={() => handleResolve('use-server')}
-                    className="px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors w-full sm:w-auto"
+                    className="px-4 py-2 border border-border rounded-md hover:bg-secondary/70 hover:border-foreground/25 transition-colors w-full sm:w-auto"
                   >
                     <X className="inline mr-2 h-4 w-4" aria-hidden="true" />
                     Use Server Version
@@ -275,14 +276,14 @@ export function ConflictResolutionDialog({
                   <button
                     type="button"
                     onClick={() => setViewingBoth(false)}
-                    className="px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors w-full sm:w-auto"
+                    className="px-4 py-2 border border-border rounded-md hover:bg-secondary/70 hover:border-foreground/25 transition-colors w-full sm:w-auto"
                   >
                     Back
                   </button>
                   <button
                     type="button"
                     onClick={() => handleResolve('use-server')}
-                    className="px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors w-full sm:w-auto"
+                    className="px-4 py-2 border border-border rounded-md hover:bg-secondary/70 hover:border-foreground/25 transition-colors w-full sm:w-auto"
                   >
                     <X className="inline mr-2 h-4 w-4" aria-hidden="true" />
                     Use Server Version

@@ -133,7 +133,7 @@ export function BrandSizesSection({ brandSizes, categoryId }: BrandSizesSectionP
         <button
           onClick={() => setIsAddingBrandSize(true)}
           aria-label="Add brand size"
-          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground text-foreground bg-card border border-border rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="h-10 inline-flex items-center gap-2 px-4 text-sm font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <Plus className="h-4 w-4" aria-hidden="true" />
           Add Brand Size

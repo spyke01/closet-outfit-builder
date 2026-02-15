@@ -67,3 +67,20 @@ export {
   useDeleteCalendarEntry,
   sanitizeCalendarNotes,
 } from './use-calendar-entries';
+
+// Trip planner hooks
+export {
+  useTrips,
+  useTripDetail,
+  useCreateTrip,
+  useUpdateTrip,
+  useDeleteTrip,
+  useCreateTripDay,
+  useUpdateTripDay,
+  useDeleteTripDay,
+  useCreateTripPackItem,
+  useUpdateTripPackItem,
+  useDeleteTripPackItem,
+  useFindTripOverlaps,
+  sanitizePackLabel,
+} from './use-trips';

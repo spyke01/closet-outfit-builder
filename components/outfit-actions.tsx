@@ -37,7 +37,7 @@ export default function OutfitActions({ onRegenerate, onSave, disabled }: Outfit
       <button
         onClick={onRegenerate}
         disabled={disabled}
-        className="w-full flex items-center justify-center gap-2 px-6 py-3 border border-border rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-foreground bg-card"
+        className="w-full flex items-center justify-center gap-2 px-6 py-3 border border-border rounded-lg hover:bg-secondary/70 hover:border-foreground/25 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-foreground bg-card"
         aria-label="Regenerate outfit"
       >
         <AIIcon className="w-4 h-4" />

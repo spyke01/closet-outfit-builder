@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, CloudSun, Loader2, Plus, Trash2, AlertTriangle, Pencil, X, Check } from 'lucide-react';
 import { useWeather } from '@/lib/hooks/use-weather';
@@ -22,6 +23,13 @@ type EntrySource = 'existing' | 'generated';
 type EntryStatus = 'planned' | 'worn';
 type ExistingPolicy = 'skip' | 'overwrite';
 type MixStrategy = 'saved-heavy' | 'balanced' | 'ai-heavy';
+type EntryFormSnapshot = {
+  entrySource: EntrySource;
+  entryStatus: EntryStatus;
+  selectedOutfitId: string;
+  notes: string;
+  generatedItemIdsKey: string;
+};
 
 interface CalendarPageClientProps {
   wardrobeItems: WardrobeItem[];
@@ -255,6 +263,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
   const [weekdaysOnly, setWeekdaysOnly] = useState(false);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [isEntryFormOpen, setIsEntryFormOpen] = useState(false);
+  const [initialEntryFormSnapshot, setInitialEntryFormSnapshot] = useState<EntryFormSnapshot | null>(null);
 
   const notesInputRef = useRef<HTMLInputElement>(null);
   const entryFormRef = useRef<HTMLDivElement>(null);
@@ -491,6 +500,13 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
     setGeneratedSummary('');
     setRepeatWarning(null);
     setEditingEntryId(null);
+    setInitialEntryFormSnapshot({
+      entrySource: 'existing',
+      entryStatus: 'planned',
+      selectedOutfitId: '',
+      notes: '',
+      generatedItemIdsKey: '',
+    });
   };
 
   const handleNewEntryClick = () => {
@@ -515,12 +531,26 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
       setSelectedOutfitId(entry.outfit_id);
       setGeneratedItemIds([]);
       setGeneratedSummary('');
+      setInitialEntryFormSnapshot({
+        entrySource: 'existing',
+        entryStatus: entry.status,
+        selectedOutfitId: entry.outfit_id,
+        notes: entry.notes || '',
+        generatedItemIdsKey: '',
+      });
     } else {
       setEntrySource('generated');
       const itemIds = (entry.items || []).map((item) => item.id);
       setGeneratedItemIds(itemIds);
       setSelectedOutfitId('');
       setGeneratedSummary(itemIds.length ? `${itemIds.length} items` : '');
+      setInitialEntryFormSnapshot({
+        entrySource: 'generated',
+        entryStatus: entry.status,
+        selectedOutfitId: '',
+        notes: entry.notes || '',
+        generatedItemIdsKey: toItemSetSignature(itemIds),
+      });
     }
 
     requestAnimationFrame(() => {
@@ -611,11 +641,45 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
   };
 
   const isSaving = createEntryMutation.isPending || updateEntryMutation.isPending || createOutfitMutation.isPending;
+  const formSnapshot: EntryFormSnapshot = useMemo(() => ({
+    entrySource,
+    entryStatus,
+    selectedOutfitId,
+    notes: notes.trim(),
+    generatedItemIdsKey: toItemSetSignature(generatedItemIds),
+  }), [entrySource, entryStatus, selectedOutfitId, notes, generatedItemIds]);
+
+  const hasFormChanges = useMemo(() => {
+    if (!initialEntryFormSnapshot) return false;
+    return JSON.stringify(formSnapshot) !== JSON.stringify(initialEntryFormSnapshot);
+  }, [formSnapshot, initialEntryFormSnapshot]);
+
+  const hasValidEntrySelection = useMemo(() => {
+    if (entrySource === 'existing') return Boolean(selectedOutfitId);
+    return generatedItemIds.length > 0;
+  }, [entrySource, selectedOutfitId, generatedItemIds.length]);
+
+  const canSaveEntry = hasFormChanges && hasValidEntrySelection && !isSaving;
+
+  const commonButtonBase =
+    'h-10 rounded-lg px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2';
+  const primaryButtonClass = `${commonButtonBase} bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed`;
+  const secondaryButtonClass = `${commonButtonBase} border border-border bg-card text-foreground hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed`;
+  const iconTertiaryClass =
+    'h-9 w-9 inline-flex items-center justify-center rounded-md border border-border bg-card text-foreground hover:bg-muted transition-colors disabled:opacity-50';
+  const destructiveIconTertiaryClass =
+    'h-9 w-9 inline-flex items-center justify-center rounded-md border border-border bg-card text-foreground hover:bg-destructive/10 hover:text-destructive hover:border-destructive/40 transition-colors disabled:opacity-50';
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6 space-y-5 sm:space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
+          <div className="inline-flex items-center rounded-lg border border-border bg-card p-1 mb-3">
+            <span className="px-3 py-1.5 rounded-md text-sm bg-primary text-primary-foreground">Calendar</span>
+            <Link href="/calendar/trips" className="px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:bg-muted">
+              Trips
+            </Link>
+          </div>
           <h1 className="text-3xl font-bold text-foreground">Outfit Calendar</h1>
           <p className="text-muted-foreground mt-1">
             Plan or log multiple outfits per day with weather-aware guidance.
@@ -775,7 +839,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
               <button
                 type="button"
                 onClick={handleNewEntryClick}
-                className="text-xs px-3 py-1.5 rounded-md bg-secondary text-secondary-foreground hover:opacity-90 transition-colors"
+                className={`${commonButtonBase} bg-secondary text-secondary-foreground hover:opacity-90`}
               >
                 <Plus className="w-3 h-3 inline mr-1" />
                 New Entry
@@ -787,7 +851,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
             ) : (
               <div className="space-y-2">
                 {selectedDateEntries.map((entry) => (
-                  <div key={entry.id} className="border border-border rounded-lg p-2 space-y-2">
+                  <div key={entry.id} className="group border border-border rounded-lg p-2 space-y-2">
                     <div className="flex items-center justify-between">
                       <span
                         className={`text-xs uppercase tracking-wide rounded-full px-2 py-0.5 border ${
@@ -798,13 +862,17 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                       >
                         {entry.status}
                       </span>
-                      <div className="flex items-center gap-1">
+                      <div
+                        className={`flex items-center gap-1 transition-opacity ${
+                          editingEntryId === entry.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100'
+                        }`}
+                      >
                         {entry.status === 'planned' && (
                           <button
                             type="button"
                             onClick={() => onMarkEntryWorn(entry)}
                             disabled={updateEntryMutation.isPending}
-                            className="px-2 py-1.5 rounded border border-emerald-500/40 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 text-xs font-medium transition-colors disabled:opacity-50"
+                            className={`${secondaryButtonClass} h-9 px-2.5 text-xs border-success/40 bg-success-light text-success-dark dark:border-success/60 dark:bg-success-dark/20 dark:text-green-200`}
                             aria-label="Mark as worn"
                           >
                             <Check className="w-3 h-3 inline mr-1" />
@@ -815,7 +883,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                           type="button"
                           onClick={() => onEditEntry(entry)}
                           disabled={updateEntryMutation.isPending}
-                          className="p-1.5 rounded border border-border hover:bg-muted text-foreground transition-colors disabled:opacity-50"
+                          className={iconTertiaryClass}
                           aria-label="Edit entry"
                         >
                           <Pencil className="w-3.5 h-3.5" />
@@ -824,7 +892,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                           type="button"
                           onClick={() => onDeleteEntry(entry.id)}
                           disabled={deleteEntryMutation.isPending || updateEntryMutation.isPending}
-                          className="p-1.5 rounded border border-destructive/40 bg-destructive/10 hover:bg-destructive/20 text-destructive transition-colors"
+                          className={destructiveIconTertiaryClass}
                           aria-label="Delete entry"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -851,20 +919,20 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                     setIsEntryFormOpen(false);
                     resetForm();
                   }}
-                  className="text-xs px-3 py-1.5 rounded-md bg-muted text-foreground border border-border hover:bg-accent transition-colors"
+                  className={secondaryButtonClass}
                 >
                   Close
                 </button>
               </div>
 
-              <div className="flex gap-2">
+              <div className="inline-flex w-full rounded-lg border border-border bg-card p-1">
                 {(['planned', 'worn'] as EntryStatus[]).map((status) => (
                   <button
                     key={status}
                     type="button"
                     onClick={() => setEntryStatus(status)}
-                    className={`px-3 py-1.5 rounded text-sm border ${
-                      entryStatus === status ? 'bg-primary text-primary-foreground border-primary' : 'border-border hover:bg-muted'
+                    className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors ${
+                      entryStatus === status ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'
                     }`}
                   >
                     {status}
@@ -874,12 +942,12 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
 
               <div className="space-y-2">
                 <p className="text-sm font-medium text-foreground">Source</p>
-                <div className="flex gap-2">
+                <div className="inline-flex w-full rounded-lg border border-border bg-card p-1">
                   <button
                     type="button"
                     onClick={() => setEntrySource('existing')}
-                    className={`px-3 py-1.5 rounded text-sm border ${
-                      entrySource === 'existing' ? 'bg-primary text-primary-foreground border-primary' : 'border-border hover:bg-muted'
+                    className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors ${
+                      entrySource === 'existing' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'
                     }`}
                   >
                     Existing Outfit
@@ -887,9 +955,9 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                   <button
                     type="button"
                     onClick={() => setEntrySource('generated')}
-                    className={`px-3 py-1.5 rounded text-sm border ${
-                      entrySource === 'generated' ? 'bg-primary text-primary-foreground border-primary' : 'border-border hover:bg-muted'
-                    } inline-flex items-center gap-1.5`}
+                    className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors inline-flex items-center justify-center gap-1.5 ${
+                      entrySource === 'generated' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'
+                    }`}
                   >
                     <AIIcon className="w-3.5 h-3.5" />
                     Generate New
@@ -945,7 +1013,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                     type="button"
                     onClick={onGenerateOutfit}
                     disabled={!hasRequiredItems}
-                    className="w-full px-3 py-2 rounded-lg border border-border hover:bg-muted disabled:opacity-50 inline-flex items-center justify-center gap-2"
+                    className={`${secondaryButtonClass} w-full inline-flex items-center justify-center gap-2`}
                   >
                     <AIIcon className="w-4 h-4" />
                     {generatedItemIds.length > 0 ? 'Regenerate Outfit' : 'Generate Weather-Aware Outfit'}
@@ -1008,10 +1076,11 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
               <button
                 type="button"
                 onClick={() => onSaveEntry().catch((err: Error) => setRepeatWarning(err.message))}
-                disabled={isSaving}
-                className="w-full px-3 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 font-semibold shadow-sm"
+                disabled={!canSaveEntry}
+                className={`${primaryButtonClass} w-full inline-flex items-center justify-center gap-2`}
               >
-                {isSaving ? 'Saving...' : editingEntryId ? 'Update Entry' : 'Save Entry'}
+                <Pencil className="w-4 h-4" />
+                {isSaving ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           )}
@@ -1109,7 +1178,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
               <button
                 type="button"
                 onClick={() => setShowGenerateModal(false)}
-                className="px-3 py-2 rounded-lg border border-border hover:bg-muted text-foreground"
+                className="px-3 py-2 rounded-lg border border-border bg-card hover:bg-secondary/70 hover:border-foreground/25 text-foreground"
                 disabled={isGeneratingWeek}
               >
                 Cancel
