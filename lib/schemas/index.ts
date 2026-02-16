@@ -130,6 +130,9 @@ export const TripPackItemSchema = z.object({
   updated_at: z.string().nullable().optional(),
 });
 
+// Account tier schema
+export const AccountTierSchema = z.enum(['starter', 'plus', 'pro']);
+
 // User preferences schema
 export const UserPreferencesSchema = z.object({
   id: UUIDSchema.optional(),
@@ -138,6 +141,7 @@ export const UserPreferencesSchema = z.object({
   show_brands: z.boolean().default(true),
   weather_enabled: z.boolean().default(true),
   default_tuck_style: z.enum(['Tucked', 'Untucked']).default('Untucked'),
+  account_tier: AccountTierSchema.default('starter'),
   created_at: TimestampSchema.optional(),
   updated_at: TimestampSchema.optional(),
 });
@@ -326,6 +330,60 @@ export const UpdateTripPackItemFormSchema = CreateTripPackItemFormSchema.partial
   id: UUIDSchema,
 });
 
+// Outfit image generation schemas
+export const GenerationStatusSchema = z.enum([
+  'pending', 'generating', 'completed', 'failed', 'cancelled',
+]);
+
+export const GenerationLogStatusSchema = z.enum([
+  'success', 'failed', 'cancelled',
+]);
+
+export const GeneratedOutfitImageSchema = z.object({
+  id: UUIDSchema.optional(),
+  outfit_id: UUIDSchema,
+  user_id: UUIDSchema.optional(),
+  image_url: z.string(),
+  storage_path: z.string(),
+  status: GenerationStatusSchema,
+  is_primary: z.boolean().default(false),
+  prompt_text: z.string().optional(),
+  prompt_hash: z.string().optional(),
+  model_version: z.string().default('google-deepmind/imagen-4'),
+  generation_duration_ms: z.number().int().positive().optional(),
+  cost_cents: z.number().int().min(0).optional(),
+  error_message: z.string().optional(),
+  retry_of: UUIDSchema.nullable().optional(),
+  retry_expires_at: z.string().nullable().optional(),
+  created_at: z.string().nullable().optional(),
+  updated_at: z.string().nullable().optional(),
+});
+
+export const ImageGenerationUsageSchema = z.object({
+  id: UUIDSchema.optional(),
+  user_id: UUIDSchema,
+  monthly_count: z.number().int().min(0).default(0),
+  monthly_reset_at: z.string(),
+  hourly_timestamps: z.array(z.string()).default([]),
+  created_at: z.string().nullable().optional(),
+  updated_at: z.string().nullable().optional(),
+});
+
+export const GenerateOutfitImageRequestSchema = z.object({
+  outfit_id: UUIDSchema,
+  retry_of: UUIDSchema.optional(),
+});
+
+export const GenerateOutfitImageResponseSchema = z.object({
+  success: z.boolean(),
+  image: GeneratedOutfitImageSchema.optional(),
+  error: z.string().optional(),
+  quota_remaining: z.object({
+    monthly: z.number().int().min(0),
+    hourly: z.number().int().min(0),
+  }).optional(),
+});
+
 // Type inference from schemas
 export type Category = z.infer<typeof CategorySchema>;
 export type WardrobeItem = z.infer<typeof WardrobeItemSchema>;
@@ -342,6 +400,10 @@ export type ImageUpload = z.infer<typeof ImageUploadSchema>;
 export type ImageProcessingRequest = z.infer<typeof ImageProcessingRequestSchema>;
 export type ImageProcessingResponse = z.infer<typeof ImageProcessingResponseSchema>;
 export type FileValidation = z.infer<typeof FileValidationSchema>;
+export type GeneratedOutfitImage = z.infer<typeof GeneratedOutfitImageSchema>;
+export type ImageGenerationUsage = z.infer<typeof ImageGenerationUsageSchema>;
+export type GenerateOutfitImageRequest = z.infer<typeof GenerateOutfitImageRequestSchema>;
+export type GenerateOutfitImageResponse = z.infer<typeof GenerateOutfitImageResponseSchema>;
 
 // Form types
 export type CreateWardrobeItemForm = z.infer<typeof CreateWardrobeItemFormSchema>;

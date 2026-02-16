@@ -140,9 +140,70 @@ export interface UserPreferences {
   show_brands: boolean;
   weather_enabled: boolean;
   default_tuck_style: 'Tucked' | 'Untucked';
+  account_tier: AccountTier;
   created_at: string;
   updated_at: string;
 }
+
+// Outfit image generation types
+export type GenerationStatus = 'pending' | 'generating' | 'completed' | 'failed' | 'cancelled';
+export type GenerationLogStatus = 'success' | 'failed' | 'cancelled';
+export type AccountTier = 'starter' | 'plus' | 'pro';
+
+export interface GeneratedOutfitImage {
+  id: string;
+  outfit_id: string;
+  user_id: string;
+  image_url: string;
+  storage_path: string;
+  status: GenerationStatus;
+  is_primary: boolean;
+  prompt_text?: string;
+  prompt_hash?: string;
+  model_version: string;
+  generation_duration_ms?: number;
+  cost_cents?: number;
+  error_message?: string;
+  retry_of?: string | null;
+  retry_expires_at?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ImageGenerationUsage {
+  id: string;
+  user_id: string;
+  monthly_count: number;
+  monthly_reset_at: string;
+  hourly_timestamps: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GenerationLogEntry {
+  id: string;
+  user_id: string;
+  outfit_id: string;
+  generated_image_id?: string | null;
+  model_used: string;
+  prompt_hash?: string;
+  status: GenerationLogStatus;
+  error_message?: string;
+  api_response_time_ms?: number;
+  cost_cents?: number;
+  created_at: string;
+}
+
+export interface ImageGenerationLimits {
+  monthly_limit: number;
+  hourly_limit: number;
+}
+
+export const IMAGE_GENERATION_LIMITS: Record<AccountTier, ImageGenerationLimits> = {
+  starter: { monthly_limit: 0, hourly_limit: 5 },
+  plus: { monthly_limit: 30, hourly_limit: 5 },
+  pro: { monthly_limit: 100, hourly_limit: 5 },
+};
 
 // Input types for mutations
 export interface CreateWardrobeItemInput {
