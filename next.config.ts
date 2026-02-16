@@ -1,9 +1,9 @@
 import type { NextConfig } from "next";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 
-const enforcedCsp = [
+const baselineCsp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https: *.supabase.co",
   "font-src 'self' data:",
@@ -97,7 +97,7 @@ const nextConfig: NextConfig = {
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'geolocation=(self), camera=(), microphone=(), payment=()' },
-          { key: 'Content-Security-Policy', value: enforcedCsp },
+          { key: 'Content-Security-Policy', value: baselineCsp },
         ],
       },
     ];
