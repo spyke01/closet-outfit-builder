@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AlertTriangle, CalendarClock, CreditCard, FileText, ImageIcon, Loader2, ReceiptText, Sparkles } from 'lucide-react';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { Button } from '@/components/ui/button';
@@ -236,7 +236,6 @@ export function BillingPageClient() {
         currentPlanCode={entitlements?.effectivePlanCode}
         busyAction={busyAction}
         onCheckout={startCheckout}
-        onManageBilling={openPortal}
         onSwitchToFree={switchToFree}
       />
 

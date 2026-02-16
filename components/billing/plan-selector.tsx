@@ -13,7 +13,6 @@ interface PlanSelectorProps {
   currentPlanCode?: PlanCode;
   busyAction?: string | null;
   onCheckout?: (plan: Exclude<PlanCode, 'free'>, interval: PlanInterval) => void;
-  onManageBilling?: () => void;
   onSwitchToFree?: () => void;
 }
 
@@ -56,6 +55,7 @@ const PLANS: PlanDefinition[] = [
       'Up to 300 saved outfits',
       'AI outfit generation (300 per cycle)',
       'AI image generation (30 per cycle)',
+      'Sebastian AI assistant access',
       '10 active trips and 30-day trip windows',
       'Basic analytics',
     ],
@@ -72,6 +72,7 @@ const PLANS: PlanDefinition[] = [
       'Unlimited active trips and calendar depth',
       'Unlimited AI outfit generation (fair use)',
       'AI image generation (100 per cycle)',
+      'Sebastian AI assistant access',
       'Advanced analytics',
       'Export and share',
       'Priority support',
@@ -100,7 +101,6 @@ export function PlanSelector({
   currentPlanCode,
   busyAction,
   onCheckout,
-  onManageBilling,
   onSwitchToFree,
 }: PlanSelectorProps) {
   const rootClassName = context === 'billing'

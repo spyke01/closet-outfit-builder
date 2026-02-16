@@ -12,6 +12,7 @@ This directory contains essential developer documentation for the My AI Outfit a
 - **[CI/CD Workflow](./ci-cd-workflow.md)** - Continuous integration and deployment processes
 - **[Performance Monitoring Setup](./performance-monitoring-setup.md)** - Monitoring and metrics configuration
 - **[Sebastian Paid Assistant PRD](./sebastian-paid-assistant-prd.md)** - Product and implementation spec for paid AI assistant chat + vision
+- **[Sebastian Personality Guide](./sebastian-personality.md)** - Voice, behavior, and safety-aligned persona contract for assistant UX
 
 ### Steering Guides (Architecture & Standards)
 

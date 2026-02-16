@@ -12,6 +12,9 @@ export function StaticPageFooter() {
               <Link href="/how-it-works" className="block text-muted-foreground text-foreground/80 hover:text-foreground transition-colors">
                 How it works
               </Link>
+              <Link href="/sebastian" className="block text-muted-foreground text-foreground/80 hover:text-foreground transition-colors">
+                Sebastian
+              </Link>
               <Link href="/pricing" className="block text-muted-foreground text-foreground/80 hover:text-foreground transition-colors">
                 Pricing
               </Link>

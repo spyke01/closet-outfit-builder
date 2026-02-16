@@ -10,6 +10,8 @@ export interface PlanLimits {
   max_trip_days: number;
   ai_outfit_generations_monthly: number | null;
   ai_image_generations_monthly: number;
+  ai_stylist_messages_monthly: number | null;
+  ai_stylist_vision_messages_monthly: number;
   packing_items_per_trip: number | null;
   ai_burst_per_hour: number;
 }
@@ -20,6 +22,7 @@ export interface PlanFeatures {
   export_share: boolean;
   priority_support: boolean;
   ai_image_generation: boolean;
+  sebastian_assistant: boolean;
 }
 
 export interface BillingPlan {
@@ -40,6 +43,8 @@ const FREE_LIMITS: PlanLimits = {
   max_trip_days: 7,
   ai_outfit_generations_monthly: 20,
   ai_image_generations_monthly: 0,
+  ai_stylist_messages_monthly: 0,
+  ai_stylist_vision_messages_monthly: 0,
   packing_items_per_trip: 50,
   ai_burst_per_hour: 5,
 };
@@ -53,6 +58,8 @@ const PLUS_LIMITS: PlanLimits = {
   max_trip_days: 30,
   ai_outfit_generations_monthly: 300,
   ai_image_generations_monthly: 30,
+  ai_stylist_messages_monthly: 300,
+  ai_stylist_vision_messages_monthly: 30,
   packing_items_per_trip: 250,
   ai_burst_per_hour: 5,
 };
@@ -66,6 +73,8 @@ const PRO_LIMITS: PlanLimits = {
   max_trip_days: 30,
   ai_outfit_generations_monthly: null,
   ai_image_generations_monthly: 100,
+  ai_stylist_messages_monthly: null,
+  ai_stylist_vision_messages_monthly: 100,
   packing_items_per_trip: null,
   ai_burst_per_hour: 5,
 };
@@ -76,6 +85,7 @@ const FREE_FEATURES: PlanFeatures = {
   export_share: false,
   priority_support: false,
   ai_image_generation: false,
+  sebastian_assistant: false,
 };
 
 const PLUS_FEATURES: PlanFeatures = {
@@ -84,6 +94,7 @@ const PLUS_FEATURES: PlanFeatures = {
   export_share: false,
   priority_support: false,
   ai_image_generation: true,
+  sebastian_assistant: true,
 };
 
 const PRO_FEATURES: PlanFeatures = {
@@ -92,6 +103,7 @@ const PRO_FEATURES: PlanFeatures = {
   export_share: true,
   priority_support: true,
   ai_image_generation: true,
+  sebastian_assistant: true,
 };
 
 export const PLAN_CATALOG: BillingPlan[] = [

@@ -31,7 +31,11 @@ export interface Entitlements {
   usage: Record<string, number>;
 }
 
-const MONTHLY_METRICS = ['ai_outfit_generations', 'ai_outfit_image_generations'] as const;
+export type MonthlyUsageMetric =
+  | 'ai_outfit_generations'
+  | 'ai_outfit_image_generations'
+  | 'ai_stylist_messages'
+  | 'ai_stylist_vision_messages';
 
 function toMonthPeriod(anchor: Date, now: Date) {
   const day = anchor.getUTCDate();
@@ -144,6 +148,12 @@ export function getUsageLimitForMetric(entitlements: Entitlements, metricKey: st
   if (metricKey === 'ai_outfit_image_generations') {
     return entitlements.plan.limits.ai_image_generations_monthly;
   }
+  if (metricKey === 'ai_stylist_messages') {
+    return entitlements.plan.limits.ai_stylist_messages_monthly;
+  }
+  if (metricKey === 'ai_stylist_vision_messages') {
+    return entitlements.plan.limits.ai_stylist_vision_messages_monthly;
+  }
   return null;
 }
 
@@ -162,7 +172,7 @@ export function isUsageExceeded(entitlements: Entitlements, metricKey: string): 
 export async function incrementUsageCounter(
   supabase: SupabaseClient,
   userId: string,
-  metricKey: (typeof MONTHLY_METRICS)[number],
+  metricKey: MonthlyUsageMetric,
   period: Entitlements['period'],
   incrementBy: number = 1
 ): Promise<number> {
@@ -204,4 +214,8 @@ export async function incrementUsageCounter(
 
 export function getAiBurstHourKey(now: Date = new Date()): string {
   return `ai_requests_hourly:${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')}T${String(now.getUTCHours()).padStart(2, '0')}`;
+}
+
+export function getAssistantBurstHourKey(now: Date = new Date()): string {
+  return `ai_stylist_requests_hourly:${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')}T${String(now.getUTCHours()).padStart(2, '0')}`;
 }

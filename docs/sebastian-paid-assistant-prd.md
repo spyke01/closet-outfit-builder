@@ -170,6 +170,11 @@ Update `netlify.toml` CSP `connect-src` to allow Replicate API domain.
 
 ## 8. Guardrails and Implementation
 
+OWASP alignment baseline:
+
+- [OWASP LLM Prompt Injection Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html)
+- Implementation details tracked in `/Volumes/workplace/closet-outfit-builder/docs/sebastian-llm-guardrails.md`
+
 ### 8.1 Access and Authorization Guardrails
 
 - Enforce auth on all assistant endpoints via Supabase server client.
@@ -211,6 +216,8 @@ Implementation:
 - Input checks:
   - profanity/abuse classifier
   - image safety screen for nudity/graphic content
+  - strict injection pattern blocks (script tags, SSI directives, role injection, prompt escape tokens)
+  - allow normal styling punctuation including `& $ % ? . , - + #` while blocking scripting payloads
 - Output checks:
   - block disallowed content categories
   - refuse medical/legal instructions
@@ -324,6 +331,7 @@ Response:
 - [ ] Add assistant API route handlers
 - [ ] Add provider adapter for Replicate
 - [ ] Add context builder service
+- [ ] Add Sebastian system prompt/persona module based on `docs/sebastian-personality.md`
 - [ ] Add Supabase migrations + RLS for assistant tables
 - [ ] Extend billing plan limits/features for stylist metrics
 - [ ] Update usage counter enforcement paths

@@ -26,6 +26,7 @@
     "start": "next start",
     "generate:outfits": "node scripts/generate-outfits.js",
     "generate:wardrobe-images": "tsx scripts/generate-wardrobe-item-images.ts",
+    "compare:image-models": "tsx scripts/compare-text-to-image-models.ts",
     "compress:wardrobe-images": "tsx scripts/compress-wardrobe-images.ts",
     "migrate:colors": "tsx scripts/migrate-colors.ts",
     "migrate:colors:dry-run": "tsx scripts/migrate-colors.ts --dry-run",

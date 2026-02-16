@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Navigation } from "@/components/homepage/navigation";
 import { HeroSection } from "@/components/homepage/hero-section";
 import { FeatureHighlights } from "@/components/homepage/feature-highlights";
+import { SebastianSection } from "@/components/homepage/sebastian-section";
 import { HowItWorks } from "@/components/homepage/how-it-works";
 import { AppDemo } from "@/components/homepage/app-demo";
 import { Testimonials } from "@/components/homepage/testimonials";
@@ -50,6 +51,7 @@ export default function Home() {
       <Navigation />
       <HeroSection />
       <FeatureHighlights />
+      <SebastianSection />
       <HowItWorks />
       <AppDemo />
       <Testimonials />

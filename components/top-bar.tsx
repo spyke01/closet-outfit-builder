@@ -16,6 +16,7 @@ import { z } from 'zod';
 import { safeValidate } from '@/lib/utils/validation';
 import { useNavigationPreloading } from '@/lib/hooks/use-intelligent-preloading';
 import { SebastianChatLauncher } from './sebastian-chat-launcher';
+import { useBillingEntitlements } from '@/lib/hooks/use-billing-entitlements';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -132,6 +133,9 @@ export const TopBar: React.FC<TopBarProps> = ({
   };
 
   const currentView = getCurrentView();
+  const { entitlements, loading: entitlementsLoading } = useBillingEntitlements(Boolean(validatedUser));
+  const canAccessSebastian = entitlements?.effectivePlanCode === 'plus' || entitlements?.effectivePlanCode === 'pro';
+  const showSebastianUpsell = Boolean(validatedUser) && !entitlementsLoading && !canAccessSebastian;
 
   // Get user initials for avatar
   const getUserInitials = () => {
@@ -143,7 +147,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     <div className="bg-card border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Left: Logo + Mobile Menu Button */}
+          {/* Left: Logo + Mobile Menu Button + Desktop Navigation */}
           <div className="flex items-center gap-3">
             {/* Mobile menu button - traditional left position */}
             {validatedUser && (
@@ -174,92 +178,96 @@ export const TopBar: React.FC<TopBarProps> = ({
             >
               <Logo className="h-12 w-auto" />
             </button>
-          </div>
 
-          {/* Center: Navigation (Desktop) */}
-          {validatedUser && (
-            <nav className="hidden md:flex items-center gap-1 absolute left-1/2 transform -translate-x-1/2">
-              <Link
-                href="/today"
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                  currentView === 'today'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                }`}
-                aria-label="View today's outfit"
-                aria-current={currentView === 'today' ? 'page' : undefined}
-                {...getNavigationProps('/today')}
-              >
-                <Calendar size={18} />
-                <span>Today</span>
-              </Link>
-              <Link
-                href="/wardrobe"
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                  currentView === 'wardrobe'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                }`}
-                aria-label="View wardrobe"
-                aria-current={currentView === 'wardrobe' ? 'page' : undefined}
-                {...getNavigationProps('/wardrobe')}
-              >
-                <Shirt size={18} />
-                <span>Wardrobe</span>
-              </Link>
-              <Link
-                href="/calendar"
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                  currentView === 'calendar'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                }`}
-                aria-label="View outfit calendar"
-                aria-current={currentView === 'calendar' ? 'page' : undefined}
-                {...getNavigationProps('/calendar')}
-              >
-                <CalendarDays size={18} />
-                <span>Calendar</span>
-              </Link>
-              <Link
-                href="/outfits"
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                  currentView === 'outfits'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                }`}
-                aria-label="View outfits"
-                aria-current={currentView === 'outfits' ? 'page' : undefined}
-                {...getNavigationProps('/outfits')}
-              >
-                <Grid3X3 size={18} />
-                <span>Outfits</span>
-              </Link>
-              <Link
-                href="/sizes"
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                  currentView === 'sizes'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                }`}
-                aria-label="View my sizes"
-                aria-current={currentView === 'sizes' ? 'page' : undefined}
-                {...getNavigationProps('/sizes')}
-              >
-                <Ruler size={18} />
-                <span>My Sizes</span>
-              </Link>
-            </nav>
-          )}
+            {validatedUser && (
+              <nav className="hidden md:flex items-center gap-1 ml-2">
+                <Link
+                  href="/today"
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                    currentView === 'today'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                  aria-label="View today's outfit"
+                  aria-current={currentView === 'today' ? 'page' : undefined}
+                  {...getNavigationProps('/today')}
+                >
+                  <Calendar size={18} />
+                  <span>Today</span>
+                </Link>
+                <Link
+                  href="/wardrobe"
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                    currentView === 'wardrobe'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                  aria-label="View wardrobe"
+                  aria-current={currentView === 'wardrobe' ? 'page' : undefined}
+                  {...getNavigationProps('/wardrobe')}
+                >
+                  <Shirt size={18} />
+                  <span>Wardrobe</span>
+                </Link>
+                <Link
+                  href="/calendar"
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                    currentView === 'calendar'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                  aria-label="View outfit calendar"
+                  aria-current={currentView === 'calendar' ? 'page' : undefined}
+                  {...getNavigationProps('/calendar')}
+                >
+                  <CalendarDays size={18} />
+                  <span>Calendar</span>
+                </Link>
+                <Link
+                  href="/outfits"
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                    currentView === 'outfits'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                  aria-label="View outfits"
+                  aria-current={currentView === 'outfits' ? 'page' : undefined}
+                  {...getNavigationProps('/outfits')}
+                >
+                  <Grid3X3 size={18} />
+                  <span>Outfits</span>
+                </Link>
+                <Link
+                  href="/sizes"
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                    currentView === 'sizes'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                  aria-label="View my sizes"
+                  aria-current={currentView === 'sizes' ? 'page' : undefined}
+                  {...getNavigationProps('/sizes')}
+                >
+                  <Ruler size={18} />
+                  <span>My Sizes</span>
+                </Link>
+              </nav>
+            )}
+          </div>
 
           {/* Right: Weather + User Menu or Auth Buttons */}
           <div className="flex items-center gap-3">
-            {/* Weather widget - always visible when enabled */}
-            <WeatherWidget className="text-sm" />
-
-            {validatedUser && (
+            {validatedUser && canAccessSebastian && (
               <SebastianChatLauncher className="min-h-[40px] bg-secondary text-secondary-foreground hover:bg-secondary/90" />
             )}
+            {showSebastianUpsell && (
+              <Button asChild variant="outline" size="sm" className="min-h-[40px]">
+                <Link href="/pricing">Unlock Sebastian</Link>
+              </Button>
+            )}
+
+            {/* Weather widget - always visible when enabled */}
+            <WeatherWidget className="text-sm" />
 
             {validatedUser ? (
               /* User dropdown menu */

@@ -26,6 +26,9 @@ export function StaticPageNavigation() {
             <Link href="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
               How it works
             </Link>
+            <Link href="/sebastian" className="text-muted-foreground hover:text-foreground transition-colors">
+              Sebastian
+            </Link>
             <Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
               Pricing
             </Link>
@@ -72,6 +75,13 @@ export function StaticPageNavigation() {
               onClick={() => setIsMenuOpen(false)}
             >
               How it works
+            </Link>
+            <Link 
+              href="/sebastian" 
+              className="block text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Sebastian
             </Link>
             <Link 
               href="/pricing" 

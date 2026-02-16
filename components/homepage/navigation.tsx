@@ -30,6 +30,9 @@ export function Navigation() {
             >
               How it works
             </Link>
+            <Link href="/sebastian" className="text-muted-foreground hover:text-foreground transition-colors">
+              Sebastian
+            </Link>
             <Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
               Pricing
             </Link>
@@ -78,6 +81,13 @@ export function Navigation() {
               onClick={() => setIsMenuOpen(false)}
             >
               How it works
+            </Link>
+            <Link 
+              href="/sebastian" 
+              className="block text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Sebastian
             </Link>
             <Link 
               href="/pricing" 
