@@ -210,7 +210,7 @@ export function SettingsPageClient() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
                 {themeOptions.map((themeOption) => {
                   const Icon = themeOption.icon;
                   const isSelected = preferences.theme === themeOption.value;
@@ -219,14 +219,14 @@ export function SettingsPageClient() {
                     <Button
                       key={themeOption.value}
                       variant={isSelected ? 'default' : 'outline'}
-                      className="flex flex-col items-center gap-2 h-auto p-4"
+                      className="flex h-auto flex-col items-center gap-1.5 p-3 whitespace-normal sm:gap-2 sm:p-4"
                       onClick={() => updatePreference('theme', themeOption.value)}
                       disabled={updating}
                     >
                       <Icon className="w-6 h-6" />
                       <div className="text-center">
-                        <div className="font-medium">{themeOption.label}</div>
-                        <div className="text-xs text-muted-foreground mt-1">
+                        <div className="font-medium leading-tight">{themeOption.label}</div>
+                        <div className="mt-1 hidden text-xs leading-snug whitespace-normal text-muted-foreground sm:block">
                           {themeOption.description}
                         </div>
                       </div>

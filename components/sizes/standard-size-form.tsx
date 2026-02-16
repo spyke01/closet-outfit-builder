@@ -191,6 +191,13 @@ export function StandardSizeForm({
         </div>
       </div>
 
+      {/* Action-localized error feedback */}
+      {updateStandardSize.isError && (
+        <Alert variant="destructive">
+          <AlertDescription>Failed to save standard size. Please try again.</AlertDescription>
+        </Alert>
+      )}
+
       {/* Form Actions */}
       <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
         <button
@@ -210,12 +217,6 @@ export function StandardSizeForm({
         </button>
       </div>
 
-      {/* Error Display */}
-      {updateStandardSize.isError && (
-        <Alert variant="destructive">
-          <AlertDescription>Failed to save standard size. Please try again.</AlertDescription>
-        </Alert>
-      )}
     </form>
   )
 }

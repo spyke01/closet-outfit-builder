@@ -159,8 +159,8 @@ describe('Outfit Save Functionality', () => {
     renderPage();
 
     expect(
-      screen.getByText('This outfit combination already exists in your collection.')
-    ).toBeInTheDocument();
+      screen.getAllByText('This outfit combination already exists in your collection.')
+    ).toHaveLength(2);
   });
 
   it('shows save failure feedback from mutation state', () => {
@@ -172,6 +172,6 @@ describe('Outfit Save Functionality', () => {
 
     renderPage();
 
-    expect(screen.getByText('Failed to create outfit: Network error')).toBeInTheDocument();
+    expect(screen.getAllByText('Failed to create outfit: Network error')).toHaveLength(2);
   });
 });

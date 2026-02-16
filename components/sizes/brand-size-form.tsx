@@ -316,6 +316,13 @@ export function BrandSizeForm({
         )}
       </div>
       
+      {/* Action-localized error feedback */}
+      {createBrandSize.isError && (
+        <Alert variant="destructive">
+          <AlertDescription>Failed to save brand size. Please try again.</AlertDescription>
+        </Alert>
+      )}
+
       {/* Form Actions */}
       <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
         <button
@@ -338,12 +345,6 @@ export function BrandSizeForm({
         </button>
       </div>
       
-      {/* Error message from mutation */}
-      {createBrandSize.isError && (
-        <Alert variant="destructive">
-          <AlertDescription>Failed to save brand size. Please try again.</AlertDescription>
-        </Alert>
-      )}
     </form>
   )
 }

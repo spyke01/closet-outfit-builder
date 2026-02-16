@@ -15,14 +15,12 @@ import { revalidatePath } from 'next/cache';
 // Validation schemas
 const CreateOutfitSchema = z.object({
   name: z.string().min(1).max(100).optional(),
-  jacket_item_id: z.string().uuid().optional(),
-  shirt_item_id: z.string().uuid().optional(),
-  pants_item_id: z.string().uuid().optional(),
-  shoes_item_id: z.string().uuid().optional(),
-  belt_item_id: z.string().uuid().optional(),
-  watch_item_id: z.string().uuid().optional(),
+  items: z.array(z.string().uuid()).min(2),
   score: z.number().min(0).max(100).optional(),
   source: z.string().optional(),
+  tuck_style: z.enum(['Tucked', 'Untucked']).optional(),
+  loved: z.boolean().optional(),
+  weight: z.number().int().min(1).max(10).optional(),
 });
 
 const UpdateOutfitSchema = z.object({
@@ -52,6 +50,7 @@ export async function createOutfit(data: unknown) {
     
     // 2. Validate input
     const validated = CreateOutfitSchema.parse(data);
+    const { items, ...outfitData } = validated;
     
     // 3. Create Supabase client
     const supabase = await createClient();
@@ -60,7 +59,7 @@ export async function createOutfit(data: unknown) {
     const { data: outfit, error } = await supabase
       .from('outfits')
       .insert({
-        ...validated,
+        ...outfitData,
         user_id: user.id,
       })
       .select()
@@ -69,7 +68,38 @@ export async function createOutfit(data: unknown) {
     if (error) {
       throw new Error(`Failed to create outfit: ${error.message}`);
     }
-    
+
+    const { data: wardrobeItems, error: wardrobeError } = await supabase
+      .from('wardrobe_items')
+      .select('id, category_id')
+      .in('id', items)
+      .eq('user_id', user.id);
+
+    if (wardrobeError || !wardrobeItems) {
+      await supabase.from('outfits').delete().eq('id', outfit.id);
+      throw new Error(`Failed to fetch wardrobe items: ${wardrobeError?.message || 'Unknown error'}`);
+    }
+
+    if (wardrobeItems.length !== items.length) {
+      await supabase.from('outfits').delete().eq('id', outfit.id);
+      throw new Error('Some wardrobe items do not exist or do not belong to user');
+    }
+
+    const outfitItems = wardrobeItems.map((wardrobeItem) => ({
+      outfit_id: outfit.id,
+      item_id: wardrobeItem.id,
+      category_id: wardrobeItem.category_id,
+    }));
+
+    const { error: outfitItemsError } = await supabase
+      .from('outfit_items')
+      .insert(outfitItems);
+
+    if (outfitItemsError) {
+      await supabase.from('outfits').delete().eq('id', outfit.id);
+      throw new Error(`Failed to create outfit items: ${outfitItemsError.message}`);
+    }
+
     // 5. Revalidate outfits page
     revalidatePath('/outfits');
     

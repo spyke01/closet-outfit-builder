@@ -244,6 +244,13 @@ export function AddCategoryForm({ onSave, onCancel }: AddCategoryFormProps) {
         </div>
       </div>
 
+      {/* Action-localized error feedback */}
+      {(createCategory.isError || createPinnedPreference.isError) && (
+        <Alert variant="destructive" aria-live="polite">
+          <AlertDescription>Failed to create category. Please try again.</AlertDescription>
+        </Alert>
+      )}
+
       {/* Form Actions */}
       <div className="flex gap-3 pt-4">
         <Button
@@ -268,12 +275,6 @@ export function AddCategoryForm({ onSave, onCancel }: AddCategoryFormProps) {
         </Button>
       </div>
 
-      {/* Error message for mutation failures */}
-      {(createCategory.isError || createPinnedPreference.isError) && (
-        <Alert variant="destructive" aria-live="polite">
-          <AlertDescription>Failed to create category. Please try again.</AlertDescription>
-        </Alert>
-      )}
     </form>
   );
 }

@@ -145,6 +145,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
   // Handle save outfit
   const handleSave = useCallback(async () => {
     if (!currentOutfit) return;
+    if (saving) return;
     
     setSaving(true);
     setSaveSuccess(false);
@@ -152,15 +153,15 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
     
     try {
       // Build outfit data for server action
+      const selectedItemIds = Object.values(currentOutfit.items).reduce<string[]>((ids, item) => {
+        if (item?.id) ids.push(item.id);
+        return ids;
+      }, []);
+
       const outfitData = {
         name: `Today's Outfit - ${new Date().toLocaleDateString()}`,
         source: 'generated',
-        jacket_item_id: currentOutfit.items.jacket?.id,
-        shirt_item_id: currentOutfit.items.shirt?.id,
-        pants_item_id: currentOutfit.items.pants?.id,
-        shoes_item_id: currentOutfit.items.shoes?.id,
-        belt_item_id: currentOutfit.items.belt?.id,
-        watch_item_id: currentOutfit.items.watch?.id,
+        items: selectedItemIds,
         score: Math.round(currentOutfit.scores.overall.total * 100),
       };
       
@@ -177,7 +178,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
     } finally {
       setSaving(false);
     }
-  }, [currentOutfit]);
+  }, [currentOutfit, saving]);
   
   // Empty state
   if (!hasRequiredCategories) {
@@ -222,7 +223,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
           )}
           
           {saveSuccess && (
-            <Alert variant="success" className="mt-4">
+            <Alert variant="success" className="mt-4 hidden lg:block">
               <CheckCircle className="h-4 w-4" />
               <AlertDescription className="mb-2 text-sm">Outfit saved successfully!</AlertDescription>
               <Link href="/outfits" className="text-primary hover:underline text-sm">
@@ -232,7 +233,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
           )}
           
           {saveError && (
-            <Alert variant="destructive" className="mt-4">
+            <Alert variant="destructive" className="mt-4 hidden lg:block">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription className="mb-2 text-sm">{saveError}</AlertDescription>
               <button
@@ -268,6 +269,29 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                   onSave={handleSave}
                   disabled={generating || saving}
                 />
+
+                {saveSuccess && (
+                  <Alert variant="success" className="mt-4">
+                    <CheckCircle className="h-4 w-4" />
+                    <AlertDescription className="mb-2 text-sm">Outfit saved successfully!</AlertDescription>
+                    <Link href="/outfits" className="text-primary hover:underline text-sm">
+                      View your outfits →
+                    </Link>
+                  </Alert>
+                )}
+
+                {saveError && (
+                  <Alert variant="destructive" className="mt-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription className="mb-2 text-sm">{saveError}</AlertDescription>
+                    <button
+                      onClick={() => handleSave()}
+                      className="text-destructive hover:underline text-sm"
+                    >
+                      Try again
+                    </button>
+                  </Alert>
+                )}
               </div>
             </>
           )}

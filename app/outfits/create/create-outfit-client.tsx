@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useCategories } from '@/lib/hooks/use-categories';
 import { useWardrobeItems } from '@/lib/hooks/use-wardrobe-items';
 import { useCreateOutfit, useScoreOutfit, useCheckOutfitDuplicate } from '@/lib/hooks/use-outfits';
@@ -36,8 +36,26 @@ interface OutfitSelection {
   score?: number;
 }
 
+const OUTFIT_SLOT_BY_CATEGORY_NAME: Record<string, keyof OutfitSelection> = {
+  Jacket: 'jacket',
+  Overshirt: 'overshirt',
+  Jackets: 'jacket',
+  Overshirts: 'overshirt',
+  Shirt: 'shirt',
+  Shirts: 'shirt',
+  Undershirt: 'undershirt',
+  Undershirts: 'undershirt',
+  Pants: 'pants',
+  Shoes: 'shoes',
+  Belt: 'belt',
+  Belts: 'belt',
+  Watch: 'watch',
+  Watches: 'watch',
+};
+
 export function CreateOutfitPageClient() {
   const router = useRouter();
+  const outfitPreviewRef = useRef<HTMLDivElement>(null);
   
   const [selection, setSelection] = useState<OutfitSelection>({
     tuck_style: 'Untucked'
@@ -140,30 +158,24 @@ export function CreateOutfitPageClient() {
   const handleItemSelect = (item: WardrobeItem | null) => {
     const category = categoryMap.get(selectedCategory);
     if (category) {
-      // Map category names to OutfitSelection property names
-      const categoryMap: Record<string, keyof OutfitSelection> = {
-        'Jacket': 'jacket',
-        'Overshirt': 'overshirt', // Separate slots for Jacket and Overshirt
-        'Jackets': 'jacket',
-        'Overshirts': 'overshirt',
-        'Shirt': 'shirt',
-        'Shirts': 'shirt',
-        'Undershirt': 'undershirt',
-        'Undershirts': 'undershirt',
-        'Pants': 'pants',
-        'Shoes': 'shoes',
-        'Belt': 'belt',
-        'Belts': 'belt',
-        'Watch': 'watch',
-        'Watches': 'watch'
-      };
-      
-      const propertyName = categoryMap[category.name];
+      const propertyName = OUTFIT_SLOT_BY_CATEGORY_NAME[category.name];
       if (propertyName && propertyName !== 'tuck_style' && propertyName !== 'score') {
         setSelection(prev => ({
           ...prev,
           [propertyName]: item // item can be null for deselection
         }));
+
+        const isMobileViewport =
+          typeof window !== 'undefined' &&
+          typeof window.matchMedia === 'function' &&
+          window.matchMedia('(max-width: 1023px)').matches;
+
+        if (item && isMobileViewport) {
+          setSelectedCategory('');
+          requestAnimationFrame(() => {
+            outfitPreviewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        }
       }
     }
   };
@@ -227,14 +239,14 @@ export function CreateOutfitPageClient() {
 
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto p-6">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6 pb-28">
         {/* Navigation */}
         <NavigationButtons 
           backTo={{ href: '/outfits', label: 'Back to Outfits' }}
         />
 
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div>
           <div>
             <h1 className="text-3xl font-bold text-foreground">
               Create New Outfit
@@ -243,30 +255,11 @@ export function CreateOutfitPageClient() {
               Select items from your wardrobe to create an outfit
             </p>
           </div>
-
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCancel}
-              disabled={createOutfitMutation.isPending}
-            >
-              <X className="mr-2 h-4 w-4" />
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={createOutfitMutation.isPending || !isFormValid}
-            >
-              <Save className="mr-2 h-4 w-4" />
-              {createOutfitMutation.isPending ? 'Creating...' : 'Create Outfit'}
-            </Button>
-          </div>
         </div>
 
         {/* Error Messages */}
         {createOutfitMutation.isError && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="hidden lg:flex">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               Failed to create outfit: {createOutfitMutation.error?.message}
@@ -275,7 +268,7 @@ export function CreateOutfitPageClient() {
         )}
 
         {isDuplicate && !createOutfitMutation.isSuccess && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="hidden lg:flex">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               This outfit combination already exists in your collection.
@@ -284,7 +277,7 @@ export function CreateOutfitPageClient() {
         )}
 
         {duplicateCheckError && (
-          <Alert variant="warning">
+          <Alert variant="warning" className="hidden lg:flex">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               Unable to check for duplicate outfits. You can still create this outfit.
@@ -294,7 +287,7 @@ export function CreateOutfitPageClient() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Outfit Preview */}
-          <div className="lg:col-span-1">
+          <div ref={outfitPreviewRef} className="lg:col-span-1">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -430,20 +423,7 @@ export function CreateOutfitPageClient() {
                   const category = categoryMap.get(selectedCategory);
                   if (!category) return undefined;
                   
-                  const categoryPropertyMap: Record<string, keyof OutfitSelection> = {
-                    'Jacket': 'jacket',
-                    'Overshirt': 'overshirt', // Separate slots for Jacket and Overshirt
-                    'Jackets': 'jacket',
-                    'Overshirts': 'overshirt',
-                    'Shirts': 'shirt',
-                    'Undershirts': 'undershirt',
-                    'Pants': 'pants',
-                    'Shoes': 'shoes',
-                    'Belts': 'belt',
-                    'Watches': 'watch'
-                  };
-                  
-                  const propertyName = categoryPropertyMap[category.name];
+                  const propertyName = OUTFIT_SLOT_BY_CATEGORY_NAME[category.name];
                   return propertyName && propertyName !== 'tuck_style' && propertyName !== 'score' 
                     ? selection[propertyName] as WardrobeItem | undefined
                     : undefined;
@@ -483,6 +463,56 @@ export function CreateOutfitPageClient() {
             </Link>
           </div>
         )}
+
+        <div className="sticky bottom-0 z-30 -mx-6 border-t border-border bg-background/95 px-6 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 backdrop-blur">
+          {createOutfitMutation.isError && (
+            <Alert variant="destructive" className="lg:hidden mb-2">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Failed to create outfit: {createOutfitMutation.error?.message}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {isDuplicate && !createOutfitMutation.isSuccess && (
+            <Alert variant="destructive" className="lg:hidden mb-2">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                This outfit combination already exists in your collection.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {duplicateCheckError && (
+            <Alert variant="warning" className="lg:hidden mb-2">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Unable to check for duplicate outfits. You can still create this outfit.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          <div className="mx-auto flex w-full max-w-7xl gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCancel}
+              disabled={createOutfitMutation.isPending}
+              className="flex-1 sm:flex-none"
+            >
+              <X className="mr-2 h-4 w-4" />
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={createOutfitMutation.isPending || !isFormValid}
+              className="flex-1 sm:flex-none"
+            >
+              <Save className="mr-2 h-4 w-4" />
+              {createOutfitMutation.isPending ? 'Creating...' : 'Create Outfit'}
+            </Button>
+          </div>
+        </div>
       </form>
     </div>
   );

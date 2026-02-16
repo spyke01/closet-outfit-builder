@@ -1100,15 +1100,28 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                 </div>
               )}
 
-              <button
-                type="button"
-                onClick={() => onSaveEntry().catch((err: Error) => setRepeatWarning(err.message))}
-                disabled={!canSaveEntry}
-                className={`${primaryButtonClass} w-full inline-flex items-center justify-center gap-2`}
-              >
-                <Pencil className="w-4 h-4" />
-                {isSaving ? 'Saving...' : 'Save Changes'}
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEntryFormOpen(false);
+                    resetForm();
+                  }}
+                  className={`${secondaryButtonClass} flex-1`}
+                  disabled={isSaving}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onSaveEntry().catch((err: Error) => setRepeatWarning(err.message))}
+                  disabled={!canSaveEntry}
+                  className={`${primaryButtonClass} flex-1 inline-flex items-center justify-center gap-2`}
+                >
+                  <Pencil className="w-4 h-4" />
+                  {isSaving ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
             </div>
           )}
         </div>

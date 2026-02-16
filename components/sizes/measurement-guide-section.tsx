@@ -286,6 +286,12 @@ export function MeasurementGuideSection({
           )}
         </div>
       </div>
+
+      {isEditing && updateMeasurements.isError && (
+        <div className="text-sm text-red-600" role="alert" aria-live="polite">
+          Failed to save measurements. Please try again.
+        </div>
+      )}
       
       {/* Measurement fields */}
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -350,7 +356,7 @@ export function MeasurementGuideSection({
         </div>
       )}
       
-      {updateMeasurements.isError && (
+      {updateMeasurements.isError && !isEditing && (
         <div className="text-sm text-red-600" role="alert" aria-live="polite">
           Failed to save measurements. Please try again.
         </div>

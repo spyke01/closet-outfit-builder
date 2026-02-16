@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { useOutfit, useUpdateOutfit, useDeleteOutfit, useScoreOutfit, useCheckOutfitDuplicate } from '@/lib/hooks/use-outfits';
 import { useCategories } from '@/lib/hooks/use-categories';
 import { useWardrobeItems } from '@/lib/hooks/use-wardrobe-items';
@@ -31,8 +31,26 @@ interface OutfitDetailPageClientProps {
   outfitId: string;
 }
 
+const OUTFIT_SLOT_BY_CATEGORY_NAME: Record<string, keyof OutfitSelection> = {
+  Jacket: 'jacket',
+  Overshirt: 'overshirt',
+  Jackets: 'jacket',
+  Overshirts: 'overshirt',
+  Shirt: 'shirt',
+  Shirts: 'shirt',
+  Undershirt: 'undershirt',
+  Undershirts: 'undershirt',
+  Pants: 'pants',
+  Shoes: 'shoes',
+  Belt: 'belt',
+  Belts: 'belt',
+  Watch: 'watch',
+  Watches: 'watch',
+};
+
 export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps) {
   const router = useRouter();
+  const outfitPreviewRef = useRef<HTMLDivElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState<Partial<Outfit>>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -174,30 +192,24 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
   const handleItemSelect = (item: WardrobeItem | null) => {
     const category = categoryMap.get(selectedCategory);
     if (category) {
-      // Map category names to OutfitSelection property names
-      const categoryMap: Record<string, keyof OutfitSelection> = {
-        'Jacket': 'jacket',
-        'Overshirt': 'overshirt',
-        'Jackets': 'jacket',
-        'Overshirts': 'overshirt',
-        'Shirt': 'shirt',
-        'Shirts': 'shirt',
-        'Undershirt': 'undershirt',
-        'Undershirts': 'undershirt',
-        'Pants': 'pants',
-        'Shoes': 'shoes',
-        'Belt': 'belt',
-        'Belts': 'belt',
-        'Watch': 'watch',
-        'Watches': 'watch'
-      };
-      
-      const propertyName = categoryMap[category.name];
+      const propertyName = OUTFIT_SLOT_BY_CATEGORY_NAME[category.name];
       if (propertyName && propertyName !== 'tuck_style' && propertyName !== 'score') {
         setSelection(prev => ({
           ...prev,
           [propertyName]: item // item can be null for deselection
         }));
+
+        const isMobileViewport =
+          typeof window !== 'undefined' &&
+          typeof window.matchMedia === 'function' &&
+          window.matchMedia('(max-width: 1023px)').matches;
+
+        if (item && isMobileViewport) {
+          setSelectedCategory('');
+          requestAnimationFrame(() => {
+            outfitPreviewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        }
       }
     }
   };
@@ -284,7 +296,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
 
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto p-6">
-      <div className="flex flex-col gap-6">
+      <div className={`flex flex-col gap-6 ${isEditing ? 'pb-28' : ''}`}>
         {/* Navigation */}
         <NavigationButtons 
           backTo={{ href: '/outfits', label: 'Back to Outfits' }}
@@ -300,23 +312,9 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
 
           <div className="flex flex-wrap gap-2 lg:justify-end">
             {isEditing ? (
-              <>
-                <Button
-                  variant="outline"
-                  onClick={handleCancelEdit}
-                  disabled={updateOutfitMutation.isPending}
-                >
-                  <X className="mr-2 h-4 w-4" />
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleSave}
-                  disabled={updateOutfitMutation.isPending || !hasMinimumOutfit || isDuplicate}
-                >
-                  <Save className="mr-2 h-4 w-4" />
-                  {updateOutfitMutation.isPending ? 'Saving...' : 'Save'}
-                </Button>
-              </>
+              <span className="inline-flex items-center rounded-md border border-border bg-muted px-2 py-1 text-xs text-muted-foreground">
+                Editing
+              </span>
             ) : (
               <>
                 <Button
@@ -345,14 +343,14 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
 
         {/* Success/Error Messages */}
         {updateOutfitMutation.isSuccess && (
-          <Alert variant="success">
+          <Alert variant="success" className={isEditing ? 'hidden lg:flex' : undefined}>
             <CheckCircle className="h-4 w-4" />
             <AlertDescription>Outfit updated successfully!</AlertDescription>
           </Alert>
         )}
 
         {updateOutfitMutation.isError && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className={isEditing ? 'hidden lg:flex' : undefined}>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               Failed to update outfit: {updateOutfitMutation.error?.message}
@@ -361,7 +359,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
         )}
 
         {isEditing && isDuplicate && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="hidden lg:flex">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               This outfit combination already exists in your collection.
@@ -370,7 +368,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
         )}
 
         {isEditing && !hasMinimumOutfit && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="hidden lg:flex">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               An outfit must have at least a shirt (or undershirt) and pants.
@@ -490,7 +488,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
         {isEditing ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Outfit Preview */}
-            <div className="lg:col-span-1">
+            <div ref={outfitPreviewRef} className="lg:col-span-1">
               <Card>
                 <CardHeader>
                   <CardTitle>Outfit Preview</CardTitle>
@@ -544,24 +542,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
                     const category = categoryMap.get(selectedCategory);
                     if (!category) return undefined;
                     
-                    const categoryPropertyMap: Record<string, keyof OutfitSelection> = {
-                      'Jacket': 'jacket',
-                      'Overshirt': 'overshirt',
-                      'Jackets': 'jacket',
-                      'Overshirts': 'overshirt',
-                      'Shirt': 'shirt',
-                      'Shirts': 'shirt',
-                      'Undershirt': 'undershirt',
-                      'Undershirts': 'undershirt',
-                      'Pants': 'pants',
-                      'Shoes': 'shoes',
-                      'Belt': 'belt',
-                      'Belts': 'belt',
-                      'Watch': 'watch',
-                      'Watches': 'watch'
-                    };
-                    
-                    const propertyName = categoryPropertyMap[category.name];
+                    const propertyName = OUTFIT_SLOT_BY_CATEGORY_NAME[category.name];
                     return propertyName && propertyName !== 'tuck_style' && propertyName !== 'score' 
                       ? selection[propertyName] as WardrobeItem | undefined
                       : undefined;
@@ -601,6 +582,64 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
               />
             </CardContent>
           </Card>
+        )}
+
+        {isEditing && (
+          <div className="sticky bottom-0 z-30 -mx-6 border-t border-border bg-background/95 px-6 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 backdrop-blur">
+            {updateOutfitMutation.isSuccess && (
+              <Alert variant="success" className="lg:hidden mb-2">
+                <CheckCircle className="h-4 w-4" />
+                <AlertDescription>Outfit updated successfully!</AlertDescription>
+              </Alert>
+            )}
+
+            {updateOutfitMutation.isError && (
+              <Alert variant="destructive" className="lg:hidden mb-2">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Failed to update outfit: {updateOutfitMutation.error?.message}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {isDuplicate && (
+              <Alert variant="destructive" className="lg:hidden mb-2">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  This outfit combination already exists in your collection.
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {!hasMinimumOutfit && (
+              <Alert variant="destructive" className="lg:hidden mb-2">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  An outfit must have at least a shirt (or undershirt) and pants.
+                </AlertDescription>
+              </Alert>
+            )}
+
+            <div className="mx-auto flex w-full max-w-7xl gap-2">
+              <Button
+                variant="outline"
+                onClick={handleCancelEdit}
+                disabled={updateOutfitMutation.isPending}
+                className="flex-1 sm:flex-none"
+              >
+                <X className="mr-2 h-4 w-4" />
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSave}
+                disabled={updateOutfitMutation.isPending || !hasMinimumOutfit || isDuplicate}
+                className="flex-1 sm:flex-none"
+              >
+                <Save className="mr-2 h-4 w-4" />
+                {updateOutfitMutation.isPending ? 'Saving...' : 'Save'}
+              </Button>
+            </div>
+          </div>
         )}
 
         {/* Delete Confirmation Dialog */}

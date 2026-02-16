@@ -141,14 +141,14 @@ export function AddItemPageClient() {
 
   return (
     <div className="flex-1 w-full max-w-4xl mx-auto p-6">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6 pb-28">
         {/* Navigation */}
         <NavigationButtons 
           backTo={{ href: '/wardrobe', label: 'Back to Wardrobe' }}
         />
 
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div>
           <div>
             <h1 className="text-3xl font-bold text-foreground">
               Add New Item
@@ -157,37 +157,18 @@ export function AddItemPageClient() {
               Add a new item to your wardrobe
             </p>
           </div>
-
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCancel}
-              disabled={createItemMutation.isPending}
-            >
-              <X className="mr-2 h-4 w-4" />
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={createItemMutation.isPending || !isFormValid}
-            >
-              <Save className="mr-2 h-4 w-4" />
-              {createItemMutation.isPending ? 'Adding...' : 'Add Item'}
-            </Button>
-          </div>
         </div>
 
         {/* Success/Error Messages */}
         {createItemMutation.isSuccess && (
-          <Alert variant="success">
+          <Alert variant="success" className="hidden lg:flex">
             <CheckCircle className="h-4 w-4" />
             <AlertDescription>Item added successfully!</AlertDescription>
           </Alert>
         )}
 
         {createItemMutation.isError && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="hidden lg:flex">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               Failed to add item: {createItemMutation.error?.message}
@@ -411,6 +392,46 @@ export function AddItemPageClient() {
               </p>
             </CardContent>
           </Card>
+        </div>
+
+        <div className="sticky bottom-0 z-30 -mx-6 border-t border-border bg-background/95 px-6 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 backdrop-blur">
+          <div className="mx-auto flex w-full max-w-4xl gap-2">
+            {createItemMutation.isSuccess && (
+              <Alert variant="success" className="lg:hidden mb-2 w-full">
+                <CheckCircle className="h-4 w-4" />
+                <AlertDescription>Item added successfully!</AlertDescription>
+              </Alert>
+            )}
+
+            {createItemMutation.isError && (
+              <Alert variant="destructive" className="lg:hidden mb-2 w-full">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Failed to add item: {createItemMutation.error?.message}
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+          <div className="mx-auto flex w-full max-w-4xl gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCancel}
+              disabled={createItemMutation.isPending}
+              className="flex-1 sm:flex-none"
+            >
+              <X className="mr-2 h-4 w-4" />
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={createItemMutation.isPending || !isFormValid}
+              className="flex-1 sm:flex-none"
+            >
+              <Save className="mr-2 h-4 w-4" />
+              {createItemMutation.isPending ? 'Adding...' : 'Add Item'}
+            </Button>
+          </div>
         </div>
       </form>
     </div>

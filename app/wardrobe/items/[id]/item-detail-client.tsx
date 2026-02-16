@@ -196,7 +196,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
 
   return (
     <div className="flex-1 w-full max-w-4xl mx-auto p-6">
-      <div className="flex flex-col gap-6">
+      <div className={`flex flex-col gap-6 ${isEditing ? 'pb-28' : ''}`}>
         {/* Navigation */}
         <NavigationButtons 
           backTo={{ href: '/wardrobe', label: 'Back to Wardrobe' }}
@@ -217,23 +217,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
 
           <div className="flex gap-2">
             {isEditing ? (
-              <>
-                <Button
-                  variant="outline"
-                  onClick={handleCancelEdit}
-                  disabled={updateItemMutation.isPending}
-                >
-                  <X className="mr-2 h-4 w-4" />
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleSave}
-                  disabled={updateItemMutation.isPending || !editForm.name?.trim()}
-                >
-                  <Save className="mr-2 h-4 w-4" />
-                  {updateItemMutation.isPending ? 'Saving...' : 'Save'}
-                </Button>
-              </>
+              <Badge variant="secondary" className="text-xs">Editing</Badge>
             ) : (
               <>
                 <Button variant="outline" onClick={handleEdit}>
@@ -254,14 +238,14 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
 
         {/* Success/Error Messages */}
         {updateItemMutation.isSuccess && (
-          <Alert variant="success">
+          <Alert variant="success" className={isEditing ? 'hidden lg:flex' : undefined}>
             <CheckCircle className="h-4 w-4" />
             <AlertDescription>Item updated successfully!</AlertDescription>
           </Alert>
         )}
 
         {updateItemMutation.isError && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className={isEditing ? 'hidden lg:flex' : undefined}>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               Failed to update item: {updateItemMutation.error?.message}
@@ -566,6 +550,46 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
             </CardContent>
           </Card>
         </div>
+
+        {isEditing && (
+          <div className="sticky bottom-0 z-30 -mx-6 border-t border-border bg-background/95 px-6 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 backdrop-blur">
+            {updateItemMutation.isSuccess && (
+              <Alert variant="success" className="lg:hidden mb-2">
+                <CheckCircle className="h-4 w-4" />
+                <AlertDescription>Item updated successfully!</AlertDescription>
+              </Alert>
+            )}
+
+            {updateItemMutation.isError && (
+              <Alert variant="destructive" className="lg:hidden mb-2">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Failed to update item: {updateItemMutation.error?.message}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            <div className="mx-auto flex w-full max-w-4xl gap-2">
+              <Button
+                variant="outline"
+                onClick={handleCancelEdit}
+                disabled={updateItemMutation.isPending}
+                className="flex-1 sm:flex-none"
+              >
+                <X className="mr-2 h-4 w-4" />
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSave}
+                disabled={updateItemMutation.isPending || !editForm.name?.trim()}
+                className="flex-1 sm:flex-none"
+              >
+                <Save className="mr-2 h-4 w-4" />
+                {updateItemMutation.isPending ? 'Saving...' : 'Save'}
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Delete Confirmation Dialog */}
         {showDeleteConfirm && (

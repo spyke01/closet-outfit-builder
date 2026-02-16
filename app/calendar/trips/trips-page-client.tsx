@@ -791,14 +791,32 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
             )}
             {formError && <p className="text-xs text-destructive">{formError}</p>}
 
-            <button
-              type="button"
-              onClick={() => handleCreateTrip().catch(() => undefined)}
-              disabled={createTripMutation.isPending}
-              className={`w-full ${BUTTON_PRIMARY}`}
-            >
-              {createTripMutation.isPending ? 'Creating...' : 'Create Trip'}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setTripName('');
+                  setDestinationText('');
+                  setStartDate('');
+                  setEndDate('');
+                  setFormWarning(null);
+                  setFormError(null);
+                  setGeocodeMessage(null);
+                }}
+                disabled={createTripMutation.isPending}
+                className={`flex-1 ${BUTTON_SECONDARY}`}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleCreateTrip().catch(() => undefined)}
+                disabled={createTripMutation.isPending}
+                className={`flex-1 ${BUTTON_PRIMARY}`}
+              >
+                {createTripMutation.isPending ? 'Creating...' : 'Create Trip'}
+              </button>
+            </div>
           </div>
 
           <div className="bg-card border border-border rounded-xl p-4 space-y-3">
