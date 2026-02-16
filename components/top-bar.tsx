@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Settings, Shirt, Grid3X3, Ruler, Calendar, CalendarDays, LogOut, Menu, X, Monitor, Moon, Sun } from 'lucide-react';
+import { Settings, Shirt, Grid3X3, Ruler, Calendar, CalendarDays, LogOut, Menu, X, Monitor, Moon, Sun, CreditCard } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useUpdateUserPreferences, useUserPreferences } from '@/lib/hooks/use-user-preferences';
 
@@ -15,6 +15,7 @@ import { Logo } from './logo';
 import { z } from 'zod';
 import { safeValidate } from '@/lib/utils/validation';
 import { useNavigationPreloading } from '@/lib/hooks/use-intelligent-preloading';
+import { SebastianChatLauncher } from './sebastian-chat-launcher';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -98,6 +99,10 @@ export const TopBar: React.FC<TopBarProps> = ({
     } else {
       router.push('/settings');
     }
+  };
+
+  const handleBilling = () => {
+    router.push('/settings/billing');
   };
 
   const handleThemeChange = async (newTheme: 'light' | 'dark' | 'system') => {
@@ -252,6 +257,10 @@ export const TopBar: React.FC<TopBarProps> = ({
             {/* Weather widget - always visible when enabled */}
             <WeatherWidget className="text-sm" />
 
+            {validatedUser && (
+              <SebastianChatLauncher className="min-h-[40px] bg-secondary text-secondary-foreground hover:bg-secondary/90" />
+            )}
+
             {validatedUser ? (
               /* User dropdown menu */
               <DropdownMenu>
@@ -276,6 +285,10 @@ export const TopBar: React.FC<TopBarProps> = ({
                   <DropdownMenuItem onClick={handleSettings} className="text-sm">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleBilling} className="text-sm">
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    <span>Billing</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-muted" />
                   {mounted && (

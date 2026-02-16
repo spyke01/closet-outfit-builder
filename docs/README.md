@@ -11,6 +11,7 @@ This directory contains essential developer documentation for the My AI Outfit a
 - **[Optimization Patterns](./optimization-patterns.md)** - Vercel React best practices implementation guide
 - **[CI/CD Workflow](./ci-cd-workflow.md)** - Continuous integration and deployment processes
 - **[Performance Monitoring Setup](./performance-monitoring-setup.md)** - Monitoring and metrics configuration
+- **[Sebastian Paid Assistant PRD](./sebastian-paid-assistant-prd.md)** - Product and implementation spec for paid AI assistant chat + vision
 
 ### Steering Guides (Architecture & Standards)
 
