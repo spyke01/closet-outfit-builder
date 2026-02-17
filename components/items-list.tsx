@@ -3,6 +3,7 @@
 import React, { useCallback } from 'react';
 import Image from 'next/image';
 import { WardrobeItem } from '@/lib/types/database';
+import { CircleDashed, Loader2, Shirt } from 'lucide-react';
 
 interface ItemsListProps {
   items: WardrobeItem[];
@@ -58,8 +59,8 @@ export const ItemsList = React.memo<ItemsListProps>(({
           aria-label={`Select ${formatItemName(item)} for outfit building`}
         >
           {/* Image */}
-          {item.image_url && (
-            <div className="w-16 h-16 bg-muted rounded-lg p-2 flex items-center justify-center flex-shrink-0">
+          <div className="w-16 h-16 bg-muted rounded-lg p-2 flex items-center justify-center flex-shrink-0">
+            {item.image_url ? (
               <Image
                 src={item.image_url}
                 alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''}`}
@@ -69,8 +70,14 @@ export const ItemsList = React.memo<ItemsListProps>(({
                 loading="lazy"
                 quality={80}
               />
-            </div>
-          )}
+            ) : item.bg_removal_status === 'processing' ? (
+              <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />
+            ) : !item.bg_removal_status || item.bg_removal_status === 'pending' ? (
+              <CircleDashed className="w-4 h-4 text-muted-foreground" />
+            ) : (
+              <Shirt className="w-4 h-4 text-muted-foreground" />
+            )}
+          </div>
           
           {/* Item details */}
           <div className="flex-1 min-w-0">

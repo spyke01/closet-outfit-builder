@@ -36,7 +36,7 @@ const getWardrobeItems = cache(async (userId: string) => {
   return data || [];
 });
 
-const getWardrobeItem = cache(async (id: string) => {
+const getWardrobeItem = cache(async (id: string, userId: string) => {
   const supabase = createClient();
   const { data, error } = await supabase
     .from('wardrobe_items')
@@ -45,7 +45,8 @@ const getWardrobeItem = cache(async (id: string) => {
       category:categories(*)
     `)
     .eq('id', id)
-    .single();
+    .eq('user_id', userId)
+    .maybeSingle();
 
   if (error) {
     throw new Error(`Failed to fetch wardrobe item: ${error.message}`);
@@ -68,10 +69,12 @@ export function useWardrobeItems() {
 
 // Fetch a single wardrobe item by ID
 export function useWardrobeItem(id: string) {
+  const { userId, isAuthenticated } = useAuth();
+
   return useQuery({
     queryKey: queryKeys.wardrobe.item(id),
-    queryFn: () => getWardrobeItem(id),
-    enabled: !!id,
+    queryFn: () => getWardrobeItem(id, userId!),
+    enabled: isAuthenticated && !!userId && !!id,
   });
 }
 

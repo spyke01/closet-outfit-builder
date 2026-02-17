@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { WardrobeItem } from '@/lib/types/database';
-import { Shirt, Watch, Zap } from 'lucide-react';
+import { CircleDashed, Loader2, Shirt, Watch, Zap } from 'lucide-react';
 
 
 
@@ -80,7 +80,19 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
           </div>
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-muted">
-            <IconComponent className="w-8 h-8 text-muted-foreground" />
+            {item.bg_removal_status === 'processing' ? (
+              <div className="flex flex-col items-center gap-1 text-muted-foreground">
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span className="text-[10px] font-medium">Generating...</span>
+              </div>
+            ) : !item.bg_removal_status || item.bg_removal_status === 'pending' ? (
+              <div className="flex flex-col items-center gap-1 text-muted-foreground">
+                <CircleDashed className="w-5 h-5" />
+                <span className="text-[10px] font-medium">Pending</span>
+              </div>
+            ) : (
+              <IconComponent className="w-8 h-8 text-muted-foreground" />
+            )}
           </div>
         )}
         

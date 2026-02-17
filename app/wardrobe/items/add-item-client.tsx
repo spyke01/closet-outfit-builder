@@ -7,10 +7,13 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { useCategories } from '@/lib/hooks/use-categories';
 import { useCreateWardrobeItem } from '@/lib/hooks/use-wardrobe-items';
+import { useImageGenerationQuota } from '@/lib/hooks/use-wardrobe-item-image-generation';
 import { ImageUploadWithErrorBoundary as ImageUpload } from '@/components/dynamic/image-upload-dynamic';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { 
   Save, 
   X, 
@@ -25,8 +28,17 @@ import { type CreateWardrobeItemForm } from '@/lib/schemas';
 import { NavigationButtons } from '@/components/navigation-buttons';
 import { COLOR_OPTIONS, normalizeColor, isValidColor } from '@/lib/data/color-options';
 
+function getFormalityGuidance(score: number): string {
+  if (score <= 2) return 'Very casual: gym tee, sweats, lounge pieces';
+  if (score <= 4) return 'Casual: denim, polos, everyday knitwear';
+  if (score <= 6) return 'Smart casual: chinos, OCBD, casual blazer';
+  if (score <= 8) return 'Business: dress shirt, trousers, tailoring';
+  return 'Formal: suiting, tuxedo, eventwear';
+}
+
 export function AddItemPageClient() {
   const router = useRouter();
+  const [autoGenerateOnSave, setAutoGenerateOnSave] = useState(false);
   const [formData, setFormData] = useState<CreateWardrobeItemForm>({
     category_id: '',
     name: '',
@@ -38,7 +50,7 @@ export function AddItemPageClient() {
     season: ['All'],
     image_url: '',
     active: true,
-    bg_removal_status: 'pending',
+    bg_removal_status: 'completed',
   });
 
   // Fetch data
@@ -46,6 +58,7 @@ export function AddItemPageClient() {
   
   // Mutations
   const createItemMutation = useCreateWardrobeItem();
+  const { canGenerate, isFreeTier, limits, isLoading: quotaLoading } = useImageGenerationQuota();
 
   const handleInputChange = <K extends keyof CreateWardrobeItemForm>(
     field: K,
@@ -102,6 +115,20 @@ export function AddItemPageClient() {
     }
 
     try {
+      const shouldAutoGenerate =
+        autoGenerateOnSave &&
+        !formData.image_url &&
+        !isFreeTier &&
+        canGenerate &&
+        Boolean(normalizedColor) &&
+        Boolean(formData.category_id);
+
+      const initialBgStatus: 'pending' | 'completed' = formData.image_url
+        ? 'completed'
+        : shouldAutoGenerate
+          ? 'pending'
+          : 'completed';
+
       const itemData = {
         ...formData,
         name: formData.name.trim(),
@@ -112,9 +139,16 @@ export function AddItemPageClient() {
         formality_score: formData.formality_score ?? undefined,
         capsule_tags: formData.capsule_tags ?? undefined,
         season: formData.season ?? undefined,
+        bg_removal_status: initialBgStatus,
       };
 
-      await createItemMutation.mutateAsync(itemData);
+      const createdItem = await createItemMutation.mutateAsync(itemData);
+
+      if (shouldAutoGenerate && createdItem?.id) {
+        router.push(`/wardrobe?autogen=${createdItem.id}`);
+        return;
+      }
+
       router.push('/wardrobe');
     } catch (error) {
       logger.error('Failed to create item:', error);
@@ -125,7 +159,12 @@ export function AddItemPageClient() {
     router.push('/wardrobe');
   };
 
+  const canAutoGenerateForForm = Boolean(normalizeColor(formData.color)) && Boolean(formData.category_id);
+  const isSubmitting = createItemMutation.isPending;
   const isFormValid = formData.name.trim() && formData.category_id;
+  const formalityScore = Number(formData.formality_score ?? 5);
+  const normalizedSelectedColor = normalizeColor(formData.color);
+  const selectedColorOption = COLOR_OPTIONS.find(opt => opt.value === normalizedSelectedColor);
   const availableTags = ['Refined', 'Adventurer', 'Crossover', 'Shorts'];
   const availableSeasons: ('All' | 'Summer' | 'Winter' | 'Spring' | 'Fall')[] = ['All', 'Spring', 'Summer', 'Fall', 'Winter'];
 
@@ -215,6 +254,54 @@ export function AddItemPageClient() {
                 onUpload={handleImageUpload}
                 onError={(error) => logger.error('Upload error:', error)}
               />
+              {/* AI generation option */}
+              <div className="mt-3 border-t border-border pt-3">
+                <p className="text-xs text-muted-foreground mb-2">AI image generation</p>
+                <div className="flex items-start justify-between gap-3 rounded-lg border border-border p-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="auto-generate-ai-image" className="text-sm font-medium text-foreground">
+                      Auto-generate AI image after save
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Save once and trigger generation automatically.
+                    </p>
+                    {isFreeTier && !quotaLoading && (
+                      <p className="text-xs text-muted-foreground">
+                        Requires Plus or Pro plan.
+                      </p>
+                    )}
+                    {!isFreeTier && !quotaLoading && (
+                      <p className="text-xs text-muted-foreground">
+                        {limits.monthly_remaining} of {limits.monthly_limit} generations remaining.
+                      </p>
+                    )}
+                    {!canAutoGenerateForForm && (
+                      <p className="text-xs text-muted-foreground">
+                        Select a category and color to enable this.
+                      </p>
+                    )}
+                    {formData.image_url && (
+                      <p className="text-xs text-muted-foreground">
+                        Disabled when an uploaded image is already provided.
+                      </p>
+                    )}
+                  </div>
+                  <Switch
+                    id="auto-generate-ai-image"
+                    checked={autoGenerateOnSave}
+                    onCheckedChange={setAutoGenerateOnSave}
+                    className="ring-1 ring-border data-[state=unchecked]:bg-slate-500/70 dark:data-[state=unchecked]:bg-slate-300/35 data-[state=checked]:bg-green-600"
+                    disabled={
+                      quotaLoading ||
+                      isFreeTier ||
+                      !canGenerate ||
+                      !canAutoGenerateForForm ||
+                      Boolean(formData.image_url)
+                    }
+                    aria-label="Auto-generate AI image after saving item"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -277,11 +364,11 @@ export function AddItemPageClient() {
                   </p>
                   <div className="relative">
                     <select
-                      value={formData.color || ''}
+                      value={normalizedSelectedColor}
                       onChange={(e) => handleInputChange('color', e.target.value)}
                       className="w-full py-2 pr-10 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground appearance-none"
                       style={{
-                        paddingLeft: formData.color && COLOR_OPTIONS.find(opt => opt.value === formData.color)?.hex ? '32px' : '12px'
+                        paddingLeft: selectedColorOption?.hex ? '32px' : '12px'
                       }}
                     >
                       {COLOR_OPTIONS.map(option => (
@@ -290,10 +377,10 @@ export function AddItemPageClient() {
                         </option>
                       ))}
                     </select>
-                    {formData.color && COLOR_OPTIONS.find(opt => opt.value === formData.color)?.hex && (
+                    {selectedColorOption?.hex && (
                       <div 
                         className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-border pointer-events-none"
-                        style={{ backgroundColor: COLOR_OPTIONS.find(opt => opt.value === formData.color)?.hex || 'transparent' }}
+                        style={{ backgroundColor: selectedColorOption.hex }}
                       />
                     )}
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -322,16 +409,25 @@ export function AddItemPageClient() {
                 <p className="block text-sm font-medium text-muted-foreground mb-1">
                   Formality Score (1-10)
                 </p>
-                <input
-                  type="number"
-                  min="1"
-                  max="10"
-                  value={formData.formality_score || 5}
-                  onChange={(e) => handleInputChange('formality_score', parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
-                />
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Casual</span>
+                    <span className="font-medium text-foreground">{formalityScore}/10</span>
+                    <span className="text-muted-foreground">Formal</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    step="1"
+                    value={formalityScore}
+                    onChange={(e) => handleInputChange('formality_score', Number(e.target.value))}
+                    className="w-full accent-primary"
+                    aria-label="Formality score from 1 to 10"
+                  />
+                </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  1 = Very casual, 10 = Very formal
+                  {getFormalityGuidance(formalityScore)}
                 </p>
               </div>
             </CardContent>
@@ -414,13 +510,14 @@ export function AddItemPageClient() {
                 </AlertDescription>
               </Alert>
             )}
+
           </div>
           <div className="mx-auto flex w-full max-w-4xl gap-2">
             <Button
               type="button"
               variant="outline"
               onClick={handleCancel}
-              disabled={createItemMutation.isPending}
+              disabled={isSubmitting}
               className="flex-1 sm:flex-none"
             >
               <X className="mr-2 h-4 w-4" />
@@ -428,7 +525,7 @@ export function AddItemPageClient() {
             </Button>
             <Button
               type="submit"
-              disabled={createItemMutation.isPending || !isFormValid}
+              disabled={isSubmitting || !isFormValid}
               className="flex-1 sm:flex-none"
             >
               <Save className="mr-2 h-4 w-4" />

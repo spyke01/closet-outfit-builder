@@ -4,7 +4,7 @@ import { createLogger } from '@/lib/utils/logger';
 
 const logger = createLogger({ component: 'components-items-grid' });
 import React, { useState, useMemo, useCallback, startTransition, useDeferredValue, useEffect } from 'react';
-import { Search, Tag, Plus } from 'lucide-react';
+import { Search, Tag, Plus, CircleDashed, Loader2, Shirt } from 'lucide-react';
 import { useContentVisibility } from '@/lib/utils/content-visibility';
 import { ProcessingIndicator } from './processing-indicator';
 
@@ -334,8 +334,8 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
               aria-pressed={validatedSelectedItem?.id === item.id}
             >
               {/* Fixed height image container */}
-              {item.image_url && (
-                <div className="h-40 sm:h-44 bg-card border border-border rounded-lg p-3 mb-3 flex items-center justify-center relative">
+              <div className="h-40 sm:h-44 bg-card border border-border rounded-lg p-3 mb-3 flex items-center justify-center relative overflow-hidden">
+                {item.image_url ? (
                   <Image
                     src={item.image_url}
                     alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''} - ${item.category?.name || 'wardrobe item'}`}
@@ -345,10 +345,29 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
                     sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
                     quality={85}
                   />
-                  {/* Background removal processing indicator */}
-                  <ProcessingIndicator status={item.bg_removal_status} />
-                </div>
-              )}
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center rounded-md bg-muted/30">
+                    {item.bg_removal_status === 'processing' ? (
+                      <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <span className="text-xs font-medium">Generating image...</span>
+                      </div>
+                    ) : !item.bg_removal_status || item.bg_removal_status === 'pending' ? (
+                      <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                        <CircleDashed className="h-5 w-5" />
+                        <span className="text-xs font-medium">Pending image generation</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                        <Shirt className="h-5 w-5" />
+                        <span className="text-xs font-medium">No image</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {/* Background removal processing indicator */}
+                <ProcessingIndicator status={item.bg_removal_status} />
+              </div>
               
               {/* Item details */}
               <div className="space-y-2 min-w-0">

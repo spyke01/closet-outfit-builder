@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { useWardrobeItem, useUpdateWardrobeItem, useDeleteWardrobeItem } from '@/lib/hooks/use-wardrobe-items';
 import { useCategories } from '@/lib/hooks/use-categories';
 import { ImageUploadWithErrorBoundary as ImageUpload } from '@/components/dynamic/image-upload-dynamic';
+import { WardrobeItemImageGenerator } from '@/components/wardrobe-item-image-generator';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -27,6 +28,14 @@ import { useRouter } from 'next/navigation';
 import { WardrobeItem } from '@/lib/types/database';
 import { NavigationButtons } from '@/components/navigation-buttons';
 import { COLOR_OPTIONS, normalizeColor, isValidColor } from '@/lib/data/color-options';
+
+function getFormalityGuidance(score: number): string {
+  if (score <= 2) return 'Very casual: gym tee, sweats, lounge pieces';
+  if (score <= 4) return 'Casual: denim, polos, everyday knitwear';
+  if (score <= 6) return 'Smart casual: chinos, OCBD, casual blazer';
+  if (score <= 8) return 'Business: dress shirt, trousers, tailoring';
+  return 'Formal: suiting, tuxedo, eventwear';
+}
 
 interface ItemDetailPageClientProps {
   itemId: string;
@@ -63,7 +72,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
       setEditForm({
         name: item.name,
         brand: item.brand || '',
-        color: item.color || '',
+        color: normalizeColor(item.color),
         material: item.material || '',
         formality_score: item.formality_score || 5,
         capsule_tags: item.capsule_tags || [],
@@ -84,7 +93,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
       setEditForm({
         name: item.name,
         brand: item.brand || '',
-        color: item.color || '',
+        color: normalizeColor(item.color),
         material: item.material || '',
         formality_score: item.formality_score || 5,
         capsule_tags: item.capsule_tags || [],
@@ -196,6 +205,12 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
 
   const availableTags = ['Refined', 'Adventurer', 'Crossover', 'Shorts'];
   const availableSeasons = ['All', 'Spring', 'Summer', 'Fall', 'Winter'];
+  const editFormalityScore = Number(editForm.formality_score ?? 5);
+  const savedFormalityScore = Number(item.formality_score ?? 0);
+  const normalizedEditColor = normalizeColor(editForm.color);
+  const selectedEditColorOption = COLOR_OPTIONS.find(opt => opt.value === normalizedEditColor);
+  const normalizedItemColor = normalizeColor(item.color);
+  const savedItemColorOption = COLOR_OPTIONS.find(opt => opt.value === normalizedItemColor);
 
   return (
     <div className="flex-1 w-full max-w-4xl mx-auto p-6">
@@ -285,6 +300,18 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                     onUpload={handleImageUpload}
                     onError={(error) => logger.error('Upload error:', error)}
                   />
+                  <div className="mt-3">
+                    <WardrobeItemImageGenerator
+                      item={{
+                        id: item.id,
+                        name: item.name,
+                        color: editForm.color || item.color,
+                        category: item.category,
+                        image_url: editForm.image_url || item.image_url,
+                      }}
+                      onGenerated={handleImageUpload}
+                    />
+                  </div>
                 </div>
               </>
             ) : (
@@ -316,6 +343,17 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                   <p className="text-sm font-medium text-foreground">
                     {item.brand ? `${item.brand} ${item.name}` : item.name}
                   </p>
+                  <div className="mt-3">
+                    <WardrobeItemImageGenerator
+                      item={{
+                        id: item.id,
+                        name: item.name,
+                        color: item.color,
+                        category: item.category,
+                        image_url: item.image_url,
+                      }}
+                    />
+                  </div>
                 </div>
               </>
             )}
@@ -361,11 +399,11 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                       </p>
                       <div className="relative">
                         <select
-                          value={editForm.color || ''}
+                          value={normalizedEditColor}
                           onChange={(e) => setEditForm(prev => ({ ...prev, color: e.target.value }))}
                           className="w-full py-2 pr-10 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground appearance-none"
                           style={{
-                            paddingLeft: editForm.color && COLOR_OPTIONS.find(opt => opt.value === editForm.color)?.hex ? '32px' : '12px'
+                            paddingLeft: selectedEditColorOption?.hex ? '32px' : '12px'
                           }}
                         >
                           {COLOR_OPTIONS.map(option => (
@@ -374,10 +412,10 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                             </option>
                           ))}
                         </select>
-                        {editForm.color && COLOR_OPTIONS.find(opt => opt.value === editForm.color)?.hex && (
+                        {selectedEditColorOption?.hex && (
                           <div 
                             className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-border pointer-events-none"
-                            style={{ backgroundColor: COLOR_OPTIONS.find(opt => opt.value === editForm.color)?.hex || 'transparent' }}
+                            style={{ backgroundColor: selectedEditColorOption.hex }}
                           />
                         )}
                         <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -405,14 +443,26 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                     <p className="block text-sm font-medium text-muted-foreground mb-1">
                       Formality Score (1-10)
                     </p>
-                    <input
-                      type="number"
-                      min="1"
-                      max="10"
-                      value={editForm.formality_score || 5}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, formality_score: parseInt(e.target.value) }))}
-                      className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
-                    />
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Casual</span>
+                        <span className="font-medium text-foreground">{editFormalityScore}/10</span>
+                        <span className="text-muted-foreground">Formal</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="1"
+                        max="10"
+                        step="1"
+                        value={editFormalityScore}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, formality_score: Number(e.target.value) }))}
+                        className="w-full accent-primary"
+                        aria-label="Formality score from 1 to 10"
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {getFormalityGuidance(editFormalityScore)}
+                    </p>
                   </div>
 
                   <div>
@@ -443,14 +493,14 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                       <p className="text-sm font-medium text-muted-foreground">Color</p>
                       {item.color ? (
                         <div className="flex items-center gap-2">
-                          {COLOR_OPTIONS.find(opt => opt.value === item.color)?.hex && (
+                          {savedItemColorOption?.hex && (
                             <div 
                               className="w-4 h-4 rounded-full border border-border"
-                              style={{ backgroundColor: COLOR_OPTIONS.find(opt => opt.value === item.color)?.hex || 'transparent' }}
+                              style={{ backgroundColor: savedItemColorOption.hex }}
                             />
                           )}
                           <p className="text-foreground">
-                            {COLOR_OPTIONS.find(opt => opt.value === item.color)?.label || item.color}
+                            {savedItemColorOption?.label || item.color}
                           </p>
                         </div>
                       ) : (
@@ -466,7 +516,14 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Formality Score</p>
-                      <p className="text-foreground">{item.formality_score || 'Not set'}/10</p>
+                      {item.formality_score ? (
+                        <>
+                          <p className="text-foreground">{savedFormalityScore}/10</p>
+                          <p className="text-xs text-muted-foreground">{getFormalityGuidance(savedFormalityScore)}</p>
+                        </>
+                      ) : (
+                        <p className="text-foreground">Not set</p>
+                      )}
                     </div>
                   </div>
                 </>

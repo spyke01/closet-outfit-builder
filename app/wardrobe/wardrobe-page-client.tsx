@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useState, useMemo, useCallback, startTransition, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, startTransition, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useCategories } from '@/lib/hooks/use-categories';
 import { useWardrobeItems } from '@/lib/hooks/use-wardrobe-items';
+import { useGenerateWardrobeItemImage } from '@/lib/hooks/use-wardrobe-item-image-generation';
 import { useWardrobeRealtime } from '@/lib/hooks/use-realtime-wardrobe';
 import { ItemsList } from '@/components/items-list';
 import { WardrobeSearchFiltersWithErrorBoundary as WardrobeSearchFilters } from '@/components/dynamic/wardrobe-search-filters-dynamic';
 import { Button } from '@/components/ui/button';
-import { Grid, List } from 'lucide-react';
+import { CircleDashed, Grid, List, Loader2, Shirt } from 'lucide-react';
 
 
 import { WardrobeItem } from '@/lib/types/database';
@@ -25,10 +26,14 @@ export function WardrobePageClient() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState<'default' | 'name-asc' | 'name-desc'>('default');
+  const activeAutogenId = useRef<string | null>(null);
+  const staleKickoffRunning = useRef(false);
+  const staleKickoffAttempted = useRef<Set<string>>(new Set());
 
   // Fetch data using hooks
   const { data: categories = [], isLoading: categoriesLoading, error: categoriesError } = useCategories();
   const { data: items = [], isLoading: itemsLoading, error: itemsError } = useWardrobeItems();
+  const { generateAsync } = useGenerateWardrobeItemImage();
 
   // Enable real-time updates for background removal status and image_url changes
   useWardrobeRealtime();
@@ -63,6 +68,60 @@ export function WardrobePageClient() {
     setViewMode(viewParam === 'list' ? 'list' : 'grid');
     setSortBy(sortParam === 'name-asc' || sortParam === 'name-desc' ? sortParam : 'default');
   }, [searchParamsKey]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParamsKey);
+    const autogenId = params.get('autogen');
+    if (!autogenId) return;
+    if (activeAutogenId.current === autogenId) return;
+
+    activeAutogenId.current = autogenId;
+    void generateAsync({ wardrobe_item_id: autogenId })
+      .catch(() => {
+        // Keep UX stable; item card state will reflect failures via realtime/query refresh.
+      })
+      .finally(() => {
+        updateQueryParams({ autogen: null });
+        activeAutogenId.current = null;
+      });
+  }, [searchParamsKey, generateAsync, updateQueryParams]);
+
+  useEffect(() => {
+    if (staleKickoffRunning.current || items.length === 0) return;
+
+    const now = Date.now();
+    const STALE_PENDING_MS = 60_000;
+    const MAX_KICKOFFS_PER_PASS = 2;
+
+    const stalePendingItems = items
+      .filter((item) => {
+        if (staleKickoffAttempted.current.has(item.id)) return false;
+        if (item.image_url) return false;
+        if (item.bg_removal_status !== 'pending') return false;
+        if (item.bg_removal_started_at) return false;
+        if (!item.color) return false;
+        const createdAtTs = new Date(item.created_at).getTime();
+        if (!Number.isFinite(createdAtTs)) return false;
+        return now - createdAtTs >= STALE_PENDING_MS;
+      })
+      .slice(0, MAX_KICKOFFS_PER_PASS);
+
+    if (stalePendingItems.length === 0) return;
+
+    staleKickoffRunning.current = true;
+    void (async () => {
+      for (const item of stalePendingItems) {
+        staleKickoffAttempted.current.add(item.id);
+        try {
+          await generateAsync({ wardrobe_item_id: item.id });
+        } catch {
+          // Leave status/UI handling to generation action + realtime/query updates.
+        }
+      }
+    })().finally(() => {
+      staleKickoffRunning.current = false;
+    });
+  }, [items, generateAsync]);
 
   // Debounce URL sync for search to keep typing responsive.
   useEffect(() => {
@@ -178,6 +237,49 @@ export function WardrobePageClient() {
     setSortBy(value);
     updateQueryParams({ sort: value === 'default' ? null : value });
   }, [updateQueryParams]);
+
+  const renderImageSection = useCallback((item: WardrobeItem, alt: string, sizes: string) => {
+    if (item.image_url) {
+      return (
+        <div className="relative w-full h-48 bg-card">
+          <Image
+            src={item.image_url}
+            alt={alt}
+            fill
+            className="object-contain p-4"
+            loading="lazy"
+            sizes={sizes}
+            quality={85}
+          />
+        </div>
+      );
+    }
+
+    const status = item.bg_removal_status;
+    const isPending = !status || status === 'pending';
+    const isProcessing = status === 'processing';
+
+    return (
+      <div className="relative w-full h-48 bg-muted/30 border-b border-border flex items-center justify-center">
+        {isProcessing ? (
+          <div className="flex flex-col items-center gap-2 text-muted-foreground">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <span className="text-xs font-medium">Generating image...</span>
+          </div>
+        ) : isPending ? (
+          <div className="flex flex-col items-center gap-2 text-muted-foreground">
+            <CircleDashed className="h-5 w-5" />
+            <span className="text-xs font-medium">Pending image generation</span>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-2 text-muted-foreground">
+            <Shirt className="h-5 w-5" />
+            <span className="text-xs font-medium">No image</span>
+          </div>
+        )}
+      </div>
+    );
+  }, []);
 
   if (categoriesError || itemsError) {
     return (
@@ -297,18 +399,10 @@ export function WardrobePageClient() {
                           aria-label={`Select ${item.brand ? `${item.brand} ${item.name}` : item.name} for outfit building`}
                         >
                           {/* Image section */}
-                          {item.image_url && (
-                            <div className="relative w-full h-48 bg-card">
-                              <Image
-                                src={item.image_url}
-                                alt={`${item.brand ? `${item.brand} ${item.name}` : item.name} - ${category.name}`}
-                                fill
-                                className="object-contain p-4"
-                                loading="lazy"
-                                sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
-                                quality={85}
-                              />
-                            </div>
+                          {renderImageSection(
+                            item,
+                            `${item.brand ? `${item.brand} ${item.name}` : item.name} - ${category.name}`,
+                            "(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                           )}
                           
                           {/* Item info */}
@@ -366,17 +460,10 @@ export function WardrobePageClient() {
                       aria-label={`Select ${item.brand ? `${item.brand} ${item.name}` : item.name} for outfit building`}
                     >
                       {/* Image section */}
-                      {item.image_url && (
-                        <div className="relative w-full h-48 bg-card">
-                          <Image
-                            src={item.image_url}
-                            alt={item.name}
-                            fill
-                            className="object-contain p-4"
-                            loading="lazy"
-                            sizes="(max-width: 640px) 100vw, 50vw"
-                          />
-                        </div>
+                      {renderImageSection(
+                        item,
+                        item.name,
+                        "(max-width: 640px) 100vw, 50vw"
                       )}
                       
                       {/* Item info */}
@@ -446,17 +533,10 @@ export function WardrobePageClient() {
                               aria-label={`Select ${item.brand ? `${item.brand} ${item.name}` : item.name} for outfit building`}
                             >
                               {/* Image section */}
-                              {item.image_url && (
-                                <div className="relative w-full h-48 bg-card">
-                                  <Image
-                                    src={item.image_url}
-                                    alt={item.name}
-                                    fill
-                                    className="object-contain p-4"
-                                    loading="lazy"
-                                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
-                                  />
-                                </div>
+                              {renderImageSection(
+                                item,
+                                item.name,
+                                "(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
                               )}
                               
                               {/* Item info */}
