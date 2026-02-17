@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-category-dropdown' });
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Lock, Loader2 } from 'lucide-react';
 import { useComponentPreloading } from '@/lib/hooks/use-intelligent-preloading';
@@ -45,7 +48,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
     return availableItems.filter(item => {
       const validation = safeValidate(WardrobeItemSchema, item);
       if (!validation.success) {
-        console.warn(`Invalid item in ${category}:`, validation.error);
+        logger.warn(`Invalid item in ${category}:`, validation.error);
         return false;
       }
       return true;
@@ -57,7 +60,7 @@ export const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
     
     const validation = safeValidate(WardrobeItemSchema, selectedItem);
     if (!validation.success) {
-      console.warn('Invalid selected item:', validation.error);
+      logger.warn('Invalid selected item:', validation.error);
       return null;
     }
     

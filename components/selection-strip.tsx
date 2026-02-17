@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-selection-strip' });
 import { useCallback, useMemo, useEffect, useRef } from 'react';
 import { produce } from 'immer';
 import { useImmerState } from '@/lib/utils/immer-state';
@@ -62,7 +65,7 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
     
     const validation = safeValidate(WardrobeItemSchema, anchorItem);
     if (!validation.success) {
-      console.warn('Invalid anchor item:', validation.error);
+      logger.warn('Invalid anchor item:', validation.error);
       return null;
     }
     
@@ -72,7 +75,7 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
   const validatedSelection = useMemo(() => {
     const validation = safeValidate(OutfitSelectionSchema, selection);
     if (!validation.success) {
-      console.warn('Invalid selection:', validation.error);
+      logger.warn('Invalid selection:', validation.error);
       return {} as OutfitSelection;
     }
     
@@ -181,7 +184,7 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
         draft.error = errorMessage;
       });
       
-      console.error('Selection change error:', err);
+      logger.error('Selection change error:', err);
     } finally {
       // Remove loading state after a brief delay
       setTimeout(() => {
@@ -198,7 +201,7 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
       // For now, return empty array - this would be replaced with actual outfit filtering logic
       return [];
     } catch (err) {
-      console.error('Error filtering outfits:', err);
+      logger.error('Error filtering outfits:', err);
       updateState(draft => {
         draft.error = 'Unable to load matching outfits. Please try refreshing the page.';
       });
@@ -215,7 +218,7 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
         // For now, return empty array - this would be replaced with actual compatibility logic
         cache[category] = [];
       } catch (err) {
-        console.error(`Error getting compatible items for ${category}:`, err);
+        logger.error(`Error getting compatible items for ${category}:`, err);
         cache[category] = [];
       }
     });
@@ -289,7 +292,7 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
           outfits={filteredOutfits}
           onOutfitSelect={onOutfitSelect}
           enableErrorBoundary={true}
-          onError={(error) => console.error('Outfit list error:', error)}
+          onError={(error) => logger.error('Outfit list error:', error)}
         />
       </div>
     </div>

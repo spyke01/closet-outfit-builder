@@ -5,6 +5,10 @@ import type { ImageProcessingResponse } from '@/lib/schemas';
 import type { BgRemovalStatus } from '@/lib/types/database';
 import { resizeImageFileForUpload } from '@/lib/utils/image-resize';
 import { z } from 'zod';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'lib-hooks-use-image-upload' });
+
 
 interface UseImageUploadOptions {
   onSuccess?: (imageUrl: string) => void;
@@ -83,7 +87,7 @@ export function useImageUpload({
       try {
         fileForUpload = await resizeImageFileForUpload(file, { maxDimension: 1024, quality });
       } catch (resizeError) {
-        console.warn('Image resize failed; using original file', resizeError);
+        logger.warn('Image resize failed; using original file', resizeError);
       }
 
       // Validate file

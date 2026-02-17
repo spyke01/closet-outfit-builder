@@ -1,3 +1,8 @@
+import { createLogger } from './logger';
+
+const logger = createLogger({ component: 'lib-utils-function-cache' });
+
+
 /**
  * Function Performance Optimization Utilities
  * 
@@ -159,7 +164,7 @@ export function createStorageCache(storageType: 'localStorage' | 'sessionStorage
         cache.set(key, parsed)
         return parsed
       } catch (error) {
-        console.error(`Error reading from ${storageType}:`, error)
+        logger.error(`Error reading from ${storageType}:`, error)
         return null
       }
     },
@@ -174,7 +179,7 @@ export function createStorageCache(storageType: 'localStorage' | 'sessionStorage
       try {
         storage.setItem(key, JSON.stringify(value))
       } catch (error) {
-        console.error(`Error writing to ${storageType}:`, error)
+        logger.error(`Error writing to ${storageType}:`, error)
       }
     },
     

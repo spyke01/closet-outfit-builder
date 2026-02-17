@@ -8,6 +8,9 @@
  */
 
 import { initWebVitals } from './web-vitals'
+import { createLogger } from '@/lib/utils/logger'
+
+const logger = createLogger({ component: 'monitoring-core' })
 
 /**
  * Initialize all core monitoring functionality
@@ -22,9 +25,9 @@ export function initializeMonitoring(): void {
     // Initialize Core Web Vitals tracking
     initWebVitals()
 
-    console.log('✅ Core monitoring initialized')
+    logger.info('Core monitoring initialized')
   } catch (error) {
-    console.error('Failed to initialize core monitoring:', error)
+    logger.error('Failed to initialize core monitoring:', error)
   }
 }
 

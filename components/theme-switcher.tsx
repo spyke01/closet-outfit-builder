@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-theme-switcher' });
 import { useTheme } from 'next-themes';
 import { useUpdateUserPreferences, useUserPreferences } from '@/lib/hooks/use-user-preferences';
 import { Button } from '@/components/ui/button';
@@ -51,7 +54,7 @@ export function ThemeSettings() {
     // Update database preference (fire and forget to prevent blocking)
     updatePreferences.mutate({ theme: newTheme }, {
       onError: (error) => {
-        console.error('Failed to update theme preference:', error);
+        logger.error('Failed to update theme preference:', error);
         // Revert theme on error
         if (preferences?.theme) {
           setTheme(preferences.theme);

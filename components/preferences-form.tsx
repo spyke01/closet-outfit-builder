@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-preferences-form' });
 import React from 'react';
 import { useUserPreferences, useUpdateUserPreferences } from '@/lib/hooks/use-user-preferences';
 import { Button } from '@/components/ui/button';
@@ -26,7 +29,7 @@ export function PreferencesForm() {
     try {
       await updatePreferences.mutateAsync({ [key]: value });
     } catch (error) {
-      console.error(`Failed to update ${key}:`, error);
+      logger.error(`Failed to update ${key}:`, error);
     }
   }, [updatePreferences]);
 

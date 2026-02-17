@@ -13,6 +13,10 @@ import {
   CreateOutfitFormSchema, 
   UpdateOutfitFormSchema 
 } from '@/lib/schemas';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'lib-hooks-use-outfits' });
+
 
 import { useAuth } from './use-auth';
 
@@ -133,13 +137,13 @@ export function useCheckOutfitDuplicate(itemIds: string[], excludeOutfitId?: str
         });
 
         if (error) {
-          console.warn('Edge function failed:', error.message);
+          logger.warn('Edge function failed:', error.message);
           // Log additional details if available
           if (data?.missing_item_ids) {
-            console.warn('Missing item IDs:', data.missing_item_ids);
+            logger.warn('Missing item IDs:', data.missing_item_ids);
           }
           if (data?.inactive_item_ids) {
-            console.warn('Inactive item IDs:', data.inactive_item_ids);
+            logger.warn('Inactive item IDs:', data.inactive_item_ids);
           }
           // Fallback: Don't block the user, just warn
           return false;
@@ -148,7 +152,7 @@ export function useCheckOutfitDuplicate(itemIds: string[], excludeOutfitId?: str
         // Fix: Edge function returns is_duplicate (snake_case), not isDuplicate
         return data?.is_duplicate || false;
       } catch (error) {
-        console.warn('Edge function call failed:', error);
+        logger.warn('Edge function call failed:', error);
         return false; // Fallback to no duplicates
       }
     },
@@ -175,7 +179,7 @@ export function useScoreOutfit(itemIds: string[]) {
         });
 
         if (error) {
-          console.warn('Edge function failed, using fallback scoring:', error.message);
+          logger.warn('Edge function failed, using fallback scoring', { errorMessage: error.message });
           // Fallback: Simple scoring based on item count
           const score = Math.min(itemIds.length * 15, 100);
           return { score, breakdown: { fallback: true } };
@@ -183,7 +187,7 @@ export function useScoreOutfit(itemIds: string[]) {
 
         return data || { score: 0, breakdown: {} };
       } catch (error) {
-        console.warn('Edge function call failed, using fallback scoring:', error);
+        logger.warn('Edge function call failed, using fallback scoring', { error });
         // Fallback scoring
         const score = Math.min(itemIds.length * 15, 100);
         return { score, breakdown: { fallback: true } };
@@ -218,13 +222,13 @@ export function useCreateOutfit() {
         });
         
         if (duplicateError) {
-          console.warn('Duplicate check error:', duplicateError);
+          logger.warn('Duplicate check error:', duplicateError);
         } else {
           // Fix: Edge function returns is_duplicate (snake_case), not isDuplicate
           isDuplicate = duplicateCheck?.is_duplicate || false;
         }
       } catch (error) {
-        console.warn('Duplicate check failed, proceeding anyway:', error);
+        logger.warn('Duplicate check failed, proceeding anyway', { error });
       }
 
       if (isDuplicate) {
@@ -239,7 +243,7 @@ export function useCreateOutfit() {
         });
         score = scoreData?.score || 0;
       } catch (error) {
-        console.warn('Scoring failed, using fallback:', error);
+        logger.warn('Scoring failed, using fallback', { error });
         score = Math.min(items.length * 15, 100); // Fallback scoring
       }
 
@@ -392,7 +396,7 @@ export function useUpdateOutfit() {
           // Fix: Edge function returns is_duplicate (snake_case), not isDuplicate
           isDuplicate = duplicateCheck?.is_duplicate || false;
         } catch (error) {
-          console.warn('Duplicate check failed, proceeding anyway:', error);
+          logger.warn('Duplicate check failed, proceeding anyway', { error });
         }
 
         if (isDuplicate) {
@@ -407,7 +411,7 @@ export function useUpdateOutfit() {
           });
           score = scoreData?.score || 0;
         } catch (error) {
-          console.warn('Scoring failed, using fallback:', error);
+          logger.warn('Scoring failed, using fallback', { error });
           score = Math.min(items.length * 15, 100); // Fallback scoring
         }
 

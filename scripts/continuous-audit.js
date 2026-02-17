@@ -22,17 +22,17 @@ if (!existsSync(AUDIT_DIR)) {
  * Execute command and capture output
  */
 function executeCommand(command, description) {
-  console.log(`\n🔍 ${description}...`);
+  console.info(`\n🔍 ${description}...`);
   try {
     const output = execSync(command, { 
       encoding: 'utf8', 
       stdio: 'pipe',
       maxBuffer: 1024 * 1024 * 10 // 10MB buffer
     });
-    console.log(`✅ ${description} completed`);
+    console.info(`✅ ${description} completed`);
     return { success: true, output, error: null };
   } catch (error) {
-    console.log(`❌ ${description} failed: ${error.message}`);
+    console.info(`❌ ${description} failed: ${error.message}`);
     return { success: false, output: error.stdout || '', error: error.message };
   }
 }
@@ -41,8 +41,8 @@ function executeCommand(command, description) {
  * Security Audit
  */
 function runSecurityAudit() {
-  console.log('\n🛡️  SECURITY AUDIT');
-  console.log('==================');
+  console.info('\n🛡️  SECURITY AUDIT');
+  console.info('==================');
   
   const results = {
     npmAudit: executeCommand('npm audit --json', 'NPM Security Audit'),
@@ -56,8 +56,8 @@ function runSecurityAudit() {
  * Code Quality Audit
  */
 function runQualityAudit() {
-  console.log('\n📊 CODE QUALITY AUDIT');
-  console.log('=====================');
+  console.info('\n📊 CODE QUALITY AUDIT');
+  console.info('=====================');
   
   const results = {
     eslint: executeCommand('npm run lint', 'ESLint Analysis'),
@@ -72,8 +72,8 @@ function runQualityAudit() {
  * Accessibility Audit
  */
 function runAccessibilityAudit() {
-  console.log('\n♿ ACCESSIBILITY AUDIT');
-  console.log('=====================');
+  console.info('\n♿ ACCESSIBILITY AUDIT');
+  console.info('=====================');
   
   const results = {
     a11yLint: executeCommand('npm run lint:a11y', 'Accessibility Linting'),
@@ -88,8 +88,8 @@ function runAccessibilityAudit() {
  * Build and Performance Audit
  */
 function runBuildAudit() {
-  console.log('\n🏗️  BUILD & PERFORMANCE AUDIT');
-  console.log('=============================');
+  console.info('\n🏗️  BUILD & PERFORMANCE AUDIT');
+  console.info('=============================');
   
   const results = {
     build: executeCommand('npm run build', 'Production Build Test'),
@@ -162,8 +162,8 @@ function generateAuditReport(auditResults) {
  * Main audit execution
  */
 async function runContinuousAudit() {
-  console.log('🚀 Starting Continuous Audit Process');
-  console.log('====================================');
+  console.info('🚀 Starting Continuous Audit Process');
+  console.info('====================================');
   
   const startTime = Date.now();
   
@@ -188,29 +188,29 @@ async function runContinuousAudit() {
   
   const duration = ((Date.now() - startTime) / 1000).toFixed(2);
   
-  console.log('\n📋 AUDIT SUMMARY');
-  console.log('================');
-  console.log(`Total Checks: ${report.summary.totalChecks}`);
-  console.log(`Passed: ${report.summary.passedChecks}`);
-  console.log(`Failed: ${report.summary.failedChecks}`);
-  console.log(`Critical Issues: ${report.summary.criticalIssues}`);
-  console.log(`Duration: ${duration}s`);
-  console.log(`Report saved: ${reportPath}`);
+  console.info('\n📋 AUDIT SUMMARY');
+  console.info('================');
+  console.info(`Total Checks: ${report.summary.totalChecks}`);
+  console.info(`Passed: ${report.summary.passedChecks}`);
+  console.info(`Failed: ${report.summary.failedChecks}`);
+  console.info(`Critical Issues: ${report.summary.criticalIssues}`);
+  console.info(`Duration: ${duration}s`);
+  console.info(`Report saved: ${reportPath}`);
   
   if (report.recommendations.length > 0) {
-    console.log('\n💡 RECOMMENDATIONS:');
+    console.info('\n💡 RECOMMENDATIONS:');
     report.recommendations.forEach((rec, index) => {
-      console.log(`${index + 1}. ${rec}`);
+      console.info(`${index + 1}. ${rec}`);
     });
   }
   
   // Exit with error code if critical issues found
   if (report.summary.criticalIssues > 0) {
-    console.log('\n❌ Critical issues detected. Exiting with error code 1.');
+    console.info('\n❌ Critical issues detected. Exiting with error code 1.');
     process.exit(1);
   }
   
-  console.log('\n✅ Continuous audit completed successfully!');
+  console.info('\n✅ Continuous audit completed successfully!');
 }
 
 // Execute if run directly

@@ -77,28 +77,28 @@ function makeRequest(url, options = {}) {
  * Check if weather function is deployed
  */
 async function checkWeatherFunctionDeployment() {
-  console.log('🔍 Checking Weather Function Deployment...\n');
+  console.info('🔍 Checking Weather Function Deployment...\n');
   
   // Test 1: Check if function exists (should return 400 for missing params, not 404)
-  console.log('1. Checking if weather function is accessible...');
+  console.info('1. Checking if weather function is accessible...');
   try {
     const response = await makeRequest(`${PRODUCTION_URL}/.netlify/functions/weather`);
     
     if (response.status === 400) {
-      console.log('   ✅ Weather function is deployed and accessible');
-      console.log('   ✅ Returns 400 for missing parameters (expected behavior)');
+      console.info('   ✅ Weather function is deployed and accessible');
+      console.info('   ✅ Returns 400 for missing parameters (expected behavior)');
       return true;
     } else if (response.status === 404) {
-      console.log('   ❌ Weather function not found (404)');
-      console.log('   ❌ Function may not be deployed or URL is incorrect');
+      console.info('   ❌ Weather function not found (404)');
+      console.info('   ❌ Function may not be deployed or URL is incorrect');
       return false;
     } else {
-      console.log(`   ⚠️  Unexpected status: ${response.status}`);
-      console.log(`   ⚠️  Response: ${response.rawData}`);
+      console.info(`   ⚠️  Unexpected status: ${response.status}`);
+      console.info(`   ⚠️  Response: ${response.rawData}`);
       return false;
     }
   } catch (error) {
-    console.log(`   ❌ Request failed: ${error.message}`);
+    console.info(`   ❌ Request failed: ${error.message}`);
     return false;
   }
 }
@@ -107,7 +107,7 @@ async function checkWeatherFunctionDeployment() {
  * Check CORS configuration
  */
 async function checkCORSConfiguration() {
-  console.log('\n2. Checking CORS configuration...');
+  console.info('\n2. Checking CORS configuration...');
   
   try {
     // Test OPTIONS request (CORS preflight)
@@ -127,15 +127,15 @@ async function checkCORSConfiguration() {
         'access-control-allow-headers': response.headers['access-control-allow-headers'],
       };
       
-      console.log('   ✅ CORS preflight request successful');
-      console.log('   ✅ CORS headers:', JSON.stringify(corsHeaders, null, 6));
+      console.info('   ✅ CORS preflight request successful');
+      console.info('   ✅ CORS headers:', JSON.stringify(corsHeaders, null, 6));
       return true;
     } else {
-      console.log(`   ❌ CORS preflight failed with status: ${response.status}`);
+      console.info(`   ❌ CORS preflight failed with status: ${response.status}`);
       return false;
     }
   } catch (error) {
-    console.log(`   ❌ CORS check failed: ${error.message}`);
+    console.info(`   ❌ CORS check failed: ${error.message}`);
     return false;
   }
 }
@@ -144,7 +144,7 @@ async function checkCORSConfiguration() {
  * Check error handling
  */
 async function checkErrorHandling() {
-  console.log('\n3. Checking error handling...');
+  console.info('\n3. Checking error handling...');
   
   const testCases = [
     {
@@ -172,16 +172,16 @@ async function checkErrorHandling() {
       const response = await makeRequest(testCase.url, { method: testCase.method });
       
       if (response.status === testCase.expectedStatus) {
-        console.log(`   ✅ ${testCase.name}: ${response.status} (expected)`);
+        console.info(`   ✅ ${testCase.name}: ${response.status} (expected)`);
         if (response.data && response.data.error) {
-          console.log(`      Error message: "${response.data.error}"`);
+          console.info(`      Error message: "${response.data.error}"`);
         }
         passedTests++;
       } else {
-        console.log(`   ❌ ${testCase.name}: ${response.status} (expected ${testCase.expectedStatus})`);
+        console.info(`   ❌ ${testCase.name}: ${response.status} (expected ${testCase.expectedStatus})`);
       }
     } catch (error) {
-      console.log(`   ❌ ${testCase.name}: Request failed - ${error.message}`);
+      console.info(`   ❌ ${testCase.name}: Request failed - ${error.message}`);
     }
     
     // Small delay between requests
@@ -195,45 +195,45 @@ async function checkErrorHandling() {
  * Test with one valid request (minimal API usage)
  */
 async function testValidRequest() {
-  console.log('\n4. Testing one valid request (NYC coordinates)...');
+  console.info('\n4. Testing one valid request (NYC coordinates)...');
   
   try {
     const response = await makeRequest(`${PRODUCTION_URL}/.netlify/functions/weather?lat=40.7128&lon=-74.0060`);
     
     if (response.status === 200) {
-      console.log('   ✅ Valid request successful');
+      console.info('   ✅ Valid request successful');
       
       if (response.data && response.data.current && response.data.forecast) {
-        console.log(`   ✅ Current temperature: ${response.data.current.temperature}°F`);
-        console.log(`   ✅ Current condition: ${response.data.current.condition}`);
-        console.log(`   ✅ Forecast days: ${response.data.forecast.length}`);
-        console.log('   ✅ Response structure is valid');
+        console.info(`   ✅ Current temperature: ${response.data.current.temperature}°F`);
+        console.info(`   ✅ Current condition: ${response.data.current.condition}`);
+        console.info(`   ✅ Forecast days: ${response.data.forecast.length}`);
+        console.info('   ✅ Response structure is valid');
         return true;
       } else {
-        console.log('   ❌ Invalid response structure');
-        console.log('   ❌ Response:', JSON.stringify(response.data, null, 2));
+        console.info('   ❌ Invalid response structure');
+        console.info('   ❌ Response:', JSON.stringify(response.data, null, 2));
         return false;
       }
     } else if (response.status === 500 && response.data && response.data.error) {
       // Check if it's an API key issue
       if (response.data.error.includes('API key') || response.data.error.includes('authentication')) {
-        console.log('   ⚠️  API key configuration issue detected');
-        console.log(`   ⚠️  Error: ${response.data.error}`);
-        console.log('   ⚠️  Check OPENWEATHER_API_KEY in Netlify environment variables');
+        console.info('   ⚠️  API key configuration issue detected');
+        console.info(`   ⚠️  Error: ${response.data.error}`);
+        console.info('   ⚠️  Check OPENWEATHER_API_KEY in Netlify environment variables');
         return false;
       } else {
-        console.log(`   ❌ Server error: ${response.data.error}`);
+        console.info(`   ❌ Server error: ${response.data.error}`);
         return false;
       }
     } else {
-      console.log(`   ❌ Unexpected status: ${response.status}`);
+      console.info(`   ❌ Unexpected status: ${response.status}`);
       if (response.data) {
-        console.log(`   ❌ Response: ${JSON.stringify(response.data, null, 2)}`);
+        console.info(`   ❌ Response: ${JSON.stringify(response.data, null, 2)}`);
       }
       return false;
     }
   } catch (error) {
-    console.log(`   ❌ Request failed: ${error.message}`);
+    console.info(`   ❌ Request failed: ${error.message}`);
     return false;
   }
 }
@@ -242,10 +242,10 @@ async function testValidRequest() {
  * Main deployment check function
  */
 async function checkWeatherDeployment() {
-  console.log('🌤️  Weather API Deployment Check');
-  console.log('=================================');
-  console.log(`Production URL: ${PRODUCTION_URL}`);
-  console.log(`Check started: ${new Date().toISOString()}\n`);
+  console.info('🌤️  Weather API Deployment Check');
+  console.info('=================================');
+  console.info(`Production URL: ${PRODUCTION_URL}`);
+  console.info(`Check started: ${new Date().toISOString()}\n`);
   
   const results = {
     functionDeployed: false,
@@ -261,8 +261,8 @@ async function checkWeatherDeployment() {
   results.validRequest = await testValidRequest();
   
   // Generate summary
-  console.log('\n📋 Deployment Check Summary');
-  console.log('============================');
+  console.info('\n📋 Deployment Check Summary');
+  console.info('============================');
   
   const checks = [
     { name: 'Function Deployed', passed: results.functionDeployed },
@@ -273,38 +273,38 @@ async function checkWeatherDeployment() {
   
   checks.forEach(check => {
     const status = check.passed ? '✅' : '❌';
-    console.log(`${status} ${check.name}`);
+    console.info(`${status} ${check.name}`);
   });
   
   const passedChecks = checks.filter(c => c.passed).length;
   const totalChecks = checks.length;
   
-  console.log(`\nOverall: ${passedChecks}/${totalChecks} checks passed`);
+  console.info(`\nOverall: ${passedChecks}/${totalChecks} checks passed`);
   
   if (passedChecks === totalChecks) {
-    console.log('\n🎉 Weather API deployment is SUCCESSFUL!');
-    console.log('   - Function is properly deployed');
-    console.log('   - CORS is configured correctly');
-    console.log('   - Error handling works as expected');
-    console.log('   - API responds to valid requests');
+    console.info('\n🎉 Weather API deployment is SUCCESSFUL!');
+    console.info('   - Function is properly deployed');
+    console.info('   - CORS is configured correctly');
+    console.info('   - Error handling works as expected');
+    console.info('   - API responds to valid requests');
   } else {
-    console.log('\n⚠️  Weather API deployment has ISSUES:');
+    console.info('\n⚠️  Weather API deployment has ISSUES:');
     
     if (!results.functionDeployed) {
-      console.log('   - Weather function is not accessible (check deployment)');
+      console.info('   - Weather function is not accessible (check deployment)');
     }
     if (!results.corsConfigured) {
-      console.log('   - CORS headers are not configured properly');
+      console.info('   - CORS headers are not configured properly');
     }
     if (!results.errorHandling) {
-      console.log('   - Error handling is not working correctly');
+      console.info('   - Error handling is not working correctly');
     }
     if (!results.validRequest) {
-      console.log('   - Valid requests are failing (check API key configuration)');
+      console.info('   - Valid requests are failing (check API key configuration)');
     }
   }
   
-  console.log(`\nCheck completed: ${new Date().toISOString()}`);
+  console.info(`\nCheck completed: ${new Date().toISOString()}`);
   
   return passedChecks === totalChecks;
 }

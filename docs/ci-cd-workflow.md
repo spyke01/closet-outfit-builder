@@ -417,7 +417,7 @@ npm run analyze:trends
    ```typescript
    const { container } = render(<Component />)
    const results = await axe(container)
-   console.log(results.violations)
+   console.info(results.violations)
    ```
 
 3. Fix common issues:

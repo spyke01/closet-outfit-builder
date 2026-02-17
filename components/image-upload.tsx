@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-image-upload' });
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Upload, X, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 
@@ -107,7 +110,7 @@ export function ImageUpload({
     try {
       fileForUpload = await resizeImageFileForUpload(file, { maxDimension: 1024, quality });
     } catch (resizeError) {
-      console.warn('Image resize failed; using original file', resizeError);
+      logger.warn('Image resize failed; using original file', resizeError);
     }
 
     // Validate file

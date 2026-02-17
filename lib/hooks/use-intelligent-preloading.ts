@@ -1,9 +1,8 @@
+'use client';
+
 /**
  * Intelligent preloading hook for route-based and user intent-based preloading
  */
-
-'use client';
-
 import { useEffect, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import { preloadManager, preloadByFeatureFlags } from '@/lib/utils/preload-manager';

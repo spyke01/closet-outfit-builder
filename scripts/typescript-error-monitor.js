@@ -441,52 +441,52 @@ The number of TypeScript errors is increasing over recent builds. This indicates
 }
 
 function generateConsoleReport(analysis, trendAnalysis, baseline, gate) {
-  console.log('\n📊 TypeScript Error Monitoring Report\n');
-  console.log('═'.repeat(60));
+  console.info('\n📊 TypeScript Error Monitoring Report\n');
+  console.info('═'.repeat(60));
   
-  console.log('\n📝 Current Status:');
-  console.log(`  Total Errors:        ${analysis.totalErrors}`);
-  console.log(`  Any Type Errors:     ${analysis.anyTypeErrors}`);
-  console.log(`  Strict Null Errors:  ${analysis.strictNullErrors}`);
-  console.log(`  Implicit Any Errors: ${analysis.implicitAnyErrors}`);
-  console.log(`  Other Errors:        ${analysis.otherErrors}`);
+  console.info('\n📝 Current Status:');
+  console.info(`  Total Errors:        ${analysis.totalErrors}`);
+  console.info(`  Any Type Errors:     ${analysis.anyTypeErrors}`);
+  console.info(`  Strict Null Errors:  ${analysis.strictNullErrors}`);
+  console.info(`  Implicit Any Errors: ${analysis.implicitAnyErrors}`);
+  console.info(`  Other Errors:        ${analysis.otherErrors}`);
 
   if (trendAnalysis) {
-    console.log('\n📈 Trend Analysis:');
-    console.log(`  vs Previous:  ${trendAnalysis.totalDelta > 0 ? '+' : ''}${trendAnalysis.totalDelta} errors`);
-    console.log(`  Any Type Δ:   ${trendAnalysis.anyTypeDelta > 0 ? '+' : ''}${trendAnalysis.anyTypeDelta}`);
-    console.log(`  7-Build Avg:  ${trendAnalysis.avgErrors.toFixed(1)} errors`);
-    console.log(`  Trend:        ${trendAnalysis.isIncreasing ? '📈 Increasing' : '📉 Decreasing'}`);
+    console.info('\n📈 Trend Analysis:');
+    console.info(`  vs Previous:  ${trendAnalysis.totalDelta > 0 ? '+' : ''}${trendAnalysis.totalDelta} errors`);
+    console.info(`  Any Type Δ:   ${trendAnalysis.anyTypeDelta > 0 ? '+' : ''}${trendAnalysis.anyTypeDelta}`);
+    console.info(`  7-Build Avg:  ${trendAnalysis.avgErrors.toFixed(1)} errors`);
+    console.info(`  Trend:        ${trendAnalysis.isIncreasing ? '📈 Increasing' : '📉 Decreasing'}`);
   }
 
   if (gate.status === 'pass' && analysis.totalErrors === 0) {
-    console.log('\n✅ Status: PASSED - No TypeScript errors!');
+    console.info('\n✅ Status: PASSED - No TypeScript errors!');
   } else if (gate.status === 'pass') {
     if (baseline) {
-      console.log(
+      console.info(
         `\n✅ Status: PASSED (No Regression) - within baseline (total ${analysis.totalErrors}/${baseline.totalErrors}, any ${analysis.anyTypeErrors}/${baseline.anyTypeErrors})`
       );
     } else {
-      console.log('\n✅ Status: PASSED (No Regression)');
+      console.info('\n✅ Status: PASSED (No Regression)');
     }
   } else if (analysis.anyTypeErrors === 0) {
-    console.log('\n⚠️  Status: NEEDS IMPROVEMENT - No any types, but other errors exist');
+    console.info('\n⚠️  Status: NEEDS IMPROVEMENT - No any types, but other errors exist');
   } else {
-    console.log(`\n❌ Status: FAILED - ${analysis.anyTypeErrors} any type errors detected`);
+    console.info(`\n❌ Status: FAILED - ${analysis.anyTypeErrors} any type errors detected`);
   }
 
-  console.log('\n' + '═'.repeat(60));
+  console.info('\n' + '═'.repeat(60));
 }
 
 function main() {
-  console.log('🔍 Running TypeScript error monitoring...\n');
+  console.info('🔍 Running TypeScript error monitoring...\n');
   const baseline = loadBaseline();
 
   // Run TypeScript check
   const result = runTypeScriptCheck();
 
   if (result.success) {
-    console.log('✅ No TypeScript errors detected!\n');
+    console.info('✅ No TypeScript errors detected!\n');
     
     const analysis = {
       totalErrors: 0,
@@ -509,7 +509,7 @@ function main() {
     
     ensureDirectoryExists(path.dirname(REPORT_FILE));
     fs.writeFileSync(REPORT_FILE, report);
-    console.log(`\n📄 Report saved: ${REPORT_FILE}\n`);
+    console.info(`\n📄 Report saved: ${REPORT_FILE}\n`);
 
     process.exit(0);
   }
@@ -535,26 +535,26 @@ function main() {
   
   ensureDirectoryExists(path.dirname(REPORT_FILE));
   fs.writeFileSync(REPORT_FILE, report);
-  console.log(`\n📄 Report saved: ${REPORT_FILE}\n`);
+  console.info(`\n📄 Report saved: ${REPORT_FILE}\n`);
 
   // Fail only when strict gate regresses vs baseline (or baseline is missing with errors present)
   if (gate.status === 'fail') {
-    console.log('❌ TypeScript strict gate failed:');
+    console.info('❌ TypeScript strict gate failed:');
     gate.reasons.forEach((reason) => {
-      console.log(`   - ${reason}`);
+      console.info(`   - ${reason}`);
     });
-    console.log('');
+    console.info('');
     process.exit(1);
   }
 
   // Warn about existing debt, but pass when not regressing.
   if (analysis.totalErrors > 0) {
     if (baseline) {
-      console.log(
+      console.info(
         `⚠️  TypeScript debt present but within baseline (${analysis.totalErrors}/${baseline.totalErrors} total, ${analysis.anyTypeErrors}/${baseline.anyTypeErrors} any-type)\n`
       );
     } else {
-      console.log(`⚠️  Warning: ${analysis.totalErrors} TypeScript errors exist\n`);
+      console.info(`⚠️  Warning: ${analysis.totalErrors} TypeScript errors exist\n`);
     }
   }
 

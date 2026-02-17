@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-outfit-display' });
 import React, { useCallback, useMemo, memo } from 'react';
 import { Shirt, RefreshCw, Loader2, Save } from 'lucide-react';
 import { SpinningIcon } from '@/components/ui/animated-icon';
@@ -164,7 +167,7 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
   const validatedSelection = useMemo(() => {
     const validation = safeValidate(OutfitSelectionSchema, selection);
     if (!validation.success) {
-      console.warn('Invalid selection:', validation.error);
+      logger.warn('Invalid selection:', validation.error);
       return {} as OutfitSelection;
     }
     
@@ -223,7 +226,7 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
         }, 100);
       }, 200);
     } catch (error) {
-      console.error('Failed to generate random outfit:', error);
+      logger.error('Failed to generate random outfit:', error);
       updateState(draft => {
         draft.isTransitioning = false;
       });

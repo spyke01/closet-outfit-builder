@@ -1,3 +1,8 @@
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'lib-providers-third-party-integrations' });
+
+
 /**
  * Third-party integrations that are loaded dynamically after hydration
  * This module handles optional dependencies gracefully
@@ -53,7 +58,7 @@ export async function initializeErrorTracking() {
         }
       } catch {
         // Sentry is optional, silently skip if not available
-        console.warn('Sentry not available, skipping error tracking setup');
+        logger.warn('Sentry not available, skipping error tracking setup');
       }
     }
 
@@ -68,11 +73,11 @@ export async function initializeErrorTracking() {
     //       });
     //     }
     //   } catch (error) {
-    //     console.warn('Bugsnag not available, skipping error tracking setup');
+    //     logger.warn('Bugsnag not available, skipping error tracking setup');
     //   }
     // }
   } catch (error) {
-    console.warn('Failed to initialize error tracking:', error);
+    logger.warn('Failed to initialize error tracking:', error);
   }
 }
 
@@ -118,7 +123,7 @@ export async function initializeAnalytics() {
     //       });
     //     }
     //   } catch (error) {
-    //     console.warn('Mixpanel not available, skipping analytics setup');
+    //     logger.warn('Mixpanel not available, skipping analytics setup');
     //   }
     // }
 
@@ -131,11 +136,11 @@ export async function initializeAnalytics() {
     //       amplitude.getInstance().init(process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY);
     //     }
     //   } catch (error) {
-    //     console.warn('Amplitude not available, skipping analytics setup');
+    //     logger.warn('Amplitude not available, skipping analytics setup');
     //   }
     // }
   } catch (error) {
-    console.warn('Failed to initialize analytics:', error);
+    logger.warn('Failed to initialize analytics:', error);
   }
 }
 
@@ -196,7 +201,7 @@ export async function initializePerformanceMonitoring() {
       onTTFB(sendToAnalytics);
     }
   } catch (error) {
-    console.warn('Failed to initialize performance monitoring:', error);
+    logger.warn('Failed to initialize performance monitoring:', error);
   }
 }
 

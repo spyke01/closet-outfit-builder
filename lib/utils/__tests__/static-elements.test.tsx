@@ -27,7 +27,7 @@ describe('Static Elements Utilities', () => {
 
   describe('getHydrationSafeScript', () => {
     it('should wrap code in IIFE', () => {
-      const code = 'console.log("test");';
+      const code = 'console.info("test");';
       const result = getHydrationSafeScript(code);
       
       expect(result).toContain('(function(){');

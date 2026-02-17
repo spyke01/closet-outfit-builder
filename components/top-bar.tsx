@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-top-bar' });
 import React from 'react';
 import { Settings, Shirt, Grid3X3, Ruler, Calendar, CalendarDays, LogOut, Menu, X, Monitor, Moon, Sun, CreditCard } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -72,7 +75,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
     const validation = safeValidate(UserSchema, user);
     if (!validation.success) {
-      console.warn('Invalid user data:', validation.error);
+      logger.warn('Invalid user data:', validation.error);
       return null;
     }
 
@@ -114,7 +117,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     try {
       await updatePreferences.mutateAsync({ theme: newTheme });
     } catch (error) {
-      console.error('Failed to update theme preference:', error);
+      logger.error('Failed to update theme preference:', error);
       // Revert theme on error
       if (preferences?.theme) {
         setTheme(preferences.theme);

@@ -14,7 +14,7 @@ const __dirname = dirname(__filename);
 
 const MIGRATION_FILE = join(__dirname, '../supabase/migrations/20260208_create_seed_function.sql');
 
-console.log('🔍 Verifying seed_system_categories migration...\n');
+console.info('🔍 Verifying seed_system_categories migration...\n');
 
 try {
   // Read the migration file
@@ -112,31 +112,31 @@ try {
   checks.forEach(check => {
     try {
       if (check.test()) {
-        console.log(`✅ ${check.name}`);
+        console.info(`✅ ${check.name}`);
         passed++;
       } else {
-        console.log(`❌ ${check.name}: ${check.error}`);
+        console.info(`❌ ${check.name}: ${check.error}`);
         failed++;
       }
     } catch (error) {
-      console.log(`❌ ${check.name}: ${error.message}`);
+      console.info(`❌ ${check.name}: ${error.message}`);
       failed++;
     }
   });
   
-  console.log('\n' + '='.repeat(50));
-  console.log(`Results: ${passed} passed, ${failed} failed`);
-  console.log('='.repeat(50) + '\n');
+  console.info('\n' + '='.repeat(50));
+  console.info(`Results: ${passed} passed, ${failed} failed`);
+  console.info('='.repeat(50) + '\n');
   
   if (failed === 0) {
-    console.log('✅ Migration file is valid and ready to deploy!\n');
-    console.log('Next steps:');
-    console.log('1. Apply migration: supabase db push');
-    console.log('2. Test function: psql -f scripts/test-seed-function.sql');
-    console.log('3. Verify in application: Call seed API route\n');
+    console.info('✅ Migration file is valid and ready to deploy!\n');
+    console.info('Next steps:');
+    console.info('1. Apply migration: supabase db push');
+    console.info('2. Test function: psql -f scripts/test-seed-function.sql');
+    console.info('3. Verify in application: Call seed API route\n');
     process.exit(0);
   } else {
-    console.log('❌ Migration file has issues that need to be fixed.\n');
+    console.info('❌ Migration file has issues that need to be fixed.\n');
     process.exit(1);
   }
   

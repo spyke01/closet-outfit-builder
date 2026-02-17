@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-outfit-card' });
 import React, { useState, useCallback } from 'react';
 import { RotateCcw, Heart } from 'lucide-react';
 
@@ -51,7 +54,7 @@ export const OutfitCard = React.memo<OutfitCardProps>(({
   const validatedOutfit = React.useMemo(() => {
     const validation = safeValidate(OutfitSelectionSchema, outfit);
     if (!validation.success) {
-      console.warn('Invalid outfit:', validation.error);
+      logger.warn('Invalid outfit:', validation.error);
       return {} as OutfitSelection;
     }
     

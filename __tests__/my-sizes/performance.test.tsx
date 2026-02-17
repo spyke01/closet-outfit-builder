@@ -214,7 +214,7 @@ describe('My Sizes Performance Tests', () => {
       expect(renderTime).toBeLessThan(2000)
 
       // Log performance for monitoring
-      console.log(`Page load time: ${renderTime.toFixed(2)}ms`)
+      console.info(`Page load time: ${renderTime.toFixed(2)}ms`)
     })
 
     it('should render page quickly even with large dataset (50 categories)', async () => {
@@ -258,7 +258,7 @@ describe('My Sizes Performance Tests', () => {
       // Should still render in less than 2 seconds even with 50 categories
       expect(renderTime).toBeLessThan(2000)
 
-      console.log(`Large dataset load time (50 categories): ${renderTime.toFixed(2)}ms`)
+      console.info(`Large dataset load time (50 categories): ${renderTime.toFixed(2)}ms`)
     })
   })
 
@@ -336,7 +336,7 @@ describe('My Sizes Performance Tests', () => {
       // Should render in less than 500ms
       expect(renderTime).toBeLessThan(500)
 
-      console.log(`Category detail view load time: ${renderTime.toFixed(2)}ms`)
+      console.info(`Category detail view load time: ${renderTime.toFixed(2)}ms`)
     })
 
     it('should handle category with many brand sizes (20+) efficiently', async () => {
@@ -397,7 +397,7 @@ describe('My Sizes Performance Tests', () => {
       // Should still render quickly even with many brand sizes
       expect(renderTime).toBeLessThan(500)
 
-      console.log(`Category with 25 brand sizes load time: ${renderTime.toFixed(2)}ms`)
+      console.info(`Category with 25 brand sizes load time: ${renderTime.toFixed(2)}ms`)
     })
   })
 

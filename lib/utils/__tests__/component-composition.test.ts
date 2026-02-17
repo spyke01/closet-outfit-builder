@@ -97,8 +97,7 @@ describe('Component Composition Utilities', () => {
       await new Promise(resolve => setTimeout(resolve, 10));
       
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Non-blocking operation failed:',
-        expect.any(Error)
+        expect.stringContaining('Non-blocking operation failed:')
       );
 
       consoleErrorSpy.mockRestore();
@@ -107,16 +106,18 @@ describe('Component Composition Utilities', () => {
 
   describe('logAsync', () => {
     it('should log message asynchronously', async () => {
-      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+      const consoleInfoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
 
       logAsync('Test message', { key: 'value' });
 
       // Wait for async operation
       await new Promise(resolve => setTimeout(resolve, 10));
 
-      expect(consoleLogSpy).toHaveBeenCalledWith('Test message', { key: 'value' });
+      expect(consoleInfoSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Test message')
+      );
 
-      consoleLogSpy.mockRestore();
+      consoleInfoSpy.mockRestore();
     });
 
     it('should not block execution', () => {
@@ -135,20 +136,18 @@ describe('Component Composition Utilities', () => {
 
   describe('trackEventAsync', () => {
     it('should track event asynchronously', async () => {
-      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+      const consoleInfoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
 
       trackEventAsync('user_signup', { userId: '123', plan: 'premium' });
 
       // Wait for async operation
       await new Promise(resolve => setTimeout(resolve, 10));
 
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        'Analytics event:',
-        'user_signup',
-        { userId: '123', plan: 'premium' }
+      expect(consoleInfoSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Analytics event')
       );
 
-      consoleLogSpy.mockRestore();
+      consoleInfoSpy.mockRestore();
     });
 
     it('should not block execution', () => {

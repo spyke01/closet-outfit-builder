@@ -83,7 +83,7 @@ function processFiles() {
       
       if (modified) {
         fs.writeFileSync(filePath, newContent);
-        console.log(`✓ Updated: ${path.relative(projectRoot, filePath)}`);
+        console.info(`✓ Updated: ${path.relative(projectRoot, filePath)}`);
         totalModified++;
       }
     } catch (error) {
@@ -91,7 +91,7 @@ function processFiles() {
     }
   });
   
-  console.log(`\nTotal files modified: ${totalModified}`);
+  console.info(`\nTotal files modified: ${totalModified}`);
 }
 
 processFiles();

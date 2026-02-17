@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-sizes-customize-pinned-cards-view' });
 /**
  * CustomizePinnedCardsView Component
  * 
@@ -188,7 +191,7 @@ export function CustomizePinnedCardsView({
       await updatePinnedPreferences.mutateAsync(preferences);
       onClose();
     } catch (error) {
-      console.error('Failed to update pinned preferences:', error);
+      logger.error('Failed to update pinned preferences:', error);
       // TODO: Show error toast/notification
     }
   }, [localPinnedIds, displayModes, preferredBrands, updatePinnedPreferences, onClose]);

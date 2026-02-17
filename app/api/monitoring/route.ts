@@ -4,6 +4,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { createLogger } from '@/lib/utils/logger';
+import { sanitizeCredentials } from '@/lib/utils/security';
 
 // Validation schemas
 const ErrorReportSchema = z.object({
@@ -52,6 +54,7 @@ const MonitoringRequestSchema = z.object({
   type: z.enum(['error', 'performance', 'event', 'api', 'metric']),
   data: z.any(),
 });
+const log = createLogger({ component: 'api-monitoring' });
 
 // Best-effort in-memory limiter with bounded growth.
 const rateLimitStore = new Map<string, { count: number; resetTime: number; lastSeen: number }>();
@@ -113,6 +116,20 @@ function checkRateLimit(identifier: string): boolean {
   return true;
 }
 
+function redactMonitoringData(data: Record<string, unknown>): Record<string, unknown> {
+  const redacted = sanitizeCredentials(data);
+
+  if (typeof redacted.message === 'string' && redacted.message.length > 512) {
+    redacted.message = `${redacted.message.slice(0, 512)}…[truncated]`;
+  }
+
+  if (typeof redacted.stack === 'string') {
+    redacted.stack = '[REDACTED_STACK]';
+  }
+
+  return redacted;
+}
+
 export const dynamic = 'force-static';
 
 export async function POST(request: NextRequest) {
@@ -124,6 +141,16 @@ export async function POST(request: NextRequest) {
         { error: 'Rate limit exceeded' },
         { status: 429 }
       );
+    }
+
+    const ingestionToken = process.env.MONITORING_INGESTION_TOKEN;
+    const hasBrowserOrigin = Boolean(request.headers.get('origin'));
+    if (ingestionToken && !hasBrowserOrigin) {
+      const authHeader = request.headers.get('authorization') || '';
+      const bearer = authHeader.startsWith('Bearer ') ? authHeader.slice('Bearer '.length) : '';
+      if (bearer !== ingestionToken) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
     }
 
     // Parse and validate request
@@ -161,13 +188,13 @@ export async function POST(request: NextRequest) {
 
     if (process.env.NODE_ENV === 'production') {
       // Log structured data for production monitoring
-      console.log(JSON.stringify({
+      log.info('Monitoring event received', {
         timestamp: new Date().toISOString(),
         type,
-        data: validatedData,
+        data: redactMonitoringData(validatedData as Record<string, unknown>),
         clientIdentifier,
         userAgent: request.headers.get('user-agent'),
-      }));
+      });
 
       // Send to external monitoring services (deferred, non-blocking)
       sendToMonitoringService(type, validatedData).catch(() => {
@@ -175,13 +202,17 @@ export async function POST(request: NextRequest) {
       });
     } else {
       // Development logging
-      console.log(`[MONITORING] ${type}:`, validatedData);
+      log.debug(`Monitoring development event: ${type}`, {
+        data: redactMonitoringData(validatedData as Record<string, unknown>),
+      });
     }
 
     return NextResponse.json({ success: true });
 
   } catch (error) {
-    console.error('Monitoring endpoint error:', error);
+    log.error('Monitoring endpoint error', {
+      error: error instanceof Error ? error.message : 'unknown_error',
+    });
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -230,7 +261,7 @@ async function sendToMonitoringService(type: string, data: Record<string, unknow
           });
         }
       } catch {
-        console.warn('Sentry not available for error tracking');
+        log.warn('Sentry not available for error tracking');
       }
     }
 
@@ -273,16 +304,18 @@ async function sendToMonitoringService(type: string, data: Record<string, unknow
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${process.env.CUSTOM_MONITORING_TOKEN}`
         },
-        body: JSON.stringify({
+        body: JSON.stringify(redactMonitoringData({
           type,
           data,
           timestamp: new Date().toISOString(),
           source: 'my-ai-outfit-app'
-        })
+        })),
       });
     }
   } catch (error) {
     // Silently fail to avoid breaking the monitoring endpoint
-    console.warn('Failed to send to external monitoring service:', error);
+    log.warn('Failed to send to external monitoring service', {
+      error: error instanceof Error ? error.message : 'unknown_error',
+    });
   }
 }

@@ -46,6 +46,6 @@ const summary = {
   topDirectories,
 };
 
-console.log("Lint summary");
-console.log(JSON.stringify(summary, null, 2));
+console.info("Lint summary");
+console.info(JSON.stringify(summary, null, 2));
 fs.writeFileSync(".lint-summary.json", JSON.stringify(summary, null, 2));

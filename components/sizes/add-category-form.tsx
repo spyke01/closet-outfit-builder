@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-sizes-add-category-form' });
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
@@ -117,7 +120,7 @@ export function AddCategoryForm({ onSave, onCancel }: AddCategoryFormProps) {
       onSave();
     } catch (error) {
       // Error handling - form errors are already set by react-hook-form
-      console.error('Failed to create category:', error);
+      logger.error('Failed to create category:', error);
     }
   };
 

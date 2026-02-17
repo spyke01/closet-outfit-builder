@@ -1,3 +1,8 @@
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'app-api-wardrobe-dashboard-route' });
+
+
 /**
  * Dashboard API endpoint demonstrating dependency-based parallelization
  * 
@@ -198,7 +203,7 @@ export async function GET() {
     });
     
   } catch (error) {
-    console.error('Dashboard API error:', error);
+    logger.error('Dashboard API error:', error);
     
     if (error instanceof Error && error.message === 'Unauthorized') {
       return NextResponse.json(

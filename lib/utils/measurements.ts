@@ -1,3 +1,8 @@
+import { createLogger } from './logger';
+
+const logger = createLogger({ component: 'lib-utils-measurements' });
+
+
 /**
  * Measurement utility functions for unit conversion and formatting
  * Supports imperial (inches) and metric (centimeters) units
@@ -61,7 +66,7 @@ export function getPreferredUnit(): MeasurementUnit {
     }
   } catch (error) {
     // localStorage might not be available (private browsing, etc.)
-    console.warn('Failed to read preferred unit from localStorage:', error);
+    logger.warn('Failed to read preferred unit from localStorage:', error);
   }
   
   return 'imperial'; // Default fallback
@@ -79,7 +84,7 @@ export function setPreferredUnit(unit: MeasurementUnit): void {
   try {
     localStorage.setItem('preferred-unit', unit);
   } catch (error) {
-    console.warn('Failed to save preferred unit to localStorage:', error);
+    logger.warn('Failed to save preferred unit to localStorage:', error);
   }
 }
 

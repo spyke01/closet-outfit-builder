@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'app-anchor-[category]-[id]-anchor-outfit-builder-client' });
 import React, { useState, useMemo, useCallback } from 'react';
 import { useWardrobeItem, useWardrobeItems } from '@/lib/hooks/use-wardrobe-items';
 import { useCategories } from '@/lib/hooks/use-categories';
@@ -154,7 +157,7 @@ export function AnchorOutfitBuilderClient({ categoryName, anchorItemId }: Anchor
       // Navigate to the created outfit
       router.push(`/outfits/${outfit.id}`);
     } catch (error) {
-      console.error('Failed to save outfit:', error);
+      logger.error('Failed to save outfit:', error);
     }
   };
 

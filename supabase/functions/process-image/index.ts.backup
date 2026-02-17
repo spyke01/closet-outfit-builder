@@ -39,7 +39,7 @@ function removeBackground(imageBuffer: Uint8Array): Uint8Array {
   // For now, return the original image
   // This will be enhanced with actual background removal logic
   // using libraries like Sharp, Canvas, or external services
-  console.log('Background removal requested - using fallback (original image)');
+  console.info('Background removal requested - using fallback (original image)');
   return imageBuffer;
 }
 

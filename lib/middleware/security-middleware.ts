@@ -7,6 +7,7 @@ import {
   logSecurityEvent, 
   detectMaliciousInput
 } from '@/lib/utils/security';
+import { createLogger } from '@/lib/utils/logger';
 
 /**
  * Security middleware for API routes
@@ -179,9 +180,11 @@ export function createSecurityMiddleware(config: SecurityConfig = {}) {
       const secureResponse = addSecurityHeaders(response);
 
       // Log successful request (in development only)
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`Secure API Request: ${request.method} ${request.url} - ${Date.now() - startTime}ms`);
-      }
+      logger.debug('Secure API request completed', {
+        method: request.method,
+        url: request.url,
+        durationMs: Date.now() - startTime,
+      });
 
       return secureResponse;
 
@@ -439,3 +442,4 @@ export const SecurityConfigs = {
     allowedMethods: ['POST', 'PUT', 'DELETE'],
   },
 } as const;
+const logger = createLogger({ component: 'security-middleware' });

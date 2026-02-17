@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'app-wardrobe-items-add-item-client' });
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useCategories } from '@/lib/hooks/use-categories';
@@ -94,7 +97,7 @@ export function AddItemPageClient() {
     // Normalize and validate color
     const normalizedColor = normalizeColor(formData.color);
     if (!isValidColor(normalizedColor)) {
-      console.error('Invalid color value:', formData.color);
+      logger.error('Invalid color value:', formData.color);
       return;
     }
 
@@ -114,7 +117,7 @@ export function AddItemPageClient() {
       await createItemMutation.mutateAsync(itemData);
       router.push('/wardrobe');
     } catch (error) {
-      console.error('Failed to create item:', error);
+      logger.error('Failed to create item:', error);
     }
   };
 
@@ -210,7 +213,7 @@ export function AddItemPageClient() {
               </p>
               <ImageUpload
                 onUpload={handleImageUpload}
-                onError={(error) => console.error('Upload error:', error)}
+                onError={(error) => logger.error('Upload error:', error)}
               />
             </div>
           </div>

@@ -25,7 +25,7 @@ try {
   );
   
   writeFileSync(configPath, config);
-  console.log('✅ Restored Next.js to dynamic configuration');
+  console.info('✅ Restored Next.js to dynamic configuration');
   
 } catch (error) {
   console.error('❌ Failed to restore dynamic config:', error.message);

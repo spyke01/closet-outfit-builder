@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-error-boundaries-validation-error-boundary' });
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { z } from 'zod';
 import { AlertTriangle, RefreshCw, Info } from 'lucide-react';
@@ -91,7 +94,7 @@ export class ValidationErrorBoundary extends Component<Props, State> {
     };
 
     if (process.env.NODE_ENV === 'development') {
-      console.error('Validation Error Boundary:', logEntry);
+      logger.error('Validation Error Boundary:', logEntry);
     }
 
     // Call custom validation error handler
@@ -245,7 +248,7 @@ export function useValidationErrorHandler() {
     };
 
     if (process.env.NODE_ENV === 'development') {
-      console.error('Form Validation Error:', logEntry);
+      logger.error('Form Validation Error:', logEntry);
     }
 
     return errorId;

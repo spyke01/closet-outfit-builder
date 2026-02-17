@@ -7,8 +7,8 @@
  * compliance in the My AI Outfit application.
  */
 
-console.log('🔍 Keyboard Navigation Testing Checklist');
-console.log('=========================================\n');
+console.info('🔍 Keyboard Navigation Testing Checklist');
+console.info('=========================================\n');
 
 const testCases = [
   {
@@ -83,40 +83,40 @@ const testCases = [
   }
 ];
 
-console.log('📋 Test Cases Summary:');
-console.log('=====================\n');
+console.info('📋 Test Cases Summary:');
+console.info('=====================\n');
 
 testCases.forEach((testCase, index) => {
-  console.log(`${index + 1}. ${testCase.component} (${testCase.priority} Priority)`);
-  console.log(`   Description: ${testCase.description}`);
-  console.log(`   Status: ${testCase.currentStatus}`);
-  console.log(`   Tests Required:`);
+  console.info(`${index + 1}. ${testCase.component} (${testCase.priority} Priority)`);
+  console.info(`   Description: ${testCase.description}`);
+  console.info(`   Status: ${testCase.currentStatus}`);
+  console.info(`   Tests Required:`);
   testCase.tests.forEach(test => {
-    console.log(`   - ${test}`);
+    console.info(`   - ${test}`);
   });
-  console.log('');
+  console.info('');
 });
 
-console.log('🎯 Priority Actions:');
-console.log('===================');
-console.log('1. Fix Critical issues: OutfitCard, ResultsPanel');
-console.log('2. Test existing components: CategoryDropdown, WeatherWidget');
-console.log('3. Verify Low priority components: ThemeToggle');
-console.log('');
+console.info('🎯 Priority Actions:');
+console.info('===================');
+console.info('1. Fix Critical issues: OutfitCard, ResultsPanel');
+console.info('2. Test existing components: CategoryDropdown, WeatherWidget');
+console.info('3. Verify Low priority components: ThemeToggle');
+console.info('');
 
-console.log('🧪 Manual Testing Instructions:');
-console.log('===============================');
-console.log('1. Start the application: npm run dev:netlify');
-console.log('2. Use only keyboard navigation (no mouse)');
-console.log('3. Test each component using Tab, Enter, Space, Arrow keys, Escape');
-console.log('4. Verify focus indicators are visible');
-console.log('5. Test with screen reader (VoiceOver on macOS, NVDA on Windows)');
-console.log('');
+console.info('🧪 Manual Testing Instructions:');
+console.info('===============================');
+console.info('1. Start the application: npm run dev:netlify');
+console.info('2. Use only keyboard navigation (no mouse)');
+console.info('3. Test each component using Tab, Enter, Space, Arrow keys, Escape');
+console.info('4. Verify focus indicators are visible');
+console.info('5. Test with screen reader (VoiceOver on macOS, NVDA on Windows)');
+console.info('');
 
-console.log('✅ Success Criteria:');
-console.log('====================');
-console.log('- All interactive elements reachable via keyboard');
-console.log('- Clear focus indicators on all focusable elements');
-console.log('- Logical tab order throughout the application');
-console.log('- Proper ARIA labels and roles for screen readers');
-console.log('- Modal focus trapping and focus restoration');
+console.info('✅ Success Criteria:');
+console.info('====================');
+console.info('- All interactive elements reachable via keyboard');
+console.info('- Clear focus indicators on all focusable elements');
+console.info('- Logical tab order throughout the application');
+console.info('- Proper ARIA labels and roles for screen readers');
+console.info('- Modal focus trapping and focus restoration');

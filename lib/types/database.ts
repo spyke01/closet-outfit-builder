@@ -183,14 +183,15 @@ export interface ImageGenerationUsage {
 export interface GenerationLogEntry {
   id: string;
   user_id: string;
-  outfit_id: string;
-  generated_image_id?: string | null;
+  wardrobe_item_id: string;
   model_used: string;
+  prompt_text?: string;
   prompt_hash?: string;
   status: GenerationLogStatus;
   error_message?: string;
   api_response_time_ms?: number;
   cost_cents?: number;
+  is_retry: boolean;
   created_at: string;
 }
 

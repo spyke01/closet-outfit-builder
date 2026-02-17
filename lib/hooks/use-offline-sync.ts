@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Hook for managing offline sync for My Sizes feature
  * 
@@ -9,9 +11,6 @@
  * 
  * Requirements: 10.1, 10.4, 12.5
  */
-
-'use client';
-
 import { useEffect, useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -26,6 +25,9 @@ import {
   type QueuedMutation,
   type SyncEntityData,
 } from '@/lib/utils/offline-sync';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'use-offline-sync' });
 
 export interface UseOfflineSyncOptions {
   /**
@@ -61,12 +63,12 @@ export function useOfflineSync(options: UseOfflineSyncOptions = {}) {
   // Sync queued mutations
   const sync = useCallback(async () => {
     if (!executeMutation) {
-      console.warn('No executeMutation function provided to useOfflineSync');
+      logger.warn('No executeMutation function provided to useOfflineSync');
       return;
     }
     
     if (!online) {
-      console.log('Cannot sync while offline');
+      logger.debug('Cannot sync while offline');
       return;
     }
     
@@ -85,7 +87,7 @@ export function useOfflineSync(options: UseOfflineSyncOptions = {}) {
       
       refreshSyncStatus();
     } catch (error) {
-      console.error('Sync failed:', error);
+      logger.error('Sync failed:', error);
       refreshSyncStatus();
     }
   }, [online, executeMutation, queryClient, onConflicts, refreshSyncStatus]);

@@ -1,3 +1,8 @@
+import { createLogger } from './logger';
+
+const logger = createLogger({ component: 'lib-utils-conditional-monitoring' });
+
+
 /**
  * Conditional monitoring module loader
  * Only loads monitoring functionality when enabled via feature flags
@@ -65,7 +70,7 @@ export async function initializeConditionalMonitoring(): Promise<MonitoringInsta
       }
     }
   } catch (error) {
-    console.warn('Failed to load monitoring module:', error);
+    logger.warn('Failed to load monitoring module:', error);
   } finally {
     isLoading = false;
   }

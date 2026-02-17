@@ -27,6 +27,17 @@ const REPLICATE_BG_VERSION = Deno.env.get('REPLICATE_BG_VERSION') || '';
 const SOURCE_MAX_SIZE_BYTES = 5 * 1024 * 1024;
 const STORAGE_MAX_SIZE_BYTES = 20 * 1024 * 1024;
 
+function debugLog(message: string, metadata?: unknown): void {
+  if (Deno.env.get('SECURITY_DEBUG') !== 'true') {
+    return;
+  }
+  if (metadata === undefined) {
+    console.warn(`[process-image] ${message}`);
+    return;
+  }
+  console.warn(`[process-image] ${message}`, metadata);
+}
+
 function parseReplicateModelAndVersion(rawModel: string, rawVersion: string): { model: string; version: string } {
   const explicitVersion = rawVersion.trim();
   if (explicitVersion) {
@@ -182,7 +193,7 @@ async function callReplicateBackgroundRemoval(imageUrl: string): Promise<string>
 
   const prediction: ReplicatePrediction = await response.json();
   const elapsedTime = Date.now() - startTime;
-  console.log(`Replicate processing time: ${elapsedTime}ms, status: ${prediction.status}`);
+  debugLog('Replicate processing completed', { elapsedTime, status: prediction.status });
 
   if (prediction.status === 'succeeded' && prediction.output) {
     const outputUrl = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
@@ -325,7 +336,7 @@ serve(async (req: Request): Promise<Response> => {
     const processedFileName = `processed/${user.id}/${timestamp}.png`;
 
     if (removeBackground && imageFile.type === 'image/png' && hasAlphaChannel(imageBuffer)) {
-      console.log('PNG already has alpha channel, skipping background removal');
+      debugLog('PNG already has alpha channel, skipping background removal');
 
       const { data: processedData, error: uploadError } = await supabase.storage
         .from(STORAGE_BUCKET)
@@ -406,7 +417,7 @@ serve(async (req: Request): Promise<Response> => {
               image_url: finalPublicUrl,
             }).eq('id', itemId);
           } else {
-            console.log('Item deleted during processing, cleaning up processed image');
+            debugLog('Item deleted during processing, cleaning up processed image');
             await supabase.storage.from(STORAGE_BUCKET).remove([finalData.path]);
           }
         }

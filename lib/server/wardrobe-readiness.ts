@@ -1,5 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { sanitizeInternalRedirectPath } from '@/lib/utils/redirect';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'lib-server-wardrobe-readiness' });
+
 
 const DEFAULT_POST_AUTH_REDIRECT = '/today';
 
@@ -21,7 +25,7 @@ export async function hasActiveWardrobeItems(
     .limit(1);
 
   if (error) {
-    console.error('Wardrobe readiness check failed:', error.message);
+    logger.error('Wardrobe readiness check failed:', error.message);
     // Fail-open so users are not blocked by transient DB issues.
     return true;
   }

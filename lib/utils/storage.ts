@@ -1,3 +1,8 @@
+import { createLogger } from './logger';
+
+const logger = createLogger({ component: 'lib-utils-storage' });
+
+
 /**
  * Optimized localStorage utilities with version prefixes and error handling
  * Follows Vercel React best practices for client-side storage
@@ -52,7 +57,7 @@ export function getStorageItem<T = string>(key: string): T | null {
       return item as T;
     }
   } catch (error) {
-    console.warn(`Failed to get storage item "${key}":`, error);
+    logger.warn(`Failed to get storage item "${key}":`, error);
     return null;
   }
 }
@@ -72,7 +77,7 @@ export function setStorageItem<T>(key: string, value: T): boolean {
     localStorage.setItem(versionedKey, stringValue);
     return true;
   } catch (error) {
-    console.warn(`Failed to set storage item "${key}":`, error);
+    logger.warn(`Failed to set storage item "${key}":`, error);
     return false;
   }
 }
@@ -90,7 +95,7 @@ export function removeStorageItem(key: string): boolean {
     localStorage.removeItem(versionedKey);
     return true;
   } catch (error) {
-    console.warn(`Failed to remove storage item "${key}":`, error);
+    logger.warn(`Failed to remove storage item "${key}":`, error);
     return false;
   }
 }
@@ -120,7 +125,7 @@ export function clearVersionedStorage(): boolean {
     keysToRemove.forEach((key) => localStorage.removeItem(key));
     return true;
   } catch (error) {
-    console.warn('Failed to clear versioned storage:', error);
+    logger.warn('Failed to clear versioned storage:', error);
     return false;
   }
 }
@@ -147,7 +152,7 @@ export function getStorageKeys(): string[] {
 
     return keys;
   } catch (error) {
-    console.warn('Failed to get storage keys:', error);
+    logger.warn('Failed to get storage keys:', error);
     return [];
   }
 }

@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'app-today-today-page-client' });
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { WardrobeItem } from '@/lib/types/database';
 import { useWeather } from '@/lib/hooks/use-weather';
@@ -83,7 +86,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
       const signatures = parsed.filter((entry): entry is string => typeof entry === 'string');
       setRecentOutfitSignatures(signatures.slice(-OUTFIT_HISTORY_LIMIT));
     } catch (error) {
-      console.warn('Failed to load outfit history:', error);
+      logger.warn('Failed to load outfit history:', error);
     }
   }, []);
 
@@ -94,7 +97,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
         JSON.stringify(recentOutfitSignatures.slice(-OUTFIT_HISTORY_LIMIT))
       );
     } catch (error) {
-      console.warn('Failed to persist outfit history:', error);
+      logger.warn('Failed to persist outfit history:', error);
     }
   }, [recentOutfitSignatures]);
 
@@ -166,7 +169,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
       }
       setRecentlyUsedByCategory(newRecentlyUsed);
     } catch (error) {
-      console.error('Failed to generate initial outfit:', error);
+      logger.error('Failed to generate initial outfit:', error);
     } finally {
       setGenerating(false);
     }
@@ -213,7 +216,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
         return updated;
       });
     } catch (error) {
-      console.error('Failed to regenerate outfit:', error);
+      logger.error('Failed to regenerate outfit:', error);
     } finally {
       setGenerating(false);
     }
@@ -232,7 +235,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
       });
       setCurrentOutfit(outfit);
     } catch (error) {
-      console.error(`Failed to swap ${category}:`, error);
+      logger.error(`Failed to swap ${category}:`, error);
     }
   }, [wardrobeItems, weatherContext, currentOutfit]);
   
@@ -267,7 +270,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
       
       setSaveSuccess(true);
     } catch (error) {
-      console.error('Failed to save outfit:', error);
+      logger.error('Failed to save outfit:', error);
       setSaveError(error instanceof Error ? error.message : 'Failed to save outfit');
     } finally {
       setSaving(false);

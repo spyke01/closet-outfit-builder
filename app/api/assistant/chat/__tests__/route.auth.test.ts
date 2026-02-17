@@ -7,8 +7,8 @@ vi.mock('@/lib/supabase/server', () => ({
 
 vi.mock('@/lib/services/billing/entitlements', () => ({
   resolveUserEntitlements: vi.fn(),
-  isUsageExceeded: vi.fn(() => false),
-  incrementUsageCounter: vi.fn(),
+  getUsageLimitForMetric: vi.fn(() => null),
+  reserveUsageCounterAtomic: vi.fn(() => ({ allowed: true, count: 1 })),
   getAssistantBurstHourKey: vi.fn(() => 'ai_stylist_requests_hourly:2026-02-16T10'),
 }));
 

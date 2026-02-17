@@ -3,6 +3,10 @@ import { createClient } from '@/lib/supabase/server';
 import { createStripePortalSession } from '@/lib/services/billing/stripe';
 import { resolveAppUrl } from '@/lib/services/billing/app-url';
 import { requireSameOrigin } from '@/lib/utils/request-security';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'app-api-billing-portal-route' });
+
 
 export const dynamic = 'force-dynamic';
 
@@ -38,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ url: portal.url });
   } catch (error) {
-    console.error('Billing portal session creation failed', error);
+    logger.error('Billing portal session creation failed', error);
     return NextResponse.json({ error: 'Failed to create billing portal session' }, { status: 500 });
   }
 }

@@ -1,3 +1,8 @@
+import { createLogger } from './logger';
+
+const logger = createLogger({ component: 'lib-utils-feature-flags' });
+
+
 /**
  * Feature flags for conditional module loading
  * Prevents heavy modules from being bundled when features are disabled
@@ -55,7 +60,7 @@ export function getFeatureFlags(): FeatureFlags {
       }
     } catch (error) {
       // Silently fail if localStorage is not available (incognito mode)
-      console.warn('Failed to read feature flags from localStorage:', error);
+      logger.warn('Failed to read feature flags from localStorage:', error);
     }
   }
 
@@ -89,7 +94,7 @@ export async function conditionalImport<T>(
   try {
     return await importFn();
   } catch (error) {
-    console.warn(`Failed to load module for feature ${feature}:`, error);
+    logger.warn(`Failed to load module for feature ${feature}:`, error);
     return null;
   }
 }
@@ -107,7 +112,7 @@ export function setFeatureFlags(flags: Partial<FeatureFlags>): void {
     const newFlags = { ...currentFlags, ...flags };
     localStorage.setItem('feature-flags', JSON.stringify(newFlags));
   } catch (error) {
-    console.warn('Failed to save feature flags to localStorage:', error);
+    logger.warn('Failed to save feature flags to localStorage:', error);
   }
 }
 
@@ -122,6 +127,6 @@ export function resetFeatureFlags(): void {
   try {
     localStorage.removeItem('feature-flags');
   } catch (error) {
-    console.warn('Failed to reset feature flags:', error);
+    logger.warn('Failed to reset feature flags:', error);
   }
 }

@@ -26,7 +26,7 @@ try {
   );
   
   writeFileSync(configPath, config);
-  console.log('✅ Configured Next.js for static export');
+  console.info('✅ Configured Next.js for static export');
   
 } catch (error) {
   console.error('❌ Failed to configure static build:', error.message);

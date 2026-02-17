@@ -569,7 +569,7 @@ function main() {
   // STEP 1: Load and prepare data
   // -------------------------------------------------------------------------
   
-  console.log("🔄 Loading wardrobe and outfit data...");
+  console.info("🔄 Loading wardrobe and outfit data...");
   const wardrobe = JSON.parse(fs.readFileSync(WARDROBE_PATH, "utf8"));
   const outfitsDoc = JSON.parse(fs.readFileSync(OUTFITS_PATH, "utf8"));
 
@@ -590,13 +590,13 @@ function main() {
   const watchPool = items.filter((item) => item.category === CATS.WATCH);
   const jacketPool = items.filter((item) => item.category === CATS.JACKET);
   
-  console.log(`📊 Wardrobe inventory: ${shirts.length} shirts, ${pantsPool.length} pants, ${shoesPool.length} shoes, ${jacketPool.length} jackets`);
+  console.info(`📊 Wardrobe inventory: ${shirts.length} shirts, ${pantsPool.length} pants, ${shoesPool.length} shoes, ${jacketPool.length} jackets`);
 
   // -------------------------------------------------------------------------
   // STEP 3: Validate and clean existing outfits
   // -------------------------------------------------------------------------
   
-  console.log("🧹 Validating existing outfits...");
+  console.info("🧹 Validating existing outfits...");
   const originalOutfitCount = (outfitsDoc.outfits || []).length;
   const validOutfits = [];
   const invalidOutfits = [];
@@ -616,9 +616,9 @@ function main() {
 
   // Report any removed outfits
   if (invalidOutfits.length > 0) {
-    console.log(`🧹 Removed ${invalidOutfits.length} outfit(s) with invalid items:`);
+    console.info(`🧹 Removed ${invalidOutfits.length} outfit(s) with invalid items:`);
     invalidOutfits.forEach(({ outfit, invalidItems }) => {
-      console.log(`   - Outfit ${outfit.id}: missing items [${invalidItems.join(', ')}]`);
+      console.info(`   - Outfit ${outfit.id}: missing items [${invalidItems.join(', ')}]`);
     });
   }
 
@@ -635,13 +635,13 @@ function main() {
     existingCombos.add(key);
   }
 
-  console.log(`📋 Found ${validOutfits.length} existing valid outfits`);
+  console.info(`📋 Found ${validOutfits.length} existing valid outfits`);
   
   // -------------------------------------------------------------------------
   // STEP 5: Generate new outfit combinations
   // -------------------------------------------------------------------------
   
-  console.log("🎯 Generating new outfit combinations...");
+  console.info("🎯 Generating new outfit combinations...");
   const newOutfits = [];
 
   // GENERATION STRATEGY: Start with shirts as the foundation
@@ -769,13 +769,13 @@ function main() {
     }
   }
 
-  console.log(`🎲 Generated ${newOutfits.length} candidate combinations`);
+  console.info(`🎲 Generated ${newOutfits.length} candidate combinations`);
   
   // -------------------------------------------------------------------------
   // STEP 6: Curated selection using diversity algorithm
   // -------------------------------------------------------------------------
   
-  console.log("🎯 Selecting diverse, high-quality outfits...");
+  console.info("🎯 Selecting diverse, high-quality outfits...");
   
   // DIVERSITY METRICS: These functions help ensure variety in the final selection
   
@@ -937,7 +937,7 @@ function main() {
   // Pass 1: Strict capsule quotas to ensure balanced distribution
   // Pass 2: Relaxed quotas to fill remaining slots with best available
   
-  console.log("📊 Pass 1: Selecting outfits with strict capsule quotas...");
+  console.info("📊 Pass 1: Selecting outfits with strict capsule quotas...");
   while (selected.length < TARGET_OUTFITS) {
     const pick = pickNext(true); // Strict capsule enforcement
     if (!pick) break; // Cannot satisfy quotas exactly, move to pass 2
@@ -957,8 +957,8 @@ function main() {
     capsuleCount[pick._capsule] += 1;
   }
 
-  console.log(`📊 Pass 1 complete: ${selected.length} outfits selected`);
-  console.log("📊 Pass 2: Filling remaining slots with relaxed quotas...");
+  console.info(`📊 Pass 1 complete: ${selected.length} outfits selected`);
+  console.info("📊 Pass 2: Filling remaining slots with relaxed quotas...");
   
   while (selected.length < TARGET_OUTFITS) {
     const pick = pickNext(false); // Relaxed capsule enforcement
@@ -987,11 +987,11 @@ function main() {
   newOutfits.length = 0;
   newOutfits.push(...selected);
 
-  console.log("📊 Selection complete!");
-  console.log("📊 Capsule distribution:");
-  console.log("   Targets:", capsuleTargets);
-  console.log("   Actual: ", capsuleCount);
-  console.log(`📊 Final selection: ${selected.length} of ${TARGET_OUTFITS} target outfits`);
+  console.info("📊 Selection complete!");
+  console.info("📊 Capsule distribution:");
+  console.info("   Targets:", capsuleTargets);
+  console.info("   Actual: ", capsuleCount);
+  console.info(`📊 Final selection: ${selected.length} of ${TARGET_OUTFITS} target outfits`);
 
   // Add selected outfits to the outfits document with sequential IDs
   for (const outfit of newOutfits) {
@@ -1013,11 +1013,11 @@ function main() {
   
   const removedCount = originalOutfitCount - validOutfits.length;
   if (removedCount > 0) {
-    console.log(`🧹 Cleaned up ${removedCount} invalid outfit(s).`);
+    console.info(`🧹 Cleaned up ${removedCount} invalid outfit(s).`);
   }
-  console.log(`✅ Generated ${newOutfits.length} new outfit(s).`);
-  console.log(`📁 Total outfits in collection: ${outfitsDoc.outfits.length}`);
-  console.log(`📝 Updated: ${OUTFITS_PATH}`);
+  console.info(`✅ Generated ${newOutfits.length} new outfit(s).`);
+  console.info(`📁 Total outfits in collection: ${outfitsDoc.outfits.length}`);
+  console.info(`📝 Updated: ${OUTFITS_PATH}`);
 }
 
 // =============================================================================

@@ -1,4 +1,8 @@
 import { createClient } from '@/lib/supabase/client';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'lib-services-user-seeding' });
+
 
 export interface SeedUserResponse {
   message: string;
@@ -25,7 +29,7 @@ export async function seedNewUser(): Promise<SeedUserResponse> {
   });
 
   if (error) {
-    console.error('Seed user error:', error);
+    logger.error('Seed user error:', error);
     throw new Error(`Failed to seed user data: ${error.message}`);
   }
 

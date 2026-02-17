@@ -1,3 +1,8 @@
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'lib-services-onboarding-persister' });
+
+
 /**
  * Onboarding persister service
  * 
@@ -85,7 +90,7 @@ export async function persistWardrobeItems(
         if (error) {
           result.failed += batch.length;
           result.errors.push(`Batch ${i + 1} failed: ${error.message}`);
-          console.error(`Failed to insert batch ${i + 1}:`, error);
+          logger.error(`Failed to insert batch ${i + 1}:`, error);
         } else {
           result.success += data?.length || 0;
         }
@@ -93,13 +98,13 @@ export async function persistWardrobeItems(
         result.failed += batch.length;
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         result.errors.push(`Batch ${i + 1} exception: ${errorMessage}`);
-        console.error(`Exception inserting batch ${i + 1}:`, error);
+        logger.error(`Exception inserting batch ${i + 1}:`, error);
       }
     }
 
     return result;
   } catch (error) {
-    console.error('Error persisting wardrobe items:', error);
+    logger.error('Error persisting wardrobe items:', error);
     result.failed = items.length;
     result.errors.push(error instanceof Error ? error.message : 'Unknown error');
     return result;
@@ -122,7 +127,7 @@ function mapGeneratedItemToInput(
   const categoryId = categoryMap.get(item.category);
 
   if (!categoryId) {
-    console.error(`No category ID found for category: ${item.category}`);
+    logger.error(`No category ID found for category: ${item.category}`);
     return null;
   }
 

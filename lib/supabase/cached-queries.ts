@@ -1,3 +1,8 @@
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'lib-supabase-cached-queries' });
+
+
 /**
  * Cached query functions using React.cache() for request deduplication
  * 
@@ -23,7 +28,7 @@ export const getCurrentUser = cache(async () => {
   const { data: { user }, error } = await supabase.auth.getUser();
   
   if (error) {
-    console.error('Failed to get current user:', error);
+    logger.error('Failed to get current user:', error);
     return null;
   }
   

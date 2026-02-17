@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-error-boundaries-supabase-error-boundary' });
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 
@@ -74,7 +77,7 @@ export class SupabaseErrorBoundary extends Component<Props, State> {
 
     // Log to console in development, would send to monitoring service in production
     if (process.env.NODE_ENV === 'development') {
-      console.error('Supabase Error Boundary:', logEntry);
+      logger.error('Supabase Error Boundary:', logEntry);
     }
 
     // Call custom error handler if provided
@@ -230,7 +233,7 @@ export function useErrorReporting() {
     };
 
     if (process.env.NODE_ENV === 'development') {
-      console.error('Manual Error Report:', logEntry);
+      logger.error('Manual Error Report:', logEntry);
     }
 
     return errorId;

@@ -13,7 +13,7 @@ import { readFileSync } from 'fs';
  * Execute command with timeout and error handling
  */
 function executeCommand(command, description, timeout = 30000) {
-  console.log(`🔍 ${description}...`);
+  console.info(`🔍 ${description}...`);
   try {
     const output = execSync(command, { 
       encoding: 'utf8', 
@@ -21,12 +21,12 @@ function executeCommand(command, description, timeout = 30000) {
       timeout,
       maxBuffer: 1024 * 1024 * 5 // 5MB buffer
     });
-    console.log(`✅ ${description} passed`);
+    console.info(`✅ ${description} passed`);
     return { success: true, output };
   } catch (error) {
-    console.log(`❌ ${description} failed`);
-    if (error.stdout) console.log(error.stdout);
-    if (error.stderr) console.log(error.stderr);
+    console.info(`❌ ${description} failed`);
+    if (error.stdout) console.info(error.stdout);
+    if (error.stderr) console.info(error.stderr);
     return { success: false, error: error.message };
   }
 }
@@ -39,7 +39,7 @@ function getStagedFiles() {
     const output = execSync('git diff --cached --name-only', { encoding: 'utf8' });
     return output.trim().split('\n').filter(file => file.length > 0);
   } catch (error) {
-    console.log('Warning: Could not get staged files, running checks on all files');
+    console.info('Warning: Could not get staged files, running checks on all files');
     return [];
   }
 }
@@ -59,7 +59,7 @@ function hasStagedFiles(extensions, stagedFiles) {
  */
 function runTypeCheck(stagedFiles) {
   if (!hasStagedFiles(['.ts', '.tsx'], stagedFiles)) {
-    console.log('⏭️  Skipping TypeScript check (no TS files staged)');
+    console.info('⏭️  Skipping TypeScript check (no TS files staged)');
     return { success: true, skipped: true };
   }
   
@@ -76,7 +76,7 @@ function runESLint(stagedFiles) {
   );
   
   if (jsFiles.length === 0 && stagedFiles.length > 0) {
-    console.log('⏭️  Skipping ESLint (no JS/TS files staged)');
+    console.info('⏭️  Skipping ESLint (no JS/TS files staged)');
     return { success: true, skipped: true };
   }
   
@@ -92,7 +92,7 @@ function runESLint(stagedFiles) {
  */
 function runA11yLint(stagedFiles) {
   if (!hasStagedFiles(['.tsx', '.jsx'], stagedFiles)) {
-    console.log('⏭️  Skipping A11y lint (no React files staged)');
+    console.info('⏭️  Skipping A11y lint (no React files staged)');
     return { success: true, skipped: true };
   }
   
@@ -110,7 +110,7 @@ function runSecurityCheck() {
  * Check for common issues in staged files
  */
 function runFileContentChecks(stagedFiles) {
-  console.log('🔍 File Content Checks...');
+  console.info('🔍 File Content Checks...');
   
   const issues = [];
   
@@ -120,9 +120,9 @@ function runFileContentChecks(stagedFiles) {
           file.endsWith('.js') || file.endsWith('.jsx')) {
         const content = readFileSync(file, 'utf8');
         
-        // Check for console.log statements
-        if (content.includes('console.log(') && !file.includes('.test.')) {
-          issues.push(`${file}: Contains console.log statement`);
+        // Check for console.info statements
+        if (content.includes('console.info(') && !file.includes('.test.')) {
+          issues.push(`${file}: Contains console.info statement`);
         }
         
         // Check for TODO comments
@@ -141,12 +141,12 @@ function runFileContentChecks(stagedFiles) {
   });
   
   if (issues.length > 0) {
-    console.log('⚠️  File content issues found:');
-    issues.forEach(issue => console.log(`   ${issue}`));
+    console.info('⚠️  File content issues found:');
+    issues.forEach(issue => console.info(`   ${issue}`));
     return { success: false, issues };
   }
   
-  console.log('✅ File Content Checks passed');
+  console.info('✅ File Content Checks passed');
   return { success: true };
 }
 
@@ -154,13 +154,13 @@ function runFileContentChecks(stagedFiles) {
  * Main pre-commit audit execution
  */
 async function runPreCommitAudit() {
-  console.log('🚀 Running Pre-commit Audit');
-  console.log('===========================');
+  console.info('🚀 Running Pre-commit Audit');
+  console.info('===========================');
   
   const startTime = Date.now();
   const stagedFiles = getStagedFiles();
   
-  console.log(`Staged files: ${stagedFiles.length > 0 ? stagedFiles.join(', ') : 'all files'}`);
+  console.info(`Staged files: ${stagedFiles.length > 0 ? stagedFiles.join(', ') : 'all files'}`);
   
   const results = {
     typeCheck: runTypeCheck(stagedFiles),
@@ -178,26 +178,26 @@ async function runPreCommitAudit() {
   const skippedChecks = Object.values(results).filter(r => r.skipped).length;
   const failedChecks = totalChecks - passedChecks - skippedChecks;
   
-  console.log('\n📋 PRE-COMMIT AUDIT SUMMARY');
-  console.log('===========================');
-  console.log(`Total Checks: ${totalChecks}`);
-  console.log(`Passed: ${passedChecks}`);
-  console.log(`Skipped: ${skippedChecks}`);
-  console.log(`Failed: ${failedChecks}`);
-  console.log(`Duration: ${duration}s`);
+  console.info('\n📋 PRE-COMMIT AUDIT SUMMARY');
+  console.info('===========================');
+  console.info(`Total Checks: ${totalChecks}`);
+  console.info(`Passed: ${passedChecks}`);
+  console.info(`Skipped: ${skippedChecks}`);
+  console.info(`Failed: ${failedChecks}`);
+  console.info(`Duration: ${duration}s`);
   
   if (failedChecks > 0) {
-    console.log('\n❌ Pre-commit checks failed. Please fix the issues above before committing.');
-    console.log('\nTips:');
-    console.log('- Run "npm run lint" to fix ESLint issues');
-    console.log('- Run "npx tsc --noEmit" to check TypeScript errors');
-    console.log('- Run "npm audit fix" to resolve security vulnerabilities');
-    console.log('- Remove console.log, debugger, and TODO comments from production code');
+    console.info('\n❌ Pre-commit checks failed. Please fix the issues above before committing.');
+    console.info('\nTips:');
+    console.info('- Run "npm run lint" to fix ESLint issues');
+    console.info('- Run "npx tsc --noEmit" to check TypeScript errors');
+    console.info('- Run "npm audit fix" to resolve security vulnerabilities');
+    console.info('- Remove console.info, debugger, and TODO comments from production code');
     
     process.exit(1);
   }
   
-  console.log('\n✅ All pre-commit checks passed! Ready to commit.');
+  console.info('\n✅ All pre-commit checks passed! Ready to commit.');
 }
 
 // Execute if run directly

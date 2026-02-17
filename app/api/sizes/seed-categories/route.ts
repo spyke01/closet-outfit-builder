@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { withSecurity, SecurityConfigs, SecureRequest } from '@/lib/middleware/security-middleware';
 import { logError } from '@/lib/utils/error-logging';
 import { createClient } from '@/lib/supabase/server';
+import { requireSameOriginWithOptions } from '@/lib/utils/request-security';
 
 /**
  * Seed System Categories API Route
@@ -14,6 +15,15 @@ import { createClient } from '@/lib/supabase/server';
  */
 
 async function securePostHandler(request: SecureRequest): Promise<NextResponse> {
+  const sameOriginError = requireSameOriginWithOptions(request, {
+    mode: (process.env.SECURITY_CSRF_MODE as 'off' | 'report' | 'enforce' | undefined) || 'enforce',
+    protectMethods: ['POST'],
+    reasonTag: 'seed_categories',
+  });
+  if (sameOriginError) {
+    return sameOriginError;
+  }
+
   try {
     const { user } = request;
     

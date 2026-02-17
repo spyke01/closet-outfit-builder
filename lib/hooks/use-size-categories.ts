@@ -23,6 +23,10 @@ import {
   categoryMeasurementsInputSchema,
   pinnedPreferenceInputSchema
 } from '@/lib/schemas/sizes';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'lib-hooks-use-size-categories' });
+
 
 // Query keys for size management
 export const sizeKeys = {
@@ -279,10 +283,10 @@ export function usePinnedPreferences(options?: { initialData?: PinnedPreference[
  *   const handleSubmit = (data: SizeCategoryInput) => {
  *     createCategory.mutate(data, {
  *       onSuccess: (category) => {
- *         console.log('Category created:', category);
+ *         console.info('Category created:', category);
  *       },
  *       onError: (error) => {
- *         console.error('Failed to create category:', error);
+ *         logger.error('Failed to create category:', error);
  *       }
  *     });
  *   };
@@ -387,7 +391,7 @@ export function useCreateCategory() {
  *   const handleSubmit = (data: StandardSizeInput) => {
  *     updateSize.mutate(data, {
  *       onSuccess: () => {
- *         console.log('Size updated successfully');
+ *         console.info('Size updated successfully');
  *       }
  *     });
  *   };
@@ -492,7 +496,7 @@ export function useUpdateStandardSize() {
  *   const handleSubmit = (data: BrandSizeInput) => {
  *     createBrandSize.mutate(data, {
  *       onSuccess: () => {
- *         console.log('Brand size added successfully');
+ *         console.info('Brand size added successfully');
  *       }
  *     });
  *   };
@@ -602,7 +606,7 @@ export function useCreateBrandSize() {
  *   const handleSubmit = (data: CategoryMeasurementsInput) => {
  *     updateMeasurements.mutate(data, {
  *       onSuccess: () => {
- *         console.log('Measurements saved successfully');
+ *         console.info('Measurements saved successfully');
  *       }
  *     });
  *   };
@@ -783,7 +787,7 @@ export function useCreatePinnedPreference() {
  *   const handleReorder = (preferences: PinnedPreferenceInput[]) => {
  *     updatePinned.mutate(preferences, {
  *       onSuccess: () => {
- *         console.log('Pinned preferences updated');
+ *         console.info('Pinned preferences updated');
  *       }
  *     });
  *   };
@@ -870,10 +874,10 @@ export function useUpdatePinnedPreferences() {
  *   const handleSeed = () => {
  *     seedCategories.mutate(undefined, {
  *       onSuccess: (data) => {
- *         console.log(`Seeded ${data.count} categories`);
+ *         console.info(`Seeded ${data.count} categories`);
  *       },
  *       onError: (error) => {
- *         console.error('Failed to seed categories:', error);
+ *         logger.error('Failed to seed categories:', error);
  *       }
  *     });
  *   };
@@ -955,7 +959,7 @@ export function useSeedCategories() {
  *     if (confirm('Are you sure you want to delete this category?')) {
  *       deleteCategory.mutate(categoryId, {
  *         onSuccess: () => {
- *           console.log('Category deleted successfully');
+ *           console.info('Category deleted successfully');
  *         }
  *       });
  *     }

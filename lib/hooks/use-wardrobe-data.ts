@@ -22,6 +22,10 @@ import {
   type CreateWardrobeItemForm,
   type UpdateWardrobeItemForm,
 } from '@/lib/schemas';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'lib-hooks-use-wardrobe-data' });
+
 
 type QueryKey = readonly unknown[];
 type WardrobeFilters = {
@@ -306,7 +310,7 @@ export function useWardrobeData() {
           (draft.selection as unknown as Record<string, WardrobeItem | undefined>)[category] = validation.data;
         } else {
           // For testing purposes, still add the item but log the validation error
-          console.warn('Item validation failed:', validation.error);
+          logger.warn('Item validation failed:', validation.error);
           (draft.selection as unknown as Record<string, WardrobeItem | undefined>)[category] = item;
         }
       } else {

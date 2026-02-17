@@ -150,73 +150,73 @@ function validateSupabaseConfig(envVars) {
  * Main validation function
  */
 async function validateWeatherEnvironment() {
-  console.log('🌤️  Weather API Environment Validation');
-  console.log('=======================================');
-  console.log(`Validation started: ${new Date().toISOString()}\n`);
+  console.info('🌤️  Weather API Environment Validation');
+  console.info('=======================================');
+  console.info(`Validation started: ${new Date().toISOString()}\n`);
   
   // Load local environment
-  console.log('📁 Checking Local Environment (.env.local)...');
+  console.info('📁 Checking Local Environment (.env.local)...');
   const localEnv = loadLocalEnvironment();
   
   if (localEnv) {
-    console.log('   ✅ .env.local file found and loaded');
-    console.log(`   ✅ Found ${Object.keys(localEnv).length} environment variables`);
+    console.info('   ✅ .env.local file found and loaded');
+    console.info(`   ✅ Found ${Object.keys(localEnv).length} environment variables`);
   } else {
-    console.log('   ⚠️  .env.local file not found or could not be read');
-    console.log('   ⚠️  Using system environment variables only');
+    console.info('   ⚠️  .env.local file not found or could not be read');
+    console.info('   ⚠️  Using system environment variables only');
   }
   
   // Check OpenWeatherMap API key
-  console.log('\n🔑 Validating OpenWeatherMap API Key...');
+  console.info('\n🔑 Validating OpenWeatherMap API Key...');
   const apiKey = (localEnv && localEnv.OPENWEATHER_API_KEY) || process.env.OPENWEATHER_API_KEY;
   
   if (!apiKey) {
-    console.log('   ❌ OPENWEATHER_API_KEY not found in environment');
-    console.log('   ❌ Set this variable in .env.local for local development');
-    console.log('   ❌ Set this variable in Netlify dashboard for production');
+    console.info('   ❌ OPENWEATHER_API_KEY not found in environment');
+    console.info('   ❌ Set this variable in .env.local for local development');
+    console.info('   ❌ Set this variable in Netlify dashboard for production');
   } else {
     const formatValidation = validateAPIKey(apiKey);
     
     if (formatValidation.valid) {
-      console.log('   ✅ API key format is valid');
-      console.log(`   ✅ API key length: ${apiKey.length} characters`);
+      console.info('   ✅ API key format is valid');
+      console.info(`   ✅ API key length: ${apiKey.length} characters`);
       
       // Test API key with actual request
-      console.log('   🔍 Testing API key with OpenWeatherMap...');
+      console.info('   🔍 Testing API key with OpenWeatherMap...');
       const apiTest = await testAPIKey(apiKey);
       
       if (apiTest.valid) {
-        console.log('   ✅ API key is working correctly');
-        console.log(`   ✅ Test location: ${apiTest.location}`);
-        console.log(`   ✅ Current temperature: ${apiTest.temperature}°F`);
+        console.info('   ✅ API key is working correctly');
+        console.info(`   ✅ Test location: ${apiTest.location}`);
+        console.info(`   ✅ Current temperature: ${apiTest.temperature}°F`);
       } else {
-        console.log(`   ❌ API key test failed: ${apiTest.message}`);
+        console.info(`   ❌ API key test failed: ${apiTest.message}`);
         if (apiTest.status) {
-          console.log(`   ❌ HTTP status: ${apiTest.status}`);
+          console.info(`   ❌ HTTP status: ${apiTest.status}`);
         }
       }
     } else {
-      console.log(`   ❌ API key format issue: ${formatValidation.message}`);
+      console.info(`   ❌ API key format issue: ${formatValidation.message}`);
     }
   }
   
   // Check Supabase configuration
-  console.log('\n🗄️  Validating Supabase Configuration...');
+  console.info('\n🗄️  Validating Supabase Configuration...');
   const supabaseValidation = validateSupabaseConfig(localEnv || {});
   
   if (supabaseValidation.valid) {
-    console.log('   ✅ Supabase configuration is valid');
-    console.log(`   ✅ Supabase URL: ${supabaseValidation.url}`);
-    console.log(`   ✅ Publishable key length: ${supabaseValidation.keyLength} characters`);
+    console.info('   ✅ Supabase configuration is valid');
+    console.info(`   ✅ Supabase URL: ${supabaseValidation.url}`);
+    console.info(`   ✅ Publishable key length: ${supabaseValidation.keyLength} characters`);
   } else {
-    console.log('   ❌ Supabase configuration issues:');
+    console.info('   ❌ Supabase configuration issues:');
     supabaseValidation.issues.forEach(issue => {
-      console.log(`      - ${issue}`);
+      console.info(`      - ${issue}`);
     });
   }
   
   // Check required files
-  console.log('\n📄 Checking Required Files...');
+  console.info('\n📄 Checking Required Files...');
   const requiredFiles = [
     'netlify/functions/weather.ts',
     'components/weather-widget.tsx',
@@ -230,16 +230,16 @@ async function validateWeatherEnvironment() {
     try {
       const filePath = path.join(__dirname, '..', file);
       readFileSync(filePath);
-      console.log(`   ✅ ${file}`);
+      console.info(`   ✅ ${file}`);
     } catch (error) {
-      console.log(`   ❌ ${file} (missing or unreadable)`);
+      console.info(`   ❌ ${file} (missing or unreadable)`);
       missingFiles++;
     }
   }
   
   // Generate summary
-  console.log('\n📋 Environment Validation Summary');
-  console.log('=================================');
+  console.info('\n📋 Environment Validation Summary');
+  console.info('=================================');
   
   const checks = [
     { name: 'Environment File', passed: !!localEnv },
@@ -251,34 +251,34 @@ async function validateWeatherEnvironment() {
   
   checks.forEach(check => {
     const status = check.passed ? '✅' : '❌';
-    console.log(`${status} ${check.name}`);
+    console.info(`${status} ${check.name}`);
   });
   
   const passedChecks = checks.filter(c => c.passed).length;
   const totalChecks = checks.length;
   
-  console.log(`\nOverall: ${passedChecks}/${totalChecks} checks passed`);
+  console.info(`\nOverall: ${passedChecks}/${totalChecks} checks passed`);
   
   if (passedChecks === totalChecks) {
-    console.log('\n🎉 Environment is properly configured for weather API!');
-    console.log('   - All required environment variables are set');
-    console.log('   - API key is valid and working');
-    console.log('   - Supabase configuration is correct');
-    console.log('   - All required files are present');
+    console.info('\n🎉 Environment is properly configured for weather API!');
+    console.info('   - All required environment variables are set');
+    console.info('   - API key is valid and working');
+    console.info('   - Supabase configuration is correct');
+    console.info('   - All required files are present');
   } else {
-    console.log('\n⚠️  Environment configuration needs attention:');
+    console.info('\n⚠️  Environment configuration needs attention:');
     
     const failedChecks = checks.filter(c => !c.passed);
     failedChecks.forEach(check => {
-      console.log(`   - Fix: ${check.name}`);
+      console.info(`   - Fix: ${check.name}`);
     });
     
-    console.log('\n📖 For detailed setup instructions, see:');
-    console.log('   - README.md (general setup)');
-    console.log('   - docs/weather-api-production-validation.md (weather API setup)');
+    console.info('\n📖 For detailed setup instructions, see:');
+    console.info('   - README.md (general setup)');
+    console.info('   - docs/weather-api-production-validation.md (weather API setup)');
   }
   
-  console.log(`\nValidation completed: ${new Date().toISOString()}`);
+  console.info(`\nValidation completed: ${new Date().toISOString()}`);
   
   return passedChecks === totalChecks;
 }

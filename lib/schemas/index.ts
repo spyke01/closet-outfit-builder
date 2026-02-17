@@ -384,6 +384,23 @@ export const GenerateOutfitImageResponseSchema = z.object({
   }).optional(),
 });
 
+// Wardrobe item image generation schemas
+export const GenerateWardrobeItemImageRequestSchema = z.object({
+  wardrobe_item_id: UUIDSchema,
+  is_retry: z.boolean().optional().default(false),
+});
+
+export const GenerateWardrobeItemImageResponseSchema = z.object({
+  success: z.boolean(),
+  image_url: z.string().optional(),
+  error: z.string().optional(),
+  error_code: z.string().optional(),
+  quota_remaining: z.object({
+    monthly: z.number().int().min(0),
+    hourly: z.number().int().min(0),
+  }).optional(),
+});
+
 // Type inference from schemas
 export type Category = z.infer<typeof CategorySchema>;
 export type WardrobeItem = z.infer<typeof WardrobeItemSchema>;
@@ -404,6 +421,8 @@ export type GeneratedOutfitImage = z.infer<typeof GeneratedOutfitImageSchema>;
 export type ImageGenerationUsage = z.infer<typeof ImageGenerationUsageSchema>;
 export type GenerateOutfitImageRequest = z.infer<typeof GenerateOutfitImageRequestSchema>;
 export type GenerateOutfitImageResponse = z.infer<typeof GenerateOutfitImageResponseSchema>;
+export type GenerateWardrobeItemImageRequest = z.infer<typeof GenerateWardrobeItemImageRequestSchema>;
+export type GenerateWardrobeItemImageResponse = z.infer<typeof GenerateWardrobeItemImageResponseSchema>;
 
 // Form types
 export type CreateWardrobeItemForm = z.infer<typeof CreateWardrobeItemFormSchema>;

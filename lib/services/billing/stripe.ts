@@ -229,7 +229,11 @@ export async function cancelStripeSubscriptionAtPeriodEnd(subscriptionId: string
   }
 }
 
-export function verifyStripeWebhookSignature(rawBody: string, signatureHeader: string | null): boolean {
+export function verifyStripeWebhookSignature(
+  rawBody: string,
+  signatureHeader: string | null,
+  options: { toleranceSeconds?: number; nowEpochSeconds?: number } = {}
+): boolean {
   if (!signatureHeader) return false;
 
   const secret = getStripeWebhookSecret();
@@ -240,6 +244,14 @@ export function verifyStripeWebhookSignature(rawBody: string, signatureHeader: s
   if (!timestampPart || signatures.length === 0) return false;
 
   const timestamp = timestampPart.slice(2);
+  const timestampSeconds = Number(timestamp);
+  if (!Number.isFinite(timestampSeconds)) return false;
+  const toleranceSeconds = options.toleranceSeconds ?? Number(process.env.STRIPE_WEBHOOK_TOLERANCE_SECONDS || 300);
+  const nowEpochSeconds = options.nowEpochSeconds ?? Math.floor(Date.now() / 1000);
+  if (Math.abs(nowEpochSeconds - timestampSeconds) > toleranceSeconds) {
+    return false;
+  }
+
   const signedPayload = `${timestamp}.${rawBody}`;
   const expected = crypto
     .createHmac('sha256', secret)

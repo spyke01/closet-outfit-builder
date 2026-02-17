@@ -150,7 +150,7 @@ class SecureLogger {
 
   info(message, ...args) {
     const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] INFO:`, this.sanitize(message), ...args.map(arg => this.sanitize(arg)));
+    console.info(`[${timestamp}] INFO:`, this.sanitize(message), ...args.map(arg => this.sanitize(arg)));
   }
 
   error(message, details = {}) {
@@ -169,13 +169,13 @@ class SecureLogger {
   debug(message, ...args) {
     if (this.verbose) {
       const timestamp = new Date().toISOString();
-      console.log(`[${timestamp}] DEBUG:`, this.sanitize(message), ...args.map(arg => this.sanitize(arg)));
+      console.info(`[${timestamp}] DEBUG:`, this.sanitize(message), ...args.map(arg => this.sanitize(arg)));
     }
   }
 
   success(message, ...args) {
     const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] ✅ SUCCESS:`, this.sanitize(message), ...args.map(arg => this.sanitize(arg)));
+    console.info(`[${timestamp}] ✅ SUCCESS:`, this.sanitize(message), ...args.map(arg => this.sanitize(arg)));
   }
 }
 

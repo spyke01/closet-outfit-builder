@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'app-wardrobe-items-[id]-item-detail-client' });
 import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { useWardrobeItem, useUpdateWardrobeItem, useDeleteWardrobeItem } from '@/lib/hooks/use-wardrobe-items';
@@ -98,7 +101,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
     // Normalize and validate color
     const normalizedColor = normalizeColor(editForm.color);
     if (!isValidColor(normalizedColor)) {
-      console.error('Invalid color value:', editForm.color);
+      logger.error('Invalid color value:', editForm.color);
       return;
     }
 
@@ -113,7 +116,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
       });
       setIsEditing(false);
     } catch (error) {
-      console.error('Failed to update item:', error);
+      logger.error('Failed to update item:', error);
     }
   };
 
@@ -124,7 +127,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
       await deleteItemMutation.mutateAsync(item.id);
       router.push('/wardrobe');
     } catch (error) {
-      console.error('Failed to delete item:', error);
+      logger.error('Failed to delete item:', error);
     }
   };
 
@@ -280,7 +283,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                   </p>
                   <ImageUpload
                     onUpload={handleImageUpload}
-                    onError={(error) => console.error('Upload error:', error)}
+                    onError={(error) => logger.error('Upload error:', error)}
                   />
                 </div>
               </>

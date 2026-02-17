@@ -7,7 +7,8 @@ vi.mock('@/lib/supabase/server', () => ({
 
 vi.mock('@/lib/services/billing/entitlements', () => ({
   resolveUserEntitlements: vi.fn(),
-  isUsageExceeded: vi.fn(),
+  getUsageLimitForMetric: vi.fn(() => null),
+  reserveUsageCounterAtomic: vi.fn(),
   incrementUsageCounter: vi.fn(),
   getAssistantBurstHourKey: vi.fn(() => 'ai_stylist_requests_hourly:2026-02-16T10'),
 }));
@@ -21,16 +22,7 @@ vi.mock('@/lib/services/assistant/providers/replicate', () => ({
 }));
 
 import { createClient } from '@/lib/supabase/server';
-import { isUsageExceeded, resolveUserEntitlements } from '@/lib/services/billing/entitlements';
-
-function createUsageCountersQuery(count: number) {
-  const maybeSingle = vi.fn().mockResolvedValue({ data: { id: 'counter-1', count } });
-  const eq3 = vi.fn().mockReturnValue({ maybeSingle });
-  const eq2 = vi.fn().mockReturnValue({ eq: eq3 });
-  const eq1 = vi.fn().mockReturnValue({ eq: eq2 });
-  const select = vi.fn().mockReturnValue({ eq: eq1 });
-  return { select };
-}
+import { reserveUsageCounterAtomic, resolveUserEntitlements } from '@/lib/services/billing/entitlements';
 
 describe('POST /api/assistant/chat usage guardrails', () => {
   beforeEach(() => {
@@ -51,7 +43,8 @@ describe('POST /api/assistant/chat usage guardrails', () => {
       plan: { limits: { ai_burst_per_hour: 5 } },
       period: { start: '2026-02-01', end: '2026-03-01' },
     });
-    (isUsageExceeded as unknown as Mock).mockReturnValue(true);
+    (reserveUsageCounterAtomic as unknown as Mock)
+      .mockResolvedValueOnce({ allowed: false, count: 0 });
 
     const { POST } = await import('../route');
     const request = new Request('https://example.com/api/assistant/chat', {
@@ -68,18 +61,11 @@ describe('POST /api/assistant/chat usage guardrails', () => {
   });
 
   it('returns 429 when hourly burst limit is exceeded', async () => {
-    const from = vi.fn((table: string) => {
-      if (table === 'usage_counters') {
-        return createUsageCountersQuery(5);
-      }
-      throw new Error(`Unexpected table ${table}`);
-    });
-
     (createClient as unknown as Mock).mockResolvedValue({
       auth: {
         getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-1' } }, error: null }),
       },
-      from,
+      from: vi.fn(),
     });
 
     (resolveUserEntitlements as unknown as Mock).mockResolvedValue({
@@ -87,7 +73,9 @@ describe('POST /api/assistant/chat usage guardrails', () => {
       plan: { limits: { ai_burst_per_hour: 5 } },
       period: { start: '2026-02-01', end: '2026-03-01' },
     });
-    (isUsageExceeded as unknown as Mock).mockReturnValue(false);
+    (reserveUsageCounterAtomic as unknown as Mock)
+      .mockResolvedValueOnce({ allowed: true, count: 1 })
+      .mockResolvedValueOnce({ allowed: false, count: 5 });
 
     const { POST } = await import('../route');
     const request = new Request('https://example.com/api/assistant/chat', {

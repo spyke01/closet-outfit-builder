@@ -92,7 +92,8 @@ export async function POST(request: NextRequest) {
   const signature = request.headers.get('stripe-signature');
 
   try {
-    if (!verifyStripeWebhookSignature(rawBody, signature)) {
+    const toleranceSeconds = Number(process.env.STRIPE_WEBHOOK_TOLERANCE_SECONDS || 300);
+    if (!verifyStripeWebhookSignature(rawBody, signature, { toleranceSeconds })) {
       return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 401 });
     }
 

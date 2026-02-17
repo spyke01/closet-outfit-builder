@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Sync Status Indicator Component
  * 
@@ -10,9 +12,6 @@
  * 
  * Requirements: 10.4, 12.5
  */
-
-'use client';
-
 import { Cloud, CloudOff, RefreshCw, AlertCircle, Check } from 'lucide-react';
 import { useOfflineSync } from '@/lib/hooks/use-offline-sync';
 import type { QueuedMutation, SyncConflict, SyncEntityData } from '@/lib/utils/offline-sync';

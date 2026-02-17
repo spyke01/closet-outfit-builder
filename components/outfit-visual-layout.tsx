@@ -3,6 +3,9 @@
 import React from 'react';
 import Image from 'next/image';
 import { WardrobeItem } from '@/lib/types/database';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'outfit-visual-layout' });
 
 interface OutfitVisualLayoutProps {
   items: WardrobeItem[];
@@ -64,7 +67,7 @@ export const OutfitVisualLayout: React.FC<OutfitVisualLayoutProps> = ({
     
     // Debug logging
     if (process.env.NODE_ENV === 'development') {
-      console.log('OutfitVisualLayout Debug:', {
+      logger.debug('OutfitVisualLayout Debug', {
         totalItems: items.length,
         categorizedItems: Object.keys(itemsByCategory).length,
         validItemsCount: valid.length,

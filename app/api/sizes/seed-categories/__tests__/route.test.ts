@@ -18,6 +18,10 @@ vi.mock('@/lib/middleware/security-middleware', () => ({
   },
 }));
 
+vi.mock('@/lib/utils/request-security', () => ({
+  requireSameOriginWithOptions: vi.fn(() => null),
+}));
+
 import { createClient } from '@/lib/supabase/server';
 import { logError } from '@/lib/utils/error-logging';
 

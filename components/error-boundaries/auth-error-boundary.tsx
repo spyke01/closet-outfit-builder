@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-error-boundaries-auth-error-boundary' });
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, LogIn, RefreshCw } from 'lucide-react';
 
@@ -78,7 +81,7 @@ export class AuthErrorBoundary extends Component<Props, State> {
 
     // Log without sensitive information
     if (process.env.NODE_ENV === 'development') {
-      console.error('Auth Error Boundary:', logEntry);
+      logger.error('Auth Error Boundary:', logEntry);
     }
 
     // Call custom auth error handler
@@ -245,7 +248,7 @@ export function useAuthErrorHandler() {
     };
 
     if (process.env.NODE_ENV === 'development') {
-      console.error('Auth Error Handler:', logEntry);
+      logger.error('Auth Error Handler:', logEntry);
     }
 
     // Determine if this is a session expiry that requires redirect

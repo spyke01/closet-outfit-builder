@@ -11,6 +11,7 @@ const defaultPreferences: Omit<UserPreferences, 'id' | 'user_id' | 'created_at' 
   show_brands: true,
   weather_enabled: true,
   default_tuck_style: 'Untucked',
+  account_tier: 'starter',
 };
 
 // Hook to fetch user preferences

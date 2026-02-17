@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { z } from 'zod';
 import { safeValidate } from '@/lib/utils/validation';
 import { useWeatherFallback } from './use-weather-fallback';
+import { createLogger } from '@/lib/utils/logger';
 
 // Weather data schemas
 const WeatherDataSchema = z.object({
@@ -83,6 +84,8 @@ interface LocationData {
   granted: boolean;
   error?: string;
 }
+
+const logger = createLogger({ component: 'use-weather' });
 
 /**
  * Get current location using browser geolocation API
@@ -184,7 +187,7 @@ async function fetchWeatherData(latitude: number, longitude: number): Promise<We
     const validation = safeValidate(WeatherResponseSchema, data);
     
     if (!validation.success) {
-      console.warn('Invalid weather response:', validation.error);
+      logger.warn('Invalid weather response:', validation.error);
       throw { 
         error: 'Weather service returned invalid data. Please try again later.', 
         details: 'Data validation failed' 
@@ -309,7 +312,7 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
       } catch (weatherError) {
         // If main weather service fails after multiple retries, try fallback
         if (retryCount >= 2) {
-          console.log('Main weather service failed, attempting fallback...');
+          logger.info('Main weather service failed, attempting fallback');
           try {
             const fallbackData = await generateFallbackWeather(location.latitude, location.longitude);
             setForecast(fallbackData.forecast);
@@ -324,7 +327,7 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
             setLoading(false);
             return; // Early return after successful fallback
           } catch (fallbackError) {
-            console.error('Fallback weather generation failed:', fallbackError);
+            logger.error('Fallback weather generation failed:', fallbackError);
           }
         }
         
@@ -332,7 +335,7 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
         throw weatherError;
       }
     } catch (err) {
-      console.error('Weather loading error:', err);
+      logger.error('Weather loading error:', err);
 
       // Handle different types of errors with appropriate user messaging
       let weatherError: WeatherError;

@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-score-circle' });
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -55,7 +58,7 @@ export const ScoreCircle = React.memo<ScoreCircleProps>(({
     if (!outfit) return null;
     const validation = safeValidate(OutfitSelectionSchema, outfit);
     if (!validation.success) {
-      console.warn('Invalid outfit for score breakdown:', validation.error);
+      logger.warn('Invalid outfit for score breakdown:', validation.error);
       return null;
     }
     return validation.data;

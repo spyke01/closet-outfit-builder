@@ -113,38 +113,38 @@ function validateWeatherResponse(data) {
  * Test weather API endpoint
  */
 async function testWeatherEndpoint(location) {
-  console.log(`\n🌍 Testing ${location.name} (${location.lat}, ${location.lon})`);
+  console.info(`\n🌍 Testing ${location.name} (${location.lat}, ${location.lon})`);
   
   const url = `${PRODUCTION_URL}/.netlify/functions/weather?lat=${location.lat}&lon=${location.lon}`;
   
   try {
     const response = await makeRequest(url);
     
-    console.log(`   Status: ${response.status}`);
+    console.info(`   Status: ${response.status}`);
     
     if (response.status === 200) {
       const validationErrors = validateWeatherResponse(response.data);
       
       if (validationErrors.length === 0) {
-        console.log(`   ✅ Temperature: ${response.data.current.temperature}°F`);
-        console.log(`   ✅ Condition: ${response.data.current.condition}`);
-        console.log(`   ✅ Forecast days: ${response.data.forecast.length}`);
-        console.log(`   ✅ Response structure valid`);
+        console.info(`   ✅ Temperature: ${response.data.current.temperature}°F`);
+        console.info(`   ✅ Condition: ${response.data.current.condition}`);
+        console.info(`   ✅ Forecast days: ${response.data.forecast.length}`);
+        console.info(`   ✅ Response structure valid`);
         return { success: true, location: location.name };
       } else {
-        console.log(`   ❌ Validation errors:`);
-        validationErrors.forEach(error => console.log(`      - ${error}`));
+        console.info(`   ❌ Validation errors:`);
+        validationErrors.forEach(error => console.info(`      - ${error}`));
         return { success: false, location: location.name, errors: validationErrors };
       }
     } else {
-      console.log(`   ❌ Error: ${response.data.error || 'Unknown error'}`);
+      console.info(`   ❌ Error: ${response.data.error || 'Unknown error'}`);
       if (response.data.details) {
-        console.log(`   ❌ Details: ${response.data.details}`);
+        console.info(`   ❌ Details: ${response.data.details}`);
       }
       return { success: false, location: location.name, status: response.status, error: response.data };
     }
   } catch (error) {
-    console.log(`   ❌ Request failed: ${error.message}`);
+    console.info(`   ❌ Request failed: ${error.message}`);
     return { success: false, location: location.name, error: error.message };
   }
 }
@@ -153,45 +153,45 @@ async function testWeatherEndpoint(location) {
  * Test error handling scenarios
  */
 async function testErrorScenarios() {
-  console.log(`\n🔧 Testing Error Handling Scenarios`);
+  console.info(`\n🔧 Testing Error Handling Scenarios`);
   
   // Test 1: Missing parameters
-  console.log(`\n   Testing missing parameters...`);
+  console.info(`\n   Testing missing parameters...`);
   try {
     const response = await makeRequest(`${PRODUCTION_URL}/.netlify/functions/weather`);
     if (response.status === 400) {
-      console.log(`   ✅ Missing parameters handled correctly (400)`);
+      console.info(`   ✅ Missing parameters handled correctly (400)`);
     } else {
-      console.log(`   ❌ Expected 400, got ${response.status}`);
+      console.info(`   ❌ Expected 400, got ${response.status}`);
     }
   } catch (error) {
-    console.log(`   ❌ Request failed: ${error.message}`);
+    console.info(`   ❌ Request failed: ${error.message}`);
   }
   
   // Test 2: Invalid coordinates
-  console.log(`\n   Testing invalid coordinates...`);
+  console.info(`\n   Testing invalid coordinates...`);
   try {
     const response = await makeRequest(`${PRODUCTION_URL}/.netlify/functions/weather?lat=999&lon=999`);
     if (response.status === 400) {
-      console.log(`   ✅ Invalid coordinates handled correctly (400)`);
+      console.info(`   ✅ Invalid coordinates handled correctly (400)`);
     } else {
-      console.log(`   ❌ Expected 400, got ${response.status}`);
+      console.info(`   ❌ Expected 400, got ${response.status}`);
     }
   } catch (error) {
-    console.log(`   ❌ Request failed: ${error.message}`);
+    console.info(`   ❌ Request failed: ${error.message}`);
   }
   
   // Test 3: CORS headers
-  console.log(`\n   Testing CORS headers...`);
+  console.info(`\n   Testing CORS headers...`);
   try {
     const response = await makeRequest(`${PRODUCTION_URL}/.netlify/functions/weather?lat=40.7128&lon=-74.0060`);
     if (response.headers['access-control-allow-origin']) {
-      console.log(`   ✅ CORS headers present`);
+      console.info(`   ✅ CORS headers present`);
     } else {
-      console.log(`   ❌ CORS headers missing`);
+      console.info(`   ❌ CORS headers missing`);
     }
   } catch (error) {
-    console.log(`   ❌ Request failed: ${error.message}`);
+    console.info(`   ❌ Request failed: ${error.message}`);
   }
 }
 
@@ -199,7 +199,7 @@ async function testErrorScenarios() {
  * Test performance and reliability
  */
 async function testPerformance() {
-  console.log(`\n⚡ Testing Performance and Reliability`);
+  console.info(`\n⚡ Testing Performance and Reliability`);
   
   const testLocation = TEST_COORDINATES[0]; // Use New York for performance test
   const url = `${PRODUCTION_URL}/.netlify/functions/weather?lat=${testLocation.lat}&lon=${testLocation.lon}`;
@@ -207,7 +207,7 @@ async function testPerformance() {
   const results = [];
   const concurrentRequests = 3;
   
-  console.log(`\n   Making ${concurrentRequests} concurrent requests...`);
+  console.info(`\n   Making ${concurrentRequests} concurrent requests...`);
   
   const promises = Array(concurrentRequests).fill().map(async (_, index) => {
     const startTime = Date.now();
@@ -239,9 +239,9 @@ async function testPerformance() {
   
   results_data.forEach(result => {
     if (result.success) {
-      console.log(`   ✅ Request ${result.index}: ${result.duration}ms (${result.status})`);
+      console.info(`   ✅ Request ${result.index}: ${result.duration}ms (${result.status})`);
     } else {
-      console.log(`   ❌ Request ${result.index}: ${result.duration}ms (${result.error || result.status})`);
+      console.info(`   ❌ Request ${result.index}: ${result.duration}ms (${result.error || result.status})`);
     }
   });
   
@@ -250,8 +250,8 @@ async function testPerformance() {
     ? successfulRequests.reduce((sum, r) => sum + r.duration, 0) / successfulRequests.length 
     : 0;
   
-  console.log(`\n   📊 Success rate: ${successfulRequests.length}/${concurrentRequests} (${Math.round(successfulRequests.length / concurrentRequests * 100)}%)`);
-  console.log(`   📊 Average response time: ${Math.round(averageTime)}ms`);
+  console.info(`\n   📊 Success rate: ${successfulRequests.length}/${concurrentRequests} (${Math.round(successfulRequests.length / concurrentRequests * 100)}%)`);
+  console.info(`   📊 Average response time: ${Math.round(averageTime)}ms`);
   
   return {
     successRate: successfulRequests.length / concurrentRequests,
@@ -263,10 +263,10 @@ async function testPerformance() {
  * Main validation function
  */
 async function validateProductionWeatherAPI() {
-  console.log('🌤️  Production Weather API Validation');
-  console.log('=====================================');
-  console.log(`Production URL: ${PRODUCTION_URL}`);
-  console.log(`Test started: ${new Date().toISOString()}`);
+  console.info('🌤️  Production Weather API Validation');
+  console.info('=====================================');
+  console.info(`Production URL: ${PRODUCTION_URL}`);
+  console.info(`Test started: ${new Date().toISOString()}`);
   
   const results = {
     locationTests: [],
@@ -276,7 +276,7 @@ async function validateProductionWeatherAPI() {
   };
   
   // Test multiple locations
-  console.log(`\n📍 Testing Weather API with Multiple Locations`);
+  console.info(`\n📍 Testing Weather API with Multiple Locations`);
   for (const location of TEST_COORDINATES) {
     const result = await testWeatherEndpoint(location);
     results.locationTests.push(result);
@@ -292,33 +292,33 @@ async function validateProductionWeatherAPI() {
   results.performance = await testPerformance();
   
   // Generate summary
-  console.log(`\n📋 Validation Summary`);
-  console.log('====================');
+  console.info(`\n📋 Validation Summary`);
+  console.info('====================');
   
   const successfulLocations = results.locationTests.filter(r => r.success);
-  console.log(`Location tests: ${successfulLocations.length}/${results.locationTests.length} passed`);
+  console.info(`Location tests: ${successfulLocations.length}/${results.locationTests.length} passed`);
   
   if (results.performance) {
-    console.log(`Performance: ${Math.round(results.performance.successRate * 100)}% success rate, ${Math.round(results.performance.averageTime)}ms avg`);
+    console.info(`Performance: ${Math.round(results.performance.successRate * 100)}% success rate, ${Math.round(results.performance.averageTime)}ms avg`);
   }
   
   results.overall = successfulLocations.length >= results.locationTests.length * 0.75 && 
                    results.performance.successRate >= 0.75;
   
   if (results.overall) {
-    console.log(`\n✅ Production weather API validation PASSED`);
-    console.log(`   - Weather data is accessible and properly formatted`);
-    console.log(`   - Error handling works correctly`);
-    console.log(`   - Performance is acceptable`);
-    console.log(`   - CORS headers are configured`);
+    console.info(`\n✅ Production weather API validation PASSED`);
+    console.info(`   - Weather data is accessible and properly formatted`);
+    console.info(`   - Error handling works correctly`);
+    console.info(`   - Performance is acceptable`);
+    console.info(`   - CORS headers are configured`);
   } else {
-    console.log(`\n❌ Production weather API validation FAILED`);
-    console.log(`   - Check API key configuration in Netlify environment variables`);
-    console.log(`   - Verify network connectivity and DNS resolution`);
-    console.log(`   - Review error logs for specific issues`);
+    console.info(`\n❌ Production weather API validation FAILED`);
+    console.info(`   - Check API key configuration in Netlify environment variables`);
+    console.info(`   - Verify network connectivity and DNS resolution`);
+    console.info(`   - Review error logs for specific issues`);
   }
   
-  console.log(`\nTest completed: ${new Date().toISOString()}`);
+  console.info(`\nTest completed: ${new Date().toISOString()}`);
   
   return results.overall;
 }

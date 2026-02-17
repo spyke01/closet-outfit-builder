@@ -6,6 +6,10 @@ import { createStripeCheckoutSession, getStripePriceId } from '@/lib/services/bi
 import type { PlanCode } from '@/lib/services/billing/plans';
 import { resolveAppUrl } from '@/lib/services/billing/app-url';
 import { requireSameOrigin } from '@/lib/utils/request-security';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'app-api-billing-checkout-route' });
+
 
 export const dynamic = 'force-dynamic';
 
@@ -85,7 +89,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
-    console.error('Checkout session creation failed', error);
+    logger.error('Checkout session creation failed', error);
     return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 });
   }
 }

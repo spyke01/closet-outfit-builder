@@ -5,6 +5,7 @@ import { incrementUsageCounter, resolveUserEntitlements } from '@/lib/services/b
 import { getAssistantPredictionStatus } from '@/lib/services/assistant/providers/replicate';
 import { moderateOutput } from '@/lib/services/assistant/moderation';
 import { SEBASTIAN_REFUSAL_TEMPLATES } from '@/lib/services/assistant/persona';
+import { requireSameOriginWithOptions } from '@/lib/utils/request-security';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,43 +13,16 @@ const StatusRequestSchema = z.object({
   threadId: z.string().uuid(),
 });
 
-async function getBurstCount(supabase: Awaited<ReturnType<typeof createClient>>, userId: string, hourKey: string) {
-  const { data } = await supabase
-    .from('usage_counters')
-    .select('id, count')
-    .eq('user_id', userId)
-    .eq('metric_key', 'ai_stylist_requests_hourly')
-    .eq('period_key', hourKey)
-    .maybeSingle();
-
-  return data || null;
-}
-
-async function incrementBurstCount(supabase: Awaited<ReturnType<typeof createClient>>, userId: string, hourKey: string) {
-  const existing = await getBurstCount(supabase, userId, hourKey);
-  const now = new Date();
-  const hourStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), 0, 0));
-  const hourEnd = new Date(hourStart);
-  hourEnd.setUTCHours(hourEnd.getUTCHours() + 1);
-
-  if (!existing) {
-    await supabase.from('usage_counters').insert({
-      user_id: userId,
-      metric_key: 'ai_stylist_requests_hourly',
-      period_key: hourKey,
-      period_start_at: hourStart.toISOString(),
-      period_end_at: hourEnd.toISOString(),
-      count: 1,
-    });
-    return 1;
+export async function POST(request: NextRequest) {
+  const sameOriginError = requireSameOriginWithOptions(request, {
+    mode: (process.env.SECURITY_CSRF_MODE as 'off' | 'report' | 'enforce' | undefined) || 'enforce',
+    protectMethods: ['POST'],
+    reasonTag: 'assistant_status',
+  });
+  if (sameOriginError) {
+    return sameOriginError;
   }
 
-  const next = existing.count + 1;
-  await supabase.from('usage_counters').update({ count: next }).eq('id', existing.id);
-  return next;
-}
-
-export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -106,6 +80,7 @@ export async function POST(request: NextRequest) {
       metric_key?: 'ai_stylist_messages' | 'ai_stylist_vision_messages';
       hour_key?: string;
       model?: string;
+      reserved_usage?: boolean;
     };
 
     if (!metadata.pending_prediction_id) {
@@ -175,16 +150,15 @@ export async function POST(request: NextRequest) {
       })
       .eq('id', pendingMessage.id);
 
-    const entitlements = await resolveUserEntitlements(supabase, user.id);
-    await incrementUsageCounter(
-      supabase,
-      user.id,
-      metadata.metric_key || 'ai_stylist_vision_messages',
-      entitlements.period,
-      1
-    );
-    if (metadata.hour_key) {
-      await incrementBurstCount(supabase, user.id, metadata.hour_key);
+    if (!metadata.reserved_usage) {
+      const entitlements = await resolveUserEntitlements(supabase, user.id);
+      await incrementUsageCounter(
+        supabase,
+        user.id,
+        metadata.metric_key || 'ai_stylist_vision_messages',
+        entitlements.period,
+        1
+      );
     }
 
     await supabase.from('assistant_inference_events').insert({

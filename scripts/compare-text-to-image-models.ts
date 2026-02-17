@@ -694,11 +694,11 @@ async function main(): Promise<void> {
     throw new Error('Missing REPLICATE_API_TOKEN environment variable.');
   }
 
-  console.log(`Prompt category: ${argv.category}`);
-  console.log(`Prompt target: ${argv.color} ${material} ${argv.subcategory}`);
-  console.log(`Models to run: ${models.length}`);
-  console.log(`Output directory: ${outDir}`);
-  console.log(`Dry run: ${argv['dry-run'] ? 'yes' : 'no'}`);
+  console.info(`Prompt category: ${argv.category}`);
+  console.info(`Prompt target: ${argv.color} ${material} ${argv.subcategory}`);
+  console.info(`Models to run: ${models.length}`);
+  console.info(`Output directory: ${outDir}`);
+  console.info(`Dry run: ${argv['dry-run'] ? 'yes' : 'no'}`);
 
   const results: ResultRow[] = [];
 
@@ -724,7 +724,7 @@ async function main(): Promise<void> {
     }
 
     try {
-      console.log(`Running ${model.slug}...`);
+      console.info(`Running ${model.slug}...`);
       const created = await createPredictionWithRetry({
         token: token as string,
         model: model.slug,
@@ -768,7 +768,7 @@ async function main(): Promise<void> {
         error: null,
       });
 
-      console.log(`Completed ${model.slug}`);
+      console.info(`Completed ${model.slug}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       results.push({
@@ -821,8 +821,8 @@ async function main(): Promise<void> {
   await fs.writeFile(path.join(outDir, 'results.json'), JSON.stringify(metadata, null, 2), 'utf-8');
   await fs.writeFile(path.join(outDir, 'report.html'), reportHtml, 'utf-8');
 
-  console.log(`Wrote ${path.join(outDir, 'results.json')}`);
-  console.log(`Wrote ${path.join(outDir, 'report.html')}`);
+  console.info(`Wrote ${path.join(outDir, 'results.json')}`);
+  console.info(`Wrote ${path.join(outDir, 'report.html')}`);
 }
 
 main().catch((error) => {

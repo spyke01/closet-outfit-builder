@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { createLogger } from '@/lib/utils/logger'
 
 const webVitalsSchema = z.object({
   id: z.string(),
@@ -17,6 +18,7 @@ const webVitalsSchema = z.object({
   navigationType: z.string(),
   timestamp: z.number()
 })
+const log = createLogger({ component: 'api-web-vitals' });
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     // Log metrics in development
     if (process.env.NODE_ENV === 'development') {
-      console.log('[Web Vitals API]', {
+      log.debug('Web vitals metric', {
         name: metric.name,
         value: metric.value,
         rating: metric.rating
@@ -45,7 +47,9 @@ export async function POST(request: NextRequest) {
       metric: metric.name 
     })
   } catch (error) {
-    console.error('Error processing web vitals:', error)
+    log.error('Error processing web vitals', {
+      error: error instanceof Error ? error.message : 'unknown_error',
+    })
     return NextResponse.json(
       { error: 'Invalid metric data' },
       { status: 400 }

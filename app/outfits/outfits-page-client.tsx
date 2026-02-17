@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'app-outfits-outfits-page-client' });
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useOutfits, useDeleteOutfit } from '@/lib/hooks/use-outfits';
 import { OutfitList } from '@/components/outfit-list';
@@ -189,7 +192,7 @@ export function OutfitsPageClient() {
       setShowDeleteConfirm(false);
       setOutfitToDelete(null);
     } catch (error) {
-      console.error('Failed to delete outfit:', error);
+      logger.error('Failed to delete outfit:', error);
     }
   };
 

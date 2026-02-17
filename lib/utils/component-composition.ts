@@ -6,6 +6,9 @@
  * 
  * **Validates: Requirements 5.5, 5.6**
  */
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'component-composition' });
 
 /**
  * Parallel data fetching pattern for Server Components
@@ -84,7 +87,7 @@ export function runNonBlocking(operation: () => Promise<void>): void {
   } else {
     // Fallback: Fire and forget (not recommended for production)
     operation().catch(error => {
-      console.error('Non-blocking operation failed:', error);
+      logger.error('Non-blocking operation failed:', error);
     });
   }
 }
@@ -94,8 +97,7 @@ export function runNonBlocking(operation: () => Promise<void>): void {
  */
 export function logAsync(message: string, data?: unknown): void {
   runNonBlocking(async () => {
-    // In production, this would send to logging service
-    console.log(message, data);
+    logger.debug(message, { data });
   });
 }
 
@@ -104,8 +106,7 @@ export function logAsync(message: string, data?: unknown): void {
  */
 export function trackEventAsync(event: string, properties?: Record<string, unknown>): void {
   runNonBlocking(async () => {
-    // In production, this would send to analytics service
-    console.log('Analytics event:', event, properties);
+    logger.debug('Analytics event', { event, properties });
   });
 }
 

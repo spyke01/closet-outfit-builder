@@ -52,7 +52,7 @@ const DEFAULT_SCHEDULE = {
 function loadScheduleConfig() {
   if (!existsSync(SCHEDULE_CONFIG)) {
     writeFileSync(SCHEDULE_CONFIG, JSON.stringify(DEFAULT_SCHEDULE, null, 2));
-    console.log('📅 Created default audit schedule configuration');
+    console.info('📅 Created default audit schedule configuration');
     return DEFAULT_SCHEDULE;
   }
   
@@ -60,7 +60,7 @@ function loadScheduleConfig() {
     const config = JSON.parse(readFileSync(SCHEDULE_CONFIG, 'utf8'));
     return { ...DEFAULT_SCHEDULE, ...config };
   } catch (error) {
-    console.log('⚠️  Invalid schedule config, using defaults');
+    console.info('⚠️  Invalid schedule config, using defaults');
     return DEFAULT_SCHEDULE;
   }
 }
@@ -87,7 +87,7 @@ function loadAuditReport(filename) {
     const content = readFileSync(join(AUDIT_DIR, filename), 'utf8');
     return JSON.parse(content);
   } catch (error) {
-    console.log(`⚠️  Could not load report: ${filename}`);
+    console.info(`⚠️  Could not load report: ${filename}`);
     return null;
   }
 }
@@ -96,7 +96,7 @@ function loadAuditReport(filename) {
  * Generate trends analysis
  */
 function generateTrendsReport() {
-  console.log('📊 Generating audit trends report...');
+  console.info('📊 Generating audit trends report...');
   
   const reportFiles = getAuditReports().slice(0, 30); // Last 30 reports
   const reports = reportFiles
@@ -104,7 +104,7 @@ function generateTrendsReport() {
     .filter(report => report !== null);
   
   if (reports.length === 0) {
-    console.log('⚠️  No audit reports found for trends analysis');
+    console.info('⚠️  No audit reports found for trends analysis');
     return null;
   }
   
@@ -161,7 +161,7 @@ function generateTrendsReport() {
   
   // Save trends report
   writeFileSync(TRENDS_REPORT, JSON.stringify(trends, null, 2));
-  console.log(`✅ Trends report saved: ${TRENDS_REPORT}`);
+  console.info(`✅ Trends report saved: ${TRENDS_REPORT}`);
   
   return trends;
 }
@@ -245,8 +245,8 @@ function calculateVariance(values) {
  * Run scheduled audit
  */
 async function runScheduledAudit(scheduleType = 'manual') {
-  console.log(`🚀 Running ${scheduleType} scheduled audit`);
-  console.log('=====================================');
+  console.info(`🚀 Running ${scheduleType} scheduled audit`);
+  console.info('=====================================');
   
   try {
     // Run the continuous audit
@@ -255,7 +255,7 @@ async function runScheduledAudit(scheduleType = 'manual') {
     // Generate trends report
     generateTrendsReport();
     
-    console.log(`✅ ${scheduleType} audit completed successfully`);
+    console.info(`✅ ${scheduleType} audit completed successfully`);
     
     // Check thresholds and send notifications if needed
     const config = loadScheduleConfig();
@@ -297,9 +297,9 @@ async function checkThresholdsAndNotify(config) {
   }
   
   if (alerts.length > 0) {
-    console.log('\n🚨 AUDIT ALERTS');
-    console.log('===============');
-    alerts.forEach(alert => console.log(`⚠️  ${alert}`));
+    console.info('\n🚨 AUDIT ALERTS');
+    console.info('===============');
+    alerts.forEach(alert => console.info(`⚠️  ${alert}`));
     
     // TODO: Implement actual notification sending (email, Slack, webhook)
     // This would require additional configuration and service integration
@@ -312,23 +312,23 @@ async function checkThresholdsAndNotify(config) {
 function showScheduleStatus() {
   const config = loadScheduleConfig();
   
-  console.log('📅 AUDIT SCHEDULE STATUS');
-  console.log('========================');
-  console.log(`Daily audits: ${config.daily.enabled ? '✅ Enabled' : '❌ Disabled'} (${config.daily.time})`);
-  console.log(`Weekly audits: ${config.weekly.enabled ? '✅ Enabled' : '❌ Disabled'} (${config.weekly.day} ${config.weekly.time})`);
-  console.log(`Monthly audits: ${config.monthly.enabled ? '✅ Enabled' : '❌ Disabled'} (day ${config.monthly.day} ${config.monthly.time})`);
+  console.info('📅 AUDIT SCHEDULE STATUS');
+  console.info('========================');
+  console.info(`Daily audits: ${config.daily.enabled ? '✅ Enabled' : '❌ Disabled'} (${config.daily.time})`);
+  console.info(`Weekly audits: ${config.weekly.enabled ? '✅ Enabled' : '❌ Disabled'} (${config.weekly.day} ${config.weekly.time})`);
+  console.info(`Monthly audits: ${config.monthly.enabled ? '✅ Enabled' : '❌ Disabled'} (day ${config.monthly.day} ${config.monthly.time})`);
   
-  console.log('\n🎯 THRESHOLDS');
-  console.log('=============');
-  console.log(`Critical issues: ${config.thresholds.criticalIssues}`);
-  console.log(`Failed checks: ${config.thresholds.failedChecks}`);
-  console.log(`Coverage: ${config.thresholds.coverageThreshold}%`);
+  console.info('\n🎯 THRESHOLDS');
+  console.info('=============');
+  console.info(`Critical issues: ${config.thresholds.criticalIssues}`);
+  console.info(`Failed checks: ${config.thresholds.failedChecks}`);
+  console.info(`Coverage: ${config.thresholds.coverageThreshold}%`);
   
   const reportFiles = getAuditReports();
-  console.log(`\n📊 AUDIT HISTORY: ${reportFiles.length} reports available`);
+  console.info(`\n📊 AUDIT HISTORY: ${reportFiles.length} reports available`);
   
   if (reportFiles.length > 0) {
-    console.log(`Latest: ${reportFiles[0]}`);
+    console.info(`Latest: ${reportFiles[0]}`);
   }
 }
 
@@ -358,14 +358,14 @@ async function main() {
       await runScheduledAudit('monthly');
       break;
     default:
-      console.log('🔧 Audit Scheduler Usage:');
-      console.log('=========================');
-      console.log('node scripts/audit-scheduler.js run     - Run manual audit');
-      console.log('node scripts/audit-scheduler.js trends  - Generate trends report');
-      console.log('node scripts/audit-scheduler.js status  - Show schedule status');
-      console.log('node scripts/audit-scheduler.js daily   - Run daily audit');
-      console.log('node scripts/audit-scheduler.js weekly  - Run weekly audit');
-      console.log('node scripts/audit-scheduler.js monthly - Run monthly audit');
+      console.info('🔧 Audit Scheduler Usage:');
+      console.info('=========================');
+      console.info('node scripts/audit-scheduler.js run     - Run manual audit');
+      console.info('node scripts/audit-scheduler.js trends  - Generate trends report');
+      console.info('node scripts/audit-scheduler.js status  - Show schedule status');
+      console.info('node scripts/audit-scheduler.js daily   - Run daily audit');
+      console.info('node scripts/audit-scheduler.js weekly  - Run weekly audit');
+      console.info('node scripts/audit-scheduler.js monthly - Run monthly audit');
       break;
   }
 }

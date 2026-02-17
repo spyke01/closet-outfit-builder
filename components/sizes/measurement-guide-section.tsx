@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-sizes-measurement-guide-section' });
 import { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -202,7 +205,7 @@ export function MeasurementGuideSection({
       
       setIsEditing(false);
     } catch (error) {
-      console.error('Failed to save measurements:', error);
+      logger.error('Failed to save measurements:', error);
       // Error is handled by the mutation hook
     }
   }, [categoryId, updateMeasurements]);

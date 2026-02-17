@@ -3,6 +3,9 @@
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'app-debug-page' });
 
 export default function DebugPage() {
   const [results, setResults] = useState<Record<string, unknown> | null>(null);
@@ -13,7 +16,7 @@ export default function DebugPage() {
     setResults(null);
     
     try {
-      console.log('🔍 Testing client-side Supabase connection...');
+      logger.debug('Testing client-side Supabase connection');
       
       const supabase = createClient();
       
@@ -81,7 +84,7 @@ export default function DebugPage() {
     setResults(null);
     
     try {
-      console.log('🔍 Testing server-side Supabase connection...');
+      logger.debug('Testing server-side Supabase connection');
       
       const response = await fetch('/api/debug/supabase');
       const data = await response.json();

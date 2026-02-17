@@ -1,3 +1,8 @@
+import { createLogger } from './logger';
+
+const logger = createLogger({ component: 'lib-utils-preload-manager' });
+
+
 /**
  * Preload manager for intelligent prefetching based on user intent
  * Implements preloading strategies for heavy modules and components
@@ -85,7 +90,7 @@ class PreloadManager {
         return false;
       }
     } catch (error) {
-      console.warn(`Failed to preload module for feature ${feature}:`, error);
+      logger.warn(`Failed to preload module for feature ${feature}:`, error);
       this.preloadState[key].error = true;
       return false;
     } finally {

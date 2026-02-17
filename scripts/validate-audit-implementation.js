@@ -13,17 +13,17 @@ import { join } from 'path';
  * Execute command and capture result
  */
 function executeCommand(command, description) {
-  console.log(`🔍 ${description}...`);
+  console.info(`🔍 ${description}...`);
   try {
     const output = execSync(command, { 
       encoding: 'utf8', 
       stdio: 'pipe',
       maxBuffer: 1024 * 1024 * 5
     });
-    console.log(`✅ ${description} - PASSED`);
+    console.info(`✅ ${description} - PASSED`);
     return { success: true, output };
   } catch (error) {
-    console.log(`❌ ${description} - FAILED`);
+    console.info(`❌ ${description} - FAILED`);
     return { success: false, error: error.message, output: error.stdout || '' };
   }
 }
@@ -32,10 +32,10 @@ function executeCommand(command, description) {
  * Check if file exists and has expected content
  */
 function validateFile(filePath, description, expectedContent = null) {
-  console.log(`🔍 ${description}...`);
+  console.info(`🔍 ${description}...`);
   
   if (!existsSync(filePath)) {
-    console.log(`❌ ${description} - FILE NOT FOUND: ${filePath}`);
+    console.info(`❌ ${description} - FILE NOT FOUND: ${filePath}`);
     return { success: false, error: 'File not found' };
   }
   
@@ -43,16 +43,16 @@ function validateFile(filePath, description, expectedContent = null) {
     try {
       const content = readFileSync(filePath, 'utf8');
       if (!content.includes(expectedContent)) {
-        console.log(`❌ ${description} - CONTENT MISSING: ${expectedContent}`);
+        console.info(`❌ ${description} - CONTENT MISSING: ${expectedContent}`);
         return { success: false, error: 'Expected content not found' };
       }
     } catch (error) {
-      console.log(`❌ ${description} - READ ERROR: ${error.message}`);
+      console.info(`❌ ${description} - READ ERROR: ${error.message}`);
       return { success: false, error: error.message };
     }
   }
   
-  console.log(`✅ ${description} - PASSED`);
+  console.info(`✅ ${description} - PASSED`);
   return { success: true };
 }
 
@@ -60,8 +60,8 @@ function validateFile(filePath, description, expectedContent = null) {
  * Validate NPM scripts are properly configured
  */
 function validateNpmScripts() {
-  console.log('\n📦 VALIDATING NPM SCRIPTS');
-  console.log('==========================');
+  console.info('\n📦 VALIDATING NPM SCRIPTS');
+  console.info('==========================');
   
   const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
   const expectedScripts = [
@@ -77,10 +77,10 @@ function validateNpmScripts() {
   
   expectedScripts.forEach(script => {
     if (packageJson.scripts[script]) {
-      console.log(`✅ NPM script '${script}' - CONFIGURED`);
+      console.info(`✅ NPM script '${script}' - CONFIGURED`);
       results.push({ success: true, script });
     } else {
-      console.log(`❌ NPM script '${script}' - MISSING`);
+      console.info(`❌ NPM script '${script}' - MISSING`);
       results.push({ success: false, script, error: 'Script not found' });
     }
   });
@@ -92,8 +92,8 @@ function validateNpmScripts() {
  * Validate audit scripts exist and are executable
  */
 function validateAuditScripts() {
-  console.log('\n📜 VALIDATING AUDIT SCRIPTS');
-  console.log('============================');
+  console.info('\n📜 VALIDATING AUDIT SCRIPTS');
+  console.info('============================');
   
   const scripts = [
     { path: 'scripts/continuous-audit.js', desc: 'Continuous Audit Script' },
@@ -112,8 +112,8 @@ function validateAuditScripts() {
  * Validate documentation files
  */
 function validateDocumentation() {
-  console.log('\n📚 VALIDATING DOCUMENTATION');
-  console.log('============================');
+  console.info('\n📚 VALIDATING DOCUMENTATION');
+  console.info('============================');
   
   const docs = [
     { 
@@ -137,8 +137,8 @@ function validateDocumentation() {
  * Test audit script functionality
  */
 function testAuditFunctionality() {
-  console.log('\n🧪 TESTING AUDIT FUNCTIONALITY');
-  console.log('===============================');
+  console.info('\n🧪 TESTING AUDIT FUNCTIONALITY');
+  console.info('===============================');
   
   const tests = [
     {
@@ -160,8 +160,8 @@ function testAuditFunctionality() {
  * Validate audit configuration files
  */
 function validateConfiguration() {
-  console.log('\n⚙️  VALIDATING CONFIGURATION');
-  console.log('============================');
+  console.info('\n⚙️  VALIDATING CONFIGURATION');
+  console.info('============================');
   
   // Check if audit schedule was created
   const scheduleResult = validateFile(
@@ -175,14 +175,14 @@ function validateConfiguration() {
     try {
       const config = JSON.parse(readFileSync('audits/audit-schedule.json', 'utf8'));
       if (config.daily && config.weekly && config.monthly && config.thresholds) {
-        console.log('✅ Audit Schedule Structure - VALID');
+        console.info('✅ Audit Schedule Structure - VALID');
         return [{ success: true, description: 'Configuration validation' }];
       } else {
-        console.log('❌ Audit Schedule Structure - INVALID');
+        console.info('❌ Audit Schedule Structure - INVALID');
         return [{ success: false, description: 'Configuration validation', error: 'Invalid structure' }];
       }
     } catch (error) {
-      console.log('❌ Audit Schedule JSON - MALFORMED');
+      console.info('❌ Audit Schedule JSON - MALFORMED');
       return [{ success: false, description: 'Configuration validation', error: 'Invalid JSON' }];
     }
   }
@@ -194,8 +194,8 @@ function validateConfiguration() {
  * Check for potential regressions
  */
 function checkForRegressions() {
-  console.log('\n🔄 CHECKING FOR REGRESSIONS');
-  console.log('============================');
+  console.info('\n🔄 CHECKING FOR REGRESSIONS');
+  console.info('============================');
   
   const regressionTests = [
     {
@@ -222,21 +222,21 @@ function generateValidationReport(results) {
   const passedTests = allResults.filter(r => r.success).length;
   const failedTests = totalTests - passedTests;
   
-  console.log('\n📋 VALIDATION SUMMARY');
-  console.log('=====================');
-  console.log(`Total Tests: ${totalTests}`);
-  console.log(`Passed: ${passedTests}`);
-  console.log(`Failed: ${failedTests}`);
-  console.log(`Success Rate: ${((passedTests / totalTests) * 100).toFixed(1)}%`);
+  console.info('\n📋 VALIDATION SUMMARY');
+  console.info('=====================');
+  console.info(`Total Tests: ${totalTests}`);
+  console.info(`Passed: ${passedTests}`);
+  console.info(`Failed: ${failedTests}`);
+  console.info(`Success Rate: ${((passedTests / totalTests) * 100).toFixed(1)}%`);
   
   if (failedTests > 0) {
-    console.log('\n❌ FAILED TESTS:');
+    console.info('\n❌ FAILED TESTS:');
     allResults
       .filter(r => !r.success)
       .forEach((result, index) => {
-        console.log(`${index + 1}. ${result.description || result.script || 'Unknown test'}`);
+        console.info(`${index + 1}. ${result.description || result.script || 'Unknown test'}`);
         if (result.error) {
-          console.log(`   Error: ${result.error}`);
+          console.info(`   Error: ${result.error}`);
         }
       });
   }
@@ -253,10 +253,10 @@ function generateValidationReport(results) {
  * Main validation execution
  */
 async function validateAuditImplementation() {
-  console.log('🚀 VALIDATING AUDIT IMPLEMENTATION');
-  console.log('===================================');
-  console.log('This script validates that all audit components are working correctly');
-  console.log('and ensures no regressions were introduced.\n');
+  console.info('🚀 VALIDATING AUDIT IMPLEMENTATION');
+  console.info('===================================');
+  console.info('This script validates that all audit components are working correctly');
+  console.info('and ensures no regressions were introduced.\n');
   
   const startTime = Date.now();
   
@@ -275,20 +275,20 @@ async function validateAuditImplementation() {
   // Generate report
   const report = generateValidationReport(results);
   
-  console.log(`\nValidation completed in ${duration}s`);
+  console.info(`\nValidation completed in ${duration}s`);
   
   if (report.failedTests === 0) {
-    console.log('\n🎉 ALL VALIDATIONS PASSED!');
-    console.log('The continuous audit and monitoring process has been successfully implemented.');
-    console.log('\nNext steps:');
-    console.log('1. Run "npm run audit:setup-hooks" to install Git hooks');
-    console.log('2. Run "npm run audit:continuous" to perform your first audit');
-    console.log('3. Review the documentation in audits/AUDIT_QUICK_START.md');
+    console.info('\n🎉 ALL VALIDATIONS PASSED!');
+    console.info('The continuous audit and monitoring process has been successfully implemented.');
+    console.info('\nNext steps:');
+    console.info('1. Run "npm run audit:setup-hooks" to install Git hooks');
+    console.info('2. Run "npm run audit:continuous" to perform your first audit');
+    console.info('3. Review the documentation in audits/AUDIT_QUICK_START.md');
     
     process.exit(0);
   } else {
-    console.log('\n❌ VALIDATION FAILED');
-    console.log('Some components are not working correctly. Please review the failed tests above.');
+    console.info('\n❌ VALIDATION FAILED');
+    console.info('Some components are not working correctly. Please review the failed tests above.');
     
     process.exit(1);
   }

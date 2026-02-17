@@ -6,6 +6,10 @@ import {
   listStripeSubscriptionsByCustomer,
 } from '@/lib/services/billing/stripe';
 import { requireSameOrigin } from '@/lib/utils/request-security';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'app-api-billing-switch-free-route' });
+
 
 export const dynamic = 'force-dynamic';
 
@@ -31,7 +35,7 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (subError) {
-      console.error('Failed to load subscription for switch-free', subError);
+      logger.error('Failed to load subscription for switch-free', subError);
       return NextResponse.json({ error: 'Failed to switch to free' }, { status: 500 });
     }
 
@@ -55,7 +59,7 @@ export async function POST(request: NextRequest) {
         );
 
       if (resetError) {
-        console.error('Failed to reset free membership state', resetError);
+        logger.error('Failed to reset free membership state', resetError);
         return NextResponse.json({ error: 'Failed to switch to free' }, { status: 500 });
       }
 
@@ -101,7 +105,7 @@ export async function POST(request: NextRequest) {
         .eq('user_id', user.id);
 
       if (resetError) {
-        console.error('Failed to normalize free membership state', resetError);
+        logger.error('Failed to normalize free membership state', resetError);
         return NextResponse.json({ error: 'Failed to switch to free' }, { status: 500 });
       }
 
@@ -121,7 +125,7 @@ export async function POST(request: NextRequest) {
       .eq('user_id', user.id);
 
     if (scheduleError) {
-      console.error('Failed to schedule cancellation', scheduleError);
+      logger.error('Failed to schedule cancellation', scheduleError);
       return NextResponse.json({ error: 'Failed to switch to free' }, { status: 500 });
     }
 
@@ -131,7 +135,7 @@ export async function POST(request: NextRequest) {
       message: 'Membership set to cancel at period end. Benefits remain until current period ends.',
     });
   } catch (error) {
-    console.error('Switch-free failed', error);
+    logger.error('Switch-free failed', error);
     return NextResponse.json({ error: 'Failed to switch to free' }, { status: 500 });
   }
 }

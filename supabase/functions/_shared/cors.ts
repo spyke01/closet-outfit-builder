@@ -40,6 +40,16 @@ function getAllowedOrigins(): string[] {
   return origins;
 }
 
+function debugLog(message: string, metadata?: unknown): void {
+  if (Deno.env.get('SECURITY_DEBUG') === 'true') {
+    if (metadata === undefined) {
+      console.warn(`[cors] ${message}`);
+    } else {
+      console.warn(`[cors] ${message}`, metadata);
+    }
+  }
+}
+
 /**
  * Get CORS headers with secure origin validation
  */
@@ -47,7 +57,7 @@ export function getCorsHeaders(requestOrigin?: string): Record<string, string> {
   const allowedOrigins = getAllowedOrigins();
   
   // Debug logging
-  console.log('🌐 CORS Debug:', {
+  debugLog('CORS Debug', {
     requestOrigin,
     allowedOrigins,
     env: {
@@ -63,16 +73,16 @@ export function getCorsHeaders(requestOrigin?: string): Record<string, string> {
   
   if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
     allowedOrigin = requestOrigin;
-    console.log('✅ Origin allowed:', requestOrigin);
+    debugLog('Origin allowed', { requestOrigin });
   } else {
-    console.log('❌ Origin not allowed:', requestOrigin, 'Allowed origins:', allowedOrigins);
+    debugLog('Origin not allowed', { requestOrigin, allowedOrigins });
     // For development, be more permissive with localhost
     if (requestOrigin && (
       requestOrigin.startsWith('http://localhost:') || 
       requestOrigin.startsWith('http://127.0.0.1:')
     )) {
       allowedOrigin = requestOrigin;
-      console.log('🔧 Development override - allowing localhost origin:', requestOrigin);
+      debugLog('Development override - allowing localhost origin', { requestOrigin });
     } else if (allowedOrigins.length > 0) {
       // Fallback to first allowed origin if no match
       allowedOrigin = allowedOrigins[0];

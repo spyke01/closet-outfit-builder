@@ -1,3 +1,8 @@
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'lib-monitoring' });
+
+
 /**
  * Production monitoring and error tracking utilities
  * Optimized for deferred loading after hydration
@@ -98,7 +103,7 @@ class ProductionMonitoring {
    */
   logError(error: Error, context?: Record<string, unknown>) {
     if (!this.isProduction) {
-      console.error('Error:', error, context);
+      logger.error('Error', { error, context });
       return;
     }
 
@@ -182,7 +187,7 @@ class ProductionMonitoring {
       }).observe({ entryTypes: ['layout-shift'] });
     } catch (error) {
       // Silently fail if Performance Observer is not supported
-      console.warn('Performance Observer not supported:', error);
+      logger.warn('Performance Observer not supported:', error);
     }
   }
 
@@ -256,7 +261,7 @@ class ProductionMonitoring {
     } catch (error) {
       // Silently fail in production to avoid cascading errors
       if (!this.isProduction) {
-        console.warn('Failed to send monitoring data:', error);
+        logger.warn('Failed to send monitoring data:', error);
       }
     }
   }

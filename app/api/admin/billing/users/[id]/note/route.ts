@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { hasBillingAdminRole } from '@/lib/services/billing/roles';
+import { enforceAdminRateLimit, hasRecentAdminAuth } from '@/lib/services/billing/admin-security';
+import { requireSameOriginWithOptions } from '@/lib/utils/request-security';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,6 +13,15 @@ const NoteSchema = z.object({
 });
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const sameOriginError = requireSameOriginWithOptions(request, {
+    mode: (process.env.SECURITY_CSRF_MODE as 'off' | 'report' | 'enforce' | undefined) || 'enforce',
+    protectMethods: ['POST'],
+    reasonTag: 'admin_billing_note',
+  });
+  if (sameOriginError) {
+    return sameOriginError;
+  }
+
   try {
     const { id } = await params;
     const supabase = await createClient();
@@ -23,6 +34,19 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const isAdmin = await hasBillingAdminRole(supabase, user.id);
     if (!isAdmin) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const hasRecentAuth = await hasRecentAdminAuth(supabase);
+    if (!hasRecentAuth) {
+      return NextResponse.json({ error: 'Recent authentication required' }, { status: 401 });
+    }
+
+    const rateLimit = enforceAdminRateLimit(user.id, 'admin-billing-note-write');
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded' },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfterSeconds || 60) } }
+      );
     }
 
     const body = await request.json();

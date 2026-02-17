@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createLogger } from '@/lib/utils/logger';
 
 const ALLOWED_FETCH_SITES = new Set(['same-origin', 'same-site', 'none']);
+const log = createLogger({ component: 'request-security' });
+
+export type CsrfMode = 'off' | 'report' | 'enforce';
+
+interface RequireSameOriginOptions {
+  mode?: CsrfMode;
+  protectMethods?: ReadonlyArray<string>;
+  reasonTag?: string;
+}
 
 function normalizeOrigin(value: string | null): string | null {
   if (!value) {
@@ -66,7 +76,24 @@ function getAllowedOrigins(request: NextRequest): Set<string> {
 }
 
 export function requireSameOrigin(request: NextRequest): NextResponse | null {
-  if (process.env.NODE_ENV === 'test') {
+  return requireSameOriginWithOptions(request);
+}
+
+export function requireSameOriginWithOptions(
+  request: NextRequest,
+  options: RequireSameOriginOptions = {}
+): NextResponse | null {
+  if (process.env.NODE_ENV === 'test' && !options.mode) {
+    return null;
+  }
+
+  const mode = options.mode ?? ((process.env.SECURITY_CSRF_MODE as CsrfMode | undefined) || 'enforce');
+  if (mode === 'off') {
+    return null;
+  }
+
+  const protectMethods = options.protectMethods ?? ['POST', 'PUT', 'PATCH', 'DELETE'];
+  if (!protectMethods.includes(request.method.toUpperCase())) {
     return null;
   }
 
@@ -76,8 +103,30 @@ export function requireSameOrigin(request: NextRequest): NextResponse | null {
 
   const hasValidOrigin = Boolean(origin && allowedOrigins.has(origin));
   const hasValidReferer = Boolean(refererOrigin && allowedOrigins.has(refererOrigin));
+  const requestPath = (() => {
+    if (request.nextUrl?.pathname) return request.nextUrl.pathname;
+    try {
+      return new URL((request as { url?: string }).url || '').pathname;
+    } catch {
+      return 'unknown';
+    }
+  })();
 
   if (!hasValidOrigin && !hasValidReferer) {
+    const metadata = {
+      reason: 'origin_mismatch',
+      method: request.method,
+      path: requestPath,
+      origin,
+      refererOrigin,
+      allowedOrigins: [...allowedOrigins],
+      tag: options.reasonTag || 'csrf',
+    };
+    if (mode === 'report') {
+      log.warn('CSRF would block request', metadata);
+      return null;
+    }
+
     return NextResponse.json(
       { error: 'Invalid request origin', code: 'CSRF_ORIGIN_MISMATCH' },
       { status: 403 }
@@ -86,6 +135,18 @@ export function requireSameOrigin(request: NextRequest): NextResponse | null {
 
   const fetchSite = request.headers.get('sec-fetch-site');
   if (fetchSite && !ALLOWED_FETCH_SITES.has(fetchSite)) {
+    const metadata = {
+      reason: 'fetch_site_block',
+      method: request.method,
+      path: requestPath,
+      fetchSite,
+      tag: options.reasonTag || 'csrf',
+    };
+    if (mode === 'report') {
+      log.warn('CSRF would block request', metadata);
+      return null;
+    }
+
     return NextResponse.json(
       { error: 'Cross-site requests are not allowed', code: 'CSRF_CROSS_SITE_BLOCKED' },
       { status: 403 }

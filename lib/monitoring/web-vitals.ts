@@ -9,6 +9,9 @@
  */
 
 import { onCLS, onFCP, onINP, onLCP, onTTFB, type Metric } from 'web-vitals'
+import { createLogger } from '@/lib/utils/logger'
+
+const logger = createLogger({ component: 'monitoring-web-vitals' })
 
 export interface WebVitalsMetric {
   id: string
@@ -44,7 +47,7 @@ function sendToAnalytics(metric: Metric): void {
 
   // Send to console in development
   if (process.env.NODE_ENV === 'development') {
-    console.log('[Web Vitals]', body)
+    logger.debug('Web vitals metric captured', { body })
   }
 
   // Send to analytics endpoint
@@ -60,7 +63,7 @@ function sendToAnalytics(metric: Metric): void {
       body: JSON.stringify(body),
       keepalive: true
     }).catch(error => {
-      console.error('Failed to send web vitals:', error)
+      logger.error('Failed to send web vitals:', error)
     })
   }
 }
@@ -90,7 +93,7 @@ export function initWebVitals(): void {
     // Track Interaction to Next Paint (INP) - replaces deprecated FID
     onINP(sendToAnalytics)
   } catch (error) {
-    console.error('Failed to initialize web vitals tracking:', error)
+    logger.error('Failed to initialize web vitals tracking:', error)
   }
 }
 

@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'app-outfits-create-create-outfit-client' });
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useCategories } from '@/lib/hooks/use-categories';
 import { useWardrobeItems } from '@/lib/hooks/use-wardrobe-items';
@@ -206,7 +209,7 @@ export function CreateOutfitPageClient() {
       // This avoids Next.js router state issues
       window.location.href = '/outfits';
     } catch (error) {
-      console.error('Failed to create outfit:', error);
+      logger.error('Failed to create outfit:', error);
       // Error will be shown by the error alert - don't navigate
     }
   };

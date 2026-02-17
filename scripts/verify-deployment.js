@@ -23,7 +23,7 @@ const colors = {
 };
 
 function log(message, color = 'reset') {
-  console.log(`${colors[color]}${message}${colors.reset}`);
+  console.info(`${colors[color]}${message}${colors.reset}`);
 }
 
 function makeRequest(url) {
@@ -219,7 +219,7 @@ async function runAllTests() {
 
 // Handle command line arguments
 if (process.argv.includes('--help') || process.argv.includes('-h')) {
-  console.log(`
+  console.info(`
 Deployment Verification Script
 
 Usage:

@@ -86,7 +86,7 @@ function processFiles() {
       
       if (modified) {
         fs.writeFileSync(filePath, newContent);
-        console.log(`✓ Fixed: ${path.relative(projectRoot, filePath)}`);
+        console.info(`✓ Fixed: ${path.relative(projectRoot, filePath)}`);
         totalModified++;
       }
     } catch (error) {
@@ -94,7 +94,7 @@ function processFiles() {
     }
   });
   
-  console.log(`\nTotal files fixed: ${totalModified}`);
+  console.info(`\nTotal files fixed: ${totalModified}`);
 }
 
 processFiles();

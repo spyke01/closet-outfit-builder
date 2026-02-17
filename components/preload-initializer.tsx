@@ -1,10 +1,9 @@
+'use client';
+
 /**
  * Preload initializer component
  * Initializes intelligent preloading based on feature flags and user intent
  */
-
-'use client';
-
 import { useEffect } from 'react';
 import { preloadByFeatureFlags, preloadCriticalModules } from '@/lib/utils/preload-manager';
 

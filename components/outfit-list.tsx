@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-outfit-list' });
 import React from 'react';
 import { ScoreCircle } from './score-circle';
 import { convertOutfitToSelection, canGenerateScoreBreakdown } from '@/lib/utils/outfit-conversion';
@@ -30,7 +33,7 @@ export const OutfitList: React.FC<OutfitListProps> = ({
     try {
       onOutfitSelect(outfit);
     } catch (error) {
-      console.error('Error selecting outfit:', error);
+      logger.error('Error selecting outfit:', error);
       if (onError) {
         onError(error as Error);
       }

@@ -1,3 +1,8 @@
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'lib-services-onboarding-category-manager' });
+
+
 /**
  * Onboarding category manager service
  * 
@@ -79,7 +84,7 @@ export async function ensureCategoriesExist(
 
     return categoryMap;
   } catch (error) {
-    console.error('Error ensuring categories exist:', error);
+    logger.error('Error ensuring categories exist:', error);
     throw error;
   }
 }
@@ -123,7 +128,7 @@ async function createCategory(
 
     return data;
   } catch (error) {
-    console.error(`Error creating category ${categoryName}:`, error);
+    logger.error(`Error creating category ${categoryName}:`, error);
     throw error;
   }
 }

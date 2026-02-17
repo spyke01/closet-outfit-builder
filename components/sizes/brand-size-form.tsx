@@ -1,5 +1,7 @@
 'use client'
 
+import { createLogger } from '@/lib/utils/logger';
+
 /**
  * BrandSizeForm Component
  * 
@@ -24,6 +26,8 @@ import { brandSizeInputSchema, type BrandSizeInput } from '@/lib/schemas/sizes'
 import { useCreateBrandSize, useBrandSizes } from '@/lib/hooks/use-size-categories'
 import type { BrandSize } from '@/lib/types/sizes'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+
+const logger = createLogger({ component: 'components-sizes-brand-size-form' });
 
 export interface BrandSizeFormProps {
   categoryId: string
@@ -113,7 +117,7 @@ export function BrandSizeForm({
       onSave()
     } catch (error) {
       // Error handling is done by the mutation hook
-      console.error('Failed to save brand size:', error)
+      logger.error('Failed to save brand size:', error)
     }
   }, [createBrandSize, onSave])
   

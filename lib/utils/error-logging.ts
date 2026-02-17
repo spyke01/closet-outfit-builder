@@ -1,5 +1,8 @@
 import { z } from 'zod';
 import { sanitizeCredentials } from './security';
+import { createLogger } from './logger';
+
+const logger = createLogger({ component: 'error-logging' });
 
 /**
  * Comprehensive error logging system with structured logging and sanitization
@@ -423,7 +426,7 @@ export class ErrorLogger {
     // In production, this would send to a monitoring service like Sentry, DataDog, etc.
     // For now, we'll just log that it would be sent
     if (process.env.NODE_ENV === 'development') {
-      console.log(`Would send to monitoring service:`, entry.id);
+      logger.debug('Would send to monitoring service', { entryId: entry.id });
     }
   }
 }

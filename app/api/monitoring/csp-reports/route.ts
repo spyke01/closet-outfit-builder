@@ -1,4 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'app-api-monitoring-csp-reports-route' });
+
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +20,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (process.env.NODE_ENV === "production") {
-      console.warn("[CSP-REPORT]", JSON.stringify({
+      logger.warn("[CSP-REPORT]", JSON.stringify({
         receivedAt: new Date().toISOString(),
         userAgent: request.headers.get("user-agent"),
         report: "csp-report" in payload ? payload["csp-report"] : payload,

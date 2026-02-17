@@ -318,11 +318,13 @@ serve(async (req) => {
       if (dbItemIds.length > 0) {
         let score = 0
         try {
+          const internalSecret = Deno.env.get('INTERNAL_FUNCTION_SECRET');
           const { data: scoreData, error: scoreError } = await supabaseClient.functions.invoke('score-outfit', {
             body: { 
               item_ids: dbItemIds,
               user_id: user.id 
-            }
+            },
+            headers: internalSecret ? { 'x-internal-function-secret': internalSecret } : undefined,
           })
           
           if (scoreError) {
@@ -330,7 +332,6 @@ serve(async (req) => {
             score = Math.min(dbItemIds.length * 15, 100) // Fallback scoring
           } else if (scoreData?.score !== undefined) {
             score = scoreData.score
-            console.log(`Calculated score for outfit ${outfit.id}: ${score}`)
           } else {
             console.warn(`No score returned for outfit ${outfit.id}, using fallback`)
             score = Math.min(dbItemIds.length * 15, 100) // Fallback scoring

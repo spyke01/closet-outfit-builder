@@ -1,5 +1,9 @@
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
+import { createLogger } from './logger';
+
+const logger = createLogger({ component: 'lib-utils-security' });
+
 
 /**
  * Security utilities for input sanitization and validation
@@ -374,7 +378,7 @@ export function logSecurityEvent(entry: Omit<SecurityAuditEntry, 'timestamp'>): 
   }
 
   if (process.env.NODE_ENV === 'development') {
-    console.warn('Security Event:', auditEntry);
+    logger.warn('Security Event:', auditEntry);
   }
 
   // In production, send to monitoring service

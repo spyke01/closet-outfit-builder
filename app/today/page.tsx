@@ -4,6 +4,10 @@ import { redirect } from 'next/navigation';
 import TodayPageClient from './today-page-client';
 import { TopBarWrapper } from '@/components/top-bar-wrapper';
 import type { Metadata } from 'next';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'app-today-page' });
+
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const metadata: Metadata = {
@@ -34,7 +38,7 @@ export default async function TodayPage() {
     .eq('active', true);
   
   if (wardrobeError) {
-    console.error('Failed to fetch wardrobe:', wardrobeError);
+    logger.error('Failed to fetch wardrobe:', wardrobeError);
     return (
       <div className="min-h-screen bg-background">
         <TopBarWrapper user={user} />

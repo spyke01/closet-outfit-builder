@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'app-outfits-[id]-outfit-detail-client' });
 import React, { useState, useMemo, useRef } from 'react';
 import { useOutfit, useUpdateOutfit, useDeleteOutfit, useScoreOutfit, useCheckOutfitDuplicate } from '@/lib/hooks/use-outfits';
 import { useCategories } from '@/lib/hooks/use-categories';
@@ -181,7 +184,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
       setIsEditing(false);
       setSelectedCategory('');
     } catch (error) {
-      console.error('Failed to update outfit:', error);
+      logger.error('Failed to update outfit:', error);
     }
   };
 
@@ -229,7 +232,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
       await deleteOutfitMutation.mutateAsync(outfit.id);
       router.push('/outfits');
     } catch (error) {
-      console.error('Failed to delete outfit:', error);
+      logger.error('Failed to delete outfit:', error);
     }
   };
 
@@ -242,7 +245,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
         loved: !outfit.loved,
       });
     } catch (error) {
-      console.error('Failed to update outfit:', error);
+      logger.error('Failed to update outfit:', error);
     }
   };
 

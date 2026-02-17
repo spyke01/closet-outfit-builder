@@ -153,12 +153,12 @@ export async function migrateColors(dryRun: boolean = false): Promise<MigrationR
     }
 
     if (!items || items.length === 0) {
-      console.log('No wardrobe items found.');
+      console.info('No wardrobe items found.');
       return result;
     }
 
     result.totalItems = items.length;
-    console.log(`Found ${result.totalItems} wardrobe items to process.`);
+    console.info(`Found ${result.totalItems} wardrobe items to process.`);
 
     // Process each item
     for (const item of items) {
@@ -223,11 +223,11 @@ export async function migrateColors(dryRun: boolean = false): Promise<MigrationR
         }
 
         // Log the change
-        console.log(`${dryRun ? '[DRY RUN] ' : ''}Item ${item.id}:`);
-        console.log(`  Original: "${item.name}"`);
-        console.log(`  New name: "${cleanedName}"`);
-        console.log(`  Color: "${normalizedColor}"`);
-        console.log('');
+        console.info(`${dryRun ? '[DRY RUN] ' : ''}Item ${item.id}:`);
+        console.info(`  Original: "${item.name}"`);
+        console.info(`  New name: "${cleanedName}"`);
+        console.info(`  Color: "${normalizedColor}"`);
+        console.info('');
 
       } catch (itemError) {
         const errorMessage = itemError instanceof Error ? itemError.message : String(itemError);
@@ -300,19 +300,19 @@ async function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes('--dry-run');
 
-  console.log('🎨 Color Migration Script');
-  console.log('========================');
-  console.log('');
+  console.info('🎨 Color Migration Script');
+  console.info('========================');
+  console.info('');
 
   if (dryRun) {
-    console.log('🔍 Running in DRY RUN mode - no changes will be made');
-    console.log('');
+    console.info('🔍 Running in DRY RUN mode - no changes will be made');
+    console.info('');
   }
 
   const result = await migrateColors(dryRun);
   const output = formatMigrationResult(result, dryRun);
   
-  console.log(output);
+  console.info(output);
 
   // Exit with error code if there were errors
   if (result.errors.length > 0) {

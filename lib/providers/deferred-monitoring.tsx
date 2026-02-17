@@ -1,6 +1,9 @@
 'use client';
 
 import React from 'react';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'deferred-monitoring' });
 
 /**
  * Deferred monitoring component that loads after hydration
@@ -58,9 +61,9 @@ async function initializeMonitoringLibraries() {
       initializePerformanceMonitoring(),
     ]);
 
-    console.log('✅ Monitoring libraries initialized after hydration');
+    logger.info('Monitoring libraries initialized after hydration');
   } catch (error) {
     // Silently fail to avoid breaking the app
-    console.warn('Failed to initialize monitoring libraries:', error);
+    logger.warn('Failed to initialize monitoring libraries:', error);
   }
 }

@@ -19,11 +19,11 @@ const a11yMessages = report
   .flatMap(file => file.messages || [])
   .filter(msg => typeof msg.ruleId === "string" && msg.ruleId.startsWith("jsx-a11y"));
 if (a11yMessages.length === 0) {
-  console.log("No accessibility violations found in ESLint output.");
+  console.info("No accessibility violations found in ESLint output.");
   process.exit(0);
 }
 for (const msg of a11yMessages.slice(0, 20)) {
-  console.log(`${msg.ruleId}: ${msg.message}`);
+  console.info(`${msg.ruleId}: ${msg.message}`);
 }
 ' "$REPORT_FILE"
 

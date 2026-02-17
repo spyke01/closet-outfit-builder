@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-items-grid' });
 import React, { useState, useMemo, useCallback, startTransition, useDeferredValue, useEffect } from 'react';
 import { Search, Tag, Plus } from 'lucide-react';
 import { useContentVisibility } from '@/lib/utils/content-visibility';
@@ -83,7 +86,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
     
     const validation = safeValidate(WardrobeItemSchema, selectedItem);
     if (!validation.success) {
-      console.warn('Invalid selected item:', validation.error);
+      logger.warn('Invalid selected item:', validation.error);
       return null;
     }
     
@@ -192,7 +195,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
         draft.showAddForm = false;
       });
     } catch (error) {
-      console.error('Error adding item:', error);
+      logger.error('Error adding item:', error);
       updateState(draft => {
         draft.uploadError = error instanceof Error ? error.message : 'Failed to add item';
       });
@@ -474,7 +477,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({
         image_url: formData.image_url || undefined,
       });
     } catch (error) {
-      console.error('Error submitting form:', error);
+      logger.error('Error submitting form:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -527,7 +530,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({
           </label>
           <ImageUpload
             onUpload={handleImageUpload}
-            onError={(error) => console.error('Upload error:', error)}
+            onError={(error) => logger.error('Upload error:', error)}
           />
           {uploadError && (
             <p className="text-red-600 dark:text-red-400 text-sm mt-1" role="alert" aria-live="polite">{uploadError}</p>

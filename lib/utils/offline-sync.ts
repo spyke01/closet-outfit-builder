@@ -1,3 +1,8 @@
+import { createLogger } from './logger';
+
+const logger = createLogger({ component: 'lib-utils-offline-sync' });
+
+
 /**
  * Offline Sync Manager for My Sizes Feature
  * 
@@ -42,7 +47,7 @@ export function getOfflineQueue(): QueuedMutation[] {
     const stored = localStorage.getItem(QUEUE_STORAGE_KEY);
     return stored ? JSON.parse(stored) : [];
   } catch (error) {
-    console.error('Failed to read offline queue:', error);
+    logger.error('Failed to read offline queue:', error);
     return [];
   }
 }
@@ -67,7 +72,7 @@ export function queueMutation(mutation: Omit<QueuedMutation, 'id' | 'timestamp'>
     // Update sync status
     updateSyncStatus({ hasQueuedMutations: true, lastQueuedAt: Date.now() });
   } catch (error) {
-    console.error('Failed to queue mutation:', error);
+    logger.error('Failed to queue mutation:', error);
   }
 }
 
@@ -87,7 +92,7 @@ export function removeMutationFromQueue(mutationId: string): void {
       updateSyncStatus({ hasQueuedMutations: false });
     }
   } catch (error) {
-    console.error('Failed to remove mutation from queue:', error);
+    logger.error('Failed to remove mutation from queue:', error);
   }
 }
 
@@ -101,7 +106,7 @@ export function clearOfflineQueue(): void {
     localStorage.removeItem(QUEUE_STORAGE_KEY);
     updateSyncStatus({ hasQueuedMutations: false });
   } catch (error) {
-    console.error('Failed to clear offline queue:', error);
+    logger.error('Failed to clear offline queue:', error);
   }
 }
 
@@ -125,7 +130,7 @@ export function getSyncStatus(): SyncStatus {
     const stored = localStorage.getItem(SYNC_STATUS_KEY);
     return stored ? JSON.parse(stored) : { hasQueuedMutations: false, isSyncing: false };
   } catch (error) {
-    console.error('Failed to read sync status:', error);
+    logger.error('Failed to read sync status:', error);
     return { hasQueuedMutations: false, isSyncing: false };
   }
 }
@@ -144,7 +149,7 @@ export function updateSyncStatus(updates: Partial<SyncStatus>): void {
     // Dispatch custom event for UI updates
     window.dispatchEvent(new CustomEvent('sync-status-changed', { detail: updated }));
   } catch (error) {
-    console.error('Failed to update sync status:', error);
+    logger.error('Failed to update sync status:', error);
   }
 }
 
@@ -216,7 +221,7 @@ export async function syncQueuedMutations(
         // Mark as processed
         processed.push(mutation.id);
       } catch (error) {
-        console.error(`Failed to sync mutation ${mutation.id}:`, error);
+        logger.error(`Failed to sync mutation ${mutation.id}:`, error);
         // Continue with other mutations
       }
     }

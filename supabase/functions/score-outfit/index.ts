@@ -186,9 +186,17 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     )
 
-    // Check if we have an Authorization header (for user auth) or use service role
+    // Check if we have an Authorization header (for user auth) or use trusted internal auth
     const authHeader = req.headers.get('Authorization')
+    const internalAuthHeader = req.headers.get('x-internal-function-secret');
+    const internalSecret = Deno.env.get('INTERNAL_FUNCTION_SECRET') || '';
+    const internalMode = (Deno.env.get('SECURITY_INTERNAL_FUNCTION_AUTH_MODE') || 'enforce').toLowerCase();
     let userId: string | null = null
+    const isTrustedInternalCall = Boolean(
+      internalSecret &&
+      internalAuthHeader &&
+      internalAuthHeader === internalSecret
+    );
     
     if (authHeader) {
       const token = authHeader.replace('Bearer ', '')
@@ -214,9 +222,23 @@ serve(async (req) => {
       )
     }
 
-    // Use provided user_id (for service role calls) or authenticated user_id
-    const targetUserId = user_id || userId
-    
+    let targetUserId = userId;
+    if (!targetUserId && isTrustedInternalCall && typeof user_id === 'string' && user_id.length > 0) {
+      targetUserId = user_id;
+    }
+
+    if (!targetUserId) {
+      if (internalMode === 'report') {
+        console.warn('[score-outfit] Missing auth on request that would be rejected in enforce mode');
+      } else {
+        return createCorsResponse(
+          JSON.stringify({ error: 'Authorization header is required' }),
+          { status: 401, headers: { 'Content-Type': 'application/json' } },
+          origin
+        )
+      }
+    }
+
     if (!targetUserId) {
       return createCorsResponse(
         JSON.stringify({ error: 'User ID is required' }),

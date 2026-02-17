@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'lib-hooks-use-conditional-image-upload' });
 import { useState, useEffect, useCallback } from 'react';
 import { conditionalImport, isFeatureEnabled } from '@/lib/utils/feature-flags';
 import { resizeImageFileForUpload } from '@/lib/utils/image-resize';
@@ -64,7 +67,7 @@ export function useConditionalImageUpload(isAuthenticated: boolean): UseConditio
         }
       })
       .catch((error) => {
-        console.warn('Failed to load image upload module:', error);
+        logger.warn('Failed to load image upload module:', error);
         setUploadState(prev => ({
           ...prev,
           error: 'Image processing functionality is temporarily unavailable'
@@ -92,7 +95,7 @@ export function useConditionalImageUpload(isAuthenticated: boolean): UseConditio
         quality: options.quality ?? 0.9,
       });
     } catch (resizeError) {
-      console.warn('Image resize failed; using original file', resizeError);
+      logger.warn('Image resize failed; using original file', resizeError);
     }
 
     const formData = new FormData();
@@ -157,7 +160,7 @@ export function useConditionalImageUpload(isAuthenticated: boolean): UseConditio
         await uploadImageDirect(file, options);
       }
     } catch (error) {
-      console.error('Image upload failed:', error);
+      logger.error('Image upload failed:', error);
       setUploadState(prev => ({
         ...prev,
         isUploading: false,

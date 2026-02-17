@@ -251,7 +251,7 @@ Consider the following for assets over 100KB:
 }
 
 function main() {
-  console.log('🔍 Analyzing bundle size...\n');
+  console.info('🔍 Analyzing bundle size...\n');
 
   // Analyze current bundle
   const current = analyzeBundleStats(CURRENT_FILE);
@@ -260,34 +260,34 @@ function main() {
     process.exit(1);
   }
 
-  console.log(`Current bundle size: ${formatBytes(current.totalAssetSize)}`);
-  console.log(`  - JavaScript: ${formatBytes(current.totalJsSize)}`);
-  console.log(`  - CSS: ${formatBytes(current.totalCssSize)}`);
-  console.log(`  - Assets: ${current.assetCount}\n`);
+  console.info(`Current bundle size: ${formatBytes(current.totalAssetSize)}`);
+  console.info(`  - JavaScript: ${formatBytes(current.totalJsSize)}`);
+  console.info(`  - CSS: ${formatBytes(current.totalCssSize)}`);
+  console.info(`  - Assets: ${current.assetCount}\n`);
 
   // Check for baseline
   let baseline = null;
   let comparison = null;
 
   if (fs.existsSync(BASELINE_FILE)) {
-    console.log('📊 Comparing with baseline...\n');
+    console.info('📊 Comparing with baseline...\n');
     baseline = analyzeBundleStats(BASELINE_FILE);
     
     if (baseline) {
       comparison = compareWithBaseline(current, baseline);
       
-      console.log(`Baseline bundle size: ${formatBytes(baseline.totalAssetSize)}`);
-      console.log(`  - JavaScript: ${formatBytes(baseline.totalJsSize)}`);
-      console.log(`  - CSS: ${formatBytes(baseline.totalCssSize)}\n`);
+      console.info(`Baseline bundle size: ${formatBytes(baseline.totalAssetSize)}`);
+      console.info(`  - JavaScript: ${formatBytes(baseline.totalJsSize)}`);
+      console.info(`  - CSS: ${formatBytes(baseline.totalCssSize)}\n`);
       
-      console.log(`📉 Size change: ${comparison.totalReduction > 0 ? '-' : '+'}${formatBytes(Math.abs(comparison.totalReduction))} (${comparison.totalReductionPercent.toFixed(2)}%)`);
-      console.log(`   Target: 20% reduction`);
-      console.log(`   Status: ${comparison.meetsTarget ? '✅ PASSED' : '❌ NOT MET'}\n`);
+      console.info(`📉 Size change: ${comparison.totalReduction > 0 ? '-' : '+'}${formatBytes(Math.abs(comparison.totalReduction))} (${comparison.totalReductionPercent.toFixed(2)}%)`);
+      console.info(`   Target: 20% reduction`);
+      console.info(`   Status: ${comparison.meetsTarget ? '✅ PASSED' : '❌ NOT MET'}\n`);
     }
   } else {
-    console.log('📝 No baseline found. Saving current stats as baseline...\n');
+    console.info('📝 No baseline found. Saving current stats as baseline...\n');
     fs.copyFileSync(CURRENT_FILE, BASELINE_FILE);
-    console.log(`✅ Baseline saved to ${BASELINE_FILE}\n`);
+    console.info(`✅ Baseline saved to ${BASELINE_FILE}\n`);
   }
 
   // Generate report
@@ -300,17 +300,17 @@ function main() {
   }
   
   fs.writeFileSync(REPORT_FILE, report);
-  console.log(`📄 Report generated: ${REPORT_FILE}\n`);
+  console.info(`📄 Report generated: ${REPORT_FILE}\n`);
 
   // Exit with appropriate code
   if (baseline && !comparison.meetsTarget) {
-    console.log('❌ Bundle size reduction target not met');
+    console.info('❌ Bundle size reduction target not met');
     process.exit(1);
   } else if (baseline && comparison.meetsTarget) {
-    console.log('✅ Bundle size reduction target achieved!');
+    console.info('✅ Bundle size reduction target achieved!');
     process.exit(0);
   } else {
-    console.log('✅ Baseline established');
+    console.info('✅ Baseline established');
     process.exit(0);
   }
 }

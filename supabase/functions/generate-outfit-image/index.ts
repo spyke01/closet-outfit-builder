@@ -5,6 +5,17 @@ import { handleCorsPreflightRequest, createCorsResponse } from '../_shared/cors.
 const STORAGE_BUCKET = 'outfit-generated-images';
 const STORAGE_MAX_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
 
+function debugLog(message: string, metadata?: unknown): void {
+  if (Deno.env.get('SECURITY_DEBUG') !== 'true') {
+    return;
+  }
+  if (metadata === undefined) {
+    console.warn(`[generate-outfit-image] ${message}`);
+    return;
+  }
+  console.warn(`[generate-outfit-image] ${message}`, metadata);
+}
+
 interface GenerateRequest {
   outfit_id: string;
   image_record_id: string;
@@ -91,8 +102,7 @@ async function callReplicateImageGeneration(prompt: string): Promise<{ imageUrl:
 
   const prediction: ReplicatePrediction = await response.json();
   const durationMs = Date.now() - startTime;
-
-  console.log(`Replicate generation time: ${durationMs}ms, status: ${prediction.status}`);
+  debugLog('Replicate generation completed', { durationMs, status: prediction.status });
 
   if (prediction.status === 'succeeded' && prediction.output) {
     const outputUrl = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;

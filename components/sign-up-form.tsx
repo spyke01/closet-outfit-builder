@@ -17,6 +17,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AuthHeader } from "./auth-header";
+import { createLogger } from "@/lib/utils/logger";
+
+const logger = createLogger({ component: "sign-up-form" });
 
 export function SignUpForm({
   className,
@@ -71,7 +74,7 @@ export function SignUpForm({
     logUrlConfig();
     
     const redirectUrl = getAuthCallbackUrl('/today');
-    console.log('OAuth redirect URL:', redirectUrl);
+    logger.debug('OAuth redirect URL prepared', { redirectUrl });
 
     try {
       const supabase = createClient();
@@ -89,14 +92,14 @@ export function SignUpForm({
         },
       });
       
-      console.log('OAuth response:', { data, error });
+      logger.debug('OAuth response received', { data, error });
       
       // Early return on error
       if (error) throw error;
       
       // Don't set loading to false here - let the redirect happen
     } catch (error: unknown) {
-      console.error('OAuth error:', error);
+      logger.error('OAuth error:', error);
       setError(error instanceof Error ? error.message : "An error occurred");
       setIsLoading(false);
     }

@@ -317,50 +317,50 @@ function checkSizeLimits(analysis, limits) {
 }
 
 function generateCIReport(analysis, trends, trendAnalysis, violations) {
-  console.log('\n📊 Bundle Analysis Report\n');
-  console.log('═'.repeat(60));
+  console.info('\n📊 Bundle Analysis Report\n');
+  console.info('═'.repeat(60));
   
-  console.log('\n📦 Current Bundle Size:');
-  console.log(`  Total Assets: ${formatBytes(analysis.totalAssetSize)}`);
-  console.log(`  JavaScript:   ${formatBytes(analysis.totalJsSize)}`);
-  console.log(`  CSS:          ${formatBytes(analysis.totalCssSize)}`);
-  console.log(`  Asset Count:  ${analysis.assetCount}`);
-  console.log(`  Build Time:   ${analysis.buildTime}ms`);
+  console.info('\n📦 Current Bundle Size:');
+  console.info(`  Total Assets: ${formatBytes(analysis.totalAssetSize)}`);
+  console.info(`  JavaScript:   ${formatBytes(analysis.totalJsSize)}`);
+  console.info(`  CSS:          ${formatBytes(analysis.totalCssSize)}`);
+  console.info(`  Asset Count:  ${analysis.assetCount}`);
+  console.info(`  Build Time:   ${analysis.buildTime}ms`);
 
   if (trendAnalysis) {
-    console.log('\n📈 Trend Analysis:');
-    console.log(`  vs Previous:  ${trendAnalysis.totalDelta > 0 ? '+' : ''}${formatBytes(trendAnalysis.totalDelta)} (${trendAnalysis.totalPercent.toFixed(2)}%)`);
-    console.log(`  JS Change:    ${trendAnalysis.jsDelta > 0 ? '+' : ''}${formatBytes(trendAnalysis.jsDelta)} (${trendAnalysis.jsPercent.toFixed(2)}%)`);
-    console.log(`  CSS Change:   ${trendAnalysis.cssDelta > 0 ? '+' : ''}${formatBytes(trendAnalysis.cssDelta)} (${trendAnalysis.cssPercent.toFixed(2)}%)`);
-    console.log(`  7-Build Avg:  ${formatBytes(trendAnalysis.avgSize)}`);
-    console.log(`  Trend:        ${trendAnalysis.isIncreasing ? '📈 Increasing' : '📉 Decreasing'}`);
+    console.info('\n📈 Trend Analysis:');
+    console.info(`  vs Previous:  ${trendAnalysis.totalDelta > 0 ? '+' : ''}${formatBytes(trendAnalysis.totalDelta)} (${trendAnalysis.totalPercent.toFixed(2)}%)`);
+    console.info(`  JS Change:    ${trendAnalysis.jsDelta > 0 ? '+' : ''}${formatBytes(trendAnalysis.jsDelta)} (${trendAnalysis.jsPercent.toFixed(2)}%)`);
+    console.info(`  CSS Change:   ${trendAnalysis.cssDelta > 0 ? '+' : ''}${formatBytes(trendAnalysis.cssDelta)} (${trendAnalysis.cssPercent.toFixed(2)}%)`);
+    console.info(`  7-Build Avg:  ${formatBytes(trendAnalysis.avgSize)}`);
+    console.info(`  Trend:        ${trendAnalysis.isIncreasing ? '📈 Increasing' : '📉 Decreasing'}`);
   }
 
   if (violations.length > 0) {
-    console.log('\n⚠️  Size Limit Violations:');
+    console.info('\n⚠️  Size Limit Violations:');
     violations.forEach(v => {
-      console.log(`  ${v.type}: ${formatBytes(v.current)} (limit: ${formatBytes(v.limit)}, excess: ${formatBytes(v.excess)})`);
+      console.info(`  ${v.type}: ${formatBytes(v.current)} (limit: ${formatBytes(v.limit)}, excess: ${formatBytes(v.excess)})`);
     });
   } else {
-    console.log('\n✅ All size limits passed');
+    console.info('\n✅ All size limits passed');
   }
 
   if (analysis.largeAssets.length > 0) {
-    console.log('\n⚠️  Large Assets (>100KB):');
+    console.info('\n⚠️  Large Assets (>100KB):');
     analysis.largeAssets.slice(0, 5).forEach(asset => {
-      console.log(`  ${asset.name}: ${formatBytes(asset.size)}`);
+      console.info(`  ${asset.name}: ${formatBytes(asset.size)}`);
     });
     if (analysis.largeAssets.length > 5) {
-      console.log(`  ... and ${analysis.largeAssets.length - 5} more`);
+      console.info(`  ... and ${analysis.largeAssets.length - 5} more`);
     }
   }
 
-  console.log('\n' + '═'.repeat(60));
+  console.info('\n' + '═'.repeat(60));
 }
 
 function main() {
   try {
-    console.log('🔍 Running bundle analysis for CI/CD...\n');
+    console.info('🔍 Running bundle analysis for CI/CD...\n');
 
     // Load size limits
     const limits = loadSizeLimits();
@@ -376,11 +376,11 @@ function main() {
         analysis = analyzeBundleFromBuildChunks();
       }
     }
-    console.log(`📁 Bundle data source: ${analysis.source || 'webpack-stats'}`);
+    console.info(`📁 Bundle data source: ${analysis.source || 'webpack-stats'}`);
 
     // Save to trends
     const trends = saveTrend(analysis);
-    console.log(`✅ Saved trend data (${trends.length} builds tracked)`);
+    console.info(`✅ Saved trend data (${trends.length} builds tracked)`);
 
     // Analyze trends
     const trendAnalysis = analyzeTrends(trends);
@@ -393,19 +393,19 @@ function main() {
 
     // Exit with appropriate code
     if (violations.length > 0) {
-      console.log('\n❌ Bundle size check failed: Size limit violations detected');
-      console.log('   Review the violations above and optimize bundle size\n');
+      console.info('\n❌ Bundle size check failed: Size limit violations detected');
+      console.info('   Review the violations above and optimize bundle size\n');
       process.exit(1);
     }
 
     // Warn about significant increases
     if (trendAnalysis && trendAnalysis.totalPercent > 5) {
-      console.log('\n⚠️  Warning: Bundle size increased by more than 5%');
-      console.log('   Consider reviewing recent changes for optimization opportunities\n');
+      console.info('\n⚠️  Warning: Bundle size increased by more than 5%');
+      console.info('   Consider reviewing recent changes for optimization opportunities\n');
       // Don't fail, just warn
     }
 
-    console.log('\n✅ Bundle size check passed\n');
+    console.info('\n✅ Bundle size check passed\n');
     process.exit(0);
 
   } catch (error) {

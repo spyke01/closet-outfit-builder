@@ -115,8 +115,7 @@ describe('Feature Flags', () => {
 
       expect(flags).toBeDefined();
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Failed to read feature flags from localStorage:',
-        expect.any(Error)
+        expect.stringContaining('Failed to read feature flags from localStorage:')
       );
 
       consoleSpy.mockRestore();
@@ -189,8 +188,7 @@ describe('Feature Flags', () => {
 
       expect(result).toBe(null);
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Failed to load module for feature devTools:',
-        expect.any(Error)
+        expect.stringContaining('Failed to load module for feature devTools:')
       );
 
       consoleSpy.mockRestore();
@@ -206,6 +204,7 @@ describe('Feature Flags', () => {
         monitoring: false,
         analytics: false,
         devTools: true,
+        sizeManagement: true,
       }));
 
       const newFlags = { weather: false, monitoring: true };
@@ -235,8 +234,7 @@ describe('Feature Flags', () => {
       setFeatureFlags({ weather: false });
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Failed to save feature flags to localStorage:',
-        expect.any(Error)
+        expect.stringContaining('Failed to save feature flags to localStorage:')
       );
 
       consoleSpy.mockRestore();
@@ -269,8 +267,7 @@ describe('Feature Flags', () => {
       resetFeatureFlags();
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Failed to reset feature flags:',
-        expect.any(Error)
+        expect.stringContaining('Failed to reset feature flags:')
       );
 
       consoleSpy.mockRestore();

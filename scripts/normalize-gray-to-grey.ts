@@ -28,7 +28,7 @@ async function normalizeGrayToGrey() {
     }
   });
 
-  console.log('🎨 Normalizing "gray" to "grey"...\n');
+  console.info('🎨 Normalizing "gray" to "grey"...\n');
 
   // Find all items with "gray" color
   const { data: items, error: fetchError } = await supabase
@@ -42,15 +42,15 @@ async function normalizeGrayToGrey() {
   }
 
   if (!items || items.length === 0) {
-    console.log('✅ No items with "gray" color found. Nothing to update.');
+    console.info('✅ No items with "gray" color found. Nothing to update.');
     return;
   }
 
-  console.log(`Found ${items.length} item(s) with "gray" color:`);
+  console.info(`Found ${items.length} item(s) with "gray" color:`);
   items.forEach(item => {
-    console.log(`  - ${item.name}`);
+    console.info(`  - ${item.name}`);
   });
-  console.log('');
+  console.info('');
 
   // Update all items to use "grey"
   const { error: updateError } = await supabase
@@ -63,7 +63,7 @@ async function normalizeGrayToGrey() {
     process.exit(1);
   }
 
-  console.log(`✅ Successfully updated ${items.length} item(s) from "gray" to "grey"`);
+  console.info(`✅ Successfully updated ${items.length} item(s) from "gray" to "grey"`);
 }
 
 normalizeGrayToGrey().catch((error) => {

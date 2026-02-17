@@ -12,6 +12,10 @@ import {
   CreateWardrobeItemForm,
   UpdateWardrobeItemForm
 } from '../schemas';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'lib-hooks-use-wardrobe-mutations' });
+
 
 /**
  * Query keys for wardrobe data
@@ -70,7 +74,7 @@ export function useCreateWardrobeItem(userId: string) {
       );
     },
     onError: (error) => {
-      console.error('Failed to create wardrobe item:', error);
+      logger.error('Failed to create wardrobe item:', error);
     },
   });
 }

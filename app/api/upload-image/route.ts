@@ -3,6 +3,10 @@ import { createClient } from '@/lib/supabase/server';
 import { ImageProcessingRequestSchema, ImageProcessingResponseSchema, FileValidationSchema } from '@/lib/schemas';
 import { z } from 'zod';
 import { requireSameOrigin } from '@/lib/utils/request-security';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'app-api-upload-image-route' });
+
 
 function getAllowedOrigins(): string[] {
   const platformOrigins = [
@@ -221,7 +225,7 @@ export async function POST(request: NextRequest) {
 
     if (edgeFunctionError) {
       const details = await extractFunctionErrorDetails(edgeFunctionError, edgeFunctionResponse);
-      console.error('Edge Function error:', edgeFunctionError, details);
+      logger.error('Edge Function error', { edgeFunctionError, details });
       return NextResponse.json(
         {
           success: false,
@@ -243,7 +247,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Image upload API error:', error);
+    logger.error('Image upload API error:', error);
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(

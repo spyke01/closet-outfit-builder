@@ -142,7 +142,7 @@ function validateFunctionImplementation(functionName, indexFilePath) {
 }
 
 function runValidation() {
-  console.log('🧪 Supabase Edge Functions Test Validation\n');
+  console.info('🧪 Supabase Edge Functions Test Validation\n');
   
   let totalTests = 0;
   let totalIssues = 0;
@@ -153,7 +153,7 @@ function runValidation() {
     const indexFile = path.join(functionDir, 'index.ts');
     const testFile = path.join(functionDir, `${functionName}.test.ts`);
     
-    console.log(`📁 Validating ${functionName}...`);
+    console.info(`📁 Validating ${functionName}...`);
     
     // Validate implementation
     const implResult = validateFunctionImplementation(functionName, indexFile);
@@ -174,44 +174,44 @@ function runValidation() {
     
     // Print results for this function
     if (implResult.exists) {
-      console.log(`  ✅ Implementation: ${indexFile}`);
+      console.info(`  ✅ Implementation: ${indexFile}`);
     } else {
-      console.log(`  ❌ Implementation: Missing`);
+      console.info(`  ❌ Implementation: Missing`);
     }
     
     if (testResult.exists) {
-      console.log(`  ✅ Tests: ${testResult.testCount} test cases`);
+      console.info(`  ✅ Tests: ${testResult.testCount} test cases`);
     } else {
-      console.log(`  ❌ Tests: Missing`);
+      console.info(`  ❌ Tests: Missing`);
     }
     
     if (functionResult.totalIssues > 0) {
-      console.log(`  ⚠️  Issues: ${functionResult.totalIssues}`);
+      console.info(`  ⚠️  Issues: ${functionResult.totalIssues}`);
       [...implResult.issues, ...testResult.issues].forEach(issue => {
-        console.log(`     - ${issue}`);
+        console.info(`     - ${issue}`);
       });
     }
     
-    console.log('');
+    console.info('');
   });
   
   // Summary
-  console.log('📊 Summary:');
-  console.log(`  Functions: ${EXPECTED_FUNCTIONS.length}`);
-  console.log(`  Total Tests: ${totalTests}`);
-  console.log(`  Total Issues: ${totalIssues}`);
+  console.info('📊 Summary:');
+  console.info(`  Functions: ${EXPECTED_FUNCTIONS.length}`);
+  console.info(`  Total Tests: ${totalTests}`);
+  console.info(`  Total Issues: ${totalIssues}`);
   
   if (totalIssues === 0) {
-    console.log('  🎉 All validations passed!');
+    console.info('  🎉 All validations passed!');
   } else {
-    console.log(`  ⚠️  ${totalIssues} issues found`);
+    console.info(`  ⚠️  ${totalIssues} issues found`);
   }
   
   // Detailed breakdown
-  console.log('\n📋 Detailed Results:');
+  console.info('\n📋 Detailed Results:');
   results.forEach(result => {
     const status = result.totalIssues === 0 ? '✅' : '⚠️';
-    console.log(`  ${status} ${result.name}: ${result.tests.testCount} tests, ${result.totalIssues} issues`);
+    console.info(`  ${status} ${result.name}: ${result.tests.testCount} tests, ${result.totalIssues} issues`);
   });
   
   return totalIssues === 0;

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import {
-  incrementUsageCounter,
-  isUsageExceeded,
+  getUsageLimitForMetric,
   resolveUserEntitlements,
   getAssistantBurstHourKey,
+  reserveUsageCounterAtomic,
 } from '@/lib/services/billing/entitlements';
 import {
   buildSebastianSystemPrompt,
@@ -16,43 +16,29 @@ import { buildAssistantContextPack, summarizeContextForPrompt } from '@/lib/serv
 import { isAllowedImageUrl, moderateInput, moderateOutput } from '@/lib/services/assistant/moderation';
 import { createAssistantPrediction, generateAssistantReply, resolveReplicateModelConfig } from '@/lib/services/assistant/providers/replicate';
 import { requireSameOrigin } from '@/lib/utils/request-security';
+import { createLogger } from '@/lib/utils/logger';
 
 export const dynamic = 'force-dynamic';
+const log = createLogger({ component: 'api-assistant-chat' });
+const inflightRequests = new Map<string, number>();
+const MAX_INFLIGHT_PER_USER = Number(process.env.ASSISTANT_MAX_INFLIGHT_PER_USER || 3);
 
-async function getBurstCount(supabase: Awaited<ReturnType<typeof createClient>>, userId: string, hourKey: string) {
-  const { data } = await supabase
-    .from('usage_counters')
-    .select('id, count')
-    .eq('user_id', userId)
-    .eq('metric_key', 'ai_stylist_requests_hourly')
-    .eq('period_key', hourKey)
-    .maybeSingle();
-
-  return data || null;
+function tryAcquireInflight(userId: string): boolean {
+  const current = inflightRequests.get(userId) || 0;
+  if (current >= MAX_INFLIGHT_PER_USER) {
+    return false;
+  }
+  inflightRequests.set(userId, current + 1);
+  return true;
 }
 
-async function incrementBurstCount(supabase: Awaited<ReturnType<typeof createClient>>, userId: string, hourKey: string) {
-  const existing = await getBurstCount(supabase, userId, hourKey);
-  const now = new Date();
-  const hourStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), 0, 0));
-  const hourEnd = new Date(hourStart);
-  hourEnd.setUTCHours(hourEnd.getUTCHours() + 1);
-
-  if (!existing) {
-    await supabase.from('usage_counters').insert({
-      user_id: userId,
-      metric_key: 'ai_stylist_requests_hourly',
-      period_key: hourKey,
-      period_start_at: hourStart.toISOString(),
-      period_end_at: hourEnd.toISOString(),
-      count: 1,
-    });
-    return 1;
+function releaseInflight(userId: string): void {
+  const current = inflightRequests.get(userId) || 0;
+  if (current <= 1) {
+    inflightRequests.delete(userId);
+    return;
   }
-
-  const next = existing.count + 1;
-  await supabase.from('usage_counters').update({ count: next }).eq('id', existing.id);
-  return next;
+  inflightRequests.set(userId, current - 1);
 }
 
 async function ensureThread(
@@ -142,40 +128,24 @@ export async function POST(request: NextRequest) {
 
     const metricKey = parsed.data.imageUrl ? 'ai_stylist_vision_messages' : 'ai_stylist_messages';
     const modelConfig = resolveReplicateModelConfig();
-    if (isUsageExceeded(entitlements, metricKey)) {
-      return NextResponse.json({
-        error: 'You reached your monthly Sebastian usage quota.',
-        code: 'USAGE_LIMIT_EXCEEDED',
-      }, { status: 429 });
-    }
-
     const hourKey = getAssistantBurstHourKey(new Date());
-    const burstCounter = await getBurstCount(supabase, user.id, hourKey);
-    const burstLimit = entitlements.plan.limits.ai_burst_per_hour;
-    if ((burstCounter?.count || 0) >= burstLimit) {
-      return NextResponse.json({
-        error: 'Hourly burst limit reached. Please try again later.',
-        code: 'BURST_LIMIT_EXCEEDED',
-      }, { status: 429 });
-    }
-
     const inputSafety = moderateInput(parsed.data.message, parsed.data.imageUrl);
-    const { id: ensuredThreadId, history } = await ensureThread(supabase, user.id, parsed.data.message, parsed.data.threadId);
-
-    await supabase.from('assistant_messages').insert({
-      thread_id: ensuredThreadId,
-      user_id: user.id,
-      role: 'user',
-      content: parsed.data.message,
-      image_url: parsed.data.imageUrl || null,
-      metadata_json: { safety_flags: inputSafety.flags },
-    });
 
     if (inputSafety.blocked) {
+      const { id: blockedThreadId } = await ensureThread(supabase, user.id, parsed.data.message, parsed.data.threadId);
+      await supabase.from('assistant_messages').insert({
+        thread_id: blockedThreadId,
+        user_id: user.id,
+        role: 'user',
+        content: parsed.data.message,
+        image_url: parsed.data.imageUrl || null,
+        metadata_json: { safety_flags: inputSafety.flags },
+      });
+
       const safeReply = inputSafety.safeReply || SEBASTIAN_REFUSAL_TEMPLATES.safetyBlocked;
 
       await supabase.from('assistant_messages').insert({
-        thread_id: ensuredThreadId,
+        thread_id: blockedThreadId,
         user_id: user.id,
         role: 'assistant',
         content: safeReply,
@@ -184,7 +154,7 @@ export async function POST(request: NextRequest) {
 
       await supabase.from('assistant_inference_events').insert({
         user_id: user.id,
-        thread_id: ensuredThreadId,
+        thread_id: blockedThreadId,
         provider: 'replicate',
         model: modelConfig.defaultModel,
         status: 'blocked',
@@ -194,99 +164,157 @@ export async function POST(request: NextRequest) {
       });
 
       return NextResponse.json({
-        threadId: ensuredThreadId,
+        threadId: blockedThreadId,
         assistantMessage: safeReply,
       });
     }
 
-    const { pack } = await buildAssistantContextPack(supabase, user.id, parsed.data);
-    const contextSummary = summarizeContextForPrompt(pack);
-    const systemPrompt = buildSebastianSystemPrompt();
-    const promptValidation = validateSebastianSystemPrompt(systemPrompt);
-    if (!promptValidation.valid) {
-      throw new Error(`CONFIG_ERROR: Missing prompt guardrails: ${promptValidation.missingClauses.join(' | ')}`);
+    const monthlyLimit = getUsageLimitForMetric(entitlements, metricKey);
+    const monthlyReservation = await reserveUsageCounterAtomic(supabase, {
+      userId: user.id,
+      metricKey,
+      period: entitlements.period,
+      limit: monthlyLimit,
+      incrementBy: 1,
+    });
+
+    if (!monthlyReservation.allowed) {
+      return NextResponse.json({
+        error: 'You reached your monthly Sebastian usage quota.',
+        code: 'USAGE_LIMIT_EXCEEDED',
+      }, { status: 429 });
     }
 
-    if (parsed.data.imageUrl) {
-      const prediction = await createAssistantPrediction({
+    const now = new Date();
+    const hourStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), 0, 0));
+    const hourEnd = new Date(hourStart);
+    hourEnd.setUTCHours(hourEnd.getUTCHours() + 1);
+    const burstReservation = await reserveUsageCounterAtomic(supabase, {
+      userId: user.id,
+      metricKey: 'ai_stylist_requests_hourly',
+      period: {
+        key: hourKey,
+        start: hourStart,
+        end: hourEnd,
+      },
+      limit: entitlements.plan.limits.ai_burst_per_hour,
+      incrementBy: 1,
+    });
+
+    if (!burstReservation.allowed) {
+      return NextResponse.json({
+        error: 'Hourly burst limit reached. Please try again later.',
+        code: 'BURST_LIMIT_EXCEEDED',
+      }, { status: 429 });
+    }
+
+    const { id: ensuredThreadId, history } = await ensureThread(supabase, user.id, parsed.data.message, parsed.data.threadId);
+    await supabase.from('assistant_messages').insert({
+      thread_id: ensuredThreadId,
+      user_id: user.id,
+      role: 'user',
+      content: parsed.data.message,
+      image_url: parsed.data.imageUrl || null,
+      metadata_json: { safety_flags: inputSafety.flags },
+    });
+
+    if (!tryAcquireInflight(user.id)) {
+      return NextResponse.json(
+        { error: 'Sebastian is handling high demand right now. Please retry in a moment.', code: 'UPSTREAM_RATE_LIMIT' },
+        { status: 503, headers: { 'Retry-After': '10' } }
+      );
+    }
+
+    try {
+      const { pack } = await buildAssistantContextPack(supabase, user.id, parsed.data);
+      const contextSummary = summarizeContextForPrompt(pack);
+      const systemPrompt = buildSebastianSystemPrompt();
+      const promptValidation = validateSebastianSystemPrompt(systemPrompt);
+      if (!promptValidation.valid) {
+        throw new Error(`CONFIG_ERROR: Missing prompt guardrails: ${promptValidation.missingClauses.join(' | ')}`);
+      }
+
+      if (parsed.data.imageUrl) {
+        const prediction = await createAssistantPrediction({
+          model: modelConfig.defaultModel,
+          systemPrompt,
+          userPrompt: `${parsed.data.message}\n\nContext:\n${contextSummary}`,
+          imageUrl: parsed.data.imageUrl,
+          context: pack,
+          history,
+        });
+
+        const pendingMessage = "I'm reviewing your outfit photo now. This can take up to a minute.";
+        await supabase.from('assistant_messages').insert({
+          thread_id: ensuredThreadId,
+          user_id: user.id,
+          role: 'assistant',
+          content: pendingMessage,
+          metadata_json: {
+            pending: true,
+            pending_prediction_id: prediction.id,
+            metric_key: metricKey,
+            hour_key: hourKey,
+            model: prediction.model,
+            reserved_usage: true,
+          },
+        });
+
+        return NextResponse.json({
+          threadId: ensuredThreadId,
+          assistantMessage: pendingMessage,
+          pending: true,
+        });
+      }
+
+      const providerResult = await generateAssistantReply({
         model: modelConfig.defaultModel,
         systemPrompt,
         userPrompt: `${parsed.data.message}\n\nContext:\n${contextSummary}`,
-        imageUrl: parsed.data.imageUrl,
         context: pack,
         history,
       });
 
-      const pendingMessage = "I'm reviewing your outfit photo now. This can take up to a minute.";
+      const outputSafety = moderateOutput(providerResult.text);
+      const finalReply = outputSafety.blocked
+        ? (outputSafety.safeReply || SEBASTIAN_REFUSAL_TEMPLATES.outOfScope)
+        : providerResult.text;
+
       await supabase.from('assistant_messages').insert({
         thread_id: ensuredThreadId,
         user_id: user.id,
         role: 'assistant',
-        content: pendingMessage,
+        content: finalReply,
         metadata_json: {
-          pending: true,
-          pending_prediction_id: prediction.id,
-          metric_key: metricKey,
-          hour_key: hourKey,
-          model: prediction.model,
+          blocked: outputSafety.blocked,
+          safety_flags: outputSafety.flags,
+          model: providerResult.model,
         },
+      });
+
+      await supabase.from('assistant_inference_events').insert({
+        user_id: user.id,
+        thread_id: ensuredThreadId,
+        provider: 'replicate',
+        model: providerResult.model,
+        status: outputSafety.blocked ? 'blocked' : 'succeeded',
+        latency_ms: Date.now() - start,
+        input_tokens: providerResult.inputTokens,
+        output_tokens: providerResult.outputTokens,
+        safety_flags_json: {
+          input: inputSafety.flags,
+          output: outputSafety.flags,
+        },
+        error_code: outputSafety.blocked ? 'SAFETY_BLOCKED' : null,
       });
 
       return NextResponse.json({
         threadId: ensuredThreadId,
-        assistantMessage: pendingMessage,
-        pending: true,
+        assistantMessage: finalReply,
       });
+    } finally {
+      releaseInflight(user.id);
     }
-
-    const providerResult = await generateAssistantReply({
-      model: modelConfig.defaultModel,
-      systemPrompt,
-      userPrompt: `${parsed.data.message}\n\nContext:\n${contextSummary}`,
-      context: pack,
-      history,
-    });
-
-    const outputSafety = moderateOutput(providerResult.text);
-    const finalReply = outputSafety.blocked
-      ? (outputSafety.safeReply || SEBASTIAN_REFUSAL_TEMPLATES.outOfScope)
-      : providerResult.text;
-
-    await supabase.from('assistant_messages').insert({
-      thread_id: ensuredThreadId,
-      user_id: user.id,
-      role: 'assistant',
-      content: finalReply,
-      metadata_json: {
-        blocked: outputSafety.blocked,
-        safety_flags: outputSafety.flags,
-        model: providerResult.model,
-      },
-    });
-
-    await incrementUsageCounter(supabase, user.id, metricKey, entitlements.period, 1);
-    await incrementBurstCount(supabase, user.id, hourKey);
-
-    await supabase.from('assistant_inference_events').insert({
-      user_id: user.id,
-      thread_id: ensuredThreadId,
-      provider: 'replicate',
-      model: providerResult.model,
-      status: outputSafety.blocked ? 'blocked' : 'succeeded',
-      latency_ms: Date.now() - start,
-      input_tokens: providerResult.inputTokens,
-      output_tokens: providerResult.outputTokens,
-      safety_flags_json: {
-        input: inputSafety.flags,
-        output: outputSafety.flags,
-      },
-      error_code: outputSafety.blocked ? 'SAFETY_BLOCKED' : null,
-    });
-
-    return NextResponse.json({
-      threadId: ensuredThreadId,
-      assistantMessage: finalReply,
-    });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to generate assistant response';
 
@@ -323,7 +351,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: message, code: 'CONFIG_ERROR' }, { status: 500 });
     }
 
-    console.error('Assistant chat request failed', error);
+    log.error('Assistant chat request failed', {
+      error: error instanceof Error ? error.message : 'unknown_error',
+    });
     return NextResponse.json({ error: 'Failed to generate assistant response', code: 'UPSTREAM_ERROR' }, { status: 502 });
   }
 }

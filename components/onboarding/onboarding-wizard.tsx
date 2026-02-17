@@ -17,6 +17,7 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import type { WizardState } from '@/lib/types/onboarding';
 import { INITIAL_WIZARD_STATE } from '@/lib/types/onboarding';
+import { createLogger } from '@/lib/utils/logger';
 
 // Lazy load heavy components that aren't needed immediately
 const StepColorsQuantity = lazy(() => import('./step-colors-quantity').then(m => ({ default: m.StepColorsQuantity })));
@@ -38,6 +39,7 @@ const STEP_LABELS = [
 
 const TOTAL_STEPS = 6;
 const SESSION_STORAGE_KEY = 'onboarding-wizard-state';
+const logger = createLogger({ component: 'onboarding-wizard' });
 
 /**
  * Loading fallback for lazy-loaded step components
@@ -70,12 +72,12 @@ function loadWizardState(): WizardState {
       const parsed = JSON.parse(stored) as WizardState;
       // Validate that the stored state has the expected structure
       if (typeof parsed.step === 'number' && parsed.styleBaseline !== undefined) {
-        console.log('Loaded wizard state from session storage:', parsed);
+        logger.debug('Loaded wizard state from session storage', { parsed });
         return parsed;
       }
     }
   } catch (error) {
-    console.error('Failed to load wizard state from session storage:', error);
+    logger.error('Failed to load wizard state from session storage:', error);
   }
 
   return {
@@ -94,9 +96,9 @@ function saveWizardState(state: WizardState): void {
 
   try {
     sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(state));
-    console.log('Saved wizard state to session storage:', state);
+    logger.debug('Saved wizard state to session storage', { state });
   } catch (error) {
-    console.error('Failed to save wizard state to session storage:', error);
+    logger.error('Failed to save wizard state to session storage:', error);
   }
 }
 
@@ -111,7 +113,7 @@ function clearWizardState(): void {
   try {
     sessionStorage.removeItem(SESSION_STORAGE_KEY);
   } catch (error) {
-    console.error('Failed to clear wizard state from session storage:', error);
+    logger.error('Failed to clear wizard state from session storage:', error);
   }
 }
 
@@ -273,7 +275,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       );
 
       if (result.failed > 0) {
-        console.warn(`${result.failed} items failed to save:`, result.errors);
+        logger.warn(`${result.failed} items failed to save:`, result.errors);
         
         if (result.success === 0) {
           // All items failed
@@ -281,7 +283,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
           return;
         } else {
           // Partial success - show warning but continue
-          console.log(`Successfully created ${result.success} items, ${result.failed} failed`);
+          logger.info('Wardrobe creation partially succeeded', { success: result.success, failed: result.failed });
         }
       }
 
@@ -301,7 +303,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
       setError(`Failed to create your wardrobe: ${errorMessage}. Please try again or contact support if the problem persists.`);
-      console.error('Wardrobe creation error:', err);
+      logger.error('Wardrobe creation error:', err);
     } finally {
       setIsLoading(false);
     }

@@ -1,5 +1,8 @@
 'use client';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-conditional-conditional-component-loader' });
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { conditionalImport, isFeatureEnabled, type FeatureFlags } from '@/lib/utils/feature-flags';
 import { Loader2 } from 'lucide-react';
@@ -73,7 +76,7 @@ export function ConditionalComponentLoader<P extends object>({
       if (!isMountedRef.current) {
         return;
       }
-      console.warn(`Failed to load component for feature ${feature}:`, err);
+      logger.warn(`Failed to load component for feature ${feature}:`, err);
       setError(err instanceof Error ? err.message : 'Failed to load component');
     } finally {
       if (isMountedRef.current) {

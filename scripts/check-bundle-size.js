@@ -35,12 +35,12 @@ function formatSize(bytes) {
 }
 
 function checkBundleSize() {
-  console.log(`${colors.bold}${colors.blue}Bundle Size Check${colors.reset}\n`);
+  console.info(`${colors.bold}${colors.blue}Bundle Size Check${colors.reset}\n`);
 
   const buildManifestPath = path.join(process.cwd(), '.next/build-manifest.json');
   
   if (!fs.existsSync(buildManifestPath)) {
-    console.log(`${colors.yellow}⚠ Build manifest not found. Run 'npm run build' first.${colors.reset}`);
+    console.info(`${colors.yellow}⚠ Build manifest not found. Run 'npm run build' first.${colors.reset}`);
     process.exit(0);
   }
 
@@ -93,42 +93,42 @@ function checkBundleSize() {
   const totalSizeKB = totalSize / 1024;
   
   // Print results
-  console.log(`${colors.bold}Total Bundle Size:${colors.reset} ${formatSize(totalSize)}`);
-  console.log(`${colors.bold}Budget:${colors.reset} ${BUDGETS.total} KB\n`);
+  console.info(`${colors.bold}Total Bundle Size:${colors.reset} ${formatSize(totalSize)}`);
+  console.info(`${colors.bold}Budget:${colors.reset} ${BUDGETS.total} KB\n`);
   
   if (totalSizeKB > BUDGETS.total) {
-    console.log(`${colors.red}✗ Total bundle size exceeds budget by ${formatSize((totalSizeKB - BUDGETS.total) * 1024)}${colors.reset}\n`);
+    console.info(`${colors.red}✗ Total bundle size exceeds budget by ${formatSize((totalSizeKB - BUDGETS.total) * 1024)}${colors.reset}\n`);
   } else {
-    console.log(`${colors.green}✓ Total bundle size within budget${colors.reset}\n`);
+    console.info(`${colors.green}✓ Total bundle size within budget${colors.reset}\n`);
   }
   
   // Print violations
   if (violations.length > 0) {
-    console.log(`${colors.bold}${colors.red}Violations:${colors.reset}`);
+    console.info(`${colors.bold}${colors.red}Violations:${colors.reset}`);
     violations.forEach(v => {
-      console.log(`  ${colors.red}✗${colors.reset} ${v.file}`);
-      console.log(`    Size: ${v.size.toFixed(2)} KB (budget: ${v.budget} KB)`);
+      console.info(`  ${colors.red}✗${colors.reset} ${v.file}`);
+      console.info(`    Size: ${v.size.toFixed(2)} KB (budget: ${v.budget} KB)`);
     });
-    console.log('');
+    console.info('');
   }
   
   // Print warnings
   if (warnings.length > 0) {
-    console.log(`${colors.bold}${colors.yellow}Warnings:${colors.reset}`);
+    console.info(`${colors.bold}${colors.yellow}Warnings:${colors.reset}`);
     warnings.forEach(w => {
-      console.log(`  ${colors.yellow}⚠${colors.reset} ${w.page}`);
-      console.log(`    Size: ${w.size.toFixed(2)} KB (budget: ${w.budget} KB)`);
+      console.info(`  ${colors.yellow}⚠${colors.reset} ${w.page}`);
+      console.info(`    Size: ${w.size.toFixed(2)} KB (budget: ${w.budget} KB)`);
     });
-    console.log('');
+    console.info('');
   }
   
   // Print recommendations
   if (violations.length > 0 || warnings.length > 0) {
-    console.log(`${colors.bold}Recommendations:${colors.reset}`);
-    console.log('  • Use direct imports instead of barrel imports');
-    console.log('  • Enable dynamic imports for heavy components');
-    console.log('  • Check for duplicate dependencies');
-    console.log('  • Review and remove unused code\n');
+    console.info(`${colors.bold}Recommendations:${colors.reset}`);
+    console.info('  • Use direct imports instead of barrel imports');
+    console.info('  • Enable dynamic imports for heavy components');
+    console.info('  • Check for duplicate dependencies');
+    console.info('  • Review and remove unused code\n');
   }
   
   // Exit with error if violations exist

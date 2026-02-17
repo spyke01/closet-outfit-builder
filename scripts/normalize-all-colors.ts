@@ -27,7 +27,7 @@ async function normalizeAllColors() {
     }
   });
 
-  console.log('🔄 Normalizing all color values to lowercase...\n');
+  console.info('🔄 Normalizing all color values to lowercase...\n');
 
   // Get all items with non-null colors
   const { data: items, error: fetchError } = await supabase
@@ -42,7 +42,7 @@ async function normalizeAllColors() {
   }
 
   if (!items || items.length === 0) {
-    console.log('✅ No items with colors found.');
+    console.info('✅ No items with colors found.');
     return;
   }
 
@@ -72,23 +72,23 @@ async function normalizeAllColors() {
     }
   }
 
-  console.log('═══════════════════════════════════════════════');
-  console.log('  Results');
-  console.log('═══════════════════════════════════════════════\n');
+  console.info('═══════════════════════════════════════════════');
+  console.info('  Results');
+  console.info('═══════════════════════════════════════════════\n');
 
   if (updates.length > 0) {
-    console.log('📝 Color normalizations:');
+    console.info('📝 Color normalizations:');
     updates.forEach(update => {
-      console.log(`  "${update.oldColor}" → "${update.newColor}"`);
+      console.info(`  "${update.oldColor}" → "${update.newColor}"`);
     });
-    console.log('');
-    console.log(`📊 Total items checked: ${items.length}`);
-    console.log(`✅ Successfully normalized: ${updatedCount}`);
+    console.info('');
+    console.info(`📊 Total items checked: ${items.length}`);
+    console.info(`✅ Successfully normalized: ${updatedCount}`);
   } else {
-    console.log('✅ All colors are already normalized.');
+    console.info('✅ All colors are already normalized.');
   }
 
-  console.log('\n═══════════════════════════════════════════════');
+  console.info('\n═══════════════════════════════════════════════');
 }
 
 normalizeAllColors().catch((error) => {

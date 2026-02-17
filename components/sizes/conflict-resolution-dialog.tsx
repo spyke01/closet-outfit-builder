@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Conflict Resolution Dialog Component
  * 
@@ -8,9 +10,6 @@
  * 
  * Requirements: 12.5
  */
-
-'use client';
-
 import { useState, useEffect } from 'react';
 import { AlertCircle, Check, X, Eye } from 'lucide-react';
 import type { SyncConflict, ConflictResolution } from '@/lib/utils/offline-sync';

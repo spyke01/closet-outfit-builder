@@ -22,7 +22,7 @@
  *   });
  * 
  *   return (
- *     <form onSubmit={form.handleSubmit((data) => console.log(data))}>
+ *     <form onSubmit={form.handleSubmit((data) => console.info(data))}>
  *       <input {...form.register('name')} />
  *       {form.formState.errors.name && (
  *         <span>{form.formState.errors.name.message}</span>

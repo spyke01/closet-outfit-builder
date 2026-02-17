@@ -34,6 +34,7 @@ export interface Entitlements {
 export type MonthlyUsageMetric =
   | 'ai_outfit_generations'
   | 'ai_outfit_image_generations'
+  | 'ai_wardrobe_image_generations'
   | 'ai_stylist_messages'
   | 'ai_stylist_vision_messages';
 
@@ -148,6 +149,9 @@ export function getUsageLimitForMetric(entitlements: Entitlements, metricKey: st
   if (metricKey === 'ai_outfit_image_generations') {
     return entitlements.plan.limits.ai_image_generations_monthly;
   }
+  if (metricKey === 'ai_wardrobe_image_generations') {
+    return entitlements.plan.limits.ai_image_generations_monthly;
+  }
   if (metricKey === 'ai_stylist_messages') {
     return entitlements.plan.limits.ai_stylist_messages_monthly;
   }
@@ -210,6 +214,42 @@ export async function incrementUsageCounter(
 
   if (error) throw new Error(`Failed to update usage counter: ${error.message}`);
   return nextCount;
+}
+
+export async function reserveUsageCounterAtomic(
+  supabase: SupabaseClient,
+  params: {
+    userId: string;
+    metricKey: string;
+    period: Entitlements['period'];
+    limit: number | null;
+    incrementBy?: number;
+  }
+): Promise<{ allowed: boolean; count: number }> {
+  const incrementBy = params.incrementBy ?? 1;
+  const { data, error } = await supabase.rpc('reserve_usage_counter', {
+    p_user_id: params.userId,
+    p_metric_key: params.metricKey,
+    p_period_key: params.period.key,
+    p_period_start_at: params.period.start.toISOString(),
+    p_period_end_at: params.period.end.toISOString(),
+    p_limit: params.limit,
+    p_increment_by: incrementBy,
+  });
+
+  if (error) {
+    throw new Error(`Failed to reserve usage counter: ${error.message}`);
+  }
+
+  const firstRow = Array.isArray(data) ? data[0] : null;
+  if (!firstRow) {
+    return { allowed: false, count: 0 };
+  }
+
+  return {
+    allowed: Boolean(firstRow.allowed),
+    count: Number(firstRow.new_count || 0),
+  };
 }
 
 export function getAiBurstHourKey(now: Date = new Date()): string {

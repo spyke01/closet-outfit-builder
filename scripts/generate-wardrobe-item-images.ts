@@ -526,12 +526,12 @@ async function main(): Promise<void> {
     throw new Error('Missing OPENAI_API_KEY. Set it in your local environment before running.');
   }
 
-  console.log(`Planned tasks: ${selectedTasks.length}`);
-  console.log(`Output directory: ${outDir}`);
-  console.log(`Model: ${argv.model}`);
-  console.log(`Quality: ${argv.quality}`);
-  console.log(`Dry run: ${argv['dry-run'] ? 'yes' : 'no'}`);
-  console.log(`Max retries: ${argv['max-retries']}`);
+  console.info(`Planned tasks: ${selectedTasks.length}`);
+  console.info(`Output directory: ${outDir}`);
+  console.info(`Model: ${argv.model}`);
+  console.info(`Quality: ${argv.quality}`);
+  console.info(`Dry run: ${argv['dry-run'] ? 'yes' : 'no'}`);
+  console.info(`Max retries: ${argv['max-retries']}`);
 
   const persistManifest = async (): Promise<void> => {
     await fs.writeFile(
@@ -574,7 +574,7 @@ async function main(): Promise<void> {
 
     const alreadyExists = await exists(task.outputPath);
     if (alreadyExists && !argv.overwrite) {
-      console.log(`${prefix} skip existing: ${descriptor}`);
+      console.info(`${prefix} skip existing: ${descriptor}`);
       manifest.push({
         category: task.category,
         subcategory: task.subcategory,
@@ -589,7 +589,7 @@ async function main(): Promise<void> {
     }
 
     if (argv['dry-run']) {
-      console.log(`${prefix} dry-run: ${descriptor} -> ${task.outputPath}`);
+      console.info(`${prefix} dry-run: ${descriptor} -> ${task.outputPath}`);
       manifest.push({
         category: task.category,
         subcategory: task.subcategory,
@@ -617,7 +617,7 @@ async function main(): Promise<void> {
       });
 
       await fs.writeFile(task.outputPath, pngBuffer);
-      console.log(`${prefix} generated: ${descriptor}`);
+      console.info(`${prefix} generated: ${descriptor}`);
 
       manifest.push({
         category: task.category,
@@ -670,14 +670,14 @@ async function main(): Promise<void> {
   await persistManifest();
 
   const failedCount = manifest.filter((entry) => entry.status === 'failed').length;
-  console.log(`Done. Manifest written to ${manifestPath}`);
+  console.info(`Done. Manifest written to ${manifestPath}`);
   if (runStatus === 'stopped-insufficient-credits') {
-    console.log('Stopped early because credits/quota were insufficient.');
+    console.info('Stopped early because credits/quota were insufficient.');
     process.exitCode = 2;
     return;
   }
   if (failedCount > 0) {
-    console.log(`Failures: ${failedCount}`);
+    console.info(`Failures: ${failedCount}`);
     process.exitCode = 1;
   }
 }

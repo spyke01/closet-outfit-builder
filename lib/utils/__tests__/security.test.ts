@@ -418,7 +418,9 @@ describe('Security Utils', () => {
       });
       
       expect(consoleSpy).toHaveBeenCalled();
-      const loggedEvent = consoleSpy.mock.calls[0][1];
+      const logLine = consoleSpy.mock.calls[0][0] as string;
+      const jsonStart = logLine.indexOf('{');
+      const loggedEvent = JSON.parse(logLine.slice(jsonStart));
       expect(loggedEvent.details.password).toBe('[REDACTED]');
       expect(loggedEvent.details.token).toBe('[REDACTED]');
       expect(loggedEvent.details.normalField).toBe('safe-value');
@@ -437,7 +439,9 @@ describe('Security Utils', () => {
       });
       
       expect(consoleSpy).toHaveBeenCalled();
-      const loggedEvent = consoleSpy.mock.calls[0][1];
+      const logLine = consoleSpy.mock.calls[0][0] as string;
+      const jsonStart = logLine.indexOf('{');
+      const loggedEvent = JSON.parse(logLine.slice(jsonStart));
       expect(loggedEvent.timestamp).toBeDefined();
       expect(new Date(loggedEvent.timestamp)).toBeInstanceOf(Date);
       consoleSpy.mockRestore();

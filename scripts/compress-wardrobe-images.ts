@@ -244,11 +244,11 @@ async function main(): Promise<void> {
   let cursor = 0;
   const workerCount = Math.max(1, Math.floor(argv.concurrency));
 
-  console.log(`Input directory: ${inputDir}`);
-  console.log(`Output directory: ${outputDir}`);
-  console.log(`Provider: ${provider}`);
-  console.log(`Files to process: ${selectedFiles.length}`);
-  console.log(`Dry run: ${argv['dry-run'] ? 'yes' : 'no'}`);
+  console.info(`Input directory: ${inputDir}`);
+  console.info(`Output directory: ${outputDir}`);
+  console.info(`Provider: ${provider}`);
+  console.info(`Files to process: ${selectedFiles.length}`);
+  console.info(`Dry run: ${argv['dry-run'] ? 'yes' : 'no'}`);
 
   const persistReport = async (): Promise<void> => {
     const totals = entries.reduce(
@@ -324,7 +324,7 @@ async function main(): Promise<void> {
           .catch(() => false);
 
         if (outputExists && !argv.overwrite) {
-          console.log(`${prefix} skip existing: ${rel}`);
+          console.info(`${prefix} skip existing: ${rel}`);
           entries.push({
             inputPath,
             outputPath,
@@ -337,7 +337,7 @@ async function main(): Promise<void> {
         }
 
         if (argv['dry-run']) {
-          console.log(`${prefix} dry-run: ${rel}`);
+          console.info(`${prefix} dry-run: ${rel}`);
           entries.push({
             inputPath,
             outputPath,
@@ -367,7 +367,7 @@ async function main(): Promise<void> {
         const savingsBytes = inputBytes - outputBytes;
         const savingsPct = Number(((savingsBytes / inputBytes) * 100).toFixed(2));
 
-        console.log(`${prefix} compressed: ${rel} (${savingsPct}% smaller)`);
+        console.info(`${prefix} compressed: ${rel} (${savingsPct}% smaller)`);
         entries.push({
           inputPath,
           outputPath,
@@ -401,9 +401,9 @@ async function main(): Promise<void> {
   const failed = entries.filter((entry) => entry.status === 'failed').length;
   const compressed = entries.filter((entry) => entry.status === 'compressed').length;
 
-  console.log(`Done. Report: ${reportPath}`);
-  console.log(`Compressed: ${compressed}`);
-  console.log(`Failed: ${failed}`);
+  console.info(`Done. Report: ${reportPath}`);
+  console.info(`Compressed: ${compressed}`);
+  console.info(`Failed: ${failed}`);
 
   if (failed > 0) {
     process.exitCode = 1;

@@ -6,6 +6,9 @@ import { createClient } from '@/lib/supabase/client';
 import { queryKeys } from '@/lib/query-client';
 import { useAuth } from './use-auth';
 import type { RealtimeChannel } from '@supabase/supabase-js';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'use-realtime-wardrobe' });
 
 /**
  * Subscribe to realtime updates for wardrobe items
@@ -42,7 +45,7 @@ export function useWardrobeRealtime() {
           filter: `user_id=eq.${userId}`, // Only get changes for this user
         },
         (payload) => {
-          console.log('[Realtime] Wardrobe change:', payload.eventType, payload);
+          logger.debug('Wardrobe change event', { eventType: payload.eventType, payload });
 
           // Invalidate cache to trigger refetch
           // This ensures data consistency and is simpler than direct cache updates
@@ -65,13 +68,13 @@ export function useWardrobeRealtime() {
       )
       .subscribe((status, err) => {
         if (status === 'SUBSCRIBED') {
-          console.log('[Realtime] Successfully subscribed to wardrobe changes');
+          logger.debug('Successfully subscribed to wardrobe changes');
         }
         if (status === 'CHANNEL_ERROR') {
-          console.error('[Realtime] Channel error:', err);
+          logger.error('[Realtime] Channel error:', err);
         }
         if (status === 'TIMED_OUT') {
-          console.error('[Realtime] Connection timed out');
+          logger.error('[Realtime] Connection timed out');
         }
       });
 
@@ -79,7 +82,7 @@ export function useWardrobeRealtime() {
 
     // Cleanup function: unsubscribe when component unmounts
     return () => {
-      console.log('[Realtime] Unsubscribing from wardrobe changes');
+      logger.debug('Unsubscribing from wardrobe changes');
       if (typeof supabase.removeChannel === 'function') {
         supabase.removeChannel(channel);
       }

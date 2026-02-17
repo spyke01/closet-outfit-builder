@@ -1,3 +1,8 @@
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'components-sizes-standard-size-form' });
+
+
 'use client'
 
 /**
@@ -51,7 +56,7 @@ export function StandardSizeForm({
       await updateStandardSize.mutateAsync(data)
       onSave()
     } catch (error) {
-      console.error('Failed to update standard size:', error)
+      logger.error('Failed to update standard size:', error)
     }
   }
 

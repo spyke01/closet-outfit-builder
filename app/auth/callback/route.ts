@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from "@supabase/ssr"
 import { getPostAuthRoute, hasActiveWardrobeItems } from '@/lib/server/wardrobe-readiness';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'app-auth-callback-route' });
+
 
 export const dynamic = 'force-dynamic';
 const DEFAULT_REDIRECT_PATH = '/today';
@@ -18,19 +22,19 @@ export async function GET(request: NextRequest) {
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 
     if (!supabaseUrl || !supabaseKey) {
-      console.error('Missing Supabase environment variables')
+      logger.error('Missing Supabase environment variables')
       return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent('Configuration error')}`)
     }
 
     // Handle OAuth errors from provider
     if (error) {
-      console.error('OAuth provider error:', error, error_description)
+      logger.error('OAuth provider error', { error, error_description })
       return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent('Authentication failed')}`)
     }
 
     // Handle missing code
     if (!code) {
-      console.error('No authorization code received')
+      logger.error('No authorization code received')
       return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent('No authorization code received')}`)
     }
 
@@ -60,7 +64,7 @@ export async function GET(request: NextRequest) {
     const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
     
     if (exchangeError) {
-      console.error('Code exchange error:', exchangeError.message)
+      logger.error('Code exchange error:', exchangeError.message)
       
       // Handle specific PKCE errors
       if (exchangeError.message?.includes('code verifier') || 
@@ -72,7 +76,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (!data?.session) {
-      console.error('No session returned from code exchange')
+      logger.error('No session returned from code exchange')
       return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent('No session created. Please try again.')}`)
     }
 
@@ -90,7 +94,7 @@ export async function GET(request: NextRequest) {
     return response
     
   } catch (globalError) {
-    console.error('OAuth callback failed:', globalError instanceof Error ? globalError.message : 'Unknown error')
+    logger.error('OAuth callback failed:', globalError instanceof Error ? globalError.message : 'Unknown error')
     
     // Fallback URL construction
     try {

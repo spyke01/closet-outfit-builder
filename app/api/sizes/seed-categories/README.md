@@ -142,7 +142,7 @@ async function seedCategories() {
   }
 
   const result = await response.json();
-  console.log(`Seeded ${result.count} categories`);
+  console.info(`Seeded ${result.count} categories`);
   return result.data;
 }
 ```

@@ -70,12 +70,12 @@ async function cleanColorNames(dryRun: boolean = false) {
     }
   });
 
-  console.log('🧹 Cleaning color keywords from item names...');
-  console.log('');
+  console.info('🧹 Cleaning color keywords from item names...');
+  console.info('');
 
   if (dryRun) {
-    console.log('🔍 DRY RUN MODE - No changes will be made');
-    console.log('');
+    console.info('🔍 DRY RUN MODE - No changes will be made');
+    console.info('');
   }
 
   // Get all items that have colors set
@@ -92,12 +92,12 @@ async function cleanColorNames(dryRun: boolean = false) {
   }
 
   if (!items || items.length === 0) {
-    console.log('✅ No items with colors found.');
+    console.info('✅ No items with colors found.');
     return;
   }
 
-  console.log(`Found ${items.length} items with colors set.`);
-  console.log('');
+  console.info(`Found ${items.length} items with colors set.`);
+  console.info('');
 
   const results: CleanResult[] = [];
   let updatedCount = 0;
@@ -134,34 +134,34 @@ async function cleanColorNames(dryRun: boolean = false) {
     }
   }
 
-  console.log('═══════════════════════════════════════════════');
-  console.log(`  ${dryRun ? 'Preview' : 'Results'}`);
-  console.log('═══════════════════════════════════════════════');
-  console.log('');
+  console.info('═══════════════════════════════════════════════');
+  console.info(`  ${dryRun ? 'Preview' : 'Results'}`);
+  console.info('═══════════════════════════════════════════════');
+  console.info('');
 
   if (results.length > 0) {
-    console.log('📝 Name changes:');
+    console.info('📝 Name changes:');
     results.forEach(result => {
-      console.log(`  "${result.originalName}" → "${result.cleanedName}"`);
-      console.log(`     (color: ${result.color})`);
-      console.log('');
+      console.info(`  "${result.originalName}" → "${result.cleanedName}"`);
+      console.info(`     (color: ${result.color})`);
+      console.info('');
     });
 
-    console.log(`📊 Total items to update: ${results.length}`);
+    console.info(`📊 Total items to update: ${results.length}`);
     
     if (!dryRun) {
-      console.log(`✅ Successfully updated: ${updatedCount}`);
+      console.info(`✅ Successfully updated: ${updatedCount}`);
     } else {
-      console.log('');
-      console.log('ℹ️  Run without --dry-run to apply these changes.');
+      console.info('');
+      console.info('ℹ️  Run without --dry-run to apply these changes.');
     }
   } else {
-    console.log('✅ No items need name cleaning.');
-    console.log('   All item names are already clean.');
+    console.info('✅ No items need name cleaning.');
+    console.info('   All item names are already clean.');
   }
 
-  console.log('');
-  console.log('═══════════════════════════════════════════════');
+  console.info('');
+  console.info('═══════════════════════════════════════════════');
 }
 
 async function main() {
