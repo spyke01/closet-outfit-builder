@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { WardrobeItem } from '@/lib/types/database';
 import { useWeather } from '@/lib/hooks/use-weather';
-import { generateOutfit, regenerateOutfit, swapItem } from '@/lib/services/outfit-generator';
+import { regenerateOutfit, swapItem } from '@/lib/services/outfit-generator';
 import { normalizeWeatherContext } from '@/lib/utils/weather-normalization';
 import { GeneratedOutfit, WeatherContext } from '@/lib/types/generation';
 import TodayOutfitDisplay from '@/components/today-outfit-display';
@@ -18,11 +18,26 @@ interface TodayPageClientProps {
   wardrobeItems: WardrobeItem[];
 }
 
+const OUTFIT_HISTORY_STORAGE_KEY = 'today-outfit-signatures-v1';
+const OUTFIT_HISTORY_LIMIT = 40;
+const MAX_GENERATION_ATTEMPTS = 18;
+const EXPLORATION_LEVEL = 0.65;
+
+function getOutfitSignature(outfit: GeneratedOutfit): string {
+  return Object.entries(outfit.items)
+    .filter(([, item]) => Boolean(item?.id))
+    .map(([slot, item]) => `${slot}:${item!.id}`)
+    .sort()
+    .join('|');
+}
+
 export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps) {
   const { current, forecast, loading: weatherLoading, error: weatherError } = useWeather(true);
   
   const [currentOutfit, setCurrentOutfit] = useState<GeneratedOutfit | null>(null);
   const [recentlyUsedByCategory, setRecentlyUsedByCategory] = useState<Record<string, string[]>>({});
+  const [recentOutfitSignatures, setRecentOutfitSignatures] = useState<string[]>([]);
+  const [generationNonce, setGenerationNonce] = useState(0);
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -58,6 +73,75 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
     const categories = new Set(wardrobeItems.map(item => item.category?.name).filter(Boolean));
     return categories.has('Shirt') && categories.has('Pants') && categories.has('Shoes');
   }, [wardrobeItems]);
+
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(OUTFIT_HISTORY_STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return;
+      const signatures = parsed.filter((entry): entry is string => typeof entry === 'string');
+      setRecentOutfitSignatures(signatures.slice(-OUTFIT_HISTORY_LIMIT));
+    } catch (error) {
+      console.warn('Failed to load outfit history:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        OUTFIT_HISTORY_STORAGE_KEY,
+        JSON.stringify(recentOutfitSignatures.slice(-OUTFIT_HISTORY_LIMIT))
+      );
+    } catch (error) {
+      console.warn('Failed to persist outfit history:', error);
+    }
+  }, [recentOutfitSignatures]);
+
+  const rememberOutfitSignature = useCallback((outfit: GeneratedOutfit) => {
+    const signature = getOutfitSignature(outfit);
+    setRecentOutfitSignatures(prev => {
+      const withoutDuplicate = prev.filter(existing => existing !== signature);
+      return [...withoutDuplicate, signature].slice(-OUTFIT_HISTORY_LIMIT);
+    });
+  }, []);
+
+  const generateVariedOutfit = useCallback((excludeItems: string[], nonce: number) => {
+    if (!weatherContext) {
+      throw new Error('Weather context unavailable');
+    }
+
+    const todayKey = new Date().toISOString().slice(0, 10);
+    const seenSignatures = new Set(recentOutfitSignatures);
+    let bestUnseen: GeneratedOutfit | null = null;
+    let bestUnseenScore = -1;
+    let bestOverall: GeneratedOutfit | null = null;
+    let bestOverallScore = -1;
+
+    for (let attempt = 0; attempt < MAX_GENERATION_ATTEMPTS; attempt++) {
+      const outfit = regenerateOutfit({
+        wardrobeItems,
+        weatherContext,
+        excludeItems,
+        variationSeed: `today:${todayKey}:${nonce}:${attempt}`,
+        explorationLevel: EXPLORATION_LEVEL,
+      });
+
+      const overallScore = outfit.scores.overall.total;
+      if (overallScore > bestOverallScore) {
+        bestOverall = outfit;
+        bestOverallScore = overallScore;
+      }
+
+      const signature = getOutfitSignature(outfit);
+      if (!seenSignatures.has(signature) && overallScore > bestUnseenScore) {
+        bestUnseen = outfit;
+        bestUnseenScore = overallScore;
+      }
+    }
+
+    return bestUnseen ?? bestOverall;
+  }, [wardrobeItems, weatherContext, recentOutfitSignatures]);
   
   // Generate initial outfit
   useEffect(() => {
@@ -65,12 +149,13 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
     
     setGenerating(true);
     try {
-      const outfit = generateOutfit({
-        wardrobeItems,
-        weatherContext,
-        excludeItems: [],
-      });
+      const nonce = generationNonce + 1;
+      const outfit = generateVariedOutfit([], nonce);
+      if (!outfit) return;
+
+      setGenerationNonce(nonce);
       setCurrentOutfit(outfit);
+      rememberOutfitSignature(outfit);
       
       // Track items by category
       const newRecentlyUsed: Record<string, string[]> = {};
@@ -85,7 +170,15 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
     } finally {
       setGenerating(false);
     }
-  }, [weatherContext, hasRequiredCategories, wardrobeItems, currentOutfit, generating]);
+  }, [
+    weatherContext,
+    hasRequiredCategories,
+    currentOutfit,
+    generating,
+    generateVariedOutfit,
+    generationNonce,
+    rememberOutfitSignature,
+  ]);
   
   // Handle regenerate
   const handleRegenerate = useCallback(() => {
@@ -98,13 +191,14 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
     try {
       // Flatten all recently used items for exclusion
       const excludeItems = Object.values(recentlyUsedByCategory).flat();
+      const nonce = generationNonce + 1;
       
-      const outfit = regenerateOutfit({
-        wardrobeItems,
-        weatherContext,
-        excludeItems,
-      });
+      const outfit = generateVariedOutfit(excludeItems, nonce);
+      if (!outfit) return;
+
+      setGenerationNonce(nonce);
       setCurrentOutfit(outfit);
+      rememberOutfitSignature(outfit);
       
       // Update recently used by category (keep last 3 per category)
       setRecentlyUsedByCategory(prev => {
@@ -123,7 +217,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
     } finally {
       setGenerating(false);
     }
-  }, [wardrobeItems, weatherContext, recentlyUsedByCategory]);
+  }, [weatherContext, recentlyUsedByCategory, generationNonce, generateVariedOutfit, rememberOutfitSignature]);
   
   // Handle swap item
   const handleSwap = useCallback((category: string) => {

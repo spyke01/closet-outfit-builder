@@ -503,6 +503,102 @@ describe('generateOutfit', () => {
       // Should select different shirt
       expect(outfit2.items.shirt.id).not.toBe(outfit1.items.shirt.id);
     });
+
+    it('should remain deterministic without variation seed', () => {
+      const wardrobe = [
+        createMockItem({
+          id: 'shirt-1',
+          name: 'Blue Shirt',
+          category: mockCategories.shirt,
+          formality_score: 6,
+        }),
+        createMockItem({
+          id: 'shirt-2',
+          name: 'White Shirt',
+          category: mockCategories.shirt,
+          formality_score: 6,
+        }),
+        createMockItem({
+          id: 'pants-1',
+          name: 'Grey Pants',
+          category: mockCategories.pants,
+          formality_score: 6,
+        }),
+        createMockItem({
+          id: 'shoes-1',
+          name: 'Brown Shoes',
+          category: mockCategories.shoes,
+          formality_score: 6,
+        }),
+      ];
+
+      const first = generateOutfit({
+        wardrobeItems: wardrobe,
+        weatherContext: mildWeather,
+      });
+      const second = generateOutfit({
+        wardrobeItems: wardrobe,
+        weatherContext: mildWeather,
+      });
+
+      expect(first.items.shirt.id).toBe(second.items.shirt.id);
+      expect(first.items.pants.id).toBe(second.items.pants.id);
+      expect(first.items.shoes.id).toBe(second.items.shoes.id);
+    });
+
+    it('should produce more variants with seed + exploration enabled', () => {
+      const wardrobe = [
+        createMockItem({
+          id: 'shirt-1',
+          name: 'Blue Shirt',
+          category: mockCategories.shirt,
+          formality_score: 6,
+          color: 'blue',
+        }),
+        createMockItem({
+          id: 'shirt-2',
+          name: 'White Shirt',
+          category: mockCategories.shirt,
+          formality_score: 6,
+          color: 'white',
+        }),
+        createMockItem({
+          id: 'shirt-3',
+          name: 'Grey Shirt',
+          category: mockCategories.shirt,
+          formality_score: 6,
+          color: 'grey',
+        }),
+        createMockItem({
+          id: 'pants-1',
+          name: 'Grey Pants',
+          category: mockCategories.pants,
+          formality_score: 6,
+          color: 'grey',
+        }),
+        createMockItem({
+          id: 'shoes-1',
+          name: 'Brown Shoes',
+          category: mockCategories.shoes,
+          formality_score: 6,
+          color: 'brown',
+        }),
+      ];
+
+      const selectedShirts = new Set<string>();
+
+      for (let i = 0; i < 10; i++) {
+        const outfit = generateOutfit({
+          wardrobeItems: wardrobe,
+          weatherContext: mildWeather,
+          variationSeed: `variant-${i}`,
+          explorationLevel: 1,
+        });
+        selectedShirts.add(outfit.items.shirt.id);
+      }
+
+      expect(selectedShirts.size).toBeGreaterThan(1);
+    });
   });
 
   describe('Compatibility Scoring', () => {

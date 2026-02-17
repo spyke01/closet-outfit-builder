@@ -132,6 +132,8 @@ export interface GenerationOptions {
   weatherContext: WeatherContext;
   excludeItems?: string[]; // Item IDs to exclude (recently used)
   preferredCapsules?: string[]; // Preferred capsule tags for scoring boost
+  variationSeed?: string; // Optional deterministic seed to increase variety
+  explorationLevel?: number; // 0-1, higher explores near-top matches more
 }
 
 /**

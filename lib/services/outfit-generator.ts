@@ -107,6 +107,19 @@ function applyBeltShoeColorConstraint(
   return candidates;
 }
 
+function clamp01(value: number): number {
+  return Math.max(0, Math.min(1, value));
+}
+
+function hashToUnitInterval(input: string): number {
+  let hash = 2166136261;
+  for (let i = 0; i < input.length; i++) {
+    hash ^= input.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0) / 4294967295;
+}
+
 /**
  * Check if wardrobe has all required categories
  * 
@@ -231,12 +244,18 @@ function selectBestItem(
   },
   options: {
     preferShorts?: boolean;
+    variationSeed?: string;
+    explorationLevel?: number;
   } = {}
 ): EnrichedItem | null {
   if (candidates.length === 0) return null;
   
   const { weatherContext, selectedItems, excludeItems, slot } = context;
-  const { preferShorts = false } = options;
+  const {
+    preferShorts = false,
+    variationSeed,
+    explorationLevel = 0,
+  } = options;
 
   const constrainedCandidates = applyBeltShoeColorConstraint(candidates, selectedItems, slot);
   if (constrainedCandidates.length === 0) return null;
@@ -276,7 +295,41 @@ function selectBestItem(
   // Try strict criteria first (score >= 0.7)
   const strictMatches = scoredCandidates.filter(c => c.score >= 0.7);
   if (strictMatches.length > 0) {
-    return strictMatches[0].item;
+    if (!variationSeed || clamp01(explorationLevel) === 0 || strictMatches.length === 1) {
+      return strictMatches[0].item;
+    }
+
+    const normalizedExploration = clamp01(explorationLevel);
+    const bestScore = strictMatches[0].score;
+    const diversityMargin = 0.04 + normalizedExploration * 0.18;
+    const shortlist = strictMatches
+      .filter(candidate => bestScore - candidate.score <= diversityMargin)
+      .slice(0, 6);
+
+    if (shortlist.length === 1) {
+      return shortlist[0].item;
+    }
+
+    const roll = hashToUnitInterval(`${variationSeed}:${slot ?? 'slot'}:roll`);
+    const exponent = 2.2 - normalizedExploration * 1.3;
+    const weighted = shortlist.map((candidate, index) => ({
+      candidate,
+      weight: Math.max(
+        0.0001,
+        Math.pow(candidate.score, exponent) *
+          (0.95 + hashToUnitInterval(`${variationSeed}:${slot ?? 'slot'}:${candidate.item.id}:${index}`) * 0.1)
+      ),
+    }));
+    const totalWeight = weighted.reduce((sum, entry) => sum + entry.weight, 0);
+    let cursor = roll * totalWeight;
+    for (const entry of weighted) {
+      cursor -= entry.weight;
+      if (cursor <= 0) {
+        return entry.candidate.item;
+      }
+    }
+
+    return weighted[weighted.length - 1]?.candidate.item ?? strictMatches[0].item;
   }
   
   // Relax to moderate criteria (score >= 0.5)
@@ -302,7 +355,11 @@ function selectItems(
   itemsBySlot: Map<string, EnrichedItem[]>,
   includedCategories: string[],
   weatherContext: WeatherContext,
-  excludeItems: Set<string>
+  excludeItems: Set<string>,
+  generationOptions: {
+    variationSeed?: string;
+    explorationLevel?: number;
+  }
 ): Map<string, EnrichedItem> {
   const selectedItems: Partial<Record<string, EnrichedItem>> = {};
   
@@ -321,7 +378,11 @@ function selectItems(
     const selected = selectBestItem(
       candidates,
       { weatherContext, selectedItems, excludeItems, slot },
-      { preferShorts }
+      {
+        preferShorts,
+        variationSeed: generationOptions.variationSeed ? `${generationOptions.variationSeed}:${slot}` : undefined,
+        explorationLevel: generationOptions.explorationLevel,
+      }
     );
     
     if (selected) {
@@ -468,7 +529,13 @@ function determineSwappable(
  * });
  */
 export function generateOutfit(options: GenerationOptions): GeneratedOutfit {
-  const { wardrobeItems, weatherContext, excludeItems = [] } = options;
+  const {
+    wardrobeItems,
+    weatherContext,
+    excludeItems = [],
+    variationSeed,
+    explorationLevel = 0,
+  } = options;
   
   // Validate required categories
   if (!hasRequiredCategories(wardrobeItems)) {
@@ -502,7 +569,11 @@ export function generateOutfit(options: GenerationOptions): GeneratedOutfit {
     const selected = selectBestItem(
       candidates,
       { weatherContext, selectedItems: coreItems, excludeItems: excludeSet, slot },
-      { preferShorts }
+      {
+        preferShorts,
+        variationSeed: variationSeed ? `${variationSeed}:core:${slot}` : undefined,
+        explorationLevel,
+      }
     );
     
     if (selected) {
@@ -522,7 +593,11 @@ export function generateOutfit(options: GenerationOptions): GeneratedOutfit {
     itemsBySlot,
     includedCategories,
     weatherContext,
-    excludeSet
+    excludeSet,
+    {
+      variationSeed: variationSeed ? `${variationSeed}:full` : undefined,
+      explorationLevel,
+    }
   );
   
   // Build items object with proper typing
