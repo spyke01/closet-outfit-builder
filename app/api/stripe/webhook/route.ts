@@ -53,6 +53,40 @@ function extractPriceId(object: Record<string, unknown>): string | null {
   return null;
 }
 
+function extractPeriodTimestamp(object: Record<string, unknown>, key: 'start' | 'end'): number | null {
+  const topLevelKey = key === 'start' ? 'current_period_start' : 'current_period_end';
+  const topLevelValue = object[topLevelKey];
+  if (typeof topLevelValue === 'number') {
+    return topLevelValue;
+  }
+
+  const fromItems = (object.items as {
+    data?: Array<{
+      current_period_start?: number;
+      current_period_end?: number;
+    }>;
+  } | undefined)?.data?.[0];
+  const itemValue = key === 'start' ? fromItems?.current_period_start : fromItems?.current_period_end;
+  if (typeof itemValue === 'number') {
+    return itemValue;
+  }
+
+  const fromLines = (object.lines as {
+    data?: Array<{
+      period?: {
+        start?: number;
+        end?: number;
+      };
+    }>;
+  } | undefined)?.data?.[0]?.period;
+  const lineValue = key === 'start' ? fromLines?.start : fromLines?.end;
+  if (typeof lineValue === 'number') {
+    return lineValue;
+  }
+
+  return null;
+}
+
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
   const signature = request.headers.get('stripe-signature');
@@ -140,8 +174,8 @@ export async function POST(request: NextRequest) {
         existingSubscription = (foundByUser as ExistingSubscriptionRecord | null) || null;
       }
 
-      const incomingCurrentPeriodStart = toIsoDate(object.current_period_start);
-      const incomingCurrentPeriodEnd = toIsoDate(object.current_period_end);
+      const incomingCurrentPeriodStart = toIsoDate(extractPeriodTimestamp(object, 'start'));
+      const incomingCurrentPeriodEnd = toIsoDate(extractPeriodTimestamp(object, 'end'));
       const currentPeriodStart = incomingCurrentPeriodStart || existingSubscription?.current_period_start || null;
       const currentPeriodEnd = incomingCurrentPeriodEnd || existingSubscription?.current_period_end || null;
       const hasCancelAtPeriodEnd = typeof object.cancel_at_period_end === 'boolean';
@@ -198,7 +232,7 @@ export async function POST(request: NextRequest) {
           cancel_at_period_end: cancelAtPeriodEnd,
           plan_anchor_date: currentPeriodStart
             ? currentPeriodStart.slice(0, 10)
-            : (existingSubscription?.plan_anchor_date || toAnchorDate(object.current_period_start)),
+            : (existingSubscription?.plan_anchor_date || toAnchorDate(extractPeriodTimestamp(object, 'start'))),
         }, { onConflict: 'user_id' });
 
       if (billingState === 'past_due' || billingState === 'unpaid') {

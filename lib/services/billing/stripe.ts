@@ -183,6 +183,13 @@ export async function listStripeSubscriptionsByCustomer(customerId: string, limi
   );
 }
 
+export async function getStripeSubscriptionById(subscriptionId: string) {
+  return stripeRequest<StripeSubscription>(
+    `/subscriptions/${encodeURIComponent(subscriptionId)}`,
+    'GET'
+  );
+}
+
 export async function cancelStripeSubscriptionNow(subscriptionId: string) {
   try {
     return await stripeRequest<{ id: string; status: string }>(`/subscriptions/${encodeURIComponent(subscriptionId)}`, 'DELETE');

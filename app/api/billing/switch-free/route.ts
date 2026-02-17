@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import {
   cancelStripeSubscriptionAtPeriodEnd,
   listStripeSubscriptionsByCustomer,
@@ -10,6 +11,7 @@ export const dynamic = 'force-dynamic';
 export async function POST() {
   try {
     const supabase = await createClient();
+    const admin = createAdminClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user?.id) {
@@ -27,7 +29,29 @@ export async function POST() {
     }
 
     if (!subscription?.stripe_customer_id && !subscription?.stripe_subscription_id) {
-      return NextResponse.json({ ok: true, message: 'No active paid subscription found.' });
+      // Ensure local state is normalized to free even when no Stripe identifiers exist.
+      const { error: resetError } = await admin
+        .from('user_subscriptions')
+        .upsert(
+          {
+            user_id: user.id,
+            plan_code: 'free',
+            status: 'active',
+            billing_state: 'active',
+            stripe_subscription_id: null,
+            current_period_start: null,
+            current_period_end: null,
+            cancel_at_period_end: false,
+            plan_anchor_date: null,
+          },
+          { onConflict: 'user_id' }
+        );
+
+      if (resetError) {
+        return NextResponse.json({ error: resetError.message }, { status: 500 });
+      }
+
+      return NextResponse.json({ ok: true, message: 'No active paid subscription found. Membership reset to Free immediately.' });
     }
 
     const toCancel = new Set<string>();
@@ -54,7 +78,7 @@ export async function POST() {
     const hasDeferredCancellation = cancellationResults.some((result) => cancelableStatuses.has(result.status));
 
     if (activeStripeSubscriptionCount === 0 && !hasDeferredCancellation) {
-      await supabase
+      const { error: resetError } = await admin
         .from('user_subscriptions')
         .update({
           plan_code: 'free',
@@ -68,6 +92,10 @@ export async function POST() {
         })
         .eq('user_id', user.id);
 
+      if (resetError) {
+        return NextResponse.json({ error: resetError.message }, { status: 500 });
+      }
+
       return NextResponse.json({
         ok: true,
         canceled_subscription_count: toCancel.size,
@@ -75,13 +103,17 @@ export async function POST() {
       });
     }
 
-    await supabase
+    const { error: scheduleError } = await admin
       .from('user_subscriptions')
       .update({
         cancel_at_period_end: true,
         billing_state: 'scheduled_cancel',
       })
       .eq('user_id', user.id);
+
+    if (scheduleError) {
+      return NextResponse.json({ error: scheduleError.message }, { status: 500 });
+    }
 
     return NextResponse.json({
       ok: true,

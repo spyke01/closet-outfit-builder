@@ -262,7 +262,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             )}
             {showSebastianUpsell && (
               <Button asChild variant="outline" size="sm" className="min-h-[40px]">
-                <Link href="/pricing">Unlock Sebastian</Link>
+                <Link href="/settings/billing">Unlock Sebastian</Link>
               </Button>
             )}
 

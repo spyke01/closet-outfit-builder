@@ -136,7 +136,7 @@ export async function resolveUserEntitlements(supabase: SupabaseClient, userId: 
     hasBillingAccount: Boolean(subscription?.stripe_subscription_id),
     plan,
     period,
-    renewalAt: subscription?.current_period_end || null,
+    renewalAt: subscription?.current_period_end || (resolved.isPaid ? period.end.toISOString() : null),
     usage,
   };
 }

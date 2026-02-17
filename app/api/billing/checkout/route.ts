@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { createStripeCheckoutSession, getStripePriceId } from '@/lib/services/billing/stripe';
 import type { PlanCode } from '@/lib/services/billing/plans';
 import { resolveAppUrl } from '@/lib/services/billing/app-url';
@@ -15,6 +16,7 @@ const CheckoutSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
+    const admin = createAdminClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user?.id || !user.email) {
@@ -37,14 +39,43 @@ export async function POST(request: NextRequest) {
     const priceId = getStripePriceId({ code: selected.plan as PlanCode, interval: selected.interval });
     const appUrl = resolveAppUrl(request);
 
-    const session = await createStripeCheckoutSession({
+    const baseCheckoutInput = {
       priceId,
       userId: user.id,
       email: user.email,
       appUrl,
-      customerId: subscription?.stripe_customer_id || null,
       previousSubscriptionId: subscription?.stripe_subscription_id || null,
-    });
+    };
+
+    let session;
+    try {
+      session = await createStripeCheckoutSession({
+        ...baseCheckoutInput,
+        customerId: subscription?.stripe_customer_id || null,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '';
+      const isMissingCustomer = message.toLowerCase().includes('no such customer');
+
+      if (!isMissingCustomer) {
+        throw error;
+      }
+
+      // Recover from stale/deleted Stripe customer IDs by clearing local reference
+      // and letting Stripe create/attach by customer_email.
+      const { error: clearCustomerError } = await admin
+        .from('user_subscriptions')
+        .update({ stripe_customer_id: null })
+        .eq('user_id', user.id);
+      if (clearCustomerError) {
+        throw new Error(clearCustomerError.message);
+      }
+
+      session = await createStripeCheckoutSession({
+        ...baseCheckoutInput,
+        customerId: null,
+      });
+    }
 
     return NextResponse.json({ url: session.url });
   } catch (error) {

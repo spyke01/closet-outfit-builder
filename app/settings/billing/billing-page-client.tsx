@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AlertTriangle, CalendarClock, CreditCard, FileText, ImageIcon, Loader2, ReceiptText, Sparkles } from 'lucide-react';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { BILLING_ENTITLEMENTS_REFRESH_EVENT } from '@/lib/hooks/use-billing-entitlements';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PlanSelector } from '@/components/billing/plan-selector';
@@ -141,6 +142,7 @@ export function BillingPageClient() {
         throw new Error(payload.error || 'Failed to switch to free');
       }
       await loadData();
+      window.dispatchEvent(new Event(BILLING_ENTITLEMENTS_REFRESH_EVENT));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to switch to free');
     } finally {
@@ -185,12 +187,17 @@ export function BillingPageClient() {
         <div className="grid grid-cols-1 gap-4">
           <Card>
             <CardContent className="p-6 space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h2 className="text-2xl font-semibold text-foreground">Current Membership</h2>
                   <p className="text-sm text-muted-foreground">Plan details and usage against your current cycle.</p>
                 </div>
-                <Button variant="outline" onClick={openPortal} disabled={busyAction === 'portal'}>
+                <Button
+                  variant="outline"
+                  onClick={openPortal}
+                  disabled={busyAction === 'portal'}
+                  className="w-full sm:w-auto shrink-0"
+                >
                   <CreditCard className="w-4 h-4 mr-1" />
                   {busyAction === 'portal' ? 'Opening...' : 'Manage Payment Info'}
                 </Button>
