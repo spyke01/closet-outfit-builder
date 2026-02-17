@@ -70,7 +70,7 @@ export function buildOutfitPrompt(options: BuildOutfitPromptOptions): string {
 
   if (resolvedTuckStyle) {
     garmentRequirements.push(
-      `- Shirt styled ${resolvedTuckStyle.toLowerCase()} into pants/bottoms`
+      `- Shirt styled ${resolvedTuckStyle} into pants/bottoms`
     );
   }
 
