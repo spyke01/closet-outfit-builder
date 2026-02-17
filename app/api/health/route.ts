@@ -17,6 +17,7 @@ export async function GET() {
       database: 'unknown',
       environment: 'unknown',
     },
+    diagnostics: process.env.NODE_ENV === 'production' ? undefined : {},
   };
 
   try {
@@ -31,8 +32,14 @@ export async function GET() {
     );
 
     if (missingEnvVars.length > 0) {
-      healthCheck.checks.environment = `missing: ${missingEnvVars.join(', ')}`;
+      healthCheck.checks.environment = 'unhealthy';
       healthCheck.status = 'unhealthy';
+      if (healthCheck.diagnostics) {
+        healthCheck.diagnostics = {
+          ...(healthCheck.diagnostics as Record<string, unknown>),
+          missingEnvironmentCount: missingEnvVars.length,
+        };
+      }
     } else {
       healthCheck.checks.environment = 'ok';
     }
@@ -49,13 +56,19 @@ export async function GET() {
         const { error } = await supabase.from('categories').select('count').limit(1);
         
         if (error) {
-          healthCheck.checks.database = `error: ${error.message}`;
+          healthCheck.checks.database = 'degraded';
           healthCheck.status = 'degraded';
+          if (healthCheck.diagnostics) {
+            healthCheck.diagnostics = {
+              ...(healthCheck.diagnostics as Record<string, unknown>),
+              databaseError: true,
+            };
+          }
         } else {
           healthCheck.checks.database = 'ok';
         }
-      } catch (error) {
-        healthCheck.checks.database = `connection failed: ${error instanceof Error ? error.message : 'unknown error'}`;
+      } catch {
+        healthCheck.checks.database = 'unhealthy';
         healthCheck.status = 'unhealthy';
       }
     }
@@ -70,7 +83,13 @@ export async function GET() {
     return NextResponse.json({
       status: 'unhealthy',
       timestamp: new Date().toISOString(),
-      error: error instanceof Error ? error.message : 'Unknown error',
+      checks: {
+        database: 'unhealthy',
+        environment: 'unknown',
+      },
+      diagnostics: process.env.NODE_ENV === 'production'
+        ? undefined
+        : { failure: error instanceof Error ? error.message : 'Unknown error' },
     }, { status: 503 });
   }
 }

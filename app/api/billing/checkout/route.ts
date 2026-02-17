@@ -5,6 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { createStripeCheckoutSession, getStripePriceId } from '@/lib/services/billing/stripe';
 import type { PlanCode } from '@/lib/services/billing/plans';
 import { resolveAppUrl } from '@/lib/services/billing/app-url';
+import { requireSameOrigin } from '@/lib/utils/request-security';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,6 +15,11 @@ const CheckoutSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const sameOriginError = requireSameOrigin(request);
+  if (sameOriginError) {
+    return sameOriginError;
+  }
+
   try {
     const supabase = await createClient();
     const admin = createAdminClient();
@@ -79,7 +85,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to create checkout session';
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error('Checkout session creation failed', error);
+    return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 });
   }
 }

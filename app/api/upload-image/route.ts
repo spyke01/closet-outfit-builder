@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { ImageProcessingRequestSchema, ImageProcessingResponseSchema, FileValidationSchema } from '@/lib/schemas';
 import { z } from 'zod';
+import { requireSameOrigin } from '@/lib/utils/request-security';
 
 function getAllowedOrigins(): string[] {
   const platformOrigins = [
@@ -93,6 +94,11 @@ async function extractFunctionErrorDetails(
 }
 
 export async function POST(request: NextRequest) {
+  const sameOriginError = requireSameOrigin(request);
+  if (sameOriginError) {
+    return sameOriginError;
+  }
+
   try {
     // Start operations in parallel to avoid waterfalls
     const supabasePromise = createClient();
@@ -253,7 +259,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Internal server error',
+        error: 'Internal server error',
         message: 'Failed to process image upload'
       },
       { status: 500 }

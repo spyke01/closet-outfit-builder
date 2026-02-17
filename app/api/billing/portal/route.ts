@@ -2,10 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createStripePortalSession } from '@/lib/services/billing/stripe';
 import { resolveAppUrl } from '@/lib/services/billing/app-url';
+import { requireSameOrigin } from '@/lib/utils/request-security';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
+  const sameOriginError = requireSameOrigin(request);
+  if (sameOriginError) {
+    return sameOriginError;
+  }
+
   try {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -32,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ url: portal.url });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to create billing portal session';
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error('Billing portal session creation failed', error);
+    return NextResponse.json({ error: 'Failed to create billing portal session' }, { status: 500 });
   }
 }

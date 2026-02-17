@@ -53,26 +53,63 @@ const MonitoringRequestSchema = z.object({
   data: z.any(),
 });
 
-// Rate limiting (simple in-memory store for demo)
-const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+// Best-effort in-memory limiter with bounded growth.
+const rateLimitStore = new Map<string, { count: number; resetTime: number; lastSeen: number }>();
 const RATE_LIMIT = 100; // requests per minute
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const MAX_RATE_LIMIT_KEYS = 10_000;
 
-function checkRateLimit(ip: string): boolean {
+function getClientIdentifier(request: NextRequest): string {
+  const trustedIp =
+    request.headers.get('cf-connecting-ip') ||
+    request.headers.get('x-nf-client-connection-ip') ||
+    request.headers.get('x-real-ip');
+  const forwardedIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
+  const ip = trustedIp || forwardedIp || 'unknown';
+  const userAgent = (request.headers.get('user-agent') || 'unknown').slice(0, 160);
+
+  return `${ip}:${userAgent}`;
+}
+
+function pruneRateLimitStore(now: number): void {
+  for (const [key, value] of rateLimitStore.entries()) {
+    if (now > value.resetTime) {
+      rateLimitStore.delete(key);
+    }
+  }
+
+  if (rateLimitStore.size <= MAX_RATE_LIMIT_KEYS) {
+    return;
+  }
+
+  const overflow = rateLimitStore.size - MAX_RATE_LIMIT_KEYS;
+  const oldestEntries = [...rateLimitStore.entries()]
+    .sort((a, b) => a[1].lastSeen - b[1].lastSeen)
+    .slice(0, overflow);
+
+  for (const [key] of oldestEntries) {
+    rateLimitStore.delete(key);
+  }
+}
+
+function checkRateLimit(identifier: string): boolean {
   const now = Date.now();
-  const key = ip;
+  pruneRateLimitStore(now);
+  const key = identifier;
   const current = rateLimitStore.get(key);
 
   if (!current || now > current.resetTime) {
-    rateLimitStore.set(key, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+    rateLimitStore.set(key, { count: 1, resetTime: now + RATE_LIMIT_WINDOW, lastSeen: now });
     return true;
   }
 
   if (current.count >= RATE_LIMIT) {
+    current.lastSeen = now;
     return false;
   }
 
   current.count++;
+  current.lastSeen = now;
   return true;
 }
 
@@ -81,8 +118,8 @@ export const dynamic = 'force-static';
 export async function POST(request: NextRequest) {
   try {
     // Rate limiting - early return if exceeded
-    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
-    if (!checkRateLimit(ip)) {
+    const clientIdentifier = getClientIdentifier(request);
+    if (!checkRateLimit(clientIdentifier)) {
       return NextResponse.json(
         { error: 'Rate limit exceeded' },
         { status: 429 }
@@ -128,7 +165,7 @@ export async function POST(request: NextRequest) {
         timestamp: new Date().toISOString(),
         type,
         data: validatedData,
-        ip,
+        clientIdentifier,
         userAgent: request.headers.get('user-agent'),
       }));
 

@@ -1,14 +1,20 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import {
   cancelStripeSubscriptionAtPeriodEnd,
   listStripeSubscriptionsByCustomer,
 } from '@/lib/services/billing/stripe';
+import { requireSameOrigin } from '@/lib/utils/request-security';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST() {
+export async function POST(request: NextRequest) {
+  const sameOriginError = requireSameOrigin(request);
+  if (sameOriginError) {
+    return sameOriginError;
+  }
+
   try {
     const supabase = await createClient();
     const admin = createAdminClient();
@@ -25,7 +31,8 @@ export async function POST() {
       .maybeSingle();
 
     if (subError) {
-      return NextResponse.json({ error: subError.message }, { status: 500 });
+      console.error('Failed to load subscription for switch-free', subError);
+      return NextResponse.json({ error: 'Failed to switch to free' }, { status: 500 });
     }
 
     if (!subscription?.stripe_customer_id && !subscription?.stripe_subscription_id) {
@@ -48,7 +55,8 @@ export async function POST() {
         );
 
       if (resetError) {
-        return NextResponse.json({ error: resetError.message }, { status: 500 });
+        console.error('Failed to reset free membership state', resetError);
+        return NextResponse.json({ error: 'Failed to switch to free' }, { status: 500 });
       }
 
       return NextResponse.json({ ok: true, message: 'No active paid subscription found. Membership reset to Free immediately.' });
@@ -93,7 +101,8 @@ export async function POST() {
         .eq('user_id', user.id);
 
       if (resetError) {
-        return NextResponse.json({ error: resetError.message }, { status: 500 });
+        console.error('Failed to normalize free membership state', resetError);
+        return NextResponse.json({ error: 'Failed to switch to free' }, { status: 500 });
       }
 
       return NextResponse.json({
@@ -112,7 +121,8 @@ export async function POST() {
       .eq('user_id', user.id);
 
     if (scheduleError) {
-      return NextResponse.json({ error: scheduleError.message }, { status: 500 });
+      console.error('Failed to schedule cancellation', scheduleError);
+      return NextResponse.json({ error: 'Failed to switch to free' }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -121,7 +131,7 @@ export async function POST() {
       message: 'Membership set to cancel at period end. Benefits remain until current period ends.',
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to switch to free';
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error('Switch-free failed', error);
+    return NextResponse.json({ error: 'Failed to switch to free' }, { status: 500 });
   }
 }

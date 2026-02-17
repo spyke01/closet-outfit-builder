@@ -15,6 +15,7 @@ import { AssistantChatRequestSchema } from '@/lib/services/assistant/types';
 import { buildAssistantContextPack, summarizeContextForPrompt } from '@/lib/services/assistant/context-builder';
 import { isAllowedImageUrl, moderateInput, moderateOutput } from '@/lib/services/assistant/moderation';
 import { createAssistantPrediction, generateAssistantReply, resolveReplicateModelConfig } from '@/lib/services/assistant/providers/replicate';
+import { requireSameOrigin } from '@/lib/utils/request-security';
 
 export const dynamic = 'force-dynamic';
 
@@ -104,6 +105,10 @@ async function ensureThread(
 
 export async function POST(request: NextRequest) {
   const start = Date.now();
+  const sameOriginError = requireSameOrigin(request);
+  if (sameOriginError) {
+    return sameOriginError;
+  }
 
   try {
     const supabase = await createClient();
@@ -318,6 +323,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: message, code: 'CONFIG_ERROR' }, { status: 500 });
     }
 
-    return NextResponse.json({ error: message, code: 'UPSTREAM_ERROR' }, { status: 502 });
+    console.error('Assistant chat request failed', error);
+    return NextResponse.json({ error: 'Failed to generate assistant response', code: 'UPSTREAM_ERROR' }, { status: 502 });
   }
 }

@@ -8,6 +8,7 @@ import {
   incrementUsageCounter,
   getAiBurstHourKey,
 } from '@/lib/services/billing/entitlements';
+import { requireSameOrigin } from '@/lib/utils/request-security';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,6 +53,11 @@ async function incrementBurstCount(supabase: Awaited<ReturnType<typeof createCli
 }
 
 export async function POST(request: NextRequest) {
+  const sameOriginError = requireSameOrigin(request);
+  if (sameOriginError) {
+    return sameOriginError;
+  }
+
   try {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -114,7 +120,8 @@ export async function POST(request: NextRequest) {
 
     if (!createPrediction.ok) {
       const errPayload = await createPrediction.text();
-      return NextResponse.json({ error: `Replicate error: ${errPayload}` }, { status: 502 });
+      console.error('Replicate create prediction failed', { status: createPrediction.status, errPayload });
+      return NextResponse.json({ error: 'Image generation provider failed' }, { status: 502 });
     }
 
     let prediction = await createPrediction.json() as {
@@ -155,7 +162,7 @@ export async function POST(request: NextRequest) {
       predictionId: prediction.id,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to generate image';
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error('Image generation request failed', error);
+    return NextResponse.json({ error: 'Failed to generate image' }, { status: 500 });
   }
 }

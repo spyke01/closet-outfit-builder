@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     // Handle OAuth errors from provider
     if (error) {
       console.error('OAuth provider error:', error, error_description)
-      return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent(error_description || error)}`)
+      return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent('Authentication failed')}`)
     }
 
     // Handle missing code
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent('Authentication session expired. Please try signing in again.')}`)
       }
       
-      return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent(exchangeError.message || 'Authentication failed')}`)
+      return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent('Authentication failed')}`)
     }
 
     if (!data?.session) {
