@@ -14,7 +14,7 @@ import {
 import { AssistantChatRequestSchema } from '@/lib/services/assistant/types';
 import { buildAssistantContextPack, summarizeContextForPrompt } from '@/lib/services/assistant/context-builder';
 import { isAllowedImageUrl, moderateInput, moderateOutput } from '@/lib/services/assistant/moderation';
-import { generateAssistantReply, resolveReplicateModelConfig } from '@/lib/services/assistant/providers/replicate';
+import { createAssistantPrediction, generateAssistantReply, resolveReplicateModelConfig } from '@/lib/services/assistant/providers/replicate';
 
 export const dynamic = 'force-dynamic';
 
@@ -202,11 +202,42 @@ export async function POST(request: NextRequest) {
       throw new Error(`CONFIG_ERROR: Missing prompt guardrails: ${promptValidation.missingClauses.join(' | ')}`);
     }
 
+    if (parsed.data.imageUrl) {
+      const prediction = await createAssistantPrediction({
+        model: modelConfig.defaultModel,
+        systemPrompt,
+        userPrompt: `${parsed.data.message}\n\nContext:\n${contextSummary}`,
+        imageUrl: parsed.data.imageUrl,
+        context: pack,
+        history,
+      });
+
+      const pendingMessage = "I'm reviewing your outfit photo now. This can take up to a minute.";
+      await supabase.from('assistant_messages').insert({
+        thread_id: ensuredThreadId,
+        user_id: user.id,
+        role: 'assistant',
+        content: pendingMessage,
+        metadata_json: {
+          pending: true,
+          pending_prediction_id: prediction.id,
+          metric_key: metricKey,
+          hour_key: hourKey,
+          model: prediction.model,
+        },
+      });
+
+      return NextResponse.json({
+        threadId: ensuredThreadId,
+        assistantMessage: pendingMessage,
+        pending: true,
+      });
+    }
+
     const providerResult = await generateAssistantReply({
       model: modelConfig.defaultModel,
       systemPrompt,
       userPrompt: `${parsed.data.message}\n\nContext:\n${contextSummary}`,
-      imageUrl: parsed.data.imageUrl,
       context: pack,
       history,
     });

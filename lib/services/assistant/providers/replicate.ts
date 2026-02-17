@@ -14,6 +14,7 @@ const MAX_TRANSIENT_RETRIES = 2;
 const CIRCUIT_FAILURE_THRESHOLD = 3;
 const CIRCUIT_OPEN_MS = 60_000;
 const MAX_PROMPT_CHARS = 12_000;
+const END_TO_END_TIMEOUT_MS = 28_000;
 
 const modelCircuitState = new Map<string, { consecutiveFailures: number; openUntilMs: number }>();
 
@@ -100,6 +101,7 @@ export function resolveReplicateModelConfig(): { defaultModel: string; fallbackM
 
 interface ReplicatePrediction {
   id: string;
+  model?: string;
   status: 'starting' | 'processing' | 'succeeded' | 'failed' | 'canceled';
   output?: unknown;
   error?: string | null;
@@ -110,6 +112,21 @@ interface ReplicatePrediction {
     input_token_count?: number;
     output_token_count?: number;
   };
+}
+
+export interface AssistantPredictionHandle {
+  id: string;
+  model: string;
+}
+
+export interface AssistantPredictionStatus {
+  id: string;
+  model: string;
+  status: 'pending' | 'succeeded' | 'failed';
+  text?: string;
+  inputTokens?: number | null;
+  outputTokens?: number | null;
+  error?: string | null;
 }
 
 function parseModelSlug(model: string): { owner: string; name: string } {
@@ -147,6 +164,29 @@ async function readReplicateErrorDetail(response: Response): Promise<string> {
   } catch {
     return 'No error detail provided';
   }
+}
+
+function buildReplicateInputPayload(input: AssistantProviderInput): Record<string, unknown> {
+  const conversationHistory = input.history.map((entry) => `${entry.role.toUpperCase()}: ${entry.content}`).join('\n');
+  const composedPrompt = [
+    'Conversation history:',
+    conversationHistory || 'No prior history.',
+    '',
+    `User request: ${input.userPrompt}`,
+    '',
+    'Return a concise, actionable response.',
+  ].join('\n').slice(0, MAX_PROMPT_CHARS);
+
+  const payload: Record<string, unknown> = {
+    prompt: composedPrompt,
+    system_prompt: input.systemPrompt.slice(0, 4000),
+  };
+
+  if (input.imageUrl) {
+    payload.image_input = [input.imageUrl];
+  }
+
+  return payload;
 }
 
 function extractOutputText(output: unknown): string {
@@ -188,18 +228,25 @@ function normalizeAssistantText(text: string): string {
     .trim();
 }
 
-async function runPrediction(model: string, input: Record<string, unknown>, token: string): Promise<ReplicatePrediction> {
+async function runPrediction(
+  model: string,
+  input: Record<string, unknown>,
+  token: string,
+  deadlineAtMs: number
+): Promise<ReplicatePrediction> {
   const { owner, name } = parseModelSlug(model);
+  if (Date.now() >= deadlineAtMs) {
+    throw new Error('UPSTREAM_TIMEOUT: end_to_end_deadline');
+  }
   const response = await withTimeout({
     url: `https://api.replicate.com/v1/models/${owner}/${name}/predictions`,
-    timeoutMs: REQUEST_TIMEOUT_MS,
+    timeoutMs: Math.min(REQUEST_TIMEOUT_MS, Math.max(1000, deadlineAtMs - Date.now())),
     timeoutLabel: 'create_prediction',
     init: {
       method: 'POST',
       headers: {
         Authorization: `Token ${token}`,
         'Content-Type': 'application/json',
-        Prefer: 'wait=60',
       },
       body: JSON.stringify({ input }),
     },
@@ -228,6 +275,9 @@ async function runPrediction(model: string, input: Record<string, unknown>, toke
   }
 
   for (let i = 0; i < MAX_POLL_ATTEMPTS; i += 1) {
+    if (Date.now() >= deadlineAtMs) {
+      throw new Error('UPSTREAM_TIMEOUT: end_to_end_deadline');
+    }
     if (prediction.status === 'succeeded' || prediction.status === 'failed' || prediction.status === 'canceled') {
       break;
     }
@@ -235,7 +285,7 @@ async function runPrediction(model: string, input: Record<string, unknown>, toke
     await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
     const poll = await withTimeout({
       url: pollUrl,
-      timeoutMs: REQUEST_TIMEOUT_MS,
+      timeoutMs: Math.min(REQUEST_TIMEOUT_MS, Math.max(1000, deadlineAtMs - Date.now())),
       timeoutLabel: 'poll_prediction',
       init: {
         headers: { Authorization: `Token ${token}` },
@@ -263,6 +313,118 @@ async function runPrediction(model: string, input: Record<string, unknown>, toke
   return prediction;
 }
 
+async function createPrediction(
+  model: string,
+  input: Record<string, unknown>,
+  token: string
+): Promise<ReplicatePrediction> {
+  const { owner, name } = parseModelSlug(model);
+  const response = await withTimeout({
+    url: `https://api.replicate.com/v1/models/${owner}/${name}/predictions`,
+    timeoutMs: REQUEST_TIMEOUT_MS,
+    timeoutLabel: 'create_prediction',
+    init: {
+      method: 'POST',
+      headers: {
+        Authorization: `Token ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ input }),
+    },
+  });
+
+  if (!response.ok) {
+    const requestId = response.headers.get('x-request-id') || response.headers.get('x-replicate-request-id');
+    const detail = await readReplicateErrorDetail(response);
+    if (response.status === 422) {
+      throw new Error(`Replicate invalid request: 422${requestId ? ` (request_id=${requestId})` : ''}${detail ? ` - ${detail}` : ''}`);
+    }
+    if (response.status === 429) {
+      throw new Error(`Replicate rate limit on create prediction: 429${requestId ? ` (request_id=${requestId})` : ''}${detail ? ` - ${detail}` : ''}`);
+    }
+    throw new Error(`Replicate create prediction failed: ${response.status}${requestId ? ` (request_id=${requestId})` : ''}${detail ? ` - ${detail}` : ''}`);
+  }
+
+  return response.json() as Promise<ReplicatePrediction>;
+}
+
+async function getPredictionById(predictionId: string, token: string): Promise<ReplicatePrediction> {
+  const response = await withTimeout({
+    url: `https://api.replicate.com/v1/predictions/${predictionId}`,
+    timeoutMs: REQUEST_TIMEOUT_MS,
+    timeoutLabel: 'get_prediction',
+    init: {
+      headers: { Authorization: `Token ${token}` },
+    },
+  });
+
+  if (!response.ok) {
+    const requestId = response.headers.get('x-request-id') || response.headers.get('x-replicate-request-id');
+    const detail = await readReplicateErrorDetail(response);
+    throw new Error(`Replicate get prediction failed: ${response.status}${requestId ? ` (request_id=${requestId})` : ''}${detail ? ` - ${detail}` : ''}`);
+  }
+
+  return response.json() as Promise<ReplicatePrediction>;
+}
+
+export async function createAssistantPrediction(input: AssistantProviderInput): Promise<AssistantPredictionHandle> {
+  const token = process.env.REPLICATE_API_TOKEN;
+  if (!token) {
+    throw new Error('Replicate token is not configured');
+  }
+
+  const payload = buildReplicateInputPayload(input);
+  const prediction = await createPrediction(input.model, payload, token);
+  return {
+    id: prediction.id,
+    model: input.model,
+  };
+}
+
+export async function getAssistantPredictionStatus(predictionId: string): Promise<AssistantPredictionStatus> {
+  const token = process.env.REPLICATE_API_TOKEN;
+  if (!token) {
+    throw new Error('Replicate token is not configured');
+  }
+
+  const prediction = await getPredictionById(predictionId, token);
+  if (prediction.status === 'starting' || prediction.status === 'processing') {
+    return {
+      id: prediction.id,
+      model: prediction.model || '',
+      status: 'pending',
+    };
+  }
+
+  if (prediction.status !== 'succeeded') {
+    return {
+      id: prediction.id,
+      model: prediction.model || '',
+      status: 'failed',
+      error: prediction.error || 'Prediction failed',
+    };
+  }
+
+  const text = normalizeAssistantText(extractOutputText(prediction.output));
+  if (!text) {
+    return {
+      id: prediction.id,
+      model: prediction.model || '',
+      status: 'failed',
+      error: 'Replicate returned empty response',
+    };
+  }
+
+  return {
+    id: prediction.id,
+    model: prediction.model || '',
+    status: 'succeeded',
+    text,
+    inputTokens: prediction.metrics?.input_token_count ?? null,
+    outputTokens: prediction.metrics?.output_token_count ?? null,
+  };
+}
+
 export async function generateAssistantReply(input: AssistantProviderInput): Promise<AssistantProviderOutput> {
   const token = process.env.REPLICATE_API_TOKEN;
   if (!token) {
@@ -271,25 +433,9 @@ export async function generateAssistantReply(input: AssistantProviderInput): Pro
 
   const { fallbackModel } = resolveReplicateModelConfig();
 
-  const conversationHistory = input.history.map((entry) => `${entry.role.toUpperCase()}: ${entry.content}`).join('\n');
-  const composedPrompt = [
-    'Conversation history:',
-    conversationHistory || 'No prior history.',
-    '',
-    `User request: ${input.userPrompt}`,
-    '',
-    'Return a concise, actionable response.',
-  ].join('\n').slice(0, MAX_PROMPT_CHARS);
+  const payload = buildReplicateInputPayload(input);
 
-  const payload: Record<string, unknown> = {
-    prompt: composedPrompt,
-    system_prompt: input.systemPrompt.slice(0, 4000),
-  };
-
-  if (input.imageUrl) {
-    payload.image_input = [input.imageUrl];
-  }
-
+  const deadlineAtMs = Date.now() + END_TO_END_TIMEOUT_MS;
   const runWithRetry = async (model: string): Promise<ReplicatePrediction> => {
     if (isCircuitOpen(model)) {
       throw new Error(`UPSTREAM_CIRCUIT_OPEN: ${model}`);
@@ -299,7 +445,7 @@ export async function generateAssistantReply(input: AssistantProviderInput): Pro
     let lastError: unknown = null;
     while (attempts <= MAX_TRANSIENT_RETRIES) {
       try {
-        const prediction = await runPrediction(model, payload, token);
+        const prediction = await runPrediction(model, payload, token, deadlineAtMs);
         recordModelSuccess(model);
         return prediction;
       } catch (error) {

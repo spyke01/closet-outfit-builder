@@ -1,8 +1,8 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Camera, Image as ImageIcon, MessageCircle, Paperclip, Send, X } from 'lucide-react';
+import { Image as ImageIcon, MessageCircle, Paperclip, Send, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SebastianAvatar } from '@/components/sebastian-avatar';
@@ -16,6 +16,12 @@ interface ChatMessage {
   id: string;
   role: ChatRole;
   text: string;
+}
+
+interface ChatApiPayload {
+  threadId: string | null;
+  assistantMessage: string;
+  pending?: boolean;
 }
 
 interface SebastianChatLauncherProps {
@@ -127,6 +133,55 @@ export function SebastianChatLauncher({ className }: SebastianChatLauncherProps)
   const [messages, setMessages] = useState<ChatMessage[]>([
     { id: 'welcome', role: 'assistant', text: SEBASTIAN_GREETING },
   ]);
+  const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (pollTimerRef.current) {
+        clearTimeout(pollTimerRef.current);
+        pollTimerRef.current = null;
+      }
+    };
+  }, []);
+
+  const pollPendingResponse = (currentThreadId: string, placeholderMessageId: string, attempts = 0) => {
+    if (attempts >= 45) {
+      setMessages((prev) => prev.map((message) => (
+        message.id === placeholderMessageId
+          ? { ...message, text: 'This image review is taking longer than expected. Please try again shortly.' }
+          : message
+      )));
+      return;
+    }
+
+    pollTimerRef.current = setTimeout(() => {
+      fetch('/api/assistant/chat/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ threadId: currentThreadId }),
+      })
+        .then(async (response) => {
+          const payload = await response.json() as ChatApiPayload;
+          if (!response.ok) {
+            throw new Error(payload?.assistantMessage || payload?.threadId || 'Unable to fetch assistant status.');
+          }
+
+          if (payload.pending) {
+            pollPendingResponse(currentThreadId, placeholderMessageId, attempts + 1);
+            return;
+          }
+
+          setMessages((prev) => prev.map((message) => (
+            message.id === placeholderMessageId
+              ? { ...message, text: payload.assistantMessage || 'Review complete.' }
+              : message
+          )));
+        })
+        .catch(() => {
+          pollPendingResponse(currentThreadId, placeholderMessageId, attempts + 1);
+        });
+    }, 2200);
+  };
 
   const uploadAssistantImage = async (file: File) => {
     setUploadError(null);
@@ -186,6 +241,9 @@ export function SebastianChatLauncher({ className }: SebastianChatLauncherProps)
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsResponding(true);
+    const imageUrlForRequest = attachedImageUrl;
+    setAttachedImageUrl(null);
+    setAttachedImageName(null);
     const weatherHint = await getLiveWeatherHint();
 
     fetch('/api/assistant/chat', {
@@ -194,7 +252,7 @@ export function SebastianChatLauncher({ className }: SebastianChatLauncherProps)
       body: JSON.stringify({
         threadId: threadId || undefined,
         message: trimmed || 'Please review this outfit image and share practical improvements.',
-        imageUrl: attachedImageUrl || undefined,
+        imageUrl: imageUrlForRequest || undefined,
         contextHints: weatherHint ? { weather: weatherHint } : undefined,
       }),
     })
@@ -215,6 +273,12 @@ export function SebastianChatLauncher({ className }: SebastianChatLauncherProps)
               assistantMessage: 'I am seeing high demand right now. Please try again in a minute.',
             };
           }
+          if (code === 'UPSTREAM_TIMEOUT') {
+            return {
+              threadId: threadId,
+              assistantMessage: 'That request is taking longer than expected. Please try again with a shorter prompt or without an image.',
+            };
+          }
           if (code === 'UPSTREAM_INVALID_REQUEST') {
             return {
               threadId: threadId,
@@ -224,20 +288,23 @@ export function SebastianChatLauncher({ className }: SebastianChatLauncherProps)
           throw new Error(payload?.error || 'Unable to reach Sebastian right now.');
         }
 
-        return payload as { threadId: string; assistantMessage: string };
+        return payload as ChatApiPayload;
       })
       .then((payload) => {
         if (payload.threadId) {
           setThreadId(payload.threadId);
         }
-        setAttachedImageUrl(null);
-        setAttachedImageName(null);
+        const assistantId = `assistant-${Date.now()}`;
         const assistantMessage: ChatMessage = {
-          id: `assistant-${Date.now()}`,
+          id: assistantId,
           role: 'assistant',
           text: payload.assistantMessage,
         };
         setMessages((prev) => [...prev, assistantMessage]);
+
+        if (payload.pending && payload.threadId) {
+          pollPendingResponse(payload.threadId, assistantId);
+        }
       })
       .catch((error: unknown) => {
         const fallback = error instanceof Error ? error.message : 'Unable to reach Sebastian right now.';
@@ -366,40 +433,13 @@ export function SebastianChatLauncher({ className }: SebastianChatLauncherProps)
                   <input
                     type="file"
                     accept="image/jpeg,image/png,image/webp"
-                    capture="environment"
-                    className="hidden"
-                    onChange={handleFilePick}
-                    disabled={isResponding || isUploadingImage}
-                  />
-                  <span className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-border px-2 py-1 text-[11px] text-muted-foreground hover:bg-muted">
-                    <Camera className="h-3.5 w-3.5" />
-                    Camera
-                  </span>
-                </label>
-                <label className="inline-flex">
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    className="hidden"
-                    onChange={handleFilePick}
-                    disabled={isResponding || isUploadingImage}
-                  />
-                  <span className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-border px-2 py-1 text-[11px] text-muted-foreground hover:bg-muted">
-                    <ImageIcon className="h-3.5 w-3.5" />
-                    Library
-                  </span>
-                </label>
-                <label className="inline-flex">
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
                     className="hidden"
                     onChange={handleFilePick}
                     disabled={isResponding || isUploadingImage}
                   />
                   <span className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-border px-2 py-1 text-[11px] text-muted-foreground hover:bg-muted">
                     <Paperclip className="h-3.5 w-3.5" />
-                    Files
+                    Attach
                   </span>
                 </label>
                 {isUploadingImage && (
