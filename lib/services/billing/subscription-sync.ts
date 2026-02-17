@@ -32,7 +32,13 @@ function resolveBillingState(subscription: StripeSubscriptionLite): BillingState
 function chooseBestSubscription(subscriptions: StripeSubscriptionLite[]): StripeSubscriptionLite | null {
   if (!subscriptions.length) return null;
 
-  const ranked = [...subscriptions].sort((a, b) => {
+  // Ignore terminal checkout states that should not grant paid access.
+  const relevant = subscriptions.filter(
+    (subscription) => subscription.status !== 'incomplete' && subscription.status !== 'incomplete_expired'
+  );
+  if (!relevant.length) return null;
+
+  const ranked = [...relevant].sort((a, b) => {
     const rank = (status: string) => {
       if (status === 'active' || status === 'trialing') return 4;
       if (status === 'past_due' || status === 'unpaid') return 3;

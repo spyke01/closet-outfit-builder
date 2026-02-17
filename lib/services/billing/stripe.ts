@@ -209,9 +209,12 @@ export async function cancelStripeSubscriptionAtPeriodEnd(subscriptionId: string
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown Stripe cancellation error';
+    const normalizedMessage = message.toLowerCase();
     if (
-      message.toLowerCase().includes('already canceled')
-      || message.toLowerCase().includes('no such subscription')
+      normalizedMessage.includes('already canceled')
+      || normalizedMessage.includes('no such subscription')
+      || normalizedMessage.includes('incomplete_expired')
+      || normalizedMessage.includes('cannot update a subscription that is incomplete')
     ) {
       return { id: subscriptionId, status: 'canceled', cancel_at_period_end: true };
     }

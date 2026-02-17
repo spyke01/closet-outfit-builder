@@ -31,21 +31,48 @@ export async function POST() {
     }
 
     const toCancel = new Set<string>();
-    if (subscription?.stripe_subscription_id) {
-      toCancel.add(subscription.stripe_subscription_id);
-    }
+    const cancelableStatuses = new Set(['active', 'trialing', 'past_due', 'unpaid']);
+    let activeStripeSubscriptionCount = 0;
 
     if (subscription?.stripe_customer_id) {
       const stripeSubs = await listStripeSubscriptionsByCustomer(subscription.stripe_customer_id, 50);
       for (const item of stripeSubs.data || []) {
-        if (['active', 'trialing', 'past_due', 'unpaid'].includes(item.status)) {
+        if (cancelableStatuses.has(item.status)) {
           toCancel.add(item.id);
+          activeStripeSubscriptionCount += 1;
         }
       }
+    } else if (subscription?.stripe_subscription_id) {
+      // Fall back to local subscription id when no customer id exists.
+      toCancel.add(subscription.stripe_subscription_id);
     }
 
-    for (const subId of toCancel) {
-      await cancelStripeSubscriptionAtPeriodEnd(subId);
+    const cancellationResults = await Promise.all(
+      [...toCancel].map((subId) => cancelStripeSubscriptionAtPeriodEnd(subId))
+    );
+
+    const hasDeferredCancellation = cancellationResults.some((result) => cancelableStatuses.has(result.status));
+
+    if (activeStripeSubscriptionCount === 0 && !hasDeferredCancellation) {
+      await supabase
+        .from('user_subscriptions')
+        .update({
+          plan_code: 'free',
+          status: 'active',
+          billing_state: 'active',
+          stripe_subscription_id: null,
+          current_period_start: null,
+          current_period_end: null,
+          cancel_at_period_end: false,
+          plan_anchor_date: null,
+        })
+        .eq('user_id', user.id);
+
+      return NextResponse.json({
+        ok: true,
+        canceled_subscription_count: toCancel.size,
+        message: 'No active Stripe subscription found. Membership reset to Free immediately.',
+      });
     }
 
     await supabase

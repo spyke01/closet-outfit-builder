@@ -159,6 +159,7 @@ export async function POST(request: NextRequest) {
       else if (normalizedStatus === 'unpaid') billingState = 'unpaid';
       else if (normalizedStatus === 'trialing') billingState = 'trialing';
       else if (normalizedStatus === 'canceled') billingState = 'canceled';
+      else if (normalizedStatus === 'incomplete' || normalizedStatus === 'incomplete_expired') billingState = 'canceled';
       else if (cancelAtPeriodEnd) billingState = 'scheduled_cancel';
 
       if (event.type === 'invoice.payment_failed') {
@@ -179,6 +180,10 @@ export async function POST(request: NextRequest) {
         ? 'free'
         : nextPlanCode;
 
+      const nextStripeSubscriptionId = normalizedStatus === 'incomplete_expired'
+        ? null
+        : (subscriptionId || existingSubscription?.stripe_subscription_id || null);
+
       await admin
         .from('user_subscriptions')
         .upsert({
@@ -187,7 +192,7 @@ export async function POST(request: NextRequest) {
           status: normalizedStatus,
           billing_state: billingState,
           stripe_customer_id: customerId || existingSubscription?.stripe_customer_id || null,
-          stripe_subscription_id: subscriptionId || existingSubscription?.stripe_subscription_id || null,
+          stripe_subscription_id: nextStripeSubscriptionId,
           current_period_start: currentPeriodStart,
           current_period_end: currentPeriodEnd,
           cancel_at_period_end: cancelAtPeriodEnd,
