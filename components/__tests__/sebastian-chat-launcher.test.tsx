@@ -27,4 +27,12 @@ describe('SebastianChatLauncher', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Close chat' }));
     expect(screen.queryByRole('dialog', { name: 'Sebastian chat' })).not.toBeInTheDocument();
   });
+
+  it('shows upgrade overlay in modal when access is restricted', () => {
+    render(<SebastianChatLauncher variant="floating" requiresUpgrade />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Ask Sebastian' }));
+    expect(screen.getByText('Unlock Sebastian')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'View Plus/Pro plans' })).toHaveAttribute('href', '/settings/billing');
+  });
 });

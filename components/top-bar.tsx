@@ -138,7 +138,6 @@ export const TopBar: React.FC<TopBarProps> = ({
   const currentView = getCurrentView();
   const { entitlements, loading: entitlementsLoading } = useBillingEntitlements(Boolean(validatedUser));
   const canAccessSebastian = entitlements?.effectivePlanCode === 'plus' || entitlements?.effectivePlanCode === 'pro';
-  const showSebastianUpsell = Boolean(validatedUser) && !entitlementsLoading && !canAccessSebastian;
   const desktopNavLinkClass = (isActive: boolean) =>
     `flex cursor-pointer items-center gap-2 px-4 h-16 -mb-0.5 border-b-2 text-sm transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
       isActive
@@ -252,12 +251,6 @@ export const TopBar: React.FC<TopBarProps> = ({
 
           {/* Right: Weather + User Menu or Auth Buttons */}
           <div className="flex items-center gap-3">
-            {showSebastianUpsell && (
-              <Button asChild variant="outline" size="sm" className="min-h-[40px]">
-                <Link href="/settings/billing">Unlock Sebastian</Link>
-              </Button>
-            )}
-
             {/* Weather widget - always visible when enabled */}
             <WeatherWidget className="text-sm" compact />
 
@@ -408,8 +401,11 @@ export const TopBar: React.FC<TopBarProps> = ({
           </nav>
         </div>
       )}
-      {validatedUser && canAccessSebastian && (
-        <SebastianChatLauncher variant="floating" />
+      {validatedUser && (
+        <SebastianChatLauncher
+          variant="floating"
+          requiresUpgrade={!entitlementsLoading && !canAccessSebastian}
+        />
       )}
     </div>
   );

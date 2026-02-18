@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Image as ImageIcon, MessageCircle, Paperclip, Send, X } from 'lucide-react';
+import { Image as ImageIcon, MessageCircle, Paperclip, Send, Sparkles, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SebastianAvatar } from '@/components/sebastian-avatar';
@@ -29,6 +29,7 @@ interface SebastianChatLauncherProps {
   className?: string;
   variant?: 'inline' | 'floating';
   floatingOffsetClassName?: string;
+  requiresUpgrade?: boolean;
 }
 
 interface WeatherHintPayload {
@@ -128,6 +129,7 @@ export function SebastianChatLauncher({
   className,
   variant = 'inline',
   floatingOffsetClassName,
+  requiresUpgrade = false,
 }: SebastianChatLauncherProps) {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
@@ -236,6 +238,7 @@ export function SebastianChatLauncher({
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (requiresUpgrade) return;
     const trimmed = input.trim();
     if ((!trimmed && !attachedImageUrl) || isResponding || isUploadingImage) return;
 
@@ -335,12 +338,13 @@ export function SebastianChatLauncher({
           onClick={() => setOpen(true)}
           aria-label="Ask Sebastian"
           className={cn(
-            "fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] right-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-border bg-foreground text-background shadow-lg transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:border-border dark:bg-[#111A20] dark:text-white",
+            "fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] right-4 z-40 inline-flex h-[3.5rem] w-[3.5rem] items-center justify-center rounded-full border border-border bg-foreground text-background shadow-lg transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:border-border dark:bg-[#111A20] dark:text-white",
             floatingOffsetClassName,
             className,
           )}
         >
-          <MessageCircle className="h-5 w-5" />
+          <MessageCircle className="h-7 w-7" />
+          <Sparkles className="pointer-events-none absolute right-3 top-3 h-4 w-4" aria-hidden="true" />
         </button>
       ) : (
         <Button
@@ -387,98 +391,119 @@ export function SebastianChatLauncher({
               </button>
             </header>
 
-            <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`max-w-[88%] rounded-2xl px-3 py-2 text-sm ${
-                    message.role === 'assistant'
-                      ? 'bg-muted text-foreground whitespace-pre-line'
-                      : 'ml-auto bg-primary text-primary-foreground whitespace-pre-line'
-                  }`}
-                >
-                  {message.text}
+            <div className="relative flex min-h-0 flex-1 flex-col">
+              <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`max-w-[88%] rounded-2xl px-3 py-2 text-sm ${
+                      message.role === 'assistant'
+                        ? 'bg-muted text-foreground whitespace-pre-line'
+                        : 'ml-auto bg-primary text-primary-foreground whitespace-pre-line'
+                    }`}
+                  >
+                    {message.text}
+                  </div>
+                ))}
+                {isResponding && (
+                  <div className="inline-flex items-center gap-2 rounded-2xl bg-muted px-3 py-2 text-xs text-muted-foreground">
+                    <MessageCircle className="h-3.5 w-3.5" />
+                    Sebastian is thinking...
+                  </div>
+                )}
+              </div>
+
+              <div className="border-t border-border px-4 py-3">
+                {attachedImageUrl && (
+                  <div className="mb-2 flex items-center justify-between rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <ImageIcon className="h-3.5 w-3.5" />
+                      <span className="truncate max-w-[220px]">{attachedImageName || 'Image attached'}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAttachedImageUrl(null);
+                        setAttachedImageName(null);
+                      }}
+                      className="text-xs font-medium text-primary hover:underline"
+                      disabled={isResponding || isUploadingImage || requiresUpgrade}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
+
+                {uploadError && (
+                  <p className="mb-2 text-xs text-destructive">{uploadError}</p>
+                )}
+
+                <form onSubmit={handleSubmit} className="flex items-center gap-2">
+                  <Input
+                    value={input}
+                    onChange={(event) => setInput(event.target.value)}
+                    placeholder="Ask about styling, outfits, or trips..."
+                    aria-label="Message Sebastian"
+                    maxLength={2000}
+                    disabled={requiresUpgrade}
+                  />
+                  <Button
+                    type="submit"
+                    size="icon"
+                    disabled={requiresUpgrade || (!input.trim() && !attachedImageUrl) || isResponding || isUploadingImage}
+                    aria-label="Send message"
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </form>
+                <div className="mt-2 flex items-center gap-2">
+                  <label className="inline-flex">
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      className="hidden"
+                      onChange={handleFilePick}
+                      disabled={requiresUpgrade || isResponding || isUploadingImage}
+                    />
+                    <span className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-border px-2 py-1 text-[11px] text-muted-foreground hover:bg-muted">
+                      <Paperclip className="h-3.5 w-3.5" />
+                      Attach
+                    </span>
+                  </label>
+                  {isUploadingImage && (
+                    <span className="text-[11px] text-muted-foreground">Uploading...</span>
+                  )}
                 </div>
-              ))}
-              {isResponding && (
-                <div className="inline-flex items-center gap-2 rounded-2xl bg-muted px-3 py-2 text-xs text-muted-foreground">
-                  <MessageCircle className="h-3.5 w-3.5" />
-                  Sebastian is thinking...
+                <div className="mt-2 flex items-center justify-between gap-2">
+                  <p className="text-[11px] text-muted-foreground">
+                    Ask styling, wardrobe, trip, or outfit-photo questions.
+                  </p>
+                  <Link
+                    href="/sebastian"
+                    className="text-[11px] font-medium text-primary underline-offset-2 hover:underline"
+                  >
+                    Who is Sebastian?
+                  </Link>
+                </div>
+              </div>
+
+              {requiresUpgrade && (
+                <div className="absolute inset-0 z-10 flex items-center justify-center bg-card/85 px-6 text-center backdrop-blur-[1px]">
+                  <div className="max-w-[280px] rounded-xl border border-border bg-card p-4 shadow-lg">
+                    <h3 className="text-sm font-semibold text-foreground">Unlock Sebastian</h3>
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Free plans do not include Sebastian. Upgrade to Plus or Pro for full AI stylist access.
+                    </p>
+                    <Button asChild className="mt-3 w-full" size="sm">
+                      <Link href="/settings/billing">View Plus/Pro plans</Link>
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
-
-            <div className="border-t border-border px-4 py-3">
-              {attachedImageUrl && (
-                <div className="mb-2 flex items-center justify-between rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <ImageIcon className="h-3.5 w-3.5" />
-                    <span className="truncate max-w-[220px]">{attachedImageName || 'Image attached'}</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAttachedImageUrl(null);
-                      setAttachedImageName(null);
-                    }}
-                    className="text-xs font-medium text-primary hover:underline"
-                    disabled={isResponding || isUploadingImage}
-                  >
-                    Remove
-                  </button>
-                </div>
-              )}
-
-              {uploadError && (
-                <p className="mb-2 text-xs text-destructive">{uploadError}</p>
-              )}
-
-              <form onSubmit={handleSubmit} className="flex items-center gap-2">
-                <Input
-                  value={input}
-                  onChange={(event) => setInput(event.target.value)}
-                  placeholder="Ask about styling, outfits, or trips..."
-                  aria-label="Message Sebastian"
-                  maxLength={2000}
-                />
-                <Button
-                  type="submit"
-                  size="icon"
-                  disabled={(!input.trim() && !attachedImageUrl) || isResponding || isUploadingImage}
-                  aria-label="Send message"
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-              </form>
-              <div className="mt-2 flex items-center gap-2">
-                <label className="inline-flex">
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    className="hidden"
-                    onChange={handleFilePick}
-                    disabled={isResponding || isUploadingImage}
-                  />
-                  <span className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-border px-2 py-1 text-[11px] text-muted-foreground hover:bg-muted">
-                    <Paperclip className="h-3.5 w-3.5" />
-                    Attach
-                  </span>
-                </label>
-                {isUploadingImage && (
-                  <span className="text-[11px] text-muted-foreground">Uploading...</span>
-                )}
-              </div>
-              <div className="mt-2 flex items-center justify-between gap-2">
-                <p className="text-[11px] text-muted-foreground">
-                  Ask styling, wardrobe, trip, or outfit-photo questions.
-                </p>
-                <Link
-                  href="/sebastian"
-                  className="text-[11px] font-medium text-primary underline-offset-2 hover:underline"
-                >
-                  Who is Sebastian?
-                </Link>
-              </div>
+            
+            <div className="sr-only" aria-live="polite">
+              {requiresUpgrade ? 'Sebastian is locked for free plans.' : ''}
             </div>
           </section>
         </>
