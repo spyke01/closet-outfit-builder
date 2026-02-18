@@ -5,7 +5,6 @@ import { createLogger } from '@/lib/utils/logger';
 const logger = createLogger({ component: 'app-outfits-outfits-page-client' });
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useOutfits, useDeleteOutfit } from '@/lib/hooks/use-outfits';
-import { OutfitList } from '@/components/outfit-list';
 import { OutfitSimpleLayout } from '@/components/outfit-simple-layout';
 import { OutfitGridLayout } from '@/components/outfit-grid-layout';
 import { ScoreCircle } from '@/components/score-circle';
@@ -15,8 +14,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Plus, 
   Filter, 
-  Grid, 
-  List, 
   Search,
   Heart,
   AlertCircle,
@@ -42,7 +39,6 @@ export function OutfitsPageClient() {
   const searchParams = useSearchParams();
   const searchParamsKey = searchParams.toString();
 
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [layoutType, setLayoutType] = useState<'grid' | 'visual'>('grid');
   const [showFilters, setShowFilters] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -75,17 +71,14 @@ export function OutfitsPageClient() {
     const nextSearch = params.get('q') ?? '';
     const nextFilter = params.get('filter');
     const nextSort = params.get('sort');
-    const nextView = params.get('view');
     const nextLayout = params.get('layout');
     const normalizedFilter: FilterBy = FILTER_OPTIONS.includes(nextFilter as FilterBy) ? nextFilter as FilterBy : 'all';
     const normalizedSort: SortBy = SORT_OPTIONS.includes(nextSort as SortBy) ? nextSort as SortBy : 'newest';
-    const normalizedView: 'grid' | 'list' = nextView === 'list' ? 'list' : 'grid';
     const normalizedLayout: 'grid' | 'visual' = nextLayout === 'visual' ? 'visual' : 'grid';
 
     setSearchTerm(prev => (prev === nextSearch ? prev : nextSearch));
     setFilterBy(prev => (prev === normalizedFilter ? prev : normalizedFilter));
     setSortBy(prev => (prev === normalizedSort ? prev : normalizedSort));
-    setViewMode(prev => (prev === normalizedView ? prev : normalizedView));
     setLayoutType(prev => (prev === normalizedLayout ? prev : normalizedLayout));
   }, [searchParamsKey]);
 
@@ -157,11 +150,6 @@ export function OutfitsPageClient() {
   const handleSortChange = (value: SortBy) => {
     setSortBy(value);
     updateQueryParams({ sort: value === 'newest' ? null : value });
-  };
-
-  const handleViewModeChange = (value: 'grid' | 'list') => {
-    setViewMode(value);
-    updateQueryParams({ view: value === 'grid' ? null : value });
   };
 
   const handleLayoutTypeChange = (value: 'grid' | 'visual') => {
@@ -248,47 +236,25 @@ export function OutfitsPageClient() {
             </Button>
             
             <div className="flex border border-border rounded-lg">
-                <Button
-                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                  size="default"
-                  onClick={() => handleViewModeChange('grid')}
-                  className="h-10 rounded-r-none"
-                >
-                  <Grid size={16} />
-                </Button>
-                <Button
-                  variant={viewMode === 'list' ? 'default' : 'ghost'}
-                  size="default"
-                  onClick={() => handleViewModeChange('list')}
-                  className="h-10 rounded-l-none"
-                >
-                  <List size={16} />
-                </Button>
+              <Button
+                variant={layoutType === 'grid' ? 'default' : 'ghost'}
+                size="default"
+                onClick={() => handleLayoutTypeChange('grid')}
+                className="h-10 rounded-r-none text-xs px-3"
+                title="Organized Grid"
+              >
+                Grid
+              </Button>
+              <Button
+                variant={layoutType === 'visual' ? 'default' : 'ghost'}
+                size="default"
+                onClick={() => handleLayoutTypeChange('visual')}
+                className="h-10 rounded-l-none text-xs px-3"
+                title="Original Visual"
+              >
+                Visual
+              </Button>
             </div>
-            
-            {/* Layout Type Toggle (only show in grid mode) */}
-            {viewMode === 'grid' && (
-              <div className="flex border border-border rounded-lg">
-                <Button
-                  variant={layoutType === 'grid' ? 'default' : 'ghost'}
-                  size="default"
-                  onClick={() => handleLayoutTypeChange('grid')}
-                  className="h-10 rounded-r-none text-xs px-3"
-                  title="Organized Grid"
-                >
-                  Grid
-                </Button>
-                <Button
-                  variant={layoutType === 'visual' ? 'default' : 'ghost'}
-                  size="default"
-                  onClick={() => handleLayoutTypeChange('visual')}
-                  className="h-10 rounded-l-none text-xs px-3"
-                  title="Original Visual"
-                >
-                  Visual
-                </Button>
-              </div>
-            )}
             
             <Link href="/outfits/create">
               <Button className="flex items-center gap-2">
@@ -470,7 +436,7 @@ export function OutfitsPageClient() {
               </>
             )}
           </div>
-        ) : viewMode === 'grid' ? (
+        ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredAndSortedOutfits.map(outfit => (
               <div
@@ -570,11 +536,6 @@ export function OutfitsPageClient() {
               </div>
             ))}
           </div>
-        ) : (
-          <OutfitList
-            outfits={filteredAndSortedOutfits}
-            onOutfitSelect={handleOutfitSelect}
-          />
         )}
 
         {/* Delete Confirmation Dialog */}

@@ -6,10 +6,9 @@ import { useCategories } from '@/lib/hooks/use-categories';
 import { useWardrobeItems } from '@/lib/hooks/use-wardrobe-items';
 import { useGenerateWardrobeItemImage } from '@/lib/hooks/use-wardrobe-item-image-generation';
 import { useWardrobeRealtime } from '@/lib/hooks/use-realtime-wardrobe';
-import { ItemsList } from '@/components/items-list';
 import { WardrobeSearchFiltersWithErrorBoundary as WardrobeSearchFilters } from '@/components/dynamic/wardrobe-search-filters-dynamic';
 import { Button } from '@/components/ui/button';
-import { CircleDashed, Grid, List, Loader2, Shirt } from 'lucide-react';
+import { CircleDashed, Loader2, Shirt } from 'lucide-react';
 
 
 import { WardrobeItem } from '@/lib/types/database';
@@ -22,7 +21,6 @@ export function WardrobePageClient() {
   const searchParamsKey = searchParams.toString();
 
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState<'default' | 'name-asc' | 'name-desc'>('default');
@@ -56,7 +54,6 @@ export function WardrobePageClient() {
     const q = params.get('q') ?? '';
     const tagsParam = params.get('tags') ?? '';
     const categoriesParam = params.get('categories') ?? '';
-    const viewParam = params.get('view');
     const sortParam = params.get('sort');
 
     const tags = tagsParam ? tagsParam.split(',').filter(Boolean) : [];
@@ -65,7 +62,6 @@ export function WardrobePageClient() {
     setSearchTerm(prev => (prev === q ? prev : q));
     setSelectedTags(new Set(tags));
     setSelectedCategories(new Set(categoryIds));
-    setViewMode(viewParam === 'list' ? 'list' : 'grid');
     setSortBy(sortParam === 'name-asc' || sortParam === 'name-desc' ? sortParam : 'default');
   }, [searchParamsKey]);
 
@@ -331,38 +327,8 @@ export function WardrobePageClient() {
           totalCount={items.length}
         />
 
-        {/* View Mode Toggle */}
-        <div className="flex justify-end">
-          <div className="flex border border-border rounded-lg">
-            <Button
-              variant={viewMode === 'grid' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => {
-                setViewMode('grid');
-                updateQueryParams({ view: null });
-              }}
-              className="rounded-r-none"
-            >
-              <Grid size={16} />
-            </Button>
-            <Button
-              variant={viewMode === 'list' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => {
-                setViewMode('list');
-                updateQueryParams({ view: 'list' });
-              }}
-              className="rounded-l-none"
-            >
-              <List size={16} />
-            </Button>
-          </div>
-        </div>
-
         {/* Content */}
-        {viewMode === 'grid' ? (
-          // Grid View
-          selectedCategories.size === 0 ? (
+        {selectedCategories.size === 0 ? (
             // Show all categories with their items
             <div className="space-y-8">
               {categories.map(category => {
@@ -572,75 +538,6 @@ export function WardrobePageClient() {
                   })}
               </div>
             )
-          )
-        ) : (
-          // List View
-          selectedCategories.size === 0 ? (
-            // Show all categories with their items in list view
-            <div className="space-y-8">
-              {categories.map(category => {
-                const categoryItems = itemsByCategory.get(category.id) || [];
-                
-                if (categoryItems.length === 0) return null;
-                
-                return (
-                  <div key={category.id} className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-semibold text-foreground">
-                        {category.name}
-                      </h2>
-                      <span className="text-sm text-muted-foreground">
-                        {categoryItems.length} item{categoryItems.length !== 1 ? 's' : ''}
-                      </span>
-                    </div>
-                    
-                    <ItemsList
-                      items={categoryItems}
-                      onItemSelect={handleItemSelect}
-                      showBrand={true}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          ) : selectedCategories.size === 1 ? (
-            // Single category selected - show as flat list
-            <ItemsList
-              items={filteredItems}
-              onItemSelect={handleItemSelect}
-              showBrand={true}
-            />
-          ) : (
-            // Multiple categories selected - show grouped by category in list view
-            <div className="space-y-8">
-              {categories
-                .filter(category => selectedCategories.has(category.id))
-                .map(category => {
-                  const categoryItems = itemsByCategory.get(category.id) || [];
-                  
-                  if (categoryItems.length === 0) return null;
-                  
-                  return (
-                    <div key={category.id} className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-foreground">
-                          {category.name}
-                        </h2>
-                        <span className="text-sm text-muted-foreground">
-                          {categoryItems.length} item{categoryItems.length !== 1 ? 's' : ''}
-                        </span>
-                      </div>
-                      
-                      <ItemsList
-                        items={categoryItems}
-                        onItemSelect={handleItemSelect}
-                        showBrand={true}
-                      />
-                    </div>
-                  );
-                })}
-            </div>
-          )
         )}
 
         {/* Empty states */}
