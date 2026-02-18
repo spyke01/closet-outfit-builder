@@ -139,6 +139,18 @@ export const TopBar: React.FC<TopBarProps> = ({
   const { entitlements, loading: entitlementsLoading } = useBillingEntitlements(Boolean(validatedUser));
   const canAccessSebastian = entitlements?.effectivePlanCode === 'plus' || entitlements?.effectivePlanCode === 'pro';
   const showSebastianUpsell = Boolean(validatedUser) && !entitlementsLoading && !canAccessSebastian;
+  const desktopNavLinkClass = (isActive: boolean) =>
+    `flex cursor-pointer items-center gap-2 px-4 h-16 -mb-0.5 border-b-2 text-sm transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+      isActive
+        ? 'border-[var(--app-nav-border-active)] text-foreground font-semibold'
+        : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+    }`;
+  const mobileNavLinkClass = (isActive: boolean) =>
+    `flex cursor-pointer items-center gap-3 px-4 py-3 rounded-lg text-base transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+      isActive
+        ? 'text-foreground font-semibold border-l-2 border-[var(--app-nav-border-strong)]'
+        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+    }`;
 
   // Get user initials for avatar
   const getUserInitials = () => {
@@ -147,7 +159,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   };
 
   return (
-    <div className="bg-card border-b border-border">
+    <div className="bg-card border-b-2 border-[var(--app-nav-border-strong)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left: Logo + Mobile Menu Button + Desktop Navigation */}
@@ -183,14 +195,10 @@ export const TopBar: React.FC<TopBarProps> = ({
             </button>
 
             {validatedUser && (
-              <nav className="hidden md:flex items-center gap-1 ml-2">
+              <nav className="hidden md:flex items-center gap-1 ml-6">
                 <Link
                   href="/today"
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                    currentView === 'today'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
+                  className={desktopNavLinkClass(currentView === 'today')}
                   aria-label="View today's outfit"
                   aria-current={currentView === 'today' ? 'page' : undefined}
                   {...getNavigationProps('/today')}
@@ -200,11 +208,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 </Link>
                 <Link
                   href="/wardrobe"
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                    currentView === 'wardrobe'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
+                  className={desktopNavLinkClass(currentView === 'wardrobe')}
                   aria-label="View wardrobe"
                   aria-current={currentView === 'wardrobe' ? 'page' : undefined}
                   {...getNavigationProps('/wardrobe')}
@@ -214,11 +218,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 </Link>
                 <Link
                   href="/calendar"
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                    currentView === 'calendar'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
+                  className={desktopNavLinkClass(currentView === 'calendar')}
                   aria-label="View outfit calendar"
                   aria-current={currentView === 'calendar' ? 'page' : undefined}
                   {...getNavigationProps('/calendar')}
@@ -228,11 +228,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 </Link>
                 <Link
                   href="/outfits"
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                    currentView === 'outfits'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
+                  className={desktopNavLinkClass(currentView === 'outfits')}
                   aria-label="View outfits"
                   aria-current={currentView === 'outfits' ? 'page' : undefined}
                   {...getNavigationProps('/outfits')}
@@ -242,11 +238,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 </Link>
                 <Link
                   href="/sizes"
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                    currentView === 'sizes'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
+                  className={desktopNavLinkClass(currentView === 'sizes')}
                   aria-label="View my sizes"
                   aria-current={currentView === 'sizes' ? 'page' : undefined}
                   {...getNavigationProps('/sizes')}
@@ -260,9 +252,6 @@ export const TopBar: React.FC<TopBarProps> = ({
 
           {/* Right: Weather + User Menu or Auth Buttons */}
           <div className="flex items-center gap-3">
-            {validatedUser && canAccessSebastian && (
-              <SebastianChatLauncher className="min-h-[40px] bg-secondary text-secondary-foreground hover:bg-secondary/90" />
-            )}
             {showSebastianUpsell && (
               <Button asChild variant="outline" size="sm" className="min-h-[40px]">
                 <Link href="/settings/billing">Unlock Sebastian</Link>
@@ -270,7 +259,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             )}
 
             {/* Weather widget - always visible when enabled */}
-            <WeatherWidget className="text-sm" />
+            <WeatherWidget className="text-sm" compact />
 
             {validatedUser ? (
               /* User dropdown menu */
@@ -369,11 +358,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             <Link
               href="/today"
               onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                currentView === 'today'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-              }`}
+              className={mobileNavLinkClass(currentView === 'today')}
               aria-label="View today's outfit"
               aria-current={currentView === 'today' ? 'page' : undefined}
             >
@@ -383,11 +368,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             <Link
               href="/wardrobe"
               onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                currentView === 'wardrobe'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-              }`}
+              className={mobileNavLinkClass(currentView === 'wardrobe')}
               aria-label="View wardrobe"
               aria-current={currentView === 'wardrobe' ? 'page' : undefined}
             >
@@ -397,11 +378,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             <Link
               href="/outfits"
               onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                currentView === 'outfits'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-              }`}
+              className={mobileNavLinkClass(currentView === 'outfits')}
               aria-label="View outfits"
               aria-current={currentView === 'outfits' ? 'page' : undefined}
             >
@@ -411,11 +388,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             <Link
               href="/calendar"
               onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                currentView === 'calendar'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-              }`}
+              className={mobileNavLinkClass(currentView === 'calendar')}
               aria-label="View outfit calendar"
               aria-current={currentView === 'calendar' ? 'page' : undefined}
             >
@@ -425,11 +398,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             <Link
               href="/sizes"
               onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                currentView === 'sizes'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-              }`}
+              className={mobileNavLinkClass(currentView === 'sizes')}
               aria-label="View my sizes"
               aria-current={currentView === 'sizes' ? 'page' : undefined}
             >
@@ -438,6 +407,9 @@ export const TopBar: React.FC<TopBarProps> = ({
             </Link>
           </nav>
         </div>
+      )}
+      {validatedUser && canAccessSebastian && (
+        <SebastianChatLauncher variant="floating" />
       )}
     </div>
   );

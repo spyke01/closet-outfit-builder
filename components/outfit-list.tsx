@@ -71,7 +71,7 @@ export const OutfitList: React.FC<OutfitListProps> = ({
             aria-label={`Select outfit: ${outfit.name || 'Untitled Outfit'}`}
           >
             <div className="flex items-center justify-between mb-2">
-              <h4 className="font-medium text-foreground truncate">
+              <h4 className="font-bold text-foreground truncate">
                 {outfit.name || 'Untitled Outfit'}
               </h4>
               {typeof outfit.score === 'number' && (

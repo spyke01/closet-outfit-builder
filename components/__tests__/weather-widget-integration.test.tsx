@@ -124,7 +124,7 @@ describe('WeatherWidget Integration', () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText('Loading weather…')).toBeInTheDocument();
+    expect(screen.getByText('Loading…')).toBeInTheDocument();
   });
 
   it('should show weather data for authenticated users', () => {
@@ -155,6 +155,36 @@ describe('WeatherWidget Integration', () => {
     );
 
     expect(screen.getByText('75°')).toBeInTheDocument();
+    expect(screen.queryByText('clear sky')).not.toBeInTheDocument();
+  });
+
+  it('should show condition text when compact is disabled', () => {
+    mockUseAuth.mockReturnValue({
+      user: mockUser,
+      loading: false,
+      isAuthenticated: true,
+      userId: '123'
+    });
+    mockUseConditionalWeather.mockReturnValue({
+      current: {
+        temperature: 75,
+        condition: 'clear sky',
+        icon: '01d',
+      },
+      forecast: [],
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+      usingFallback: false,
+      weatherEnabled: true,
+    });
+
+    render(
+      <TestWrapper>
+        <WeatherWidget compact={false} />
+      </TestWrapper>
+    );
+
     expect(screen.getByText('clear sky')).toBeInTheDocument();
   });
 
@@ -186,7 +216,7 @@ describe('WeatherWidget Integration', () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText('Weather service unavailable')).toBeInTheDocument();
+    expect(screen.getByText('Weather error')).toBeInTheDocument();
     expect(screen.getByText('Retry')).toBeInTheDocument();
   });
 

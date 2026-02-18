@@ -7,7 +7,6 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useOutfits, useDeleteOutfit } from '@/lib/hooks/use-outfits';
 import { OutfitSimpleLayout } from '@/components/outfit-simple-layout';
 import { OutfitGridLayout } from '@/components/outfit-grid-layout';
-import { ScoreCircle } from '@/components/score-circle';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -23,8 +22,6 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { Outfit } from '@/lib/types/database';
-import { type OutfitSelection as ScoreOutfitSelection } from '@/lib/schemas';
-import { convertOutfitToSelection, canGenerateScoreBreakdown } from '@/lib/utils/outfit-conversion';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 const FILTER_OPTIONS = ['all', 'loved', 'curated', 'generated'] as const;
@@ -455,26 +452,11 @@ export function OutfitsPageClient() {
                 {/* Card Header */}
                 <div className="p-3 border-b border-border">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-medium text-foreground text-sm truncate flex-1 mr-2">
+                    <h3 className="font-semibold text-foreground text-base truncate flex-1 mr-2">
                       {outfit.name || 'Untitled Outfit'}
                     </h3>
                     
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      {typeof outfit.score === 'number' && (
-                        <ScoreCircle
-                          score={outfit.score}
-                          size="sm"
-                          showLabel={false}
-                          outfit={canGenerateScoreBreakdown(outfit) ? (() => {
-                            const selection = convertOutfitToSelection(outfit);
-                            return selection ? ({
-                              ...selection,
-                              tuck_style: selection.tuck_style || 'Untucked'
-                            } as unknown as ScoreOutfitSelection) : undefined;
-                          })() : undefined}
-                          className="scale-75 -m-2"
-                        />
-                      )}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();

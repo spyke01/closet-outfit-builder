@@ -13,10 +13,12 @@ import { useAuth } from '@/lib/hooks/use-auth';
 
 export interface WeatherWidgetProps {
   className?: string;
+  compact?: boolean;
 }
 
 export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
-  className = ""
+  className = "",
+  compact = true,
 }) => {
   // ✅ Call all hooks first (Rules of Hooks)
   const { user } = useAuth();
@@ -61,11 +63,13 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
 
   if (loading) {
     return (
-      <div className={`flex items-center gap-2 ${className}`}>
+      <div
+        className={`inline-flex items-center gap-2 rounded-full border border-[var(--app-weather-badge-border)] bg-[var(--app-weather-badge-bg)] px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] ${className}`}
+      >
         <SpinningIcon>
           <RefreshCw size={16} className="text-muted-foreground" />
         </SpinningIcon>
-        <span className="text-muted-foreground text-xs">Loading weather…</span>
+        <span className="text-muted-foreground text-xs">Loading…</span>
       </div>
     );
   }
@@ -77,15 +81,17 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
                          !error.error.includes('Maximum retry attempts');
 
     return (
-      <div className={`flex items-center gap-2 ${className}`}>
+      <div
+        className={`inline-flex items-center gap-2 rounded-full border border-[var(--app-weather-badge-border)] bg-[var(--app-weather-badge-bg)] px-3 py-1.5 ${className}`}
+      >
         <AlertCircle size={16} className="text-destructive" />
-        <span className="text-destructive text-xs max-w-48 truncate" title={error.error}>
-          {error.error}
+        <span className="text-destructive text-xs max-w-24 truncate" title={error.error}>
+          Weather error
         </span>
         {isRecoverable && (
           <button
             onClick={retry}
-            className="text-xs text-primary hover:underline ml-1 flex-shrink-0"
+            className="text-xs text-primary hover:underline flex-shrink-0"
             aria-label="Retry loading weather"
           >
             Retry
@@ -100,17 +106,21 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
   }
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div
+      className={`inline-flex items-center gap-2 rounded-full border border-[var(--app-weather-badge-border)] bg-[var(--app-weather-badge-bg)] px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] ${className}`}
+    >
       {getWeatherIcon(current.condition)}
-      <span className="text-muted-foreground text-sm font-medium">
+      <span className="text-foreground text-sm font-semibold tabular-nums">
         {Math.round(current.temperature)}°
       </span>
-      <span className="text-muted-foreground text-xs hidden sm:inline">
-        {current.condition}
-      </span>
+      {!compact && (
+        <span className="text-muted-foreground text-xs hidden sm:inline">
+          {current.condition}
+        </span>
+      )}
       {usingFallback && (
         <span 
-          className="text-amber-600 dark:text-amber-400 text-xs"
+          className="text-muted-foreground text-xs"
           title="Using estimated weather data"
         >
           ~

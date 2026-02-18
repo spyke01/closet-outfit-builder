@@ -88,7 +88,7 @@ export function OutfitFlatLayout({
       {/* Header with total score */}
       {showHeader && (
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-foreground">
+          <h3 className="text-lg font-bold text-foreground">
             Outfit Items ({items.length})
           </h3>
           {outfitScore > 0 && (
@@ -181,7 +181,7 @@ export function OutfitFlatLayout({
                 </div>
 
                 {/* Item name */}
-                <h4 className="font-medium text-foreground text-sm leading-tight line-clamp-2 break-words" title={item.name}>
+                <h4 className="font-semibold text-foreground text-sm leading-tight line-clamp-2 break-words" title={item.name}>
                   {item.name}
                 </h4>
 

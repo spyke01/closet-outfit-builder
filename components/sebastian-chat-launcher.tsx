@@ -6,6 +6,7 @@ import { Image as ImageIcon, MessageCircle, Paperclip, Send, X } from 'lucide-re
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SebastianAvatar } from '@/components/sebastian-avatar';
+import { cn } from '@/lib/utils';
 import {
   SEBASTIAN_GREETING,
 } from '@/lib/services/assistant/persona';
@@ -26,6 +27,8 @@ interface ChatApiPayload {
 
 interface SebastianChatLauncherProps {
   className?: string;
+  variant?: 'inline' | 'floating';
+  floatingOffsetClassName?: string;
 }
 
 interface WeatherHintPayload {
@@ -121,7 +124,11 @@ async function getLiveWeatherHint(): Promise<WeatherHintPayload | null> {
   }
 }
 
-export function SebastianChatLauncher({ className }: SebastianChatLauncherProps) {
+export function SebastianChatLauncher({
+  className,
+  variant = 'inline',
+  floatingOffsetClassName,
+}: SebastianChatLauncherProps) {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
   const [isResponding, setIsResponding] = useState(false);
@@ -322,17 +329,32 @@ export function SebastianChatLauncher({ className }: SebastianChatLauncherProps)
 
   return (
     <>
-      <Button
-        type="button"
-        variant="secondary"
-        className={className}
-        onClick={() => setOpen(true)}
-        aria-label="Ask Sebastian"
-      >
-        <SebastianAvatar className="mr-2 h-6 w-6 border-primary/40" />
-        <span className="hidden sm:inline">Ask Sebastian</span>
-        <span className="sm:hidden">Ask</span>
-      </Button>
+      {variant === 'floating' ? (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label="Ask Sebastian"
+          className={cn(
+            "fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] right-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-border bg-foreground text-background shadow-lg transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:border-border dark:bg-[#111A20] dark:text-white",
+            floatingOffsetClassName,
+            className,
+          )}
+        >
+          <MessageCircle className="h-5 w-5" />
+        </button>
+      ) : (
+        <Button
+          type="button"
+          variant="secondary"
+          className={className}
+          onClick={() => setOpen(true)}
+          aria-label="Ask Sebastian"
+        >
+          <SebastianAvatar className="mr-2 h-6 w-6 border-primary/40" />
+          <span className="hidden sm:inline">Ask Sebastian</span>
+          <span className="sm:hidden">Ask</span>
+        </Button>
+      )}
 
       {open && (
         <>

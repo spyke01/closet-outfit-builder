@@ -98,7 +98,7 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
         
         {showLabels && (
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 min-w-0">
-            <p className="text-white text-xs font-medium truncate" title={item.name}>
+            <p className="text-white text-xs font-semibold truncate" title={item.name}>
               {item.name}
             </p>
           </div>
@@ -109,7 +109,7 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
 
   return (
     <div className={`${sizeClasses[size]} ${className}`}>
-      <div className="w-full h-full p-3 bg-card rounded-lg border border-border">
+      <div className="w-full h-full p-3">
         {/* Flexible Grid Layout - up to 3 rows, 2-3 columns for 8 categories */}
         <div className="h-full grid gap-2 place-items-center" style={{
           gridTemplateColumns: items.length <= 2 ? 'repeat(2, 1fr)' : 

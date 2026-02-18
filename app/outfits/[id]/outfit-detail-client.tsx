@@ -11,6 +11,8 @@ import { OutfitFlatLayout } from '@/components/outfit-flat-layout';
 import { ItemsGridWithErrorBoundary as ItemsGrid } from '@/components/dynamic/items-grid-dynamic';
 import { OutfitDisplayWithErrorBoundary as OutfitDisplay } from '@/components/dynamic/outfit-display-dynamic';
 import { convertOutfitToSelection } from '@/lib/utils/outfit-conversion';
+import { ScoreBreakdown } from '@/components/score-breakdown';
+import { type ScoreBreakdownData } from '@/components/score-circle';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -57,6 +59,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState<Partial<Outfit>>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showScoreBreakdownModal, setShowScoreBreakdownModal] = useState(false);
   
   // Edit mode state for item selection
   const [selection, setSelection] = useState<OutfitSelection>({
@@ -81,6 +84,13 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
       .map(([, item]) => (item as WardrobeItem).id);
   }, [selection, isEditing]);
 
+  const viewModeItemIds = useMemo(() => {
+    if (isEditing || !outfit?.items) return [];
+    return outfit.items.map(item => item.id);
+  }, [isEditing, outfit?.items]);
+
+  const scoreItemIds = isEditing ? selectedItemIds : viewModeItemIds;
+
   // Check if outfit meets minimum requirements (shirt + pants)
   const hasMinimumOutfit = useMemo(() => {
     if (!isEditing) return true; // Always valid when not editing
@@ -88,8 +98,24 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
   }, [selection.shirt, selection.undershirt, selection.pants, isEditing]);
 
   // Score and duplicate checking for edit mode
-  const { data: scoreData } = useScoreOutfit(selectedItemIds);
+  const { data: scoreData } = useScoreOutfit(scoreItemIds);
   const { data: isDuplicate } = useCheckOutfitDuplicate(selectedItemIds, outfit?.id);
+  const scoreBreakdown = useMemo<ScoreBreakdownData | null>(() => {
+    const breakdown = scoreData?.breakdown;
+    if (!breakdown || typeof breakdown !== 'object') return null;
+
+    const candidate = breakdown as Partial<ScoreBreakdownData>;
+    const hasRequiredFields =
+      typeof candidate.formalityScore === 'number' &&
+      typeof candidate.formalityWeight === 'number' &&
+      typeof candidate.consistencyBonus === 'number' &&
+      typeof candidate.consistencyWeight === 'number' &&
+      Array.isArray(candidate.layerAdjustments) &&
+      typeof candidate.total === 'number' &&
+      typeof candidate.percentage === 'number';
+
+    return hasRequiredFields ? (candidate as ScoreBreakdownData) : null;
+  }, [scoreData?.breakdown]);
 
   // Create category lookup map for O(1) performance
   const categoryMap = useMemo(() => {
@@ -474,9 +500,20 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
                 </div>
                 <div className="rounded-lg border border-border bg-card/60 p-4 space-y-2">
                   <p className="text-xs font-medium tracking-wide uppercase text-muted-foreground">Outfit Score</p>
-                  <div className="flex items-center gap-2">
-                    <Star className="h-4 w-4 text-yellow-500" />
-                    <p className="text-foreground">{outfit.score || 0}/100</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <Star className="h-4 w-4 text-yellow-500" />
+                      <p className="text-foreground">{scoreData?.score ?? outfit.score ?? 0}/100</p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowScoreBreakdownModal(true)}
+                      disabled={!scoreBreakdown}
+                    >
+                      Explain
+                    </Button>
                   </div>
                 </div>
                 <div className="rounded-lg border border-border bg-card/60 p-4 space-y-2">
@@ -642,6 +679,37 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
                 {updateOutfitMutation.isPending ? 'Saving...' : 'Save'}
               </Button>
             </div>
+          </div>
+        )}
+
+        {showScoreBreakdownModal && scoreBreakdown && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            onClick={() => setShowScoreBreakdownModal(false)}
+            role="presentation"
+          >
+            <Card
+              className="w-full max-w-lg"
+              onClick={(event) => event.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Outfit score explanation"
+            >
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2">
+                  <Star className="h-4 w-4 text-yellow-500" />
+                  Outfit Score Breakdown
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <ScoreBreakdown breakdown={scoreBreakdown} showDetails={true} />
+                <div className="flex justify-end">
+                  <Button type="button" onClick={() => setShowScoreBreakdownModal(false)}>
+                    Close
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )}
 

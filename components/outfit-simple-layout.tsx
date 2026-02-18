@@ -234,7 +234,7 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
 
       {/* Item count badge */}
       <div className="absolute bottom-2 right-2">
-        <div className="bg-card/90 backdrop-blur-sm text-muted-foreground text-xs px-2 py-1 rounded-full border border-border shadow-sm">
+        <div className="bg-[var(--app-badge-bg)] text-[var(--app-badge-text)] text-xs px-2 py-1 rounded-full border border-[var(--app-badge-border)] shadow-sm">
           {items.length} item{items.length !== 1 ? 's' : ''}
         </div>
       </div>
