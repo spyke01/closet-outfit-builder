@@ -344,7 +344,7 @@ export function SebastianChatLauncher({
           )}
         >
           <MessageCircle className="h-7 w-7" />
-          <Sparkles className="pointer-events-none absolute right-3 top-3 h-4 w-4" aria-hidden="true" />
+          <Sparkles className="pointer-events-none absolute right-5 top-4 h-3 w-3" aria-hidden="true" />
         </button>
       ) : (
         <Button
