@@ -120,9 +120,9 @@ function buildPrompt(params: {
   const resolvedBrand = brand.trim();
 
   return [
-    '## Transparent Background Garment Image Generator Prompt',
+    '## White Background Garment Image Generator Prompt',
     '',
-    `Create a high-resolution product-style PNG image of a **${colorLabel} ${material} ${garment}** with a fully transparent background.`,
+    `Create a high-resolution product-style PNG image of a **${colorLabel} ${material} ${garment}** on a pure solid white background (#FFFFFF).`,
     '',
     '### Garment Requirements',
     '',
@@ -137,11 +137,13 @@ function buildPrompt(params: {
     '',
     '### Background Requirements',
     '',
-    '- Fully transparent background',
-    '- No shadows touching a visible surface',
+    '- Pure solid white background (#FFFFFF) only',
+    '- No transparency or alpha channel',
+    '- No checkerboard, grid, or tiled pattern background',
+    '- No drop shadow or cast shadow of any kind',
     '- No floor line',
     '- No gradient',
-    '- No color backdrop',
+    '- No colored backdrop',
     '- No halo artifacts',
     '',
     '### Style Requirements',
@@ -165,7 +167,7 @@ function buildPrompt(params: {
     '- Square image',
     '- Generous padding around the garment',
     '- Balanced composition suitable for grid slicing',
-    '- PNG format with true transparency',
+    '- PNG format',
   ].join('\n');
 }
 

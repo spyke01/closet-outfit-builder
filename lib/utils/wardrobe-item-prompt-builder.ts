@@ -64,9 +64,9 @@ export function buildWardrobeItemPrompt(item: WardrobeItemPromptInput): string {
   const brand = item.brand?.trim() || '';
 
   return [
-    '## Transparent Background Garment Image Generator Prompt',
+    '## White Background Garment Image Generator Prompt',
     '',
-    `Create a high-resolution product-style PNG image of a **${color} ${material} ${garment}** with a fully transparent background.`,
+    `Create a high-resolution product-style PNG image of a **${color} ${material} ${garment}** on a pure solid white background (#FFFFFF).`,
     '',
     '### Garment Requirements',
     '',
@@ -81,11 +81,13 @@ export function buildWardrobeItemPrompt(item: WardrobeItemPromptInput): string {
     '',
     '### Background Requirements',
     '',
-    '- Fully transparent background',
-    '- No shadows touching a visible surface',
+    '- Pure solid white background (#FFFFFF) only',
+    '- No transparency or alpha channel',
+    '- No checkerboard, grid, or tiled pattern background',
+    '- No drop shadow or cast shadow of any kind',
     '- No floor line',
     '- No gradient',
-    '- No color backdrop',
+    '- No colored backdrop',
     '- No halo artifacts',
     '',
     '### Style Requirements',
@@ -109,6 +111,6 @@ export function buildWardrobeItemPrompt(item: WardrobeItemPromptInput): string {
     '- Square image',
     '- Generous padding around the garment',
     '- Balanced composition suitable for grid slicing',
-    '- PNG format with true transparency',
+    '- PNG format',
   ].join('\n');
 }
