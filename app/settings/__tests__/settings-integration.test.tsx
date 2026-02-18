@@ -1,18 +1,18 @@
 import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import type { ReactNode } from 'react';
 import { SettingsPageClient } from '../settings-page-client';
 import { ThemeProvider } from 'next-themes';
 
-// Mock window.matchMedia
 beforeAll(() => {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
-    value: vi.fn().mockImplementation(query => ({
+    value: vi.fn().mockImplementation((query) => ({
       matches: false,
       media: query,
       onchange: null,
-      addListener: vi.fn(), // deprecated
-      removeListener: vi.fn(), // deprecated
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
       dispatchEvent: vi.fn(),
@@ -20,51 +20,65 @@ beforeAll(() => {
   });
 });
 
-// Mock Supabase client
-vi.mock('@/lib/supabase/client', () => ({
-  createClient: () => ({
-    from: () => ({
-      select: () => ({
-        eq: () => ({
-          single: () => Promise.resolve({
-            data: {
-              id: 'test-id',
-              user_id: 'test-user',
-              theme: 'system',
-              show_brands: true,
-              weather_enabled: true,
-              default_tuck_style: 'Untucked',
-              created_at: '2024-01-01T00:00:00Z',
-              updated_at: '2024-01-01T00:00:00Z',
-            },
-            error: null,
+vi.mock('@/lib/supabase/client', () => {
+  const mockPreferences = {
+    id: 'test-id',
+    user_id: 'test-user',
+    theme: 'system',
+    show_brands: true,
+    weather_enabled: true,
+    default_tuck_style: 'Untucked',
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
+  };
+
+  return {
+    createClient: () => ({
+      from: () => ({
+        select: () => ({
+          eq: () => ({
+            single: () => Promise.resolve({ data: mockPreferences, error: null }),
           }),
         }),
-      }),
-      update: () => ({
-        eq: () => ({
-          select: () => ({
-            single: () => Promise.resolve({
-              data: {
-                id: 'test-id',
-                user_id: 'test-user',
-                theme: 'dark',
-                show_brands: false,
-                weather_enabled: false,
-                default_tuck_style: 'Tucked',
-                created_at: '2024-01-01T00:00:00Z',
-                updated_at: '2024-01-01T00:00:00Z',
-              },
-              error: null,
+        update: () => ({
+          eq: () => ({
+            select: () => ({
+              single: () => Promise.resolve({ data: mockPreferences, error: null }),
             }),
           }),
         }),
+        insert: () => ({
+          select: () => ({
+            single: () => Promise.resolve({ data: mockPreferences, error: null }),
+          }),
+        }),
       }),
+      auth: {
+        getUser: () => Promise.resolve({
+          data: {
+            user: {
+              id: 'test-user',
+              email: 'test@example.com',
+              user_metadata: { first_name: 'Taylor', last_name: 'Smith', avatar_url: '' },
+              app_metadata: { providers: ['email'] },
+            },
+          },
+          error: null,
+        }),
+        getUserIdentities: () => Promise.resolve({
+          data: {
+            identities: [{ provider: 'email', id: 'email-identity' }],
+          },
+          error: null,
+        }),
+        updateUser: () => Promise.resolve({ data: { user: null }, error: null }),
+        linkIdentity: () => Promise.resolve({ data: null, error: null }),
+        unlinkIdentity: () => Promise.resolve({ data: {}, error: null }),
+      },
     }),
-  }),
-}));
+  };
+});
 
-// Mock auth hook
 vi.mock('@/lib/hooks/use-auth', () => ({
   useAuth: () => ({
     user: { id: 'test-user', email: 'test@example.com' },
@@ -74,16 +88,15 @@ vi.mock('@/lib/hooks/use-auth', () => ({
   }),
 }));
 
-// Mock next-themes
 vi.mock('next-themes', () => ({
   useTheme: () => ({
     theme: 'system',
     setTheme: vi.fn(),
   }),
-  ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
+  ThemeProvider: ({ children }: { children: ReactNode }) => children,
 }));
 
-const TestWrapper = ({ children }: { children: React.ReactNode }) => {
+const TestWrapper = ({ children }: { children: ReactNode }) => {
   return (
     <ThemeProvider attribute="class" defaultTheme="system">
       {children}
@@ -92,57 +105,50 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => {
 };
 
 describe('Settings Page Integration', () => {
-  it('should render settings page with all sections', async () => {
+  it('renders unified settings/profile sections', async () => {
     render(
       <TestWrapper>
         <SettingsPageClient />
       </TestWrapper>
     );
 
-    // Wait for the component to load preferences
     await waitFor(() => {
       expect(screen.getByText('Settings')).toBeInTheDocument();
     });
 
-    // Check sections
+    expect(screen.getByText('Profile')).toBeInTheDocument();
+    expect(screen.getByText('Security')).toBeInTheDocument();
+    expect(screen.getByText('Connected Accounts')).toBeInTheDocument();
     expect(screen.getByText('Appearance')).toBeInTheDocument();
     expect(screen.getByText('Display Preferences')).toBeInTheDocument();
-    expect(screen.getByText('Weather Integration')).toBeInTheDocument();
-    expect(screen.getByText('Style Preferences')).toBeInTheDocument();
-
-    // Check theme options
-    expect(screen.getByText('Light')).toBeInTheDocument();
-    expect(screen.getByText('Dark')).toBeInTheDocument();
-    expect(screen.getByText('System')).toBeInTheDocument();
-
-    // Check preference toggles
-    expect(screen.getByText('Brand Display')).toBeInTheDocument();
-    expect(screen.getByText('Weather Widget')).toBeInTheDocument();
-    expect(screen.getByText('Default Tuck Style')).toBeInTheDocument();
+    expect(screen.queryByText('Style Preferences')).not.toBeInTheDocument();
   });
 
-  it('should display preference values correctly', async () => {
+  it('does not render duplicate legacy descriptions', async () => {
     render(
       <TestWrapper>
         <SettingsPageClient />
       </TestWrapper>
     );
 
-    // Wait for preferences to load
     await waitFor(() => {
-      expect(screen.getByText('Tucked')).toBeInTheDocument();
-      expect(screen.getByText('Untucked')).toBeInTheDocument();
+      expect(screen.getByText('Show Brand Names')).toBeInTheDocument();
     });
+
+    expect(screen.queryByText('Show or hide brand names on wardrobe items and outfits')).not.toBeInTheDocument();
+    expect(screen.queryByText('Enable weather-based outfit recommendations and forecasts')).not.toBeInTheDocument();
+    expect(screen.queryByText('Choose your preferred default tuck style for new outfits')).not.toBeInTheDocument();
+    expect(screen.queryByText('Brand visibility')).not.toBeInTheDocument();
+    expect(screen.queryByText('Weather Widget')).not.toBeInTheDocument();
   });
 
-  it('should show loading state initially', () => {
+  it('shows loading state initially', () => {
     render(
       <TestWrapper>
         <SettingsPageClient />
       </TestWrapper>
     );
 
-    // Should show loading message initially
-    expect(screen.getByText('Loading your preferences...')).toBeInTheDocument();
+    expect(screen.getByText('Loading your profile and preferences...')).toBeInTheDocument();
   });
 });

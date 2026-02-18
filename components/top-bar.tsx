@@ -33,7 +33,7 @@ import { createClient } from '@/lib/supabase/client';
 // Zod schema for user validation
 const UserSchema = z.object({
   id: z.string().uuid(),
-  email: z.string().email(),
+  email: z.string().email().optional(),
   user_metadata: z.record(z.string(), z.any()).optional(),
   app_metadata: z.record(z.string(), z.any()).optional(),
 });
@@ -139,7 +139,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   const { entitlements, loading: entitlementsLoading } = useBillingEntitlements(Boolean(validatedUser));
   const canAccessSebastian = entitlements?.effectivePlanCode === 'plus' || entitlements?.effectivePlanCode === 'pro';
   const desktopNavLinkClass = (isActive: boolean) =>
-    `flex cursor-pointer items-center gap-2 px-4 h-16 -mb-0.5 border-b-2 text-sm transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+    `flex cursor-pointer items-center gap-2 px-4 h-16 -mb-1 border-b-2 text-sm transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
       isActive
         ? 'border-[var(--app-nav-border-active)] text-foreground font-semibold'
         : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
@@ -153,9 +153,32 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   // Get user initials for avatar
   const getUserInitials = () => {
-    if (!validatedUser?.email) return 'U';
-    return validatedUser.email.charAt(0).toUpperCase();
+    const firstName = validatedUser?.user_metadata?.first_name;
+    if (typeof firstName === 'string' && firstName.trim().length > 0) {
+      return firstName.trim().charAt(0).toUpperCase();
+    }
+
+    if (validatedUser?.email) {
+      return validatedUser.email.charAt(0).toUpperCase();
+    }
+
+    return 'U';
   };
+
+  const getUserAvatarUrl = () => {
+    const avatarUrl = validatedUser?.user_metadata?.avatar_url;
+    const providerPicture = validatedUser?.user_metadata?.picture;
+    if (typeof avatarUrl === 'string') {
+      const trimmed = avatarUrl.trim();
+      if (trimmed.length > 0) return trimmed;
+    }
+    if (typeof providerPicture === 'string') {
+      const providerTrimmed = providerPicture.trim();
+      return providerTrimmed.length > 0 ? providerTrimmed : null;
+    }
+    return null;
+  };
+  const avatarUrl = getUserAvatarUrl();
 
   return (
     <div className="bg-card border-b-2 border-[var(--app-nav-border-strong)]">
@@ -263,9 +286,18 @@ export const TopBar: React.FC<TopBarProps> = ({
                     className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     aria-label="User menu"
                   >
-                    <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium">
-                      {getUserInitials()}
-                    </div>
+                    {avatarUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- remote avatar URLs from storage are dynamic user content.
+                      <img
+                        src={avatarUrl}
+                        alt="Profile avatar"
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium">
+                        {getUserInitials()}
+                      </div>
+                    )}
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 bg-card border-border">

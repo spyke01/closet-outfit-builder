@@ -21,6 +21,8 @@ interface ReplicatePrediction {
   logs?: string;
 }
 
+type UploadType = 'wardrobe' | 'avatar';
+
 const STORAGE_BUCKET = Deno.env.get('SUPABASE_WARDROBE_BUCKET') || 'wardrobe-images';
 const REPLICATE_BG_MODEL = Deno.env.get('REPLICATE_BG_MODEL') || '851-labs/background-remover';
 const REPLICATE_BG_VERSION = Deno.env.get('REPLICATE_BG_VERSION') || '';
@@ -124,6 +126,54 @@ async function resizeImageToMaxDimension(
     const resizedBlob = await canvas.convertToBlob({ type: 'image/png' });
     const resizedArrayBuffer = await resizedBlob.arrayBuffer();
     return new Uint8Array(resizedArrayBuffer);
+  } finally {
+    bitmap.close();
+  }
+}
+
+async function transformAvatarImage(
+  imageBuffer: Uint8Array,
+  targetSize = 400
+): Promise<{ buffer: Uint8Array; contentType: 'image/webp' | 'image/jpeg' }> {
+  const inputBlob = new Blob([imageBuffer], { type: 'image/png' });
+  const bitmap = await createImageBitmap(inputBlob);
+
+  try {
+    const squareSize = Math.min(bitmap.width, bitmap.height);
+    const sx = Math.max(0, Math.floor((bitmap.width - squareSize) / 2));
+    const sy = Math.max(0, Math.floor((bitmap.height - squareSize) / 2));
+
+    const canvas = new OffscreenCanvas(targetSize, targetSize);
+    const context = canvas.getContext('2d');
+    if (!context) {
+      throw new Error('Failed to get 2D canvas context');
+    }
+
+    context.drawImage(bitmap, sx, sy, squareSize, squareSize, 0, 0, targetSize, targetSize);
+
+    let blob = await canvas.convertToBlob({ type: 'image/webp', quality: 0.9 });
+    let contentType: 'image/webp' | 'image/jpeg' = 'image/webp';
+
+    if (!blob || blob.size === 0) {
+      blob = await canvas.convertToBlob({ type: 'image/jpeg', quality: 0.9 });
+      contentType = 'image/jpeg';
+    }
+
+    if (!blob || blob.size === 0) {
+      throw new Error('Failed to encode avatar image');
+    }
+
+    const outputBitmap = await createImageBitmap(blob);
+    try {
+      if (outputBitmap.width !== targetSize || outputBitmap.height !== targetSize) {
+        throw new Error('Avatar dimensions are invalid');
+      }
+    } finally {
+      outputBitmap.close();
+    }
+
+    const outputBuffer = new Uint8Array(await blob.arrayBuffer());
+    return { buffer: outputBuffer, contentType };
   } finally {
     bitmap.close();
   }
@@ -293,7 +343,16 @@ serve(async (req: Request): Promise<Response> => {
     const imageFile = formData.get('image') as File;
     const removeBackgroundParam = formData.get('removeBackground') as string;
     const itemId = formData.get('itemId') as string | null;
-    const removeBackground = removeBackgroundParam !== 'false';
+    const uploadTypeParam = formData.get('uploadType');
+    if (uploadTypeParam && uploadTypeParam !== 'wardrobe' && uploadTypeParam !== 'avatar') {
+      return createCorsResponse(
+        JSON.stringify({ success: false, error: 'Invalid upload type' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } },
+        origin
+      );
+    }
+    const uploadType: UploadType = uploadTypeParam === 'avatar' ? 'avatar' : 'wardrobe';
+    const removeBackground = uploadType === 'avatar' ? false : removeBackgroundParam !== 'false';
 
     if (!imageFile) {
       return createCorsResponse(
@@ -326,6 +385,41 @@ serve(async (req: Request): Promise<Response> => {
       return createCorsResponse(
         JSON.stringify({ success: false, error: 'File content does not match declared MIME type' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } },
+        origin
+      );
+    }
+
+    if (uploadType === 'avatar') {
+      const transformed = await transformAvatarImage(imageBuffer, 400);
+      if (transformed.buffer.byteLength > STORAGE_MAX_SIZE_BYTES) {
+        throw new Error(`Avatar image too large (${(transformed.buffer.byteLength / 1024 / 1024).toFixed(2)}MB)`);
+      }
+
+      const timestamp = Date.now();
+      const avatarExtension = transformed.contentType === 'image/webp' ? 'webp' : 'jpg';
+      const avatarFileName = `avatars/${user.id}/avatar-${timestamp}.${avatarExtension}`;
+      const { data: avatarData, error: avatarUploadError } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .upload(avatarFileName, transformed.buffer, { contentType: transformed.contentType, upsert: false });
+
+      if (avatarUploadError) {
+        throw new Error(`Failed to upload avatar image: ${avatarUploadError.message}`);
+      }
+
+      const { data: { publicUrl: avatarPublicUrl } } =
+        supabase.storage.from(STORAGE_BUCKET).getPublicUrl(avatarData.path);
+
+      const result: ImageProcessingResult = {
+        success: true,
+        imageUrl: avatarPublicUrl,
+        bgRemovalStatus: 'completed',
+        message: 'Avatar uploaded successfully',
+        processingTime: Date.now() - processingStartTime,
+      };
+
+      return createCorsResponse(
+        JSON.stringify(result),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
         origin
       );
     }

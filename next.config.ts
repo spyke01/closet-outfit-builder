@@ -5,7 +5,7 @@ const baselineCsp = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: https: *.supabase.co",
+  "img-src 'self' data: blob: https: *.supabase.co",
   "font-src 'self' data:",
   "connect-src 'self' https://api.openweathermap.org https://maps.googleapis.com https://*.supabase.co wss://*.supabase.co https://ahjwzpyammiqelloazvn.supabase.co",
   "base-uri 'self'",

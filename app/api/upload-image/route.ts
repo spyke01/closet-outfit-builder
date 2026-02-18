@@ -7,6 +7,10 @@ import { createLogger } from '@/lib/utils/logger';
 
 const logger = createLogger({ component: 'app-api-upload-image-route' });
 
+type UploadType = 'wardrobe' | 'avatar';
+const avatarUploadWindowMs = 60_000;
+const avatarUploadMaxRequests = 10;
+const avatarUploadCounters = new Map<string, { count: number; startedAt: number }>();
 
 function getAllowedOrigins(): string[] {
   const platformOrigins = [
@@ -44,7 +48,7 @@ const MAGIC_BYTES = {
 };
 
 // Validate file type using magic bytes
-function validateFileType(buffer: Uint8Array, expectedType: string): boolean {
+export function validateFileType(buffer: Uint8Array, expectedType: string): boolean {
   const magicBytes = MAGIC_BYTES[expectedType as keyof typeof MAGIC_BYTES];
   if (!magicBytes) return false;
   
@@ -58,7 +62,28 @@ function validateFileType(buffer: Uint8Array, expectedType: string): boolean {
   return magicBytes.every((byte, index) => buffer[index] === byte);
 }
 
+export function isSupportedUploadMimeType(type: string): boolean {
+  return ['image/jpeg', 'image/png', 'image/webp'].includes(type);
+}
+
 export const dynamic = 'force-dynamic';
+
+function throttleAvatarUpload(userId: string): boolean {
+  const now = Date.now();
+  const current = avatarUploadCounters.get(userId);
+  if (!current || now - current.startedAt > avatarUploadWindowMs) {
+    avatarUploadCounters.set(userId, { count: 1, startedAt: now });
+    return false;
+  }
+
+  if (current.count >= avatarUploadMaxRequests) {
+    return true;
+  }
+
+  current.count += 1;
+  avatarUploadCounters.set(userId, current);
+  return false;
+}
 
 async function extractFunctionErrorDetails(
   edgeFunctionError: unknown,
@@ -126,11 +151,26 @@ export async function POST(request: NextRequest) {
     const imageFile = formData.get('image') as File;
     const removeBackground = formData.get('removeBackground') === 'true';
     const quality = parseFloat(formData.get('quality') as string) || 0.9;
+    const uploadTypeRaw = formData.get('uploadType');
+    if (uploadTypeRaw && uploadTypeRaw !== 'avatar' && uploadTypeRaw !== 'wardrobe') {
+      return NextResponse.json(
+        { success: false, error: 'Invalid upload type' },
+        { status: 400 }
+      );
+    }
+    const uploadType: UploadType = uploadTypeRaw === 'avatar' ? 'avatar' : 'wardrobe';
 
     if (!imageFile) {
       return NextResponse.json(
         { success: false, error: 'No image file provided' },
         { status: 400 }
+      );
+    }
+
+    if (uploadType === 'avatar' && throttleAvatarUpload(user.id)) {
+      return NextResponse.json(
+        { success: false, error: 'Too many avatar upload attempts. Please try again in a minute.' },
+        { status: 429 }
       );
     }
 
@@ -173,7 +213,7 @@ export async function POST(request: NextRequest) {
     // Validate request data
     const requestData = ImageProcessingRequestSchema.parse({
       image: imageFile,
-      removeBackground,
+      removeBackground: uploadType === 'avatar' ? false : removeBackground,
       quality,
     });
 
@@ -192,6 +232,7 @@ export async function POST(request: NextRequest) {
     edgeFunctionFormData.append('image', requestData.image);
     edgeFunctionFormData.append('removeBackground', requestData.removeBackground.toString());
     edgeFunctionFormData.append('quality', requestData.quality.toString());
+    edgeFunctionFormData.append('uploadType', uploadType);
 
     const invokeProcessImage = async (accessToken: string) => {
       return supabase.functions.invoke(

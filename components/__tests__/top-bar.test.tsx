@@ -71,4 +71,71 @@ describe('TopBar', () => {
     render(<TopBar user={user} />);
     expect(screen.getByTestId('sebastian-launcher')).toHaveTextContent('floating');
   });
+
+  it('renders avatar image when avatar_url metadata exists', () => {
+    render(
+      <TopBar
+        user={{
+          ...user,
+          user_metadata: { avatar_url: 'https://cdn.example.com/avatar.webp', first_name: 'Alex' },
+        }}
+      />
+    );
+
+    expect(screen.getByAltText('Profile avatar')).toBeInTheDocument();
+  });
+
+  it('falls back to first-name initial when no avatar exists', () => {
+    render(
+      <TopBar
+        user={{
+          ...user,
+          user_metadata: { first_name: 'Jordan' },
+        }}
+      />
+    );
+
+    expect(screen.getByLabelText('User menu')).toHaveTextContent('J');
+  });
+
+  it('uses provider picture when avatar_url is missing', () => {
+    render(
+      <TopBar
+        user={{
+          ...user,
+          user_metadata: { picture: 'https://cdn.example.com/google-avatar.png' },
+        }}
+      />
+    );
+
+    expect(screen.getByAltText('Profile avatar')).toBeInTheDocument();
+  });
+
+  it('falls back to email initial when first name is missing', () => {
+    render(
+      <TopBar
+        user={{
+          ...user,
+          email: 'sam@example.com',
+          user_metadata: {},
+        }}
+      />
+    );
+
+    expect(screen.getByLabelText('User menu')).toHaveTextContent('S');
+  });
+
+  it('falls back to U when neither first name nor email is present', () => {
+    render(
+      <TopBar
+        user={{
+          ...user,
+          email: undefined,
+          user_metadata: {},
+        }}
+      />
+    );
+
+    expect(screen.getByLabelText('User menu')).toHaveTextContent('U');
+  });
 });

@@ -6,13 +6,12 @@ const logger = createLogger({ component: 'components-image-upload' });
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Upload, X, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ImageProcessingResponse, FileValidationSchema } from '@/lib/schemas';
-import { resizeImageFileForUpload } from '@/lib/utils/image-resize';
+import { resizeImageFileForUpload, transformImageFileForAvatar } from '@/lib/utils/image-resize';
 import { z } from 'zod';
 
 export interface ImageUploadProps {
@@ -22,6 +21,8 @@ export interface ImageUploadProps {
   acceptedTypes?: string[];
   removeBackground?: boolean;
   quality?: number;
+  mode?: 'default' | 'avatar';
+  recommendedAspect?: 'square';
   className?: string;
   disabled?: boolean;
 }
@@ -34,10 +35,8 @@ interface UploadState {
   previewUrl: string | null;
 }
 
-// Specific image types to avoid HEIC/HEIF issues on iOS
-// iOS devices can convert HEIC to JPEG automatically when using these MIME types
 const DEFAULT_ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-const DEFAULT_MAX_SIZE = 5 * 1024 * 1024; // 5MB
+const DEFAULT_MAX_SIZE = 5 * 1024 * 1024;
 
 export function ImageUpload({
   onUpload,
@@ -46,6 +45,8 @@ export function ImageUpload({
   acceptedTypes = DEFAULT_ACCEPTED_TYPES,
   removeBackground = true,
   quality = 0.9,
+  mode = 'default',
+  recommendedAspect,
   className = '',
   disabled = false,
 }: ImageUploadProps) {
@@ -80,7 +81,6 @@ export function ImageUpload({
         lastModified: file.lastModified,
       });
 
-      // Additional checks
       if (file.size > maxSize) {
         return `File size (${(file.size / 1024 / 1024).toFixed(2)}MB) exceeds maximum allowed size (${(maxSize / 1024 / 1024).toFixed(2)}MB)`;
       }
@@ -92,7 +92,7 @@ export function ImageUpload({
       return null;
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return error.issues.map(err => err.message).join(', ');
+        return error.issues.map((err) => err.message).join(', ');
       }
       return 'File validation failed';
     }
@@ -101,63 +101,61 @@ export function ImageUpload({
   const uploadFile = useCallback(async (file: File) => {
     if (!acceptedTypes.includes(file.type)) {
       const typeError = `File type ${file.type} is not supported. Allowed types: ${acceptedTypes.join(', ')}`;
-      setUploadState(prev => ({ ...prev, error: typeError }));
+      setUploadState((prev) => ({ ...prev, error: typeError }));
       onError?.(typeError);
       return;
     }
 
     let fileForUpload = file;
     try {
-      fileForUpload = await resizeImageFileForUpload(file, { maxDimension: 1024, quality });
+      if (mode === 'avatar') {
+        fileForUpload = await transformImageFileForAvatar(file, { size: 400, quality });
+      } else {
+        fileForUpload = await resizeImageFileForUpload(file, { maxDimension: 1024, quality });
+      }
     } catch (resizeError) {
       logger.warn('Image resize failed; using original file', resizeError);
     }
 
-    // Validate file
     const validationError = validateFile(fileForUpload);
     if (validationError) {
-      setUploadState(prev => ({ ...prev, error: validationError }));
+      setUploadState((prev) => ({ ...prev, error: validationError }));
       onError?.(validationError);
       return;
     }
 
-    // Replace prior local preview URL to avoid leaking blob URLs
     if (previewUrlRef.current) {
       URL.revokeObjectURL(previewUrlRef.current);
       previewUrlRef.current = null;
     }
 
-    // Create preview URL
     const previewUrl = URL.createObjectURL(fileForUpload);
     previewUrlRef.current = previewUrl;
-    setUploadState(prev => ({ 
-      ...prev, 
-      isUploading: true, 
-      progress: 0, 
-      error: null, 
+    setUploadState((prev) => ({
+      ...prev,
+      isUploading: true,
+      progress: 0,
+      error: null,
       success: null,
-      previewUrl 
+      previewUrl,
     }));
 
-    // Create abort controller for cancellation
     abortControllerRef.current = new AbortController();
 
     try {
-      // Prepare form data
       const formData = new FormData();
       formData.append('image', fileForUpload);
-      formData.append('removeBackground', removeBackground.toString());
+      formData.append('removeBackground', mode === 'avatar' ? 'false' : removeBackground.toString());
       formData.append('quality', quality.toString());
+      formData.append('uploadType', mode === 'avatar' ? 'avatar' : 'wardrobe');
 
-      // Simulate progress for better UX
       const progressInterval = setInterval(() => {
-        setUploadState(prev => ({
+        setUploadState((prev) => ({
           ...prev,
-          progress: Math.min(prev.progress + Math.random() * 20, 90)
+          progress: Math.min(prev.progress + Math.random() * 20, 90),
         }));
       }, 200);
 
-      // Upload to API
       const response = await fetch('/api/upload-image', {
         method: 'POST',
         body: formData,
@@ -173,52 +171,50 @@ export function ImageUpload({
       }
 
       const result: ImageProcessingResponse = await response.json();
-
-      setUploadState(prev => ({ ...prev, progress: 100 }));
+      setUploadState((prev) => ({ ...prev, progress: 100 }));
 
       if (result.success && result.imageUrl) {
-        setUploadState(prev => ({ 
-          ...prev, 
-          isUploading: false, 
+        setUploadState((prev) => ({
+          ...prev,
+          isUploading: false,
           success: result.message || 'Image uploaded successfully',
-          progress: 100
+          progress: 100,
         }));
         onUpload(result.imageUrl);
       } else if (result.fallbackUrl) {
-        setUploadState(prev => ({ 
-          ...prev, 
-          isUploading: false, 
+        setUploadState((prev) => ({
+          ...prev,
+          isUploading: false,
           success: result.message || 'Image uploaded (background removal failed)',
-          progress: 100
+          progress: 100,
         }));
         onUpload(result.fallbackUrl);
       } else {
         throw new Error(result.error || 'Upload failed');
       }
-
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
-        setUploadState(prev => ({ 
-          ...prev, 
-          isUploading: false, 
+        setUploadState((prev) => ({
+          ...prev,
+          isUploading: false,
           error: 'Upload cancelled',
-          progress: 0
+          progress: 0,
         }));
         return;
       }
 
       const errorMessage = error instanceof Error ? error.message : 'Upload failed';
-      setUploadState(prev => ({ 
-        ...prev, 
-        isUploading: false, 
+      setUploadState((prev) => ({
+        ...prev,
+        isUploading: false,
         error: errorMessage,
-        progress: 0
+        progress: 0,
       }));
       onError?.(errorMessage);
     } finally {
       abortControllerRef.current = null;
     }
-  }, [acceptedTypes, validateFile, removeBackground, quality, onUpload, onError]);
+  }, [acceptedTypes, mode, onError, onUpload, quality, removeBackground, validateFile]);
 
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -232,16 +228,16 @@ export function ImageUpload({
     event.stopPropagation();
 
     const files = Array.from(event.dataTransfer.files);
-    const imageFile = files.find(file => acceptedTypes.includes(file.type));
+    const imageFile = files.find((file) => acceptedTypes.includes(file.type));
 
     if (imageFile) {
       uploadFile(imageFile);
     } else {
       const error = 'Please drop a valid image file (JPEG, PNG, or WebP)';
-      setUploadState(prev => ({ ...prev, error }));
+      setUploadState((prev) => ({ ...prev, error }));
       onError?.(error);
     }
-  }, [acceptedTypes, uploadFile, onError]);
+  }, [acceptedTypes, onError, uploadFile]);
 
   const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -312,7 +308,7 @@ export function ImageUpload({
                   <img
                     src={uploadState.previewUrl}
                     alt="Image upload preview"
-                    className="max-w-xs max-h-48 rounded-lg shadow-md object-contain"
+                    className={mode === 'avatar' ? 'h-28 w-28 rounded-lg shadow-md object-cover' : 'max-w-xs max-h-48 rounded-lg shadow-md object-contain'}
                   />
                   {!uploadState.isUploading && (
                     <Button
@@ -339,8 +335,11 @@ export function ImageUpload({
                   <p className="text-sm text-muted-foreground">
                     Drag and drop or click to select • Max {(maxSize / 1024 / 1024).toFixed(0)}MB
                   </p>
+                  {mode === 'avatar' && recommendedAspect === 'square' && (
+                    <p className="text-xs text-muted-foreground mt-1">Recommended: square image for best results</p>
+                  )}
                   <p className="text-xs text-muted-foreground mt-1">
-                    Supported formats: {acceptedTypes.map(type => type.split('/')[1].toUpperCase()).join(', ')}
+                    Supported formats: {acceptedTypes.map((type) => type.split('/')[1].toUpperCase()).join(', ')}
                   </p>
                 </div>
               </div>
@@ -365,7 +364,7 @@ export function ImageUpload({
               <Progress value={uploadState.progress} className="w-full" />
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Loader2 className="w-3 h-3 animate-spin" />
-                {removeBackground && 'Removing background automatically...'}
+                {mode === 'avatar' ? 'Optimizing avatar image...' : removeBackground && 'Removing background automatically...'}
               </div>
             </div>
           )}
