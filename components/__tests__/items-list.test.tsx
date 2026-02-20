@@ -2,8 +2,9 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi, describe, it, expect } from 'vitest';
 import { ItemsList } from '../items-list';
+import type { WardrobeItem } from '@/lib/types/database';
 
-const mockItems = [
+const mockItems: WardrobeItem[] = [
   {
     id: 'item1',
     name: 'Blue Shirt',
@@ -16,6 +17,7 @@ const mockItems = [
     image_url: 'https://example.com/shirt.jpg',
     user_id: 'user1',
     active: true,
+    bg_removal_status: 'completed',
     season: ['All'],
     created_at: '2024-01-01',
     updated_at: '2024-01-01',
@@ -32,6 +34,7 @@ const mockItems = [
     image_url: 'https://example.com/pants.jpg',
     user_id: 'user1',
     active: true,
+    bg_removal_status: 'completed',
     season: ['All'],
     created_at: '2024-01-01',
     updated_at: '2024-01-01',
@@ -165,12 +168,13 @@ describe('ItemsList', () => {
   });
 
   it('handles items without optional fields gracefully', () => {
-    const minimalItem = {
+    const minimalItem: WardrobeItem = {
       id: 'item3',
       name: 'Simple Shirt',
       category_id: 'cat1',
       user_id: 'user1',
       active: true,
+      bg_removal_status: 'completed',
       season: ['All'],
       created_at: '2024-01-01',
       updated_at: '2024-01-01',

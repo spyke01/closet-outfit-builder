@@ -46,7 +46,7 @@ describe('Security Utils', () => {
     });
 
     it('should throw error for non-string input', () => {
-      expect(() => sanitizeSqlInput(123 as unknown)).toThrow('Input must be a string');
+      expect(() => sanitizeSqlInput(123 as never)).toThrow('Input must be a string');
     });
   });
 
@@ -80,7 +80,7 @@ describe('Security Utils', () => {
     });
 
     it('should throw error for non-string input', () => {
-      expect(() => sanitizeHtmlInput({} as unknown)).toThrow('Input must be a string');
+      expect(() => sanitizeHtmlInput({} as never)).toThrow('Input must be a string');
     });
   });
 

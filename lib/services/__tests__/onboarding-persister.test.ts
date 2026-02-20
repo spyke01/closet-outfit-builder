@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { persistWardrobeItems } from '../onboarding-persister';
+import type { GeneratedWardrobeItem } from '@/lib/types/onboarding';
+import type { CategoryKey } from '@/lib/data/onboarding-categories';
 
 const insertMock = vi.fn();
 
@@ -23,7 +25,7 @@ describe('persistWardrobeItems', () => {
   });
 
   it('inserts onboarding items with user_id and active=true', async () => {
-    const items = [
+    const items: GeneratedWardrobeItem[] = [
       {
         id: 'tmp-1',
         category: 'Tops' as const,
@@ -36,7 +38,7 @@ describe('persistWardrobeItems', () => {
         source: 'onboarding' as const,
       },
     ];
-    const categoryMap = new Map([['Tops', 'cat-1']]);
+    const categoryMap = new Map<CategoryKey, string>([['Tops', 'cat-1']]);
 
     const result = await persistWardrobeItems('user-1', items, categoryMap);
 

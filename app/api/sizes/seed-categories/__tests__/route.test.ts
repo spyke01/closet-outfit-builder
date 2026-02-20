@@ -68,7 +68,7 @@ describe('Seed Categories API Route', () => {
       const { POST } = await import('../route');
       
       const mockRequest: MockRequest = {
-        user: null,
+        user: undefined,
       };
 
       const response = await POST(mockRequest as SecureRequest);
@@ -103,7 +103,7 @@ describe('Seed Categories API Route', () => {
       mockOrder.mockResolvedValue({ data: mockCategories, error: null });
 
       const mockRequest: MockRequest = {
-        user: { id: 'user-123' },
+        user: { id: 'user-123', email: 'user@example.com' },
       };
 
       const response = await POST(mockRequest as SecureRequest);
@@ -126,7 +126,7 @@ describe('Seed Categories API Route', () => {
       mockRpc.mockResolvedValue({ error: seedError });
 
       const mockRequest: MockRequest = {
-        user: { id: 'user-123' },
+        user: { id: 'user-123', email: 'user@example.com' },
       };
 
       const response = await POST(mockRequest as SecureRequest);
@@ -153,7 +153,7 @@ describe('Seed Categories API Route', () => {
       mockOrder.mockResolvedValue({ data: null, error: fetchError });
 
       const mockRequest: MockRequest = {
-        user: { id: 'user-123' },
+        user: { id: 'user-123', email: 'user@example.com' },
       };
 
       const response = await POST(mockRequest as SecureRequest);
@@ -192,7 +192,7 @@ describe('Seed Categories API Route', () => {
       mockOrder.mockResolvedValue({ data: mockCategories, error: null });
 
       const mockRequest: MockRequest = {
-        user: { id: 'user-123' },
+        user: { id: 'user-123', email: 'user@example.com' },
       };
 
       // Call twice
@@ -216,7 +216,7 @@ describe('Seed Categories API Route', () => {
       mockRpc.mockRejectedValue(new Error('Unexpected error'));
 
       const mockRequest: MockRequest = {
-        user: { id: 'user-123' },
+        user: { id: 'user-123', email: 'user@example.com' },
       };
 
       const response = await POST(mockRequest as SecureRequest);

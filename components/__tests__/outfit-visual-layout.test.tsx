@@ -15,6 +15,7 @@ const mockItems: WardrobeItem[] = [
     season: ['All'],
     image_url: 'https://example.com/blazer.jpg',
     active: true,
+    bg_removal_status: 'completed',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
     category: {
@@ -38,6 +39,7 @@ const mockItems: WardrobeItem[] = [
     season: ['All'],
     image_url: 'https://example.com/shirt.jpg',
     active: true,
+    bg_removal_status: 'completed',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
     category: {
@@ -58,8 +60,9 @@ const mockItems: WardrobeItem[] = [
     brand: 'Levi\'s',
     color: 'Dark Blue',
     formality_score: 5,
-    image_url: null, // No image
+    image_url: undefined, // No image
     active: true,
+    bg_removal_status: 'completed',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
     category: {
@@ -83,7 +86,7 @@ describe('OutfitVisualLayout', () => {
   });
 
   it('renders fallback state when items have no images', () => {
-    const itemsWithoutImages = mockItems.map(item => ({ ...item, image_url: null }));
+    const itemsWithoutImages = mockItems.map(item => ({ ...item, image_url: undefined }));
     render(<OutfitVisualLayout items={itemsWithoutImages} />);
     
     expect(screen.getByText('3 Items')).toBeInTheDocument();

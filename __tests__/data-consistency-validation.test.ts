@@ -241,18 +241,18 @@ describe('Data Consistency Validation Tests', () => {
       
       // Test jacket classification
       const jacketItem = { name: 'Navy Blazer', formality_score: 8 };
-      expect(classifier.classifyItem(jacketItem)).toBe('Jacket');
+      expect(classifier.classifyItem(jacketItem as never)).toBe('Jacket');
       
       // Test overshirt classification
       const overshirtItem = { name: 'Flannel Overshirt', formality_score: 4 };
-      expect(classifier.classifyItem(overshirtItem)).toBe('Overshirt');
+      expect(classifier.classifyItem(overshirtItem as never)).toBe('Overshirt');
     });
 
     it('should provide classification reasons', () => {
       const classifier = new WardrobeItemClassifier();
       
       const jacketItem = { name: 'Navy Blazer', formality_score: 8 };
-      const reason = classifier.getClassificationReason(jacketItem);
+      const reason = classifier.getClassificationReason(jacketItem as never);
       
       expect(reason).toContain('Jacket');
       expect(typeof reason).toBe('string');
@@ -264,7 +264,7 @@ describe('Data Consistency Validation Tests', () => {
       
       // Test item with no formality score
       const unknownItem = { name: 'Unknown Item' };
-      const classification = classifier.classifyItem(unknownItem);
+      const classification = classifier.classifyItem(unknownItem as never);
       
       expect(['Jacket', 'Overshirt']).toContain(classification);
     });

@@ -18,6 +18,7 @@ const mockJacketItems: WardrobeItem[] = [
     season: ['Fall', 'Winter'],
     image_url: null,
     active: true,
+    bg_removal_status: 'completed',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z'
   },
@@ -33,6 +34,7 @@ const mockJacketItems: WardrobeItem[] = [
     season: ['Spring', 'Fall'],
     image_url: null,
     active: true,
+    bg_removal_status: 'completed',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z'
   }
@@ -51,6 +53,7 @@ const mockOvershirtItems: WardrobeItem[] = [
     season: ['Fall', 'Winter'],
     image_url: null,
     active: true,
+    bg_removal_status: 'completed',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z'
   },
@@ -66,6 +69,7 @@ const mockOvershirtItems: WardrobeItem[] = [
     season: ['Spring', 'Fall'],
     image_url: null,
     active: true,
+    bg_removal_status: 'completed',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z'
   }

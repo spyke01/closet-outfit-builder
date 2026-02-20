@@ -18,7 +18,7 @@ describe('generateWardrobeItems', () => {
   describe('Basic Item Generation', () => {
     it('should generate 1 item per selected color', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt'],
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -47,7 +47,7 @@ describe('generateWardrobeItems', () => {
 
     it('should generate items for multiple subcategories', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt', 'Polo'],
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -81,7 +81,7 @@ describe('generateWardrobeItems', () => {
 
     it('should generate items for multiple categories', () => {
       const selectedCategories: CategoryKey[] = ['Tops', 'Bottoms'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt'],
         Bottoms: ['Jeans'],
       };
@@ -118,7 +118,7 @@ describe('generateWardrobeItems', () => {
   describe('Item Naming', () => {
     it('should generate names as "{Color} {Subcategory}"', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['Polo'],
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -146,7 +146,7 @@ describe('generateWardrobeItems', () => {
 
     it('should capitalize first letter of color in name', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt'],
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -174,7 +174,7 @@ describe('generateWardrobeItems', () => {
 
     it('should use subcategory name only when color is empty', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt'],
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -204,7 +204,7 @@ describe('generateWardrobeItems', () => {
   describe('Formality Scores', () => {
     it('should assign correct formality scores from subcategory definitions', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt', 'Polo', 'OCBD', 'Dress Shirt'],
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -252,7 +252,7 @@ describe('generateWardrobeItems', () => {
 
     it('should ensure all formality scores are between 1 and 10', () => {
       const selectedCategories: CategoryKey[] = ['Tops', 'Bottoms', 'Shoes'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt', 'Dress Shirt'],
         Bottoms: ['Jeans', 'Trousers'],
         Shoes: ['Sneakers', 'Dress Shoes'],
@@ -289,7 +289,7 @@ describe('generateWardrobeItems', () => {
   describe('Season Tags', () => {
     it('should set seasons to Summer/Spring for Hot climate with All-season items', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt'], // T-Shirt has seasons: ['All']
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -317,7 +317,7 @@ describe('generateWardrobeItems', () => {
 
     it('should set seasons to Fall/Winter for Cold climate with All-season items', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['Polo'], // Polo has seasons: ['All']
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -345,7 +345,7 @@ describe('generateWardrobeItems', () => {
 
     it('should set seasons to All for Mixed climate with All-season items', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['OCBD'], // OCBD has seasons: ['All']
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -373,7 +373,7 @@ describe('generateWardrobeItems', () => {
 
     it('should use subcategory default seasons for seasonal items', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['Tank Top', 'Sweater'], // Tank Top: Summer, Sweater: Fall/Winter
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -411,7 +411,7 @@ describe('generateWardrobeItems', () => {
   describe('Item Cap', () => {
     it('should enforce item cap when enabled', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt'],
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -439,7 +439,7 @@ describe('generateWardrobeItems', () => {
 
     it('should not enforce item cap when disabled', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt'],
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -467,7 +467,7 @@ describe('generateWardrobeItems', () => {
 
     it('should respect custom item cap values', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt'],
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -497,7 +497,7 @@ describe('generateWardrobeItems', () => {
   describe('Color Normalization', () => {
     it('should normalize colors to lowercase', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt'],
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -527,7 +527,7 @@ describe('generateWardrobeItems', () => {
 
     it('should trim whitespace from colors', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt'],
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -559,7 +559,7 @@ describe('generateWardrobeItems', () => {
   describe('Item Metadata', () => {
     it('should set source to "onboarding"', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt'],
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -587,7 +587,7 @@ describe('generateWardrobeItems', () => {
 
     it('should generate unique temporary IDs', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt'],
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -617,7 +617,7 @@ describe('generateWardrobeItems', () => {
 
     it('should set image_url to null or string', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt'],
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -649,7 +649,7 @@ describe('generateWardrobeItems', () => {
   describe('Edge Cases', () => {
     it('should return empty array when no categories selected', () => {
       const selectedCategories: CategoryKey[] = [];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {};
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {};
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {};
       const styleBaseline: StyleBaseline = {
         primaryUse: 'Casual',
@@ -670,7 +670,7 @@ describe('generateWardrobeItems', () => {
 
     it('should skip subcategories with no colors selected', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt', 'Polo'],
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -703,7 +703,7 @@ describe('generateWardrobeItems', () => {
 
     it('should skip subcategories with no color selection entry', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt', 'Polo'],
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -733,7 +733,7 @@ describe('generateWardrobeItems', () => {
 
     it('should handle null climate gracefully', () => {
       const selectedCategories: CategoryKey[] = ['Tops'];
-      const selectedSubcategories: Record<CategoryKey, string[]> = {
+      const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
         Tops: ['T-Shirt'],
       };
       const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {

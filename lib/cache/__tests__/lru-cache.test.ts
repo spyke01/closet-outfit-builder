@@ -144,14 +144,14 @@ describe('LRU Cache', () => {
 
       // First call
       const result1 = await getCached(userCache, key, fetcher);
-      expect(result1.name).toBe('John Doe');
+      expect((result1 as { name?: string }).name).toBe('John Doe');
 
       // Invalidate cache
       invalidateCache.user('user-123');
 
       // Second call - should refetch
       const result2 = await getCached(userCache, key, fetcher);
-      expect(result2.name).toBe('Jane Doe');
+      expect((result2 as { name?: string }).name).toBe('Jane Doe');
       expect(fetcher).toHaveBeenCalledTimes(2);
     });
   });
@@ -169,7 +169,7 @@ describe('LRU Cache', () => {
       const results = await Promise.all(promises);
 
       // All results should be the same
-      expect(results.every(r => r.id === 'user-123')).toBe(true);
+      expect(results.every((r: { id?: string }) => r.id === 'user-123')).toBe(true);
       
       // Note: Due to race conditions, fetcher might be called multiple times
       // in concurrent scenarios. This is acceptable for LRU cache.

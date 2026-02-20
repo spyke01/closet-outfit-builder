@@ -38,7 +38,7 @@ vi.mock('../lib/supabase/client', () => ({
 }));
 
 // Test component that simulates SSR behavior
-function TestSSRComponent({ initialData }: { initialData?: unknown }) {
+function TestSSRComponent({ initialData }: { initialData?: Record<string, unknown> }) {
   return (
     <div data-testid="ssr-component">
       <h1>SSR Test Component</h1>
@@ -161,7 +161,10 @@ describe('SSR Performance Tests', () => {
       const concurrentTime = concurrentEnd - concurrentStart;
       
       expect(results).toHaveLength(10);
-      expect(results.every((result, i) => result && (result as unknown).id === i)).toBe(true);
+      expect(results.every((result, i) => {
+        const hydrated = result as { id?: number } | undefined;
+        return hydrated?.id === i;
+      })).toBe(true);
       expect(concurrentTime).toBeLessThan(50); // Should handle concurrent operations efficiently
     });
   });

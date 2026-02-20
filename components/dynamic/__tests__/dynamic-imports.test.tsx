@@ -4,12 +4,16 @@ import React from 'react';
 
 // Mock Next.js dynamic import
 vi.mock('next/dynamic', () => ({
-  default: (importFn: () => Promise<unknown>, options?: unknown) => {
+  default: (
+    importFn: () => Promise<{ default: React.ComponentType<Record<string, unknown>> }>,
+    options?: { loading?: () => React.ReactNode },
+  ) => {
     const DynamicComponent = React.lazy(importFn);
+    const loading = options?.loading;
     
-    if (options?.loading) {
-      const DynamicLoadingWrapper = (props: unknown) => (
-        <React.Suspense fallback={options.loading()}>
+    if (loading) {
+      const DynamicLoadingWrapper = (props: Record<string, unknown>) => (
+        <React.Suspense fallback={loading()}>
           <DynamicComponent {...props} />
         </React.Suspense>
       );

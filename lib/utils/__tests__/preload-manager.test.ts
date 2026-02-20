@@ -10,7 +10,7 @@ import * as featureFlags from '../feature-flags';
 vi.mock('../feature-flags', () => ({
   isFeatureEnabled: vi.fn(),
   conditionalImport: vi.fn(),
-  type: {} as unknown,
+  type: {} as never,
 }));
 
 // Mock requestIdleCallback
@@ -161,7 +161,11 @@ describe('PreloadManager', () => {
       };
       
       const IntersectionObserverSpy = vi.fn().mockImplementation(() => mockObserver);
-      (global as unknown).IntersectionObserver = IntersectionObserverSpy;
+      (
+        globalThis as typeof globalThis & {
+          IntersectionObserver?: typeof IntersectionObserver;
+        }
+      ).IntersectionObserver = IntersectionObserverSpy as unknown as typeof IntersectionObserver;
       
       const cleanup = preloadManager.preloadOnIntersection(mockElement, 'weather', mockImport);
       
@@ -176,7 +180,7 @@ describe('PreloadManager', () => {
 
     it('should fallback to immediate preload when IntersectionObserver is not supported', () => {
       // Remove IntersectionObserver
-      delete (global as unknown).IntersectionObserver;
+      Reflect.deleteProperty(globalThis as unknown as Record<string, unknown>, 'IntersectionObserver');
       
       const mockElement = document.createElement('div');
       const mockImport = vi.fn();

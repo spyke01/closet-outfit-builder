@@ -16,8 +16,10 @@ function createWrapper() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
-  return ({ children }: { children: React.ReactNode }) =>
+  const Wrapper = ({ children }: { children: React.ReactNode }) =>
     React.createElement(QueryClientProvider, { client: queryClient }, children);
+  Wrapper.displayName = 'UseWardrobeItemImageGenerationTestWrapper';
+  return Wrapper;
 }
 
 const mockItemId = '550e8400-e29b-41d4-a716-446655440001';

@@ -127,10 +127,10 @@ function calculateCompatibility(anchorItem: WardrobeItem, candidateItem: Wardrob
 const wardrobeItemGenerator = fc.record({
   id: fc.string({ minLength: 1 }),
   name: fc.string({ minLength: 1 }),
-  color: fc.option(fc.constantFrom('white', 'black', 'navy', 'blue', 'red', 'green', 'brown', 'grey')),
-  formality_score: fc.option(fc.integer({ min: 1, max: 10 })),
-  capsule_tags: fc.option(fc.array(fc.constantFrom('casual', 'formal', 'business', 'weekend', 'summer', 'winter'))),
-  season: fc.option(fc.array(fc.constantFrom('Spring', 'Summer', 'Fall', 'Winter', 'All'))),
+  color: fc.option(fc.constantFrom('white', 'black', 'navy', 'blue', 'red', 'green', 'brown', 'grey'), { nil: undefined }),
+  formality_score: fc.option(fc.integer({ min: 1, max: 10 }), { nil: undefined }),
+  capsule_tags: fc.option(fc.array(fc.constantFrom('casual', 'formal', 'business', 'weekend', 'summer', 'winter')), { nil: undefined }),
+  season: fc.option(fc.array(fc.constantFrom('Spring', 'Summer', 'Fall', 'Winter', 'All')), { nil: undefined }),
   category_name: fc.constantFrom('Jacket', 'Overshirt', 'Shirt', 'Pants', 'Shoes', 'Belt', 'Watch')
 });
 

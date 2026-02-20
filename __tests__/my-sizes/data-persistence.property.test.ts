@@ -133,8 +133,8 @@ describe('Property 14: Data persistence on save', () => {
         const queried = await db.query('standard_sizes', 'category_id', standardSize.category_id);
 
         expect(queried).toBeDefined();
-        expect(queried.primary_size).toBe(standardSize.primary_size);
-        expect(queried.category_id).toBe(standardSize.category_id);
+        expect(queried!.primary_size).toBe(standardSize.primary_size);
+        expect(queried!.category_id).toBe(standardSize.category_id);
 
         return true;
       }),
@@ -158,8 +158,8 @@ describe('Property 14: Data persistence on save', () => {
         const queried = await db.query('brand_sizes', 'category_id', brandSize.category_id);
 
         expect(queried).toBeDefined();
-        expect(queried.brand_name).toBe(brandSize.brand_name);
-        expect(queried.size).toBe(brandSize.size);
+        expect(queried!.brand_name).toBe(brandSize.brand_name);
+        expect(queried!.size).toBe(brandSize.size);
 
         return true;
       }),
@@ -183,8 +183,8 @@ describe('Property 14: Data persistence on save', () => {
         const queried = await db.query('category_measurements', 'category_id', measurement.category_id);
 
         expect(queried).toBeDefined();
-        expect(queried.unit).toBe(measurement.unit);
-        expect(queried.measurements).toEqual(measurement.measurements);
+        expect(queried!.unit).toBe(measurement.unit);
+        expect(queried!.measurements).toEqual(measurement.measurements);
 
         return true;
       }),
@@ -208,8 +208,8 @@ describe('Property 14: Data persistence on save', () => {
         const queried = await db.query('pinned_preferences', 'category_id', pinnedPref.category_id);
 
         expect(queried).toBeDefined();
-        expect(queried.display_mode).toBe(pinnedPref.display_mode);
-        expect(queried.display_order).toBe(pinnedPref.display_order);
+        expect(queried!.display_mode).toBe(pinnedPref.display_mode);
+        expect(queried!.display_order).toBe(pinnedPref.display_order);
 
         return true;
       }),
@@ -240,14 +240,14 @@ describe('Property 14: Data persistence on save', () => {
           );
 
           expect(updated).toBeDefined();
-          expect(updated.primary_size).toBe(newSize);
-          expect(updated.updated_at).toBeDefined();
+          expect(updated!.primary_size).toBe(newSize);
+          expect(updated!.updated_at).toBeDefined();
 
           // Verify updated data is immediately queryable
           const queried = await db.query('standard_sizes', 'category_id', initialSize.category_id);
 
           expect(queried).toBeDefined();
-          expect(queried.primary_size).toBe(newSize);
+          expect(queried!.primary_size).toBe(newSize);
 
           return true;
         }

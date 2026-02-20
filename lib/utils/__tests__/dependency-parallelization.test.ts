@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { executeWithDependencies, createExecutor } from '../dependency-parallelization';
 
+type User = { id: string; name?: string };
+type Auth = { token: string; url: string };
+type Post = { userId: string; token?: string };
+type Comment = { userId: string; token?: string };
+
 describe('dependency-parallelization', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -54,23 +59,23 @@ describe('dependency-parallelization', () => {
           await new Promise(resolve => setTimeout(resolve, 10));
           return { id: '123', name: 'John' };
         },
-        posts: async ({ user }) => {
+        posts: async ({ user }: { user?: User }) => {
           executionOrder.push('posts');
           expect(user).toEqual({ id: '123', name: 'John' });
           await new Promise(resolve => setTimeout(resolve, 10));
-          return [{ id: 'p1', userId: user.id }];
+          return [{ id: 'p1', userId: user!.id }];
         },
-        comments: async ({ user }) => {
+        comments: async ({ user }: { user?: User }) => {
           executionOrder.push('comments');
           expect(user).toEqual({ id: '123', name: 'John' });
           await new Promise(resolve => setTimeout(resolve, 10));
-          return [{ id: 'c1', userId: user.id }];
+          return [{ id: 'c1', userId: user!.id }];
         },
-        stats: async ({ posts, comments }) => {
+        stats: async ({ posts, comments }: { posts?: Post[]; comments?: Comment[] }) => {
           executionOrder.push('stats');
           expect(posts).toHaveLength(1);
           expect(comments).toHaveLength(1);
-          return { postCount: posts.length, commentCount: comments.length };
+          return { postCount: posts!.length, commentCount: comments!.length };
         },
       });
 
@@ -96,19 +101,19 @@ describe('dependency-parallelization', () => {
           await new Promise(resolve => setTimeout(resolve, 50));
           return 'a';
         },
-        b: async ({ a }) => {
+        b: async ({ a }: { a?: string }) => {
           startTimes.b = Date.now();
           expect(a).toBe('a');
           await new Promise(resolve => setTimeout(resolve, 50));
           return 'b';
         },
-        c: async ({ a }) => {
+        c: async ({ a }: { a?: string }) => {
           startTimes.c = Date.now();
           expect(a).toBe('a');
           await new Promise(resolve => setTimeout(resolve, 50));
           return 'c';
         },
-        d: async ({ b, c }) => {
+        d: async ({ b, c }: { b?: string; c?: string }) => {
           startTimes.d = Date.now();
           expect(b).toBe('b');
           expect(c).toBe('c');
@@ -156,7 +161,7 @@ describe('dependency-parallelization', () => {
       // For now, we'll test that all tasks complete successfully
       const result = await executeWithDependencies({
         a: async () => 'a',
-        b: async ({ a }) => `b-${a}`,
+        b: async ({ a }: { a?: string }) => `b-${a}`,
       });
 
       expect(result).toEqual({ a: 'a', b: 'b-a' });
@@ -165,15 +170,15 @@ describe('dependency-parallelization', () => {
     it('should handle complex dependency chains', async () => {
       const result = await executeWithDependencies({
         config: async () => ({ apiUrl: 'https://api.example.com' }),
-        auth: async ({ config }) => ({ token: 'token-123', url: config.apiUrl }),
-        user: async ({ auth }) => ({ id: '1', token: auth.token }),
-        posts: async ({ user, auth }) => [{ userId: user.id, token: auth.token }],
-        comments: async ({ user, auth }) => [{ userId: user.id, token: auth.token }],
-        likes: async ({ posts }) => posts.map((p: { userId: string }) => ({ postId: p.userId })),
-        summary: async ({ posts, comments, likes }) => ({
-          posts: posts.length,
-          comments: comments.length,
-          likes: likes.length,
+        auth: async ({ config }: { config?: { apiUrl: string } }) => ({ token: 'token-123', url: config!.apiUrl }),
+        user: async ({ auth }: { auth?: Auth }) => ({ id: '1', token: auth!.token }),
+        posts: async ({ user, auth }: { user?: { id: string }; auth?: Auth }) => [{ userId: user!.id, token: auth!.token }],
+        comments: async ({ user, auth }: { user?: { id: string }; auth?: Auth }) => [{ userId: user!.id, token: auth!.token }],
+        likes: async ({ posts }: { posts?: Post[] }) => posts!.map((p: { userId: string }) => ({ postId: p.userId })),
+        summary: async ({ posts, comments, likes }: { posts?: Post[]; comments?: Comment[]; likes?: Array<{ postId: string }> }) => ({
+          posts: posts!.length,
+          comments: comments!.length,
+          likes: likes!.length,
         }),
       });
 
@@ -192,7 +197,7 @@ describe('dependency-parallelization', () => {
           task1: async () => {
             throw new Error('Task 1 failed');
           },
-          task2: async ({ task1 }) => task1,
+          task2: async ({ task1 }: { task1?: string }) => task1,
         })
       ).rejects.toThrow('Task 1 failed');
     });
@@ -201,11 +206,11 @@ describe('dependency-parallelization', () => {
       await expect(
         executeWithDependencies({
           task1: async () => 'success',
-          task2: async ({ task1 }) => {
+          task2: async ({ task1 }: { task1?: string }) => {
             expect(task1).toBe('success');
             throw new Error('Task 2 failed');
           },
-          task3: async ({ task2 }) => task2,
+          task3: async ({ task2 }: { task2?: string }) => task2,
         })
       ).rejects.toThrow('Task 2 failed');
     });
@@ -215,11 +220,11 @@ describe('dependency-parallelization', () => {
     it('should build and execute tasks with fluent API', async () => {
       const result = await createExecutor()
         .add('user', async () => ({ id: '123', name: 'John' }))
-        .addDependent('posts', async ({ user }) => [{ userId: user.id }])
-        .addDependent('comments', async ({ user }) => [{ userId: user.id }])
-        .addDependent('stats', async ({ posts, comments }) => ({
-          postCount: posts.length,
-          commentCount: comments.length,
+        .addDependent('posts', async ({ user }: { user?: { id: string } }) => [{ userId: user!.id }])
+        .addDependent('comments', async ({ user }: { user?: { id: string } }) => [{ userId: user!.id }])
+        .addDependent('stats', async ({ posts, comments }: { posts?: Array<{ userId: string }>; comments?: Array<{ userId: string }> }) => ({
+          postCount: posts!.length,
+          commentCount: comments!.length,
         }))
         .execute();
 
@@ -247,7 +252,7 @@ describe('dependency-parallelization', () => {
       // This test verifies TypeScript type safety at compile time
       const result = await createExecutor<Record<string, never>>()
         .add('num', async () => 42)
-        .addDependent('doubled', async ({ num }: { num: number }) => num * 2)
+        .addDependent('doubled', async ({ num }: { num?: number }) => num! * 2)
         .execute();
 
       expect(result.num).toBe(42);
@@ -298,15 +303,15 @@ describe('dependency-parallelization', () => {
           await new Promise(resolve => setTimeout(resolve, delay));
           return 'root';
         },
-        branch1: async ({ root }) => {
+        branch1: async ({ root }: { root?: string }) => {
           await new Promise(resolve => setTimeout(resolve, delay));
           return `${root}-1`;
         },
-        branch2: async ({ root }) => {
+        branch2: async ({ root }: { root?: string }) => {
           await new Promise(resolve => setTimeout(resolve, delay));
           return `${root}-2`;
         },
-        leaf: async ({ branch1, branch2 }) => {
+        leaf: async ({ branch1, branch2 }: { branch1?: string; branch2?: string }) => {
           await new Promise(resolve => setTimeout(resolve, delay));
           return `${branch1}-${branch2}`;
         },

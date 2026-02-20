@@ -23,23 +23,20 @@ describe('Weather Function', () => {
     httpMethod: string = 'GET',
     queryStringParameters: Record<string, string> | null = null,
     headers: Record<string, string> = {}
-  ): HandlerEvent => ({
-    httpMethod,
-    queryStringParameters,
-    headers: {
-      'x-forwarded-for': '127.0.0.1',
-      ...headers,
-    },
-    body: null,
-    path: '/.netlify/functions/weather',
-    isBase64Encoded: false,
-    multiValueHeaders: {},
-    multiValueQueryStringParameters: {},
-    pathParameters: {},
-    requestContext: {} as unknown,
-    resource: '',
-    stageVariables: {},
-  });
+  ): HandlerEvent =>
+    ({
+      httpMethod,
+      queryStringParameters,
+      headers: {
+        'x-forwarded-for': '127.0.0.1',
+        ...headers,
+      },
+      body: null,
+      path: '/.netlify/functions/weather',
+      isBase64Encoded: false,
+      multiValueHeaders: {},
+      multiValueQueryStringParameters: {},
+    } as never);
 
   const mockContext: HandlerContext = {
     callbackWaitsForEmptyEventLoop: false,

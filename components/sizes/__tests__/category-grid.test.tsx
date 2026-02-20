@@ -1,11 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+import React from 'react';
 import { CategoryGrid } from '../category-grid';
 import type { SizeCategory, StandardSize, BrandSize } from '@/lib/types/sizes';
 
 // Mock Next.js Link component
 vi.mock('next/link', () => ({
-  default: ({ children, href, ...props }: unknown) => (
+  default: ({ children, href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
     <a href={href} {...props}>
       {children}
     </a>

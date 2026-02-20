@@ -22,16 +22,16 @@ vi.mock('@/lib/hooks/use-size-categories', () => ({
 
 // Mock next/dynamic
 vi.mock('next/dynamic', () => ({
-  default: (fn: unknown) => {
-    const Component = fn().then ? null : fn
-    if (Component) return Component
-    
-    return (props: unknown) => {
-      const [LoadedComponent, setLoadedComponent] = React.useState<unknown>(null)
+  default: (
+    fn: () => Promise<{ default: React.ComponentType<Record<string, unknown>> }>,
+  ) => {
+    return (props: Record<string, unknown>) => {
+      const [LoadedComponent, setLoadedComponent] =
+        React.useState<React.ComponentType<Record<string, unknown>> | null>(null)
       
       React.useEffect(() => {
-        Promise.resolve(fn()).then((mod: unknown) => {
-          setLoadedComponent(() => mod.default || mod)
+        Promise.resolve(fn()).then((mod) => {
+          setLoadedComponent(() => mod.default)
         })
       }, [])
       
@@ -43,7 +43,7 @@ vi.mock('next/dynamic', () => ({
 
 // Mock section components
 vi.mock('../standard-size-section', () => ({
-  StandardSizeSection: ({ category }: unknown) => (
+  StandardSizeSection: ({ category }: { category: SizeCategory }) => (
     <div data-testid="standard-size-section">
       Standard Size Section for {category.name}
     </div>
@@ -51,7 +51,7 @@ vi.mock('../standard-size-section', () => ({
 }))
 
 vi.mock('../brand-sizes-section', () => ({
-  BrandSizesSection: ({ categoryId }: unknown) => (
+  BrandSizesSection: ({ categoryId }: { categoryId: string }) => (
     <div data-testid="brand-sizes-section">
       Brand Sizes Section for {categoryId}
     </div>
@@ -59,7 +59,7 @@ vi.mock('../brand-sizes-section', () => ({
 }))
 
 vi.mock('../measurement-guide-section', () => ({
-  MeasurementGuideSection: ({ categoryId }: unknown) => (
+  MeasurementGuideSection: ({ categoryId }: { categoryId: string }) => (
     <div data-testid="measurement-guide-section">
       Measurement Guide Section for {categoryId}
     </div>
@@ -117,19 +117,19 @@ describe('CategoryDetailClient', () => {
       data: mockCategory,
       isLoading: false,
       error: null,
-    } as unknown)
+    } as never)
 
     vi.mocked(useBrandSizes).mockReturnValue({
       data: mockBrandSizes,
       isLoading: false,
       error: null,
-    } as unknown)
+    } as never)
 
     vi.mocked(useMeasurements).mockReturnValue({
       data: mockMeasurements,
       isLoading: false,
       error: null,
-    } as unknown)
+    } as never)
   })
 
   describe('Section Rendering', () => {
@@ -239,7 +239,7 @@ describe('CategoryDetailClient', () => {
         data: undefined,
         isLoading: true,
         error: null,
-      } as unknown)
+      } as never)
 
       render(
         <CategoryDetailClient

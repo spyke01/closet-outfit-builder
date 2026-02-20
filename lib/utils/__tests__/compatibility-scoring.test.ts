@@ -25,6 +25,7 @@ const createMockItem = (overrides: Partial<EnrichedItem> = {}): EnrichedItem => 
   season: ['Spring', 'Summer', 'Fall', 'Winter'],
   image_url: undefined,
   active: true,
+  bg_removal_status: 'completed',
   created_at: '2024-01-01T00:00:00Z',
   updated_at: '2024-01-01T00:00:00Z',
   color: 'unknown',

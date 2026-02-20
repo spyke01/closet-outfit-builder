@@ -230,7 +230,7 @@ describe('HeroSection - Unit Tests', () => {
       const mockScrollIntoView = vi.fn();
       const mockElement = { scrollIntoView: mockScrollIntoView };
       
-      vi.spyOn(document, 'getElementById').mockReturnValue(mockElement as unknown);
+      vi.spyOn(document, 'getElementById').mockReturnValue(mockElement as never);
       
       render(<HeroSection />);
       

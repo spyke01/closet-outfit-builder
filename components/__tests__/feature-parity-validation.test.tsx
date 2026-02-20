@@ -282,7 +282,7 @@ describe('Feature Parity Validation Tests', () => {
 
     it('maintains consistent data validation patterns', () => {
       // Test that data validation follows consistent patterns
-      const validateItem = (item: unknown): boolean => {
+      const validateItem = (item: { id?: unknown; name?: unknown } | null): boolean => {
         return (
           typeof item === 'object' &&
           item !== null &&
@@ -309,7 +309,7 @@ describe('Feature Parity Validation Tests', () => {
       // Test that expensive operations are properly memoized
       let computationCount = 0;
       
-      const expensiveComputation = (items: unknown[]) => {
+      const expensiveComputation = (items: Array<{ active: boolean }>) => {
         computationCount++;
         return items.filter(item => item.active);
       };

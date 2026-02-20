@@ -54,14 +54,14 @@ describe('Size Validation Utilities', () => {
     });
 
     it('should reject null and undefined inputs', () => {
-      expect(isValidLetterSize(null as unknown)).toBe(false);
-      expect(isValidLetterSize(undefined as unknown)).toBe(false);
+      expect(isValidLetterSize(null as never)).toBe(false);
+      expect(isValidLetterSize(undefined as never)).toBe(false);
     });
 
     it('should reject non-string inputs', () => {
-      expect(isValidLetterSize(123 as unknown)).toBe(false);
-      expect(isValidLetterSize({} as unknown)).toBe(false);
-      expect(isValidLetterSize([] as unknown)).toBe(false);
+      expect(isValidLetterSize(123 as never)).toBe(false);
+      expect(isValidLetterSize({} as never)).toBe(false);
+      expect(isValidLetterSize([] as never)).toBe(false);
     });
   });
 
@@ -104,14 +104,14 @@ describe('Size Validation Utilities', () => {
     });
 
     it('should reject null and undefined inputs', () => {
-      expect(isValidNumericSize(null as unknown)).toBe(false);
-      expect(isValidNumericSize(undefined as unknown)).toBe(false);
+      expect(isValidNumericSize(null as never)).toBe(false);
+      expect(isValidNumericSize(undefined as never)).toBe(false);
     });
 
     it('should reject non-string inputs', () => {
-      expect(isValidNumericSize(10 as unknown)).toBe(false);
-      expect(isValidNumericSize({} as unknown)).toBe(false);
-      expect(isValidNumericSize([] as unknown)).toBe(false);
+      expect(isValidNumericSize(10 as never)).toBe(false);
+      expect(isValidNumericSize({} as never)).toBe(false);
+      expect(isValidNumericSize([] as never)).toBe(false);
     });
   });
 
@@ -160,14 +160,14 @@ describe('Size Validation Utilities', () => {
     });
 
     it('should reject null and undefined inputs', () => {
-      expect(isValidWaistInseamSize(null as unknown)).toBe(false);
-      expect(isValidWaistInseamSize(undefined as unknown)).toBe(false);
+      expect(isValidWaistInseamSize(null as never)).toBe(false);
+      expect(isValidWaistInseamSize(undefined as never)).toBe(false);
     });
 
     it('should reject non-string inputs', () => {
-      expect(isValidWaistInseamSize(32 as unknown)).toBe(false);
-      expect(isValidWaistInseamSize({} as unknown)).toBe(false);
-      expect(isValidWaistInseamSize([] as unknown)).toBe(false);
+      expect(isValidWaistInseamSize(32 as never)).toBe(false);
+      expect(isValidWaistInseamSize({} as never)).toBe(false);
+      expect(isValidWaistInseamSize([] as never)).toBe(false);
     });
   });
 
@@ -221,10 +221,10 @@ describe('Size Validation Utilities', () => {
 
     it('should handle null/undefined inputs', () => {
       expect(isValidSize('', ['letter'])).toBe(false);
-      expect(isValidSize(null as unknown, ['letter'])).toBe(false);
-      expect(isValidSize(undefined as unknown, ['letter'])).toBe(false);
-      expect(isValidSize('M', null as unknown)).toBe(false);
-      expect(isValidSize('M', undefined as unknown)).toBe(false);
+      expect(isValidSize(null as never, ['letter'])).toBe(false);
+      expect(isValidSize(undefined as never, ['letter'])).toBe(false);
+      expect(isValidSize('M', null as never)).toBe(false);
+      expect(isValidSize('M', undefined as never)).toBe(false);
     });
 
     it('should match first valid format', () => {
@@ -263,8 +263,8 @@ describe('Size Validation Utilities', () => {
     });
 
     it('should handle null and undefined inputs', () => {
-      expect(detectSizeFormat(null as unknown)).toBe(null);
-      expect(detectSizeFormat(undefined as unknown)).toBe(null);
+      expect(detectSizeFormat(null as never)).toBe(null);
+      expect(detectSizeFormat(undefined as never)).toBe(null);
     });
 
     it('should prioritize format detection correctly', () => {

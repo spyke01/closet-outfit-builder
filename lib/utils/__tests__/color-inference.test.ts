@@ -130,17 +130,17 @@ describe('inferColor', () => {
     });
 
     it('handles null input', () => {
-      expect(inferColor(null as unknown)).toBe('unknown');
+      expect(inferColor(null as never)).toBe('unknown');
     });
 
     it('handles undefined input', () => {
-      expect(inferColor(undefined as unknown)).toBe('unknown');
+      expect(inferColor(undefined as never)).toBe('unknown');
     });
 
     it('handles non-string input', () => {
-      expect(inferColor(123 as unknown)).toBe('unknown');
-      expect(inferColor({} as unknown)).toBe('unknown');
-      expect(inferColor([] as unknown)).toBe('unknown');
+      expect(inferColor(123 as never)).toBe('unknown');
+      expect(inferColor({} as never)).toBe('unknown');
+      expect(inferColor([] as never)).toBe('unknown');
     });
 
     it('handles string with only whitespace', () => {

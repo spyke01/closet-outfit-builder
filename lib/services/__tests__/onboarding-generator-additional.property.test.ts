@@ -30,15 +30,20 @@ const colorArb = fc.oneof(
 );
 
 // Generate valid subcategory selections
-const subcategorySelectionArb = fc.tuple(categoryKeyArb).chain(([categoryKey]) => {
+interface SubcategorySelection {
+  categoryKey: CategoryKey;
+  subcategories: string[];
+}
+
+const subcategorySelectionArb: fc.Arbitrary<SubcategorySelection> = categoryKeyArb.chain((categoryKey) => {
   const subcategories = getSubcategoriesForCategory(categoryKey);
   if (subcategories.length === 0) {
-    return fc.constant({ categoryKey, subcategories: [] });
+    return fc.constant<SubcategorySelection>({ categoryKey, subcategories: [] });
   }
-  
-  return fc.subarray(subcategories.map(s => s.name), { minLength: 1 }).map(selected => ({
+
+  return fc.subarray(subcategories.map(s => s.name), { minLength: 1 }).map((selected) => ({
     categoryKey,
-    subcategories: selected,
+    subcategories: [...selected],
   }));
 });
 
@@ -59,7 +64,7 @@ describe('Property-Based Tests: Additional Properties', () => {
         styleBaselineArb,
         (selections, colors, styleBaseline) => {
           const selectedCategories: CategoryKey[] = [];
-          const selectedSubcategories: Record<CategoryKey, string[]> = {} as Record<CategoryKey, string[]>;
+          const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {} as Partial<Record<CategoryKey, string[]>>;
           
           for (const { categoryKey, subcategories } of selections) {
             if (!selectedCategories.includes(categoryKey)) {
@@ -129,7 +134,7 @@ describe('Property-Based Tests: Additional Properties', () => {
         styleBaselineArb,
         (selections, styleBaseline) => {
           const selectedCategories: CategoryKey[] = [];
-          const selectedSubcategories: Record<CategoryKey, string[]> = {} as Record<CategoryKey, string[]>;
+          const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {} as Partial<Record<CategoryKey, string[]>>;
           
           for (const { categoryKey, subcategories } of selections) {
             if (!selectedCategories.includes(categoryKey)) {

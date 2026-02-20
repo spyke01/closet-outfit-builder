@@ -461,7 +461,7 @@ describe('MeasurementGuide', () => {
 
       const card = container.firstChild
       expect(card).toHaveClass('border-border')
-      expect(card).toHaveClass('bg-background')
+      expect(card).toHaveClass('bg-card')
     })
 
     it('should have dark mode classes on measurement field containers', () => {

@@ -5,9 +5,27 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import type { Category, WardrobeItem } from '@/lib/types/database';
 
 // Test utilities and mock data
-const createMockCategory = (overrides = {}) => ({
+type WorkflowOutfitItem = {
+  id: string;
+  name: string;
+  category: 'Jacket' | 'Overshirt' | 'Shirt' | 'Pants';
+};
+
+type WorkflowOutfit = {
+  id: string;
+  user_id: string;
+  name: string;
+  score: number;
+  source: 'curated' | 'generated';
+  items: WorkflowOutfitItem[];
+  created_at: string;
+  updated_at: string;
+};
+
+const createMockCategory = (overrides: Partial<Category> = {}): Category => ({
   id: 'test-category-id',
   user_id: 'test-user-id',
   name: 'Test Category',
@@ -18,18 +36,19 @@ const createMockCategory = (overrides = {}) => ({
   ...overrides
 });
 
-const createMockWardrobeItem = (overrides = {}) => ({
+const createMockWardrobeItem = (overrides: Partial<WardrobeItem> = {}): WardrobeItem => ({
   id: 'test-item-id',
   user_id: 'test-user-id',
   category_id: 'test-category-id',
   name: 'Test Item',
   active: true,
+  bg_removal_status: 'completed',
   created_at: '2024-01-01T00:00:00Z',
   updated_at: '2024-01-01T00:00:00Z',
   ...overrides
 });
 
-const createMockOutfit = (overrides = {}) => ({
+const createMockOutfit = (overrides: Partial<WorkflowOutfit> = {}): WorkflowOutfit => ({
   id: 'test-outfit-id',
   user_id: 'test-user-id',
   name: 'Test Outfit',
@@ -255,7 +274,7 @@ describe('Category Workflow Integration Tests', () => {
 
     it('should support outfit creation workflow with both new categories', () => {
       // Test that outfits can be created with items from both Jacket and Overshirt categories
-      const allCategories = new Set(
+      const allCategories = new Set<string>(
         mockOutfits.flatMap(outfit => outfit.items.map(item => item.category))
       );
       

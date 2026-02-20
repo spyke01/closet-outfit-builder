@@ -103,9 +103,13 @@ describe('TextTruncate Component', () => {
       expect(textElement).toBeTruthy();
 
       if (textElement) {
+        const webkitStyle = textElement.style as CSSStyleDeclaration & {
+          WebkitLineClamp: string;
+          WebkitBoxOrient: string;
+        };
         expect(textElement.style.display).toBe('-webkit-box');
-        expect(textElement.style.WebkitLineClamp).toBe('2');
-        expect(textElement.style.WebkitBoxOrient).toBe('vertical');
+        expect(webkitStyle.WebkitLineClamp).toBe('2');
+        expect(webkitStyle.WebkitBoxOrient).toBe('vertical');
         expect(textElement.style.overflow).toBe('hidden');
       }
     });
@@ -124,7 +128,10 @@ describe('TextTruncate Component', () => {
       expect(textElement).toBeTruthy();
 
       if (textElement) {
-        expect(textElement.style.WebkitLineClamp).toBe('3');
+        const webkitStyle = textElement.style as CSSStyleDeclaration & {
+          WebkitLineClamp: string;
+        };
+        expect(webkitStyle.WebkitLineClamp).toBe('3');
       }
     });
   });

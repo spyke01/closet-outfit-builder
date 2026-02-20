@@ -5,6 +5,7 @@ import { handleCorsPreflightRequest, createCorsResponse } from '../_shared/cors.
 const STORAGE_BUCKET = 'wardrobe-images';
 const REPLICATE_BG_MODEL = Deno.env.get('REPLICATE_BG_MODEL') || '851-labs/background-remover';
 const REPLICATE_BG_VERSION = Deno.env.get('REPLICATE_BG_VERSION') || '';
+const BG_REMOVAL_MAX_ATTEMPTS = 3;
 
 interface GenerateRequest {
   wardrobe_item_id: string;
@@ -132,6 +133,30 @@ async function callReplicateBackgroundRemoval(imageUrl: string): Promise<string>
   }
 
   throw new Error(`Unexpected background removal status: ${prediction.status}`);
+}
+
+async function callReplicateBackgroundRemovalWithRetry(imageUrl: string): Promise<string> {
+  let lastError: unknown = null;
+
+  for (let attempt = 1; attempt <= BG_REMOVAL_MAX_ATTEMPTS; attempt++) {
+    try {
+      return await callReplicateBackgroundRemoval(imageUrl);
+    } catch (error) {
+      lastError = error;
+      const message = error instanceof Error ? error.message : 'Unknown background removal error';
+      console.error(`Background removal attempt ${attempt}/${BG_REMOVAL_MAX_ATTEMPTS} failed`, {
+        error: message,
+      });
+
+      if (attempt < BG_REMOVAL_MAX_ATTEMPTS) {
+        await delay(1000 * attempt);
+      }
+    }
+  }
+
+  throw lastError instanceof Error
+    ? lastError
+    : new Error('Background removal failed after maximum retry attempts');
 }
 
 async function callReplicateImageGeneration(
@@ -404,13 +429,27 @@ serve(async (req: Request): Promise<Response> => {
       );
     }
 
-    // Run generated image through background-removal. If it fails, fall back to the
-    // generated image so users still receive an image instead of a stuck "No image" state.
+    // Run generated image through background-removal. Treat failures as hard failures so
+    // users and logs clearly show when bg removal did not run successfully.
     try {
-      imageUrl = await callReplicateBackgroundRemoval(imageUrl);
+      imageUrl = await callReplicateBackgroundRemovalWithRetry(imageUrl);
     } catch (bgError) {
       const errorMessage = bgError instanceof Error ? bgError.message : 'Unknown background removal error';
-      console.error('Background removal failed; using original generated image', { error: errorMessage });
+      console.error('Background removal failed', { error: errorMessage });
+      await updateWardrobeItemStatus({
+        bg_removal_status: 'failed',
+        bg_removal_completed_at: new Date().toISOString(),
+      });
+
+      return createCorsResponse(
+        JSON.stringify({
+          success: false,
+          error: errorMessage,
+          error_code: 'BACKGROUND_REMOVAL_FAILED',
+        }),
+        { status: 502, headers: { 'Content-Type': 'application/json' } },
+        origin,
+      );
     }
 
     // Download the processed transparent image.

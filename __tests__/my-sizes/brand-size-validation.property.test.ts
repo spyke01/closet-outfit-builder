@@ -60,7 +60,7 @@ const validBrandSizeInputArb = fc.record({
  */
 const missingBrandNameArb = fc.record({
   category_id: fc.uuid(),
-  brand_name: fc.constantFrom('', '   ', undefined as unknown),
+  brand_name: fc.constantFrom('', '   ', undefined as never),
   item_type: fc.option(nonEmptyStringArb(1, 100), { nil: undefined }),
   size: validSizeArb,
   fit_scale: validFitScaleArb,
@@ -74,7 +74,7 @@ const missingSizeArb = fc.record({
   category_id: fc.uuid(),
   brand_name: nonEmptyStringArb(1, 100),
   item_type: fc.option(nonEmptyStringArb(1, 100), { nil: undefined }),
-  size: fc.constantFrom('', '   ', undefined as unknown),
+  size: fc.constantFrom('', '   ', undefined as never),
   fit_scale: validFitScaleArb,
   notes: fc.option(fc.string({ maxLength: 500 }), { nil: undefined }),
 })
@@ -90,8 +90,8 @@ const invalidFitScaleArb = fc.record({
   fit_scale: fc.oneof(
     fc.integer({ max: 0 }),
     fc.integer({ min: 6 }),
-    fc.constant(null as unknown),
-    fc.constant(undefined as unknown)
+    fc.constant(null as never),
+    fc.constant(undefined as never)
   ),
   notes: fc.option(fc.string({ maxLength: 500 }), { nil: undefined }),
 })

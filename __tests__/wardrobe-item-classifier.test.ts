@@ -30,6 +30,7 @@ describe('WardrobeItemClassifier', () => {
           image_url: fc.option(fc.string(), { nil: undefined }),
           active: fc.boolean(),
           external_id: fc.option(fc.string(), { nil: undefined }),
+          bg_removal_status: fc.constantFrom('pending', 'processing', 'completed', 'failed'),
           created_at: fc.string(),
           updated_at: fc.string()
         }),
@@ -58,6 +59,7 @@ describe('WardrobeItemClassifier', () => {
           formality_score: fc.option(fc.integer({ min: 1, max: 10 }), { nil: undefined }),
           material: fc.option(fc.string(), { nil: undefined }),
           active: fc.boolean(),
+          bg_removal_status: fc.constantFrom('pending', 'processing', 'completed', 'failed'),
           created_at: fc.string(),
           updated_at: fc.string()
         }),
@@ -97,6 +99,7 @@ describe('WardrobeItemClassifier', () => {
             name: fc.constant(name),
             formality_score: fc.option(fc.integer({ min: 1, max: 10 }), { nil: undefined }),
             active: fc.boolean(),
+            bg_removal_status: fc.constantFrom('pending', 'processing', 'completed', 'failed'),
             created_at: fc.string(),
             updated_at: fc.string()
           })
@@ -133,6 +136,7 @@ describe('WardrobeItemClassifier', () => {
             name: fc.constant(name),
             formality_score: fc.option(fc.integer({ min: 1, max: 6 }), { nil: undefined }),
             active: fc.boolean(),
+            bg_removal_status: fc.constantFrom('pending', 'processing', 'completed', 'failed'),
             created_at: fc.string(),
             updated_at: fc.string()
           })
@@ -162,6 +166,7 @@ describe('WardrobeItemClassifier', () => {
           ),
           formality_score: fc.integer({ min: 1, max: 10 }),
           active: fc.boolean(),
+          bg_removal_status: fc.constantFrom('pending', 'processing', 'completed', 'failed'),
           created_at: fc.string(),
           updated_at: fc.string()
         }),
@@ -199,6 +204,7 @@ describe('WardrobeItemClassifier', () => {
           name: fc.string({ minLength: 1 }),
           formality_score: fc.option(fc.integer({ min: 1, max: 10 }), { nil: undefined }),
           active: fc.boolean(),
+          bg_removal_status: fc.constantFrom('pending', 'processing', 'completed', 'failed'),
           created_at: fc.string(),
           updated_at: fc.string()
         }),

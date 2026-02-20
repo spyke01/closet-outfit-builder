@@ -9,10 +9,12 @@
 import { describe, it, expect } from 'vitest';
 
 describe('Auto-Seed Integration', () => {
+  type ExistingCategory = { id: string };
+
   describe('Server Component Logic', () => {
     it('should detect when user needs seeding (no categories)', () => {
       // Simulate server-side check
-      const existingCategories: unknown[] = [];
+      const existingCategories: ExistingCategory[] = [];
       const needsSeeding = existingCategories.length === 0;
 
       expect(needsSeeding).toBe(true);
@@ -28,11 +30,12 @@ describe('Auto-Seed Integration', () => {
 
     it('should handle database errors gracefully', () => {
       // Simulate error scenario
-      const checkError = new Error('Database connection failed');
-      const existingCategories = null;
+      const checkError: Error | null = new Error('Database connection failed');
+      const existingCategories: ExistingCategory[] | null = null;
       
       // When there's an error, we should not attempt seeding
-      const needsSeeding = !checkError && (!existingCategories || existingCategories.length === 0);
+      const categories = existingCategories as never[] | null;
+      const needsSeeding = checkError === null && (!categories || categories.length === 0);
 
       expect(needsSeeding).toBe(false);
     });
@@ -116,8 +119,8 @@ describe('Auto-Seed Integration', () => {
       const seedingPending = false;
       const categoriesLoading = true;
       const pinnedLoading = false;
-      const categoriesLength = 5;
-      const pinnedLength = 2;
+      const categoriesLength: number = 5;
+      const pinnedLength: number = 2;
 
       const isLoading = seedingPending || 
                         ((categoriesLoading || pinnedLoading) && 
@@ -156,7 +159,7 @@ describe('Auto-Seed Integration', () => {
   describe('Acceptance Criteria Validation', () => {
     it('AC1: New users get categories automatically', () => {
       // Server detects no categories
-      const existingCategories: unknown[] = [];
+      const existingCategories: ExistingCategory[] = [];
       const needsSeeding = existingCategories.length === 0;
       
       // Client triggers seeding

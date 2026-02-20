@@ -30,7 +30,7 @@ describe('useSeedCategories', () => {
       userId: 'test-user-id',
       isAuthenticated: true,
       user: null,
-      isLoading: false,
+      loading: false,
     });
   });
 
@@ -52,7 +52,7 @@ describe('useSeedCategories', () => {
         count: 2,
         message: 'Categories seeded successfully',
       }),
-    } as Response);
+    } as never);
 
     const { result } = renderHook(() => useSeedCategories(), { wrapper });
 
@@ -85,7 +85,7 @@ describe('useSeedCategories', () => {
         count: 0,
         message: 'Categories seeded successfully',
       }),
-    } as Response);
+    } as never);
 
     const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
 
@@ -115,7 +115,7 @@ describe('useSeedCategories', () => {
                 count: 0,
                 message: 'Categories seeded successfully',
               }),
-            } as Response);
+            } as never);
           }, 100);
         })
     );
@@ -141,7 +141,7 @@ describe('useSeedCategories', () => {
       userId: null,
       isAuthenticated: false,
       user: null,
-      isLoading: false,
+      loading: false,
     });
 
     const { result } = renderHook(() => useSeedCategories(), { wrapper });
@@ -165,7 +165,7 @@ describe('useSeedCategories', () => {
         error: 'Failed to seed categories',
         details: 'Database error',
       }),
-    } as Response);
+    } as never);
 
     const { result } = renderHook(() => useSeedCategories(), { wrapper });
 
@@ -185,7 +185,7 @@ describe('useSeedCategories', () => {
       json: async () => {
         throw new Error('Invalid JSON');
       },
-    } as Response);
+    } as never);
 
     const { result } = renderHook(() => useSeedCategories(), { wrapper });
 
@@ -205,7 +205,7 @@ describe('useSeedCategories', () => {
         success: false,
         error: 'Seeding failed',
       }),
-    } as Response);
+    } as never);
 
     const { result } = renderHook(() => useSeedCategories(), { wrapper });
 
@@ -245,7 +245,7 @@ describe('useSeedCategories', () => {
         count: 1,
         message: 'Categories seeded successfully',
       }),
-    } as Response);
+    } as never);
 
     const { result } = renderHook(() => useSeedCategories(), { wrapper });
 

@@ -10,13 +10,20 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import React from 'react';
 import { PinnedCard } from '../pinned-card';
 import type { SizeCategory, StandardSize, BrandSize } from '@/lib/types/sizes';
 
 // Mock Next.js Link
 vi.mock('next/link', () => ({
-  default: ({ children, href, ...props }: unknown) => (
-    <a href={href} onClick={(e: unknown) => e.preventDefault()} {...props}>{children}</a>
+  default: ({ children, href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+    <a
+      href={href}
+      onClick={(e: React.MouseEvent<HTMLAnchorElement>) => e.preventDefault()}
+      {...props}
+    >
+      {children}
+    </a>
   ),
 }));
 
@@ -69,13 +76,13 @@ describe('PinnedCard', () => {
       isLoading: false,
       error: null,
       refetch: vi.fn(),
-    } as unknown);
+    } as never);
     vi.mocked(useBrandSizes).mockReturnValue({
       data: mockBrandSizes,
       isLoading: false,
       error: null,
       refetch: vi.fn(),
-    } as unknown);
+    } as never);
   });
 
   describe('Data Display', () => {
@@ -92,7 +99,7 @@ describe('PinnedCard', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as unknown);
+      } as never);
 
       render(<PinnedCard categoryId="cat-1" displayMode="standard" />);
       expect(screen.getByText('No size set')).toBeInTheDocument();
@@ -165,7 +172,7 @@ describe('PinnedCard', () => {
         isLoading: false,
         error: new Error('Failed to load'),
         refetch: vi.fn(),
-      } as unknown);
+      } as never);
 
       render(<PinnedCard categoryId="cat-1" displayMode="standard" />);
       expect(screen.getByText(/Failed to load category/i)).toBeInTheDocument();
@@ -177,7 +184,7 @@ describe('PinnedCard', () => {
         isLoading: true,
         error: null,
         refetch: vi.fn(),
-      } as unknown);
+      } as never);
 
       render(<PinnedCard categoryId="cat-1" displayMode="standard" />);
       // Loading skeleton should be present

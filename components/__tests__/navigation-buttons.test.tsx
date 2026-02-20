@@ -1,10 +1,19 @@
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
+import React from 'react';
 import { NavigationButtons } from '../navigation-buttons';
 
 // Mock Next.js Link component
 vi.mock('next/link', () => ({
-  default: function MockLink({ children, href, className }: unknown) {
+  default: function MockLink({
+    children,
+    href,
+    className,
+  }: {
+    children: React.ReactNode;
+    href: string;
+    className?: string;
+  }) {
     return (
       <a href={href} className={className}>
         {children}

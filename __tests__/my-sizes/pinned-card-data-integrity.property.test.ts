@@ -10,7 +10,7 @@
  * Feature: my-sizes
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 import * as fc from 'fast-check';
 import { createClient } from '@/lib/supabase/client';
 import type { SizeCategory, StandardSize, PinnedPreference } from '@/lib/types/sizes';
@@ -26,7 +26,19 @@ vi.mock('@/lib/hooks/use-auth', () => ({
 }));
 
 describe('Property 1: Pinned Card Data Integrity', () => {
-  let mockSupabase: unknown;
+  type MockSupabaseClient = {
+    from: Mock;
+    select: Mock;
+    insert: Mock;
+    update: Mock;
+    delete: Mock;
+    eq: Mock;
+    order: Mock;
+    maybeSingle: Mock;
+    single: Mock;
+  };
+
+  let mockSupabase: MockSupabaseClient;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -44,7 +56,7 @@ describe('Property 1: Pinned Card Data Integrity', () => {
       single: vi.fn()
     };
 
-    (createClient as unknown).mockReturnValue(mockSupabase);
+    vi.mocked(createClient).mockReturnValue(mockSupabase as never);
   });
 
   /**

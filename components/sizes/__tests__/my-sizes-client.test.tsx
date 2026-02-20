@@ -13,7 +13,13 @@ vi.mock('@/lib/hooks/use-size-categories', () => ({
 
 // Mock child components
 vi.mock('../pinned-cards-section', () => ({
-  PinnedCardsSection: ({ pinnedPreferences, onCustomize }: unknown) => (
+  PinnedCardsSection: ({
+    pinnedPreferences,
+    onCustomize,
+  }: {
+    pinnedPreferences: PinnedPreference[];
+    onCustomize: () => void;
+  }) => (
     <div data-testid="pinned-cards-section">
       <div>Pinned Cards: {pinnedPreferences.length}</div>
       <button onClick={onCustomize}>Customize</button>
@@ -22,7 +28,13 @@ vi.mock('../pinned-cards-section', () => ({
 }));
 
 vi.mock('../category-grid', () => ({
-  CategoryGrid: ({ categories, onAddCategory }: unknown) => (
+  CategoryGrid: ({
+    categories,
+    onAddCategory,
+  }: {
+    categories: SizeCategory[];
+    onAddCategory?: () => void;
+  }) => (
     <div data-testid="category-grid">
       <div>Categories: {categories.length}</div>
       {onAddCategory && <button onClick={onAddCategory}>Add Category</button>}
@@ -99,14 +111,14 @@ describe('MySizesClient', () => {
       isLoading: false,
       error: null,
       refetch: vi.fn(),
-    } as unknown);
+    } as never);
 
     vi.mocked(usePinnedPreferences).mockReturnValue({
       data: mockPinnedPreferences,
       isLoading: false,
       error: null,
       refetch: vi.fn(),
-    } as unknown);
+    } as never);
 
     vi.mocked(useSeedCategories).mockReturnValue({
       mutate: vi.fn(),
@@ -116,14 +128,14 @@ describe('MySizesClient', () => {
       isError: false,
       error: null,
       reset: vi.fn(),
-    } as unknown);
+    } as never);
 
     vi.mocked(useUpdatePinnedPreferences).mockReturnValue({
       mutateAsync: vi.fn(),
       isPending: false,
       isError: false,
       error: null,
-    } as unknown);
+    } as never);
   });
 
   describe('Page Structure', () => {
@@ -283,7 +295,7 @@ describe('MySizesClient', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as unknown);
+      } as never);
 
       render(
         <MySizesClient
@@ -303,7 +315,7 @@ describe('MySizesClient', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as unknown);
+      } as never);
 
       render(
         <MySizesClient
@@ -325,14 +337,14 @@ describe('MySizesClient', () => {
         isLoading: true,
         error: null,
         refetch: vi.fn(),
-      } as unknown);
+      } as never);
 
       vi.mocked(usePinnedPreferences).mockReturnValue({
         data: [],
         isLoading: true,
         error: null,
         refetch: vi.fn(),
-      } as unknown);
+      } as never);
 
       render(
         <MySizesClient
@@ -354,14 +366,14 @@ describe('MySizesClient', () => {
         isLoading: true, // Refetching
         error: null,
         refetch: vi.fn(),
-      } as unknown);
+      } as never);
 
       vi.mocked(usePinnedPreferences).mockReturnValue({
         data: mockPinnedPreferences,
         isLoading: true, // Refetching
         error: null,
         refetch: vi.fn(),
-      } as unknown);
+      } as never);
 
       render(
         <MySizesClient
@@ -384,14 +396,14 @@ describe('MySizesClient', () => {
         isLoading: true,
         error: null,
         refetch: vi.fn(),
-      } as unknown);
+      } as never);
 
       vi.mocked(usePinnedPreferences).mockReturnValue({
         data: [],
         isLoading: true,
         error: null,
         refetch: vi.fn(),
-      } as unknown);
+      } as never);
 
       const { container } = render(
         <MySizesClient

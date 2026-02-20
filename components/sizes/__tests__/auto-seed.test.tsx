@@ -43,14 +43,14 @@ describe('MySizesClient - Auto-Seed', () => {
       isLoading: false,
       error: null,
       refetch: vi.fn(),
-    } as unknown);
+    } as never);
 
     vi.mocked(useSizeCategoriesModule.usePinnedPreferences).mockReturnValue({
       data: [],
       isLoading: false,
       error: null,
       refetch: vi.fn(),
-    } as unknown);
+    } as never);
 
     vi.mocked(useSizeCategoriesModule.useSeedCategories).mockReturnValue({
       mutate: mockSeedMutate,
@@ -58,7 +58,7 @@ describe('MySizesClient - Auto-Seed', () => {
       isSuccess: false,
       isError: false,
       error: null,
-    } as unknown);
+    } as never);
   });
 
   const renderComponent = (needsSeeding: boolean) => {
@@ -89,7 +89,7 @@ describe('MySizesClient - Auto-Seed', () => {
         isSuccess: false,
         isError: false,
         error: null,
-      } as unknown);
+      } as never);
 
       renderComponent(true);
 
@@ -103,7 +103,7 @@ describe('MySizesClient - Auto-Seed', () => {
         isSuccess: false,
         isError: false,
         error: null,
-      } as unknown);
+      } as never);
 
       renderComponent(true);
 
@@ -119,7 +119,7 @@ describe('MySizesClient - Auto-Seed', () => {
         isSuccess: false,
         isError: true,
         error: new Error('Seeding failed'),
-      } as unknown);
+      } as never);
 
       renderComponent(true);
 
@@ -133,7 +133,7 @@ describe('MySizesClient - Auto-Seed', () => {
         isSuccess: false,
         isError: true,
         error: new Error('Seeding failed'),
-      } as unknown);
+      } as never);
 
       renderComponent(true);
 
@@ -148,7 +148,7 @@ describe('MySizesClient - Auto-Seed', () => {
         isSuccess: false,
         isError: true,
         error: new Error('Seeding failed'),
-      } as unknown);
+      } as never);
 
       renderComponent(true);
 
@@ -167,7 +167,7 @@ describe('MySizesClient - Auto-Seed', () => {
         isSuccess: true,
         isError: false,
         error: null,
-      } as unknown);
+      } as never);
 
       renderComponent(true);
 
@@ -182,7 +182,7 @@ describe('MySizesClient - Auto-Seed', () => {
         isSuccess: false,
         isError: false,
         error: null,
-      } as unknown);
+      } as never);
 
       renderComponent(true);
 
@@ -224,7 +224,7 @@ describe('MySizesClient - Auto-Seed', () => {
         isLoading: false,
         error: null,
         refetch: vi.fn(),
-      } as unknown);
+      } as never);
 
       renderComponent(false);
 
@@ -239,7 +239,7 @@ describe('MySizesClient - Auto-Seed', () => {
         isLoading: true,
         error: null,
         refetch: vi.fn(),
-      } as unknown);
+      } as never);
 
       renderComponent(false);
 
@@ -254,7 +254,7 @@ describe('MySizesClient - Auto-Seed', () => {
         isLoading: true,
         error: null,
         refetch: vi.fn(),
-      } as unknown);
+      } as never);
 
       renderComponent(false);
 
@@ -269,7 +269,7 @@ describe('MySizesClient - Auto-Seed', () => {
         isLoading: false,
         error: new Error('Failed to fetch categories'),
         refetch: vi.fn(),
-      } as unknown);
+      } as never);
 
       renderComponent(false);
 
@@ -282,7 +282,7 @@ describe('MySizesClient - Auto-Seed', () => {
         isLoading: false,
         error: new Error('Failed to fetch categories'),
         refetch: vi.fn(),
-      } as unknown);
+      } as never);
 
       vi.mocked(useSizeCategoriesModule.useSeedCategories).mockReturnValue({
         mutate: mockSeedMutate,
@@ -290,7 +290,7 @@ describe('MySizesClient - Auto-Seed', () => {
         isSuccess: false,
         isError: true,
         error: new Error('Seeding failed'),
-      } as unknown);
+      } as never);
 
       renderComponent(true);
 

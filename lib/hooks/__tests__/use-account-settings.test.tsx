@@ -63,9 +63,11 @@ describe('useAccountSettings', () => {
 
   const createWrapper = () => {
     const client = new QueryClient();
-    return ({ children }: { children: React.ReactNode }) => (
+    const Wrapper = ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={client}>{children}</QueryClientProvider>
     );
+    Wrapper.displayName = 'UseAccountSettingsTestWrapper';
+    return Wrapper;
   };
 
   it('persists avatar_url in metadata-only profile updates', async () => {

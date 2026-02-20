@@ -17,8 +17,10 @@ function createWrapper() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
-  return ({ children }: { children: React.ReactNode }) =>
+  const Wrapper = ({ children }: { children: React.ReactNode }) =>
     React.createElement(QueryClientProvider, { client: queryClient }, children);
+  Wrapper.displayName = 'WardrobeItemImageGeneratorTestWrapper';
+  return Wrapper;
 }
 
 const mockItemWithData = {
@@ -81,6 +83,7 @@ describe('WardrobeItemImageGenerator - free tier locked state', () => {
     vi.clearAllMocks();
     vi.mocked(useGenerateWardrobeItemImage).mockReturnValue({
       generate: vi.fn(),
+      generateAsync: vi.fn(),
       isGenerating: false,
       error: null,
     });
@@ -109,6 +112,7 @@ describe('WardrobeItemImageGenerator - quota display', () => {
     vi.clearAllMocks();
     vi.mocked(useGenerateWardrobeItemImage).mockReturnValue({
       generate: vi.fn(),
+      generateAsync: vi.fn(),
       isGenerating: false,
       error: null,
     });
@@ -129,6 +133,7 @@ describe('WardrobeItemImageGenerator - error messages', () => {
     });
     vi.mocked(useGenerateWardrobeItemImage).mockReturnValue({
       generate: vi.fn(),
+      generateAsync: vi.fn(),
       isGenerating: false,
       error: err,
     });
@@ -142,6 +147,7 @@ describe('WardrobeItemImageGenerator - error messages', () => {
     vi.clearAllMocks();
     vi.mocked(useGenerateWardrobeItemImage).mockReturnValue({
       generate: vi.fn(),
+      generateAsync: vi.fn(),
       isGenerating: false,
       error: null,
     });

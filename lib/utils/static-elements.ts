@@ -1,8 +1,3 @@
-import { createLogger } from './logger';
-
-const logger = createLogger({ component: 'lib-utils-static-elements' });
-
-
 /**
  * Static Elements Optimization Utilities
  * 
@@ -66,7 +61,7 @@ export function getThemeScript(storageKey: string = 'theme'): string {
         document.documentElement.classList.add(theme);
       }
     } catch (e) {
-      logger.error('Failed to load theme:', e);
+      console.error('Failed to load theme:', e);
     }
   `);
 }

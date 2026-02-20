@@ -41,7 +41,7 @@ describe('Error Logging System', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       errorLogger.logError(sensitiveError, 'security', 'high');
       
-      const logs = errorLogger.getRecentLogs(1);
+      const logs = errorLogger.getRecentLogs(1) as import("../error-logging").ErrorLogEntry[];
       expect(logs[0].message).toContain('[JWT_REDACTED]');
       expect(logs[0].message).toContain('[API_KEY_REDACTED]');
       expect(logs[0].message).not.toContain('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9');
@@ -60,7 +60,7 @@ describe('Error Logging System', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       errorLogger.logError(error, 'system', 'medium');
       
-      const logs = errorLogger.getRecentLogs(1);
+      const logs = errorLogger.getRecentLogs(1) as import("../error-logging").ErrorLogEntry[];
       expect(logs[0].error?.stack).toContain('[PATH_REDACTED]');
       expect(logs[0].error?.stack).not.toContain('/home/user/sensitive');
       
@@ -81,13 +81,17 @@ describe('Error Logging System', () => {
           const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
           errorLogger.logError(error, 'validation', 'medium');
           
-          const logs = errorLogger.getRecentLogs(1);
+          const logs = errorLogger.getRecentLogs(1) as import("../error-logging").ErrorLogEntry[];
+          const zodErrorDetails = logs[0].context.metadata?.zodErrorDetails as {
+            fieldErrors?: unknown;
+            affectedFields?: string[];
+          } | undefined;
           expect(logs[0].error?.name).toBe('ZodError');
-          expect(logs[0].context.metadata?.zodErrorDetails).toBeDefined();
-          expect(logs[0].context.metadata?.zodErrorDetails.fieldErrors).toBeDefined();
-          expect(logs[0].context.metadata?.zodErrorDetails.affectedFields).toContain('name');
-          expect(logs[0].context.metadata?.zodErrorDetails.affectedFields).toContain('email');
-          expect(logs[0].context.metadata?.zodErrorDetails.affectedFields).toContain('age');
+          expect(zodErrorDetails).toBeDefined();
+          expect(zodErrorDetails?.fieldErrors).toBeDefined();
+          expect(zodErrorDetails?.affectedFields).toContain('name');
+          expect(zodErrorDetails?.affectedFields).toContain('email');
+          expect(zodErrorDetails?.affectedFields).toContain('age');
           
           consoleSpy.mockRestore();
         }
@@ -110,7 +114,7 @@ describe('Error Logging System', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       errorLogger.logError(error, 'system', 'medium', context);
       
-      const logs = errorLogger.getRecentLogs(1);
+      const logs = errorLogger.getRecentLogs(1) as import("../error-logging").ErrorLogEntry[];
       expect(logs[0].context.metadata?.password).toBe('[REDACTED]');
       expect(logs[0].context.metadata?.token).toBe('[REDACTED]');
       expect(logs[0].context.metadata?.safeField).toBe('safe-value');
@@ -130,7 +134,7 @@ describe('Error Logging System', () => {
         errorLogger.logError(new Error(`Error ${i}`), 'system', 'low');
       }
       
-      const logs = errorLogger.getRecentLogs(200);
+      const logs = errorLogger.getRecentLogs(200) as import("../error-logging").ErrorLogEntry[];
       expect(logs.length).toBeLessThanOrEqual(100);
       
       consoleSpy.mockRestore();
@@ -164,7 +168,7 @@ describe('Error Logging System', () => {
       
       logAuthError('Invalid credentials', { userId: 'user123' });
       
-      const logs = errorLogger.getRecentLogs(1);
+      const logs = errorLogger.getRecentLogs(1) as import("../error-logging").ErrorLogEntry[];
       expect(logs[0].category).toBe('authentication');
       expect(logs[0].severity).toBe('high');
       expect(logs[0].context.component).toBe('auth');
@@ -184,7 +188,7 @@ describe('Error Logging System', () => {
           
           logValidationError(error, { component: 'form' });
           
-          const logs = errorLogger.getRecentLogs(1);
+          const logs = errorLogger.getRecentLogs(1) as import("../error-logging").ErrorLogEntry[];
           expect(logs[0].category).toBe('validation');
           expect(logs[0].severity).toBe('medium');
           expect(logs[0].context.component).toBe('form');
@@ -203,7 +207,7 @@ describe('Error Logging System', () => {
         userAgent: 'Malicious Bot',
       });
       
-      const logs = errorLogger.getRecentLogs(1);
+      const logs = errorLogger.getRecentLogs(1) as import("../error-logging").ErrorLogEntry[];
       expect(logs[0].category).toBe('security');
       expect(logs[0].severity).toBe('high');
       expect(logs[0].context.component).toBe('security');
@@ -214,7 +218,7 @@ describe('Error Logging System', () => {
 
     it('should log database errors', () => {
       const dbError = new Error('Connection timeout');
-      (dbError as unknown).code = 'ECONNRESET';
+      (dbError as Error & { code?: string }).code = 'ECONNRESET';
       
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       
@@ -223,7 +227,7 @@ describe('Error Logging System', () => {
         action: 'query_wardrobe_items',
       });
       
-      const logs = errorLogger.getRecentLogs(1);
+      const logs = errorLogger.getRecentLogs(1) as import("../error-logging").ErrorLogEntry[];
       expect(logs[0].category).toBe('database');
       expect(logs[0].severity).toBe('high');
       expect(logs[0].context.component).toBe('supabase');
@@ -241,7 +245,7 @@ describe('Error Logging System', () => {
         metadata: { fileSize: 10485760, maxSize: 5242880 },
       });
       
-      const logs = errorLogger.getRecentLogs(1);
+      const logs = errorLogger.getRecentLogs(1) as import("../error-logging").ErrorLogEntry[];
       expect(logs[0].category).toBe('file_upload');
       expect(logs[0].severity).toBe('medium');
       expect(logs[0].context.component).toBe('image_upload');
@@ -258,7 +262,7 @@ describe('Error Logging System', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       errorLogger.logError(error, 'authentication', 'high');
       
-      const logs = errorLogger.getRecentLogs(1);
+      const logs = errorLogger.getRecentLogs(1) as import("../error-logging").ErrorLogEntry[];
       expect(logs[0].message).toContain('[JWT_REDACTED]');
       expect(logs[0].message).not.toContain('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9');
       
@@ -271,7 +275,7 @@ describe('Error Logging System', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       errorLogger.logError(error, 'authentication', 'medium');
       
-      const logs = errorLogger.getRecentLogs(1);
+      const logs = errorLogger.getRecentLogs(1) as import("../error-logging").ErrorLogEntry[];
       expect(logs[0].message).toContain('[EMAIL_REDACTED]');
       expect(logs[0].message).not.toContain('john.doe@example.com');
       
@@ -284,7 +288,7 @@ describe('Error Logging System', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       errorLogger.logError(error, 'validation', 'medium');
       
-      const logs = errorLogger.getRecentLogs(1);
+      const logs = errorLogger.getRecentLogs(1) as import("../error-logging").ErrorLogEntry[];
       expect(logs[0].message).toContain('[PHONE_REDACTED]');
       expect(logs[0].message).not.toContain('555-123-4567');
       
@@ -297,7 +301,7 @@ describe('Error Logging System', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       errorLogger.logError(error, 'validation', 'high');
       
-      const logs = errorLogger.getRecentLogs(1);
+      const logs = errorLogger.getRecentLogs(1) as import("../error-logging").ErrorLogEntry[];
       expect(logs[0].message).toContain('[CARD_REDACTED]');
       expect(logs[0].message).not.toContain('4532-1234-5678-9012');
       
@@ -310,7 +314,7 @@ describe('Error Logging System', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       errorLogger.logError(error, 'database', 'medium');
       
-      const logs = errorLogger.getRecentLogs(1);
+      const logs = errorLogger.getRecentLogs(1) as import("../error-logging").ErrorLogEntry[];
       expect(logs[0].message).toContain('[UUID_REDACTED]');
       expect(logs[0].message).not.toContain('550e8400-e29b-41d4-a716-446655440000');
       
@@ -328,7 +332,7 @@ describe('Error Logging System', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       errorLogger.logError(error, 'network', 'medium', context);
       
-      const logs = errorLogger.getRecentLogs(1);
+      const logs = errorLogger.getRecentLogs(1) as import("../error-logging").ErrorLogEntry[];
       // URL encoding may change the format, so check for the presence of REDACTED
       expect(logs[0].context.url).toContain('REDACTED');
       expect(logs[0].context.url).toContain('id=123');
@@ -347,7 +351,7 @@ describe('Error Logging System', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       errorLogger.logError(error, 'system', 'low', context);
       
-      const logs = errorLogger.getRecentLogs(1);
+      const logs = errorLogger.getRecentLogs(1) as import("../error-logging").ErrorLogEntry[];
       expect(logs[0].context.userAgent).toContain('X.X.X');
       expect(logs[0].context.userAgent).not.toContain('91.0.4472.124');
       
@@ -363,7 +367,7 @@ describe('Error Logging System', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       errorLogger.logError(error, 'network', 'medium', context);
       
-      const logs = errorLogger.getRecentLogs(1);
+      const logs = errorLogger.getRecentLogs(1) as import("../error-logging").ErrorLogEntry[];
       expect(logs[0].context.url).toContain('[API_KEY_REDACTED]');
       expect(logs[0].context.url).not.toContain('abcdef123456789012345678901234567890');
       

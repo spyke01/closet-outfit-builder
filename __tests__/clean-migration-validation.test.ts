@@ -101,21 +101,36 @@ const wardrobeItemArb = fc.record({
 });
 
 // Mock validation functions
-function validateNoLegacyCategories(categories: unknown[]): boolean {
+type MigrationCategory = {
+  id: string;
+  name: string;
+  user_id: string;
+  is_anchor_item: boolean;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+type MigrationItem = {
+  id: string;
+  category_id: string;
+};
+
+function validateNoLegacyCategories(categories: MigrationCategory[]): boolean {
   return !categories.some(cat => cat.name === 'Jacket/Overshirt');
 }
 
-function validateNewCategoriesExist(categories: unknown[]): boolean {
+function validateNewCategoriesExist(categories: MigrationCategory[]): boolean {
   const categoryNames = new Set(categories.map(cat => cat.name));
   return categoryNames.has('Jacket') && categoryNames.has('Overshirt');
 }
 
-function validateItemCategoryReferences(items: unknown[], categories: unknown[]): boolean {
+function validateItemCategoryReferences(items: MigrationItem[], categories: MigrationCategory[]): boolean {
   const validCategoryIds = new Set(categories.map(cat => cat.id));
   return items.every(item => validCategoryIds.has(item.category_id));
 }
 
-function validateCategoryDisplayOrder(categories: unknown[]): boolean {
+function validateCategoryDisplayOrder(categories: MigrationCategory[]): boolean {
   const categoryOrder = {
     'Jacket': 1,
     'Overshirt': 2,
@@ -133,7 +148,7 @@ function validateCategoryDisplayOrder(categories: unknown[]): boolean {
   });
 }
 
-function validateSystemFunctionality(categories: unknown[], items: unknown[]): boolean {
+function validateSystemFunctionality(categories: MigrationCategory[], items: MigrationItem[]): boolean {
   // Simulate system functionality checks
   
   // 1. Category filtering should work
@@ -303,8 +318,8 @@ describe('Clean Migration Validation Property Tests', () => {
 
   describe('Property 8 Edge Cases: Clean Migration Validation', () => {
     it('should handle empty database state correctly', () => {
-      const emptyCategories: unknown[] = [];
-      const emptyItems: unknown[] = [];
+      const emptyCategories: MigrationCategory[] = [];
+      const emptyItems: MigrationItem[] = [];
 
       // Property: Empty state should not have legacy categories
       const noLegacyCategories = validateNoLegacyCategories(emptyCategories);
@@ -373,7 +388,7 @@ describe('Clean Migration Validation Property Tests', () => {
           fc.array(wardrobeItemArb, { minLength: 1, maxLength: 20 }),
           (categories, items) => {
             // Filter out any potential legacy categories
-            const cleanCategories = categories.filter(cat => cat.name !== 'Jacket/Overshirt');
+            const cleanCategories: MigrationCategory[] = categories;
             
             // Ensure we have the new categories
             const hasJacket = cleanCategories.some(cat => cat.name === 'Jacket');

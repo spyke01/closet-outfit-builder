@@ -29,7 +29,7 @@ describe('Performance Tests', () => {
     queryClient = createQueryClient();
     
     // Mock global performance
-    global.performance = mockPerformance as unknown;
+    global.performance = mockPerformance as never;
     
     // Reset mocks
     vi.clearAllMocks();

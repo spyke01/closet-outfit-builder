@@ -24,8 +24,8 @@ describe('Text Truncation Utilities', () => {
 
     it('should handle empty or invalid input', () => {
       expect(truncateText('', 50)).toBe('');
-      expect(truncateText(null as unknown, 50)).toBe('');
-      expect(truncateText(undefined as unknown, 50)).toBe('');
+      expect(truncateText(null as never, 50)).toBe('');
+      expect(truncateText(undefined as never, 50)).toBe('');
     });
 
     it('should trim whitespace', () => {

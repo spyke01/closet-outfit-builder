@@ -10,7 +10,7 @@
  * Feature: my-sizes
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 import * as fc from 'fast-check';
 import { createClient } from '@/lib/supabase/client';
 import type { SizeCategory, CategoryGridItem } from '@/lib/types/sizes';
@@ -26,7 +26,19 @@ vi.mock('@/lib/hooks/use-auth', () => ({
 }));
 
 describe('Property 4: Category Grid Item Completeness', () => {
-  let mockSupabase: unknown;
+  type MockSupabaseClient = {
+    from: Mock;
+    select: Mock;
+    insert: Mock;
+    update: Mock;
+    delete: Mock;
+    eq: Mock;
+    order: Mock;
+    maybeSingle: Mock;
+    single: Mock;
+  };
+
+  let mockSupabase: MockSupabaseClient;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -44,7 +56,7 @@ describe('Property 4: Category Grid Item Completeness', () => {
       single: vi.fn()
     };
 
-    (createClient as unknown).mockReturnValue(mockSupabase);
+    vi.mocked(createClient).mockReturnValue(mockSupabase as never);
   });
 
   /**
@@ -377,7 +389,7 @@ describe('Property 4: Category Grid Item Completeness', () => {
             user_id: 'test-user-id',
             name: testData.categoryName,
             icon: undefined,
-            supported_formats: testData.supportedFormats as unknown,
+            supported_formats: testData.supportedFormats as never,
             is_system_category: false,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()

@@ -14,6 +14,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { ComponentProps, MouseEvent } from 'react';
 import { MySizesClient } from '@/components/sizes/my-sizes-client';
 import { CategoryDetailClient } from '@/components/sizes/category-detail-client';
 import type { SizeCategory, PinnedPreference, StandardSize, BrandSize, CategoryMeasurements } from '@/lib/types/sizes';
@@ -37,10 +38,10 @@ vi.mock('next/navigation', () => ({
 
 // Prevent JSDOM navigation warnings when clicking Next.js links in tests.
 vi.mock('next/link', () => ({
-  default: ({ children, href, ...props }: unknown) => (
+  default: ({ children, href, ...props }: ComponentProps<'a'>) => (
     <a
       href={href}
-      onClick={(e: unknown) => e.preventDefault()}
+      onClick={(e: MouseEvent<HTMLAnchorElement>) => e.preventDefault()}
       {...props}
     >
       {children}
@@ -209,35 +210,35 @@ describe('My Sizes Navigation Integration', () => {
       isLoading: false,
       error: null,
       refetch: vi.fn(),
-    } as unknown);
+    } as never);
 
     vi.mocked(usePinnedPreferences).mockReturnValue({
       data: mockPinnedPreferences,
       isLoading: false,
       error: null,
       refetch: vi.fn(),
-    } as unknown);
+    } as never);
 
     vi.mocked(useSizeCategory).mockReturnValue({
       data: mockCategoryWithStandardSize,
       isLoading: false,
       error: null,
       refetch: vi.fn(),
-    } as unknown);
+    } as never);
 
     vi.mocked(useBrandSizes).mockReturnValue({
       data: mockBrandSizes,
       isLoading: false,
       error: null,
       refetch: vi.fn(),
-    } as unknown);
+    } as never);
 
     vi.mocked(useMeasurements).mockReturnValue({
       data: mockMeasurements,
       isLoading: false,
       error: null,
       refetch: vi.fn(),
-    } as unknown);
+    } as never);
   });
 
   describe('Navigation from Main Page to Detail View', () => {
@@ -536,7 +537,7 @@ describe('My Sizes Navigation Integration', () => {
         isLoading: false,
         error: new Error('Category not found'),
         refetch: vi.fn(),
-      } as unknown);
+      } as never);
 
       render(
         <QueryClientProvider client={queryClient}>

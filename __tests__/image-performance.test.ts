@@ -1,14 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { ComponentProps } from 'react';
 
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
-  default: ({ src, alt, onLoad, onError, ...props }: unknown) => {
+  default: ({ src, alt, onLoad, onError, ...props }: ComponentProps<'img'>) => {
     // Simulate image loading
     setTimeout(() => {
-      if (src.includes('error')) {
-        onError?.();
+      if (String(src).includes('error')) {
+        onError?.(new Event('error') as never);
       } else {
-        onLoad?.();
+        onLoad?.(new Event('load') as never);
       }
     }, 10);
     return { src, alt, ...props }; // Return object instead of JSX

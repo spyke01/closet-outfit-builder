@@ -1,9 +1,8 @@
+'use client'
+
 import { createLogger } from '@/lib/utils/logger';
 
 const logger = createLogger({ component: 'components-sizes-standard-size-form' });
-
-
-'use client'
 
 /**
  * StandardSizeForm Component

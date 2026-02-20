@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { buildAssistantContextPack } from '@/lib/services/assistant/context-builder';
 import type { AssistantChatRequest } from '@/lib/services/assistant/types';
 
-function createThenableQuery(data: unknown[]) {
+function createThenableQuery(data: Array<Record<string, unknown>>) {
   const query = {
     select: vi.fn(() => query),
     eq: vi.fn(() => query),
@@ -10,7 +10,10 @@ function createThenableQuery(data: unknown[]) {
     limit: vi.fn(() => query),
     gte: vi.fn(() => query),
     lte: vi.fn(() => query),
-    then: (onFulfilled: (value: { data: unknown[] }) => unknown, onRejected?: (reason: unknown) => unknown) =>
+    then: (
+      onFulfilled: (value: { data: Array<Record<string, unknown>> }) => unknown,
+      onRejected?: (reason: unknown) => unknown,
+    ) =>
       Promise.resolve({ data }).then(onFulfilled, onRejected),
   };
   return query;

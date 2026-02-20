@@ -12,7 +12,7 @@ import {
   hasAllMatches
 } from '../data-lookup'
 
-interface TestItem {
+interface TestItem extends Record<string, unknown> {
   id: string
   categoryId: string
   name: string

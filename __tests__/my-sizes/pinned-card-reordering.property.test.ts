@@ -75,10 +75,14 @@ async function reorderAndSavePinnedCards(
   });
 
   // Simulate database save (delete all, then insert new)
-  await mockSupabase.from('pinned_preferences').delete().eq('user_id', 'test-user');
+  const tableClient = mockSupabase.from('pinned_preferences') as {
+    delete: () => { eq: (column: string, value: string) => Promise<unknown> };
+    insert: (rows: PinnedPreference[]) => { select: () => Promise<unknown> };
+  };
+  await tableClient.delete().eq('user_id', 'test-user');
   
   if (updatedPreferences.length > 0) {
-    await mockSupabase.from('pinned_preferences').insert(updatedPreferences).select();
+    await tableClient.insert(updatedPreferences).select();
   }
 
   return updatedPreferences;
@@ -89,38 +93,34 @@ describe('Property 12: Pinned card reordering persistence', () => {
     vi.clearAllMocks();
     mockDataStore = []; // Clear the in-memory store
   });
-
-  // Generator for pinned preferences with guaranteed unique category_ids
-  // Using integer-based IDs to ensure uniqueness and prevent shrinking to duplicates
-  const pinnedPreferenceArb = (index: number) => fc.record({
-    id: fc.constant(`pref-${index}`),
-    user_id: fc.constant('test-user'),
-    category_id: fc.constant(`cat-${index}`),
-    display_order: fc.constant(index),
-    display_mode: fc.constantFrom('standard', 'dual', 'preferred-brand') as fc.Arbitrary<'standard' | 'dual' | 'preferred-brand'>,
-    preferred_brand_id: fc.option(fc.constant(`brand-${index}`), { nil: undefined }),
-    created_at: fc.constant(new Date().toISOString()),
-    updated_at: fc.constant(new Date().toISOString()),
-  });
-
   // Generator for array of unique pinned preferences
   const uniquePinnedPreferencesArb = (minLength: number, maxLength: number) =>
-    fc.integer({ min: minLength, max: maxLength }).chain(length =>
-      fc.tuple(...Array.from({ length }, (_, i) => pinnedPreferenceArb(i)))
+    fc.uniqueArray(fc.integer({ min: 0, max: 1000 }), {
+      minLength,
+      maxLength,
+    }).map((ids): PinnedPreference[] =>
+      ids.map((id, index) => ({
+        id: `pref-${id}`,
+        user_id: 'test-user',
+        category_id: `cat-${id}`,
+        display_order: index,
+        display_mode: 'standard',
+        preferred_brand_id: undefined,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }))
     );
 
   it('should persist reordered pinned cards with correct display_order', () => {
     fc.assert(
       fc.asyncProperty(
         uniquePinnedPreferencesArb(2, 10).chain(prefs => {
-          const prefsArray = Array.isArray(prefs) ? prefs : Array.from(prefs);
-          
           // Generate a new random order
           return fc.tuple(
-            fc.constant(prefsArray),
-            fc.shuffledSubarray(prefsArray.map(p => p.category_id), { 
-              minLength: prefsArray.length, 
-              maxLength: prefsArray.length 
+            fc.constant(prefs),
+            fc.shuffledSubarray(prefs.map(p => p.category_id), {
+              minLength: prefs.length,
+              maxLength: prefs.length
             })
           );
         }),
@@ -151,13 +151,11 @@ describe('Property 12: Pinned card reordering persistence', () => {
     fc.assert(
       fc.asyncProperty(
         uniquePinnedPreferencesArb(2, 10).chain(prefs => {
-          const prefsArray = Array.isArray(prefs) ? prefs : Array.from(prefs);
-          
           return fc.tuple(
-            fc.constant(prefsArray),
-            fc.shuffledSubarray(prefsArray.map(p => p.category_id), { 
-              minLength: prefsArray.length, 
-              maxLength: prefsArray.length 
+            fc.constant(prefs),
+            fc.shuffledSubarray(prefs.map(p => p.category_id), {
+              minLength: prefs.length,
+              maxLength: prefs.length
             })
           );
         }),
@@ -187,13 +185,11 @@ describe('Property 12: Pinned card reordering persistence', () => {
     fc.assert(
       fc.asyncProperty(
         uniquePinnedPreferencesArb(2, 10).chain(prefs => {
-          const prefsArray = Array.isArray(prefs) ? prefs : Array.from(prefs);
-          
           return fc.tuple(
-            fc.constant(prefsArray),
-            fc.shuffledSubarray(prefsArray.map(p => p.category_id), { 
-              minLength: prefsArray.length, 
-              maxLength: prefsArray.length 
+            fc.constant(prefs),
+            fc.shuffledSubarray(prefs.map(p => p.category_id), {
+              minLength: prefs.length,
+              maxLength: prefs.length
             })
           );
         }),
@@ -221,7 +217,7 @@ describe('Property 12: Pinned card reordering persistence', () => {
       fc.asyncProperty(
         uniquePinnedPreferencesArb(3, 10),
         async (prefs) => {
-          const originalOrder = Array.isArray(prefs) ? prefs : Array.from(prefs);
+          const originalOrder = prefs;
           
           if (originalOrder.length < 3) return true;
 
@@ -249,7 +245,7 @@ describe('Property 12: Pinned card reordering persistence', () => {
       fc.asyncProperty(
         uniquePinnedPreferencesArb(3, 10),
         async (prefs) => {
-          const originalOrder = Array.isArray(prefs) ? prefs : Array.from(prefs);
+          const originalOrder = prefs;
           
           if (originalOrder.length < 3) return true;
 

@@ -23,11 +23,6 @@ import {
   categoryMeasurementsInputSchema,
   pinnedPreferenceInputSchema
 } from '@/lib/schemas/sizes';
-import { createLogger } from '@/lib/utils/logger';
-
-const logger = createLogger({ component: 'lib-hooks-use-size-categories' });
-
-
 // Query keys for size management
 export const sizeKeys = {
   all: ['sizes'] as const,

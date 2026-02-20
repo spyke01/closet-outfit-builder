@@ -58,7 +58,7 @@ describe('StandardSizeSection', () => {
       isPending: false,
       isError: false,
       error: null,
-    } as unknown)
+    } as never)
   })
 
   describe('Data Display', () => {
@@ -240,7 +240,7 @@ describe('StandardSizeSection', () => {
         isPending: true,
         isError: false,
         error: null,
-      } as unknown)
+      } as never)
 
       render(<StandardSizeSection category={mockCategory} />)
 
@@ -257,7 +257,7 @@ describe('StandardSizeSection', () => {
         isPending: false,
         isError: true,
         error: new Error('Failed to save'),
-      } as unknown)
+      } as never)
 
       render(<StandardSizeSection category={mockCategory} />)
 

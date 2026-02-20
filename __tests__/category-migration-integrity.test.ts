@@ -251,7 +251,7 @@ describe('Database Integrity After Migration Property Tests', () => {
         fc.record({
           users: fc.array(
             fc.record({
-              id: fc.string({ minLength: 5, maxLength: 20 }).map((s: string, index: number) => `user-${s}-${index}`),
+              id: fc.string({ minLength: 5, maxLength: 20 }).map((s: string) => `user-${s}`),
               hasOldCategory: fc.boolean()
             }),
             { minLength: 1, maxLength: 10 }

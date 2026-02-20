@@ -10,6 +10,9 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Pass through all requests without caching
-  event.respondWith(fetch(event.request));
+  // Only proxy same-origin requests. Cross-origin requests (e.g. Google avatars)
+  // should bypass the service worker so they follow normal browser loading rules.
+  if (event.request.url.startsWith(self.location.origin)) {
+    event.respondWith(fetch(event.request));
+  }
 });

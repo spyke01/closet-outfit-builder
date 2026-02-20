@@ -222,9 +222,8 @@ describe('quota check logic', () => {
     };
 
     vi.mocked(canUseFeature).mockImplementation(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ((ent: { plan: { features: Record<string, boolean> } }, feature: string) =>
-        ent.plan.features[feature] === true) as any,
+        ent.plan.features[feature] === true) as never,
     );
 
     expect(canUseFeature(freeEntitlements as never, 'ai_image_generation')).toBe(false);

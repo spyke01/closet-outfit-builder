@@ -28,16 +28,21 @@ const styleBaselineArb: fc.Arbitrary<StyleBaseline> = fc.record({
   climate: climateArb,
 });
 
+interface SubcategorySelection {
+  categoryKey: CategoryKey;
+  subcategories: string[];
+}
+
 // Generate valid subcategory selections
-const subcategorySelectionArb = fc.tuple(categoryKeyArb).chain(([categoryKey]) => {
+const subcategorySelectionArb: fc.Arbitrary<SubcategorySelection> = categoryKeyArb.chain((categoryKey) => {
   const subcategories = getSubcategoriesForCategory(categoryKey);
   if (subcategories.length === 0) {
-    return fc.constant({ categoryKey, subcategories: [] });
+    return fc.constant<SubcategorySelection>({ categoryKey, subcategories: [] });
   }
-  
-  return fc.subarray(subcategories.map(s => s.name), { minLength: 1 }).map(selected => ({
+
+  return fc.subarray(subcategories.map(s => s.name), { minLength: 1 }).map((selected) => ({
     categoryKey,
-    subcategories: selected,
+    subcategories: [...selected],
   }));
 });
 
@@ -56,7 +61,7 @@ describe('Property-Based Tests: generateWardrobeItems', () => {
         (selections, styleBaseline) => {
           // Build selectedCategories and selectedSubcategories
           const selectedCategories: CategoryKey[] = [];
-          const selectedSubcategories: Record<CategoryKey, string[]> = {} as Record<CategoryKey, string[]>;
+          const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {} as Partial<Record<CategoryKey, string[]>>;
           
           for (const { categoryKey, subcategories } of selections) {
             if (!selectedCategories.includes(categoryKey)) {
@@ -127,7 +132,7 @@ describe('Property-Based Tests: generateWardrobeItems', () => {
         (itemCap, requestedItems, styleBaseline) => {
           // Create selections that would generate more items than the cap
           const selectedCategories: CategoryKey[] = ['Tops'];
-          const selectedSubcategories: Record<CategoryKey, string[]> = {
+          const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
             Tops: ['T-Shirt'],
           };
           
@@ -207,7 +212,7 @@ describe('Property-Based Tests: generateWardrobeItems', () => {
         styleBaselineArb,
         (colors, styleBaseline) => {
           const selectedCategories: CategoryKey[] = ['Tops'];
-          const selectedSubcategories: Record<CategoryKey, string[]> = {
+          const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {
             Tops: ['T-Shirt'],
           };
           const colorQuantitySelections: Record<string, SubcategoryColorSelection> = {
@@ -253,7 +258,7 @@ describe('Property-Based Tests: generateWardrobeItems', () => {
         styleBaselineArb,
         (selections, styleBaseline) => {
           const selectedCategories: CategoryKey[] = [];
-          const selectedSubcategories: Record<CategoryKey, string[]> = {} as Record<CategoryKey, string[]>;
+          const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {} as Partial<Record<CategoryKey, string[]>>;
           
           for (const { categoryKey, subcategories } of selections) {
             if (!selectedCategories.includes(categoryKey)) {
@@ -313,7 +318,7 @@ describe('Property-Based Tests: generateWardrobeItems', () => {
         styleBaselineArb,
         (selections, styleBaseline) => {
           const selectedCategories: CategoryKey[] = [];
-          const selectedSubcategories: Record<CategoryKey, string[]> = {} as Record<CategoryKey, string[]>;
+          const selectedSubcategories: Partial<Record<CategoryKey, string[]>> = {} as Partial<Record<CategoryKey, string[]>>;
           
           for (const { categoryKey, subcategories } of selections) {
             if (!selectedCategories.includes(categoryKey)) {

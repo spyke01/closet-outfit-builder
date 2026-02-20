@@ -14,7 +14,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { CategoryDetailClient } from '@/components/sizes/category-detail-client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import type { SizeCategory, BrandSize, CategoryMeasurements } from '@/lib/types/sizes'
+import type { SizeCategory, BrandSize, CategoryMeasurements, StandardSize } from '@/lib/types/sizes'
 import type { MeasurementGuide } from '@/lib/data/measurement-guides'
 
 // Mock next/navigation
@@ -66,15 +66,13 @@ function renderWithProviders(ui: React.ReactElement) {
 }
 
 describe('CategoryDetailClient with Measurement Guide', () => {
-  const mockCategory: SizeCategory & { standard_sizes?: unknown[] } = {
+  const mockCategory: SizeCategory & { standard_sizes?: StandardSize[] } = {
     id: 'test-category-id',
     user_id: 'test-user-id',
     name: 'Dress Shirt',
     icon: 'shirt',
     supported_formats: ['numeric', 'measurements'],
     is_system_category: true,
-    is_pinned: false,
-    display_order: 1,
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
     standard_sizes: [],
@@ -267,7 +265,7 @@ describe('CategoryDetailClient with Measurement Guide', () => {
   })
 
   it('should match category being viewed', async () => {
-    const pantsCategory: SizeCategory & { standard_sizes?: unknown[] } = {
+    const pantsCategory: SizeCategory & { standard_sizes?: StandardSize[] } = {
       ...mockCategory,
       name: 'Pants',
       icon: 'ruler',

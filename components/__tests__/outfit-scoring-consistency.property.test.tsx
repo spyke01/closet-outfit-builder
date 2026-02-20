@@ -64,7 +64,9 @@ function calculateColorHarmony(selection: OutfitSelection): number {
   
   if (items.length < 2) return 80;
   
-  const colors = items.map(item => item.color?.toLowerCase()).filter(Boolean);
+  const colors = items
+    .map(item => item.color?.toLowerCase())
+    .filter((color): color is string => Boolean(color));
   if (colors.length < 2) return 70;
   
   const neutrals = ['white', 'black', 'grey', 'gray', 'navy', 'cream', 'beige', 'khaki', 'brown'];
@@ -117,16 +119,16 @@ const outfitItemArb = fc.record({
     fc.constant('brown'),
     fc.constant('blue'),
     fc.constant('red')
-  )),
-  formality_score: fc.option(fc.integer({ min: 1, max: 10 })),
-  capsule_tags: fc.option(fc.array(fc.string({ maxLength: 10 }), { maxLength: 3 })),
+  ), { nil: undefined }),
+  formality_score: fc.option(fc.integer({ min: 1, max: 10 }), { nil: undefined }),
+  capsule_tags: fc.option(fc.array(fc.string({ maxLength: 10 }), { maxLength: 3 }), { nil: undefined }),
   season: fc.option(fc.array(fc.oneof(
     fc.constant('Spring'),
     fc.constant('Summer'),
     fc.constant('Fall'),
     fc.constant('Winter'),
     fc.constant('All')
-  ), { maxLength: 2 })),
+  ), { maxLength: 2 }), { nil: undefined }),
   category_name: fc.oneof(
     fc.constant('Jacket'),
     fc.constant('Overshirt'),
@@ -205,10 +207,10 @@ describe('Outfit Scoring Consistency Property Tests', () => {
   it('Property 10b: Scoring should be deterministic for any outfit composition', () => {
     fc.assert(fc.property(
       fc.record({
-        jacket: fc.option(outfitItemArb),
-        shirt: fc.option(outfitItemArb),
-        pants: fc.option(outfitItemArb),
-        shoes: fc.option(outfitItemArb)
+        jacket: fc.option(outfitItemArb, { nil: undefined }),
+        shirt: fc.option(outfitItemArb, { nil: undefined }),
+        pants: fc.option(outfitItemArb, { nil: undefined }),
+        shoes: fc.option(outfitItemArb, { nil: undefined })
       }),
       (testData) => {
         const selection: OutfitSelection = {

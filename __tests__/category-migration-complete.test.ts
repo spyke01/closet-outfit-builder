@@ -312,7 +312,7 @@ describe('Category Migration Complete Property Tests', () => {
                 formality_score: originalItem.formality_score,
                 capsule_tags: originalItem.capsule_tags,
                 season: originalItem.season
-              } as unknown;
+              } as never;
               
               const expectedCategory = classifier.classifyItem(mockItem);
               expect(classification.newCategory).toBe(expectedCategory);
@@ -456,7 +456,7 @@ describe('Category Migration Complete Property Tests', () => {
       name: 'Leather Jacket',
       formality_score: 7,
       brand: 'Test Brand'
-    } as unknown;
+    } as never;
 
     // Classify the same item multiple times
     const classifications = Array.from({ length: 10 }, () => classifier.classifyItem(testItem));

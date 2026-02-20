@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { 
@@ -41,7 +41,12 @@ import {
 } from '@/lib/utils/security';
 
 describe('Security Middleware', () => {
-  let mockSupabase: unknown;
+  type MockSupabase = {
+    auth: { getUser: Mock };
+    from: Mock;
+  };
+
+  let mockSupabase: MockSupabase;
   
   beforeEach(() => {
     vi.clearAllMocks();
@@ -59,10 +64,10 @@ describe('Security Middleware', () => {
       })),
     };
     
-    (createClient as unknown).mockResolvedValue(mockSupabase);
-    (checkRateLimit as unknown).mockReturnValue({ allowed: true, remaining: 99, resetTime: Date.now() + 60000 });
-    (validateAndSanitizeInput as unknown).mockReturnValue({ success: true, data: {} });
-    (detectMaliciousInput as unknown).mockReturnValue({ isMalicious: false, patterns: [], severity: 'low' });
+    vi.mocked(createClient).mockResolvedValue(mockSupabase as never);
+    vi.mocked(checkRateLimit).mockReturnValue({ allowed: true, remaining: 99, resetTime: Date.now() + 60000 });
+    vi.mocked(validateAndSanitizeInput).mockReturnValue({ success: true, data: {} });
+    vi.mocked(detectMaliciousInput).mockReturnValue({ isMalicious: false, patterns: [], severity: 'low' });
   });
 
   describe('Method Validation', () => {
@@ -104,7 +109,7 @@ describe('Security Middleware', () => {
 
   describe('Rate Limiting', () => {
     it('should allow requests within rate limit', async () => {
-      (checkRateLimit as unknown).mockReturnValue({ allowed: true, remaining: 5, resetTime: Date.now() + 60000 });
+      vi.mocked(checkRateLimit).mockReturnValue({ allowed: true, remaining: 5, resetTime: Date.now() + 60000 });
 
       const middleware = createSecurityMiddleware({
         rateLimit: { maxRequests: 10, windowMs: 60000 },
@@ -120,7 +125,7 @@ describe('Security Middleware', () => {
     });
 
     it('should reject requests exceeding rate limit', async () => {
-      (checkRateLimit as unknown).mockReturnValue({ allowed: false, remaining: 0, resetTime: Date.now() + 60000 });
+      vi.mocked(checkRateLimit).mockReturnValue({ allowed: false, remaining: 0, resetTime: Date.now() + 60000 });
 
       const middleware = createSecurityMiddleware({
         rateLimit: { maxRequests: 10, windowMs: 60000 },
@@ -144,7 +149,7 @@ describe('Security Middleware', () => {
 
     it('should include rate limit headers in response', async () => {
       const resetTime = Date.now() + 60000;
-      (checkRateLimit as unknown).mockReturnValue({ allowed: false, remaining: 0, resetTime });
+      vi.mocked(checkRateLimit).mockReturnValue({ allowed: false, remaining: 0, resetTime });
 
       const middleware = createSecurityMiddleware({
         rateLimit: { maxRequests: 10, windowMs: 60000 },
@@ -229,7 +234,7 @@ describe('Security Middleware', () => {
   describe('Input Validation', () => {
     it('should validate and sanitize input successfully', async () => {
       const validatedData = { name: 'John', email: 'john@example.com' };
-      (validateAndSanitizeInput as unknown).mockReturnValue({ success: true, data: validatedData });
+      vi.mocked(validateAndSanitizeInput).mockReturnValue({ success: true, data: validatedData });
 
       const schema = z.object({
         name: z.string(),
@@ -259,7 +264,7 @@ describe('Security Middleware', () => {
     });
 
     it('should reject invalid input', async () => {
-      (validateAndSanitizeInput as unknown).mockReturnValue({ 
+      vi.mocked(validateAndSanitizeInput).mockReturnValue({ 
         success: false, 
         error: 'Invalid email format' 
       });
@@ -296,7 +301,7 @@ describe('Security Middleware', () => {
     });
 
     it('should detect and reject malicious input', async () => {
-      (detectMaliciousInput as unknown).mockReturnValue({
+      vi.mocked(detectMaliciousInput).mockReturnValue({
         isMalicious: true,
         patterns: ['sql_injection'],
         severity: 'high',

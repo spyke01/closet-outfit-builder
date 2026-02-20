@@ -121,6 +121,7 @@ describe('enrichItem', () => {
     category_id: 'cat-123',
     name: 'Test Item',
     active: true,
+    bg_removal_status: 'completed',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
     ...overrides,
@@ -133,21 +134,21 @@ describe('enrichItem', () => {
     expect(enriched.color).toBe('blue');
   });
   
-  it('treats null color as unknown', () => {
+  it('treats null color as any', () => {
     const item = createMockItem({ name: 'Oxford Shirt', color: undefined });
     const enriched = enrichItem(item);
     
     expect(enriched.color).toBe('unknown');
   });
   
-  it('treats empty string color as unknown', () => {
+  it('treats empty string color as any', () => {
     const item = createMockItem({ name: 'Oxford Shirt', color: '' });
     const enriched = enrichItem(item);
     
     expect(enriched.color).toBe('unknown');
   });
   
-  it('treats undefined color as unknown', () => {
+  it('treats undefined color as any', () => {
     const item = createMockItem({ name: 'Oxford Shirt' });
     const enriched = enrichItem(item);
     
@@ -266,6 +267,7 @@ describe('enrichItems', () => {
     category_id: 'cat-123',
     name: 'Test Item',
     active: true,
+    bg_removal_status: 'completed',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
     ...overrides,
@@ -374,6 +376,7 @@ describe('Integration: Requirements Validation', () => {
     category_id: 'cat-123',
     name: 'Test Item',
     active: true,
+    bg_removal_status: 'completed',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
     ...overrides,
@@ -395,7 +398,7 @@ describe('Integration: Requirements Validation', () => {
     expect(enriched[3].color).toBe('brown');
   });
   
-  it('validates Requirement 3.6: Null colors treated as unknown', () => {
+  it('validates Requirement 3.6: Null colors treated as any', () => {
     const items = [
       createMockItem({ name: 'Item 1', color: undefined }),
       createMockItem({ name: 'Item 2', color: '' }),

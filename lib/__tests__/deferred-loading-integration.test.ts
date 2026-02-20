@@ -12,10 +12,10 @@ vi.mock('@/lib/monitoring', () => ({
 }));
 
 // Mock web-vitals
-vi.mock('web-vitals/onCLS.js', () => ({ onCLS: vi.fn() }), { virtual: true });
-vi.mock('web-vitals/onFCP.js', () => ({ onFCP: vi.fn() }), { virtual: true });
-vi.mock('web-vitals/onLCP.js', () => ({ onLCP: vi.fn() }), { virtual: true });
-vi.mock('web-vitals/onTTFB.js', () => ({ onTTFB: vi.fn() }), { virtual: true });
+vi.mock('web-vitals/onCLS.js', () => ({ onCLS: vi.fn() }));
+vi.mock('web-vitals/onFCP.js', () => ({ onFCP: vi.fn() }));
+vi.mock('web-vitals/onLCP.js', () => ({ onLCP: vi.fn() }));
+vi.mock('web-vitals/onTTFB.js', () => ({ onTTFB: vi.fn() }));
 
 beforeEach(() => {
   vi.clearAllMocks();
