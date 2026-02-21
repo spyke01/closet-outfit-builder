@@ -27,33 +27,30 @@ import type { MeasurementGuide as MeasurementGuideType } from '@/lib/data/measur
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 /**
- * Mapping of diagram references to actual image files
- * Available images: dress-shirt.png, dress.png, pants.png, suit.png
+ * Category-to-image map.
+ * We intentionally render one visual guide image per category to avoid
+ * mixed garment visuals inside a single measurement guide.
  */
-const DIAGRAM_IMAGE_MAP: Record<string, string | undefined> = {
-  // Dress shirt measurements (collar, sleeve)
-  'collar-measurement': '/images/measurements/dress-shirt.png',
-  'sleeve-measurement': '/images/measurements/dress-shirt.png',
-  
-  // Suit/jacket measurements (chest, jacket length, shoulder)
-  'chest-measurement': '/images/measurements/suit.png',
-  'jacket-length': '/images/measurements/suit.png',
-  'shoulder-measurement': '/images/measurements/suit.png',
-  
-  // Pants measurements (waist, inseam, hip)
-  'waist-measurement': '/images/measurements/pants.png',
-  'inseam-measurement': '/images/measurements/pants.png',
-  'hip-measurement': '/images/measurements/pants.png',
-  
-  // Dress measurements (bust, waist, hip, shoulder)
-  'bust-measurement': '/images/measurements/dress.png',
-  
-  // Belt measurements
-  'belt-measurement': '/images/measurements/pants.png',
-  
-  // Foot measurements (no image available yet)
-  'foot-length': undefined,
-  'foot-width': undefined,
+const CATEGORY_IMAGE_MAP: Record<string, string | undefined> = {
+  // Men's categories
+  'Dress Shirt': '/images/measurements/dress-shirt.png',
+  'Casual Shirt': '/images/measurements/dress-shirt.png',
+  'Suit Jacket': '/images/measurements/suit.png',
+  'Pants': '/images/measurements/pants.png',
+  'Jeans': '/images/measurements/pants.png',
+  'Shoes': undefined,
+  'Belt': '/images/measurements/pants.png',
+  'Coat/Jacket': '/images/measurements/suit.png',
+
+  // Women's categories
+  'Dress': '/images/measurements/dress.png',
+  'Blouse/Top': '/images/measurements/dress.png',
+  "Women's Pants": '/images/measurements/pants.png',
+  "Women's Jeans": '/images/measurements/pants.png',
+  "Women's Shoes": undefined,
+  'Jacket/Coat': '/images/measurements/suit.png',
+  "Women's Suit Jacket": '/images/measurements/suit.png',
+  "Women's Belt": '/images/measurements/pants.png',
 }
 
 export interface MeasurementGuideProps {
@@ -80,6 +77,7 @@ export function MeasurementGuide({
   defaultExpanded = true,
 }: MeasurementGuideProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded)
+  const categoryImageSrc = CATEGORY_IMAGE_MAP[guide.category_name]
 
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded)
@@ -123,6 +121,19 @@ export function MeasurementGuide({
               <h3 className="text-sm font-semibold text-foreground">
                 How to Measure
               </h3>
+
+              {categoryImageSrc && (
+                <div className="rounded-md border border-border bg-background p-4">
+                  <Image
+                    src={categoryImageSrc}
+                    alt={`${guide.category_name} measurement guide`}
+                    width={360}
+                    height={240}
+                    className="w-full max-w-[320px] sm:max-w-[380px] h-auto object-contain rounded-md mx-auto"
+                    priority={false}
+                  />
+                </div>
+              )}
               
               <div className="space-y-4">
                 {guide.measurement_fields.map((field, index) => (
@@ -176,23 +187,6 @@ export function MeasurementGuide({
                       </div>
                     )}
 
-                    {/* Visual diagram - only show if image exists */}
-                    {(() => {
-                      const diagramSrc = field.diagram_ref ? DIAGRAM_IMAGE_MAP[field.diagram_ref] : undefined;
-                      if (!diagramSrc) return null;
-                      return (
-                      <div className="mt-3 rounded-md border border-border bg-background p-4">
-                        <Image
-                          src={diagramSrc}
-                          alt={`How to measure ${field.label}`}
-                          width={360}
-                          height={240}
-                          className="w-full max-w-[320px] sm:max-w-[380px] h-auto object-contain rounded-md mx-auto"
-                          priority={false}
-                        />
-                      </div>
-                      );
-                    })()}
                   </div>
                 ))}
               </div>

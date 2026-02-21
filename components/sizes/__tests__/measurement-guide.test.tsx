@@ -140,17 +140,15 @@ describe('MeasurementGuide', () => {
       expect(screen.getByText("men's")).toBeInTheDocument()
     })
 
-    it('should render visual diagrams for available images', () => {
+    it('should render a single category-level visual guide image', () => {
       render(<MeasurementGuide guide={mockGuide} />)
 
-      // Both collar and sleeve measurements use dress-shirt.png
-      const images = screen.getAllByRole('img', { name: /how to measure/i })
-      expect(images).toHaveLength(2)
-      expect(images[0]).toHaveAttribute('alt', 'How to measure Collar Size')
-      expect(images[1]).toHaveAttribute('alt', 'How to measure Sleeve Length')
+      const images = screen.getAllByRole('img', { name: /measurement guide/i })
+      expect(images).toHaveLength(1)
+      expect(images[0]).toHaveAttribute('alt', 'Dress Shirt measurement guide')
     })
 
-    it('should not render anything for diagrams without images', () => {
+    it('should not render a category image when that category has no image', () => {
       const guideWithUnavailableDiagram: MeasurementGuideType = {
         category_name: 'Shoes',
         icon: 'footprints',
@@ -174,6 +172,7 @@ describe('MeasurementGuide', () => {
       // Should not show placeholder or "coming soon" text
       expect(screen.queryByText('Visual diagram: foot-length')).not.toBeInTheDocument()
       expect(screen.queryByText('(Coming soon)')).not.toBeInTheDocument()
+      expect(screen.queryByRole('img', { name: /measurement guide/i })).not.toBeInTheDocument()
       
       // Should still show the field description
       expect(screen.getByText('Measure from heel to longest toe.')).toBeInTheDocument()

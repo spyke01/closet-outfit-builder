@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isSupportedUploadMimeType, validateFileType } from '../route';
+import { isSupportedUploadMimeType, validateFileType } from '../validators';
 
 describe('upload-image route validators', () => {
   it('rejects disallowed MIME types for avatar uploads', () => {
