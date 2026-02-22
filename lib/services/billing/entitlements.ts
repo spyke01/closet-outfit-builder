@@ -36,7 +36,9 @@ export type MonthlyUsageMetric =
   | 'ai_outfit_image_generations'
   | 'ai_wardrobe_image_generations'
   | 'ai_stylist_messages'
-  | 'ai_stylist_vision_messages';
+  | 'ai_stylist_vision_messages'
+  | 'ai_today_ai_generations'
+  | 'ai_today_ai_trial_lifetime';
 
 function toMonthPeriod(anchor: Date, now: Date) {
   const day = anchor.getUTCDate();
@@ -158,6 +160,9 @@ export function getUsageLimitForMetric(entitlements: Entitlements, metricKey: st
   if (metricKey === 'ai_stylist_vision_messages') {
     return entitlements.plan.limits.ai_stylist_vision_messages_monthly;
   }
+  if (metricKey === 'ai_today_ai_generations') {
+    return entitlements.plan.limits.ai_today_ai_generations_monthly;
+  }
   return null;
 }
 
@@ -250,6 +255,28 @@ export async function reserveUsageCounterAtomic(
     allowed: Boolean(firstRow.allowed),
     count: Number(firstRow.new_count || 0),
   };
+}
+
+export async function reserveLifetimeUsageCounterAtomic(
+  supabase: SupabaseClient,
+  params: {
+    userId: string;
+    metricKey: string;
+    limit: number | null;
+    incrementBy?: number;
+  }
+): Promise<{ allowed: boolean; count: number }> {
+  return reserveUsageCounterAtomic(supabase, {
+    userId: params.userId,
+    metricKey: params.metricKey,
+    period: {
+      key: 'lifetime',
+      start: new Date('1970-01-01T00:00:00.000Z'),
+      end: new Date('2999-12-31T00:00:00.000Z'),
+    },
+    limit: params.limit,
+    incrementBy: params.incrementBy ?? 1,
+  });
 }
 
 export function getAiBurstHourKey(now: Date = new Date()): string {

@@ -2,6 +2,12 @@ import { describe, expect, it, vi } from 'vitest';
 import { buildAssistantContextPack, summarizeContextForPrompt } from '@/lib/services/assistant/context-builder';
 import type { AssistantChatRequest } from '@/lib/services/assistant/types';
 
+function isoDatePlusDays(days: number): string {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
 function createThenableQuery(data: Array<Record<string, unknown>>) {
   const query = {
     select: vi.fn(() => query),
@@ -63,6 +69,10 @@ describe('assistant context builder', () => {
   });
 
   it('sanitizes context text fields', async () => {
+    const tomorrow = isoDatePlusDays(1);
+    const tripStart = isoDatePlusDays(3);
+    const tripEnd = isoDatePlusDays(6);
+
     const tableQueries = {
       wardrobe_items: createThenableQuery([{
         id: 'item-1',
@@ -75,7 +85,7 @@ describe('assistant context builder', () => {
       outfits: createThenableQuery([]),
       calendar_entries: createThenableQuery([{
         id: 'cal-1',
-        entry_date: '2026-02-20',
+        entry_date: tomorrow,
         status: 'planned',
         notes: 'Dinner <script>alert(1)</script>',
         outfit_id: null,
@@ -91,8 +101,8 @@ describe('assistant context builder', () => {
         id: 'trip-1',
         name: 'NYC ${trip}',
         destination_text: 'New York',
-        start_date: '2026-03-01',
-        end_date: '2026-03-04',
+        start_date: tripStart,
+        end_date: tripEnd,
       }]),
     } as const;
 
@@ -119,12 +129,14 @@ describe('assistant context builder', () => {
   });
 
   it('prefers live weather hint context over calendar weather when provided', async () => {
+    const tomorrow = isoDatePlusDays(1);
+
     const tableQueries = {
       wardrobe_items: createThenableQuery([]),
       outfits: createThenableQuery([]),
       calendar_entries: createThenableQuery([{
         id: 'cal-1',
-        entry_date: '2026-02-20',
+        entry_date: tomorrow,
         status: 'planned',
         notes: null,
         outfit_id: null,

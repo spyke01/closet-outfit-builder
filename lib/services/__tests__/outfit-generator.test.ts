@@ -431,6 +431,66 @@ describe('generateOutfit', () => {
     });
   });
 
+  describe('Formality Preference', () => {
+    it('prefers refined formality items when preferred range targets formal looks', () => {
+      const wardrobeWithVariants: WardrobeItem[] = [
+        createMockItem({
+          id: 'shirt-casual',
+          name: 'T-Shirt',
+          category_id: 'cat-shirt',
+          category: mockCategories.shirt,
+          formality_score: 2,
+        }),
+        createMockItem({
+          id: 'shirt-formal',
+          name: 'Dress Shirt',
+          category_id: 'cat-shirt',
+          category: mockCategories.shirt,
+          formality_score: 9,
+        }),
+        createMockItem({
+          id: 'pants-casual',
+          name: 'Joggers',
+          category_id: 'cat-pants',
+          category: mockCategories.pants,
+          formality_score: 2,
+        }),
+        createMockItem({
+          id: 'pants-formal',
+          name: 'Wool Trousers',
+          category_id: 'cat-pants',
+          category: mockCategories.pants,
+          formality_score: 8,
+        }),
+        createMockItem({
+          id: 'shoes-casual',
+          name: 'Sneakers',
+          category_id: 'cat-shoes',
+          category: mockCategories.shoes,
+          formality_score: 2,
+        }),
+        createMockItem({
+          id: 'shoes-formal',
+          name: 'Oxford Shoes',
+          category_id: 'cat-shoes',
+          category: mockCategories.shoes,
+          formality_score: 9,
+        }),
+      ];
+
+      const outfit = generateOutfit({
+        wardrobeItems: wardrobeWithVariants,
+        weatherContext: mildWeather,
+        preferredFormalityBand: 'refined',
+        preferredFormalityRange: { min: 7, max: 10 },
+      });
+
+      expect((outfit.items.shirt.formality_score || 0)).toBeGreaterThanOrEqual(7);
+      expect((outfit.items.pants.formality_score || 0)).toBeGreaterThanOrEqual(7);
+      expect((outfit.items.shoes.formality_score || 0)).toBeGreaterThanOrEqual(7);
+    });
+  });
+
   describe('Item Selection Strategy', () => {
     it('should prefer shorts in hot weather', () => {
       const wardrobeWithShorts = [

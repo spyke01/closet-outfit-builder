@@ -16,6 +16,7 @@ import {
   WeatherContext,
   CompatibilityScore,
   ColorCategory,
+  FormalityBand,
 } from '@/lib/types/generation';
 import { enrichItems } from '@/lib/utils/item-enrichment';
 import { calculateCompatibilityScore } from '@/lib/utils/compatibility-scoring';
@@ -109,6 +110,25 @@ function applyBeltShoeColorConstraint(
 
 function clamp01(value: number): number {
   return Math.max(0, Math.min(1, value));
+}
+
+function getFormalityPreferenceScore(
+  item: EnrichedItem,
+  options: {
+    preferredFormalityBand?: FormalityBand;
+    preferredFormalityRange?: { min: number; max: number };
+  }
+): number {
+  const score = item.formality_score ?? 5;
+  if (options.preferredFormalityRange) {
+    const { min, max } = options.preferredFormalityRange;
+    if (score >= min && score <= max) return 1;
+    const distance = score < min ? min - score : score - max;
+    return clamp01(1 - distance / 4);
+  }
+
+  if (!options.preferredFormalityBand) return 1;
+  return item.formalityBand === options.preferredFormalityBand ? 1 : 0.75;
 }
 
 function hashToUnitInterval(input: string): number {
@@ -246,6 +266,8 @@ function selectBestItem(
     preferShorts?: boolean;
     variationSeed?: string;
     explorationLevel?: number;
+    preferredFormalityBand?: FormalityBand;
+    preferredFormalityRange?: { min: number; max: number };
   } = {}
 ): EnrichedItem | null {
   if (candidates.length === 0) return null;
@@ -255,6 +277,8 @@ function selectBestItem(
     preferShorts = false,
     variationSeed,
     explorationLevel = 0,
+    preferredFormalityBand,
+    preferredFormalityRange,
   } = options;
 
   const constrainedCandidates = applyBeltShoeColorConstraint(candidates, selectedItems, slot);
@@ -276,6 +300,11 @@ function selectBestItem(
     });
     
     let finalScore = compatScore.total;
+    const formalityPreference = getFormalityPreferenceScore(item, {
+      preferredFormalityBand,
+      preferredFormalityRange,
+    });
+    finalScore = finalScore * 0.85 + formalityPreference * 0.15;
     
     // Apply shorts preference in hot weather
     if (preferShorts && item.name.toLowerCase().includes('shorts')) {
@@ -359,6 +388,8 @@ function selectItems(
   generationOptions: {
     variationSeed?: string;
     explorationLevel?: number;
+    preferredFormalityBand?: FormalityBand;
+    preferredFormalityRange?: { min: number; max: number };
   }
 ): Map<string, EnrichedItem> {
   const selectedItems: Partial<Record<string, EnrichedItem>> = {};
@@ -382,6 +413,8 @@ function selectItems(
         preferShorts,
         variationSeed: generationOptions.variationSeed ? `${generationOptions.variationSeed}:${slot}` : undefined,
         explorationLevel: generationOptions.explorationLevel,
+        preferredFormalityBand: generationOptions.preferredFormalityBand,
+        preferredFormalityRange: generationOptions.preferredFormalityRange,
       }
     );
     
@@ -533,6 +566,8 @@ export function generateOutfit(options: GenerationOptions): GeneratedOutfit {
     wardrobeItems,
     weatherContext,
     excludeItems = [],
+    preferredFormalityBand,
+    preferredFormalityRange,
     variationSeed,
     explorationLevel = 0,
   } = options;
@@ -573,6 +608,8 @@ export function generateOutfit(options: GenerationOptions): GeneratedOutfit {
         preferShorts,
         variationSeed: variationSeed ? `${variationSeed}:core:${slot}` : undefined,
         explorationLevel,
+        preferredFormalityBand,
+        preferredFormalityRange,
       }
     );
     
@@ -597,6 +634,8 @@ export function generateOutfit(options: GenerationOptions): GeneratedOutfit {
     {
       variationSeed: variationSeed ? `${variationSeed}:full` : undefined,
       explorationLevel,
+      preferredFormalityBand,
+      preferredFormalityRange,
     }
   );
   

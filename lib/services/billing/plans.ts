@@ -12,6 +12,7 @@ export interface PlanLimits {
   ai_image_generations_monthly: number;
   ai_stylist_messages_monthly: number | null;
   ai_stylist_vision_messages_monthly: number;
+  ai_today_ai_generations_monthly: number | null;
   packing_items_per_trip: number | null;
   ai_burst_per_hour: number;
 }
@@ -45,6 +46,7 @@ const FREE_LIMITS: PlanLimits = {
   ai_image_generations_monthly: 0,
   ai_stylist_messages_monthly: 0,
   ai_stylist_vision_messages_monthly: 0,
+  ai_today_ai_generations_monthly: null,
   packing_items_per_trip: 50,
   ai_burst_per_hour: 5,
 };
@@ -60,6 +62,7 @@ const PLUS_LIMITS: PlanLimits = {
   ai_image_generations_monthly: 30,
   ai_stylist_messages_monthly: 300,
   ai_stylist_vision_messages_monthly: 30,
+  ai_today_ai_generations_monthly: 7,
   packing_items_per_trip: 250,
   ai_burst_per_hour: 5,
 };
@@ -75,6 +78,7 @@ const PRO_LIMITS: PlanLimits = {
   ai_image_generations_monthly: 100,
   ai_stylist_messages_monthly: null,
   ai_stylist_vision_messages_monthly: 100,
+  ai_today_ai_generations_monthly: 14,
   packing_items_per_trip: null,
   ai_burst_per_hour: 5,
 };
