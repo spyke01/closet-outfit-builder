@@ -34,6 +34,8 @@
     "migrate:clean-names": "tsx scripts/clean-color-names.ts",
     "migrate:clean-names:dry-run": "tsx scripts/clean-color-names.ts --dry-run",
     "migrate:normalize-colors": "tsx scripts/normalize-all-colors.ts",
+    "admin:backfill-billing-events": "tsx scripts/backfill-billing-event-users.ts",
+    "admin:prune-audit": "tsx scripts/prune-admin-audit-log.ts",
     "lint": "eslint .",
     "lint:report": "eslint . -f json -o .lint-report.json || true && node scripts/lint-summary.js .lint-report.json",
     "lint:strict": "eslint . --max-warnings=0",

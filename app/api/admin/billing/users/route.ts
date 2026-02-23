@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { hasBillingAdminRole } from '@/lib/services/billing/roles';
-import { enforceAdminRateLimit, hasRecentAdminAuth } from '@/lib/services/billing/admin-security';
+import { enforceAdminRateLimitDurable, hasRecentAdminAuth } from '@/lib/services/billing/admin-security';
+import { hasAdminPermission } from '@/lib/services/admin/permissions';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,17 +15,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const isAdmin = await hasBillingAdminRole(supabase, user.id);
-    if (!isAdmin) {
+    const canReadBilling = await hasAdminPermission(supabase, user.id, 'billing.read');
+    if (!canReadBilling) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const hasRecentAuth = await hasRecentAdminAuth(supabase);
+    const hasRecentAuth = await hasRecentAdminAuth(supabase, { maxAgeSeconds: Number(process.env.ADMIN_LOW_RISK_MAX_AGE_SECONDS || 43_200) });
     if (!hasRecentAuth) {
-      return NextResponse.json({ error: 'Recent authentication required' }, { status: 401 });
+      return NextResponse.json({ error: 'Recent authentication required', code: 'ADMIN_STEP_UP_REQUIRED' }, { status: 401 });
     }
 
-    const rateLimit = enforceAdminRateLimit(user.id, 'admin-billing-users-list');
+    const rateLimit = await enforceAdminRateLimitDurable(user.id, 'admin-billing-users-list');
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { error: 'Rate limit exceeded' },

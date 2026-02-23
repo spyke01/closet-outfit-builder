@@ -139,6 +139,9 @@ export async function POST(request: NextRequest) {
 
     const metadata = (object.metadata as Record<string, string> | undefined) || {};
     const previousSubscriptionId = metadata.previous_subscription_id || null;
+    if (!userId && metadata.user_id) {
+      userId = metadata.user_id;
+    }
 
     let existingSubscription: ExistingSubscriptionRecord | null = null;
 

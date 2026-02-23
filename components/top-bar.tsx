@@ -20,7 +20,7 @@ import { safeValidate } from '@/lib/utils/validation';
 import { useNavigationPreloading } from '@/lib/hooks/use-intelligent-preloading';
 import { SebastianChatLauncher } from './sebastian-chat-launcher';
 import { useBillingEntitlements } from '@/lib/hooks/use-billing-entitlements';
-import { useBillingAdminRole } from '@/lib/hooks/use-billing-admin-role';
+import { useAdminPortalAccess } from '@/lib/hooks/use-admin-portal-access';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,6 +64,12 @@ export const TopBar: React.FC<TopBarProps> = ({
   const { data: preferences } = useUserPreferences();
   const updatePreferences = useUpdateUserPreferences();
   const [mounted, setMounted] = React.useState(false);
+  const [impersonationSession, setImpersonationSession] = React.useState<{
+    target_user_id: string;
+    ticket_id?: string | null;
+    expires_at: string;
+  } | null>(null);
+  const [stoppingImpersonation, setStoppingImpersonation] = React.useState(false);
 
   // Avoid hydration mismatch
   React.useEffect(() => {
@@ -111,7 +117,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   };
 
   const handleAdminBilling = () => {
-    router.push('/admin/billing');
+    router.push('/admin');
   };
 
   const handleThemeChange = async (newTheme: 'light' | 'dark' | 'system') => {
@@ -142,7 +148,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   const currentView = getCurrentView();
   const { entitlements, loading: entitlementsLoading } = useBillingEntitlements(Boolean(validatedUser));
-  const { isBillingAdmin, loading: billingAdminLoading } = useBillingAdminRole(validatedUser?.id);
+  const { isAdminPortalUser, loading: adminPortalLoading } = useAdminPortalAccess(validatedUser?.id);
   const canAccessSebastian = entitlements?.effectivePlanCode === 'plus' || entitlements?.effectivePlanCode === 'pro';
   const desktopNavLinkClass = (isActive: boolean) =>
     `flex cursor-pointer items-center gap-2 px-4 h-16 -mb-1 border-b-2 text-sm transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
@@ -185,6 +191,40 @@ export const TopBar: React.FC<TopBarProps> = ({
     return null;
   };
   const avatarUrl = getUserAvatarUrl();
+
+  React.useEffect(() => {
+    let mountedRef = true;
+    if (!validatedUser) {
+      setImpersonationSession(null);
+      return () => {
+        mountedRef = false;
+      };
+    }
+
+    const loadSession = async () => {
+      const res = await fetch('/api/admin/impersonation/session', { cache: 'no-store' });
+      const payload = await res.json();
+      if (!mountedRef) return;
+      setImpersonationSession(payload.session || null);
+    };
+
+    loadSession().catch(() => undefined);
+    const interval = setInterval(() => loadSession().catch(() => undefined), 30_000);
+    return () => {
+      mountedRef = false;
+      clearInterval(interval);
+    };
+  }, [validatedUser]);
+
+  const stopImpersonation = async () => {
+    setStoppingImpersonation(true);
+    try {
+      await fetch('/api/admin/impersonation/stop', { method: 'POST' });
+      setImpersonationSession(null);
+    } finally {
+      setStoppingImpersonation(false);
+    }
+  };
 
   return (
     <div className="bg-card border-b-2 border-[var(--app-nav-border-strong)]">
@@ -321,7 +361,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                     <CreditCard className="mr-2 h-4 w-4" />
                     <span>Billing</span>
                   </DropdownMenuItem>
-                  {!billingAdminLoading && isBillingAdmin && (
+                  {!adminPortalLoading && isAdminPortalUser && (
                     <DropdownMenuItem onClick={handleAdminBilling} className="text-sm">
                       <Shield className="mr-2 h-4 w-4" />
                       <span>Admin Portal</span>
@@ -387,6 +427,20 @@ export const TopBar: React.FC<TopBarProps> = ({
           </div>
         </div>
       </div>
+
+      {impersonationSession && (
+        <div className="border-t border-amber-300/40 bg-amber-100/80">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-2 text-xs text-amber-900 sm:px-6 lg:px-8">
+            <p className="truncate">
+              Read-only impersonation active | target <span className="font-mono">{impersonationSession.target_user_id}</span>
+              {impersonationSession.ticket_id ? <> | ticket <span className="font-mono">{impersonationSession.ticket_id}</span></> : null}
+            </p>
+            <Button size="sm" variant="outline" onClick={() => stopImpersonation().catch(() => undefined)} disabled={stoppingImpersonation}>
+              {stoppingImpersonation ? 'Stopping...' : 'Exit impersonation'}
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Navigation Menu */}
       {validatedUser && mobileMenuOpen && (
