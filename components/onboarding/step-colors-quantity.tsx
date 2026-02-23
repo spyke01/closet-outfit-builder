@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo, useState } from 'react';
 import { Watch, Footprints } from 'lucide-react/dist/esm/icons';
 import { Icon, type IconNode } from 'lucide-react';
 import { 
@@ -45,11 +46,30 @@ const MAIN_LUCIDE_ICONS: Record<string, React.ComponentType<{ className?: string
   Watch,
 };
 
+const COMMON_COLOR_VALUES = [
+  'black',
+  'white',
+  'grey',
+  'charcoal',
+  'navy',
+  'blue',
+  'brown',
+  'khaki',
+  'tan',
+  'cream',
+  'olive',
+  'green',
+  'red',
+  'burgundy',
+] as const;
+
 interface StepColorsQuantityProps {
   selectedCategories: CategoryKey[];
   selectedSubcategories: Partial<Record<CategoryKey, string[]>>;
   colorQuantitySelections: Record<string, SubcategoryColorSelection>;
   onChange: (selections: Record<string, SubcategoryColorSelection>) => void;
+  maxSelectableItems?: number | null;
+  planCode?: 'free' | 'plus' | 'pro';
 }
 
 export function StepColorsQuantity({
@@ -57,17 +77,40 @@ export function StepColorsQuantity({
   selectedSubcategories,
   colorQuantitySelections,
   onChange,
+  maxSelectableItems = null,
+  planCode = 'free',
 }: StepColorsQuantityProps) {
+  const [showAllColors, setShowAllColors] = useState(false);
+  const [capWarning, setCapWarning] = useState<string | null>(null);
+
+  const totalSelectedColors = useMemo(() => {
+    return Object.values(colorQuantitySelections).reduce((count, selection) => count + selection.colors.length, 0);
+  }, [colorQuantitySelections]);
+
   const handleColorToggle = (categoryKey: CategoryKey, subcategory: string, color: string) => {
     const selectionKey = `${categoryKey}-${subcategory}`;
     const current = colorQuantitySelections[selectionKey] || {
       subcategory,
       colors: [],
     };
+    const isCurrentlySelected = current.colors.includes(color);
 
-    const newColors = current.colors.includes(color)
+    if (!isCurrentlySelected && maxSelectableItems !== null && totalSelectedColors >= maxSelectableItems) {
+      setCapWarning(
+        planCode === 'free'
+          ? `Starter plan allows up to ${maxSelectableItems} items during onboarding. Deselect a color to add another.`
+          : `You have reached your plan limit of ${maxSelectableItems} items. Deselect a color to add another.`
+      );
+      return;
+    }
+
+    const newColors = isCurrentlySelected
       ? current.colors.filter(c => c !== color)
       : [...current.colors, color];
+
+    if (capWarning) {
+      setCapWarning(null);
+    }
 
     onChange({
       ...colorQuantitySelections,
@@ -91,6 +134,19 @@ export function StepColorsQuantity({
     (selection) => selection.colors.length > 0
   );
 
+  const visibleColorOptions = useMemo(() => {
+    const allColors = COLOR_OPTIONS.filter((opt) => opt.value !== '');
+    if (showAllColors) {
+      return allColors;
+    }
+
+    const common = COMMON_COLOR_VALUES
+      .map((value) => allColors.find((opt) => opt.value === value))
+      .filter((opt): opt is NonNullable<typeof opt> => Boolean(opt));
+
+    return common;
+  }, [showAllColors]);
+
   return (
     <div className="space-y-8">
       <header>
@@ -99,6 +155,32 @@ export function StepColorsQuantity({
           For each item type, select the colors you own. We&apos;ll create one item per color.
         </p>
       </header>
+
+      <Alert variant="info">
+        <AlertDescription>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p>
+              We show common colors by default for a faster setup. If you have a larger wardrobe,
+              choose <span className="font-semibold">Show All Colors</span> for a deeper selection.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowAllColors(prev => !prev)}
+              className="px-4 py-2 min-h-[44px] rounded-md border border-border bg-card text-sm font-medium text-foreground hover:bg-muted transition-colors self-start sm:self-auto sm:ml-4 sm:min-w-[170px] whitespace-nowrap"
+              aria-pressed={showAllColors}
+              aria-label={showAllColors ? 'Show common colors only' : 'Show all colors'}
+            >
+              {showAllColors ? 'Show Common Colors' : 'Show All Colors'}
+            </button>
+          </div>
+        </AlertDescription>
+      </Alert>
+
+      {capWarning && (
+        <Alert variant="warning">
+          <AlertDescription>{capWarning}</AlertDescription>
+        </Alert>
+      )}
 
       <div className="space-y-6">
         {allSubcategories.map(({ categoryKey, subcategory }) => {
@@ -141,7 +223,7 @@ export function StepColorsQuantity({
               <fieldset>
                 <legend className="sr-only">Select colors for {subcategory}</legend>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5">
-                {COLOR_OPTIONS.filter(opt => opt.value !== '').map((colorOption) => {
+                {visibleColorOptions.map((colorOption) => {
                   const isSelected = selection.colors.includes(colorOption.value);
 
                   return (

@@ -2,6 +2,8 @@ import { useRef, useCallback } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { generateWardrobeItemImage, getImageGenerationQuota } from '@/lib/actions/wardrobe-item-images';
 import { queryKeys } from '@/lib/query-client';
+import type { PlanCode } from '@/lib/services/billing/plans';
+import { isFreePlan } from '@/lib/services/billing/plan-labels';
 
 const DEBOUNCE_MS = 3000;
 
@@ -96,7 +98,7 @@ export function useGenerateWardrobeItemImage(): UseGenerateWardrobeItemImageRetu
 }
 
 export interface UseImageGenerationQuotaReturn {
-  tier: string;
+  tier: PlanCode;
   limits: {
     monthly_limit: number;
     monthly_remaining: number;
@@ -128,9 +130,9 @@ export function useImageGenerationQuota(): UseImageGenerationQuotaReturn {
     staleTime: 60 * 1000, // 1 minute
   });
 
-  const tier = data?.tier ?? 'free';
+  const tier = (data?.tier ?? 'free') as PlanCode;
   const limits = data?.limits ?? defaultLimits;
-  const isFreeTier = tier === 'free';
+  const isFreeTier = isFreePlan(tier);
   const canGenerate = !isFreeTier && limits.monthly_remaining > 0 && limits.hourly_remaining > 0;
 
   return {

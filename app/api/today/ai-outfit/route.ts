@@ -24,6 +24,7 @@ import {
 import type { AssistantContextPack } from '@/lib/services/assistant/types';
 import { createLogger } from '@/lib/utils/logger';
 import type { WardrobeItem } from '@/lib/types/database';
+import { isFreePlan } from '@/lib/services/billing/plan-labels';
 
 const log = createLogger({ component: 'api-today-ai-outfit' });
 export const dynamic = 'force-dynamic';
@@ -309,7 +310,7 @@ async function runQuotaReservation(
   const monthlyLimit = getUsageLimitForMetric(entitlements, TODAY_AI_MONTHLY_METRIC);
   const trialUsed = entitlements.usage[TODAY_AI_FREE_TRIAL_METRIC] || 0;
 
-  if (planCode === 'free') {
+  if (isFreePlan(planCode)) {
     const reservation = await reserveLifetimeUsageCounterAtomic(supabase, {
       userId,
       metricKey: TODAY_AI_FREE_TRIAL_METRIC,
@@ -562,7 +563,7 @@ export async function GET() {
       },
       entitlements: {
         planCode: entitlements.effectivePlanCode,
-        canUsePaid: entitlements.effectivePlanCode === 'plus' || entitlements.effectivePlanCode === 'pro',
+        canUsePaid: !isFreePlan(entitlements.effectivePlanCode),
       },
       options: {
         eventPresets: TODAY_AI_EVENT_PRESETS,

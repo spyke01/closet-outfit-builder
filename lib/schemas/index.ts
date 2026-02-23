@@ -130,7 +130,8 @@ export const TripPackItemSchema = z.object({
   updated_at: z.string().nullable().optional(),
 });
 
-// Account tier schema
+// Account tier schema for user preferences/profile UX.
+// Billing entitlements should use effectivePlanCode ('free' | 'plus' | 'pro').
 export const AccountTierSchema = z.enum(['starter', 'plus', 'pro']);
 
 // User preferences schema

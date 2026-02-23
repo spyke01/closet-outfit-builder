@@ -169,7 +169,7 @@ export function PlanSelector({
                         disabled={isCurrent || !onSwitchToFree || Boolean(busyAction)}
                         onClick={() => onSwitchToFree?.()}
                       >
-                        {isCurrent ? 'Current Plan' : busyAction === 'switch-free' ? 'Switching...' : 'Switch to Free'}
+                        {isCurrent ? 'Current Plan' : busyAction === 'switch-free' ? 'Switching...' : 'Switch to Starter'}
                       </Button>
                     ) : (
                       <>
@@ -194,7 +194,7 @@ export function PlanSelector({
                 ) : (
                   <Button asChild className="w-full" variant={plan.featured ? 'default' : 'outline'}>
                     <Link href={getPublicHref(plan.code, isAuthenticated)}>
-                      {plan.code === 'free' ? 'Start Free' : 'Choose Plan'}
+                      {plan.code === 'free' ? 'Start Starter' : 'Choose Plan'}
                     </Link>
                   </Button>
                 )}

@@ -4,7 +4,7 @@ import { createLogger } from '@/lib/utils/logger';
 
 const logger = createLogger({ component: 'components-top-bar' });
 import React from 'react';
-import { Settings, Shirt, Grid3X3, Ruler, Calendar, CalendarDays, LogOut, Menu, X, Monitor, Moon, Sun, CreditCard } from 'lucide-react';
+import { Settings, Shirt, Grid3X3, Ruler, Calendar, CalendarDays, LogOut, Menu, X, Monitor, Moon, Sun, CreditCard, Shield } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useUpdateUserPreferences, useUserPreferences } from '@/lib/hooks/use-user-preferences';
 
@@ -20,6 +20,7 @@ import { safeValidate } from '@/lib/utils/validation';
 import { useNavigationPreloading } from '@/lib/hooks/use-intelligent-preloading';
 import { SebastianChatLauncher } from './sebastian-chat-launcher';
 import { useBillingEntitlements } from '@/lib/hooks/use-billing-entitlements';
+import { useBillingAdminRole } from '@/lib/hooks/use-billing-admin-role';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -109,6 +110,10 @@ export const TopBar: React.FC<TopBarProps> = ({
     router.push('/settings/billing');
   };
 
+  const handleAdminBilling = () => {
+    router.push('/admin/billing');
+  };
+
   const handleThemeChange = async (newTheme: 'light' | 'dark' | 'system') => {
     // Update next-themes immediately for instant UI feedback
     setTheme(newTheme);
@@ -137,6 +142,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   const currentView = getCurrentView();
   const { entitlements, loading: entitlementsLoading } = useBillingEntitlements(Boolean(validatedUser));
+  const { isBillingAdmin, loading: billingAdminLoading } = useBillingAdminRole(validatedUser?.id);
   const canAccessSebastian = entitlements?.effectivePlanCode === 'plus' || entitlements?.effectivePlanCode === 'pro';
   const desktopNavLinkClass = (isActive: boolean) =>
     `flex cursor-pointer items-center gap-2 px-4 h-16 -mb-1 border-b-2 text-sm transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
@@ -315,6 +321,12 @@ export const TopBar: React.FC<TopBarProps> = ({
                     <CreditCard className="mr-2 h-4 w-4" />
                     <span>Billing</span>
                   </DropdownMenuItem>
+                  {!billingAdminLoading && isBillingAdmin && (
+                    <DropdownMenuItem onClick={handleAdminBilling} className="text-sm">
+                      <Shield className="mr-2 h-4 w-4" />
+                      <span>Admin Portal</span>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator className="bg-muted" />
                   {mounted && (
                     <>

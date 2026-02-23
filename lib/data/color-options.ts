@@ -24,16 +24,17 @@ export const COLOR_OPTIONS: ColorOption[] = [
   { value: 'black', label: 'Black', hex: '#000000' },
   { value: 'white', label: 'White', hex: '#FFFFFF' },
   { value: 'grey', label: 'Grey', hex: '#808080' },
+  { value: 'taupe', label: 'Taupe', hex: '#8B8589' },
   { value: 'charcoal', label: 'Charcoal', hex: '#36454F' },
+  { value: 'stone', label: 'Stone', hex: '#D6D2C4' },
   { value: 'ivory', label: 'Ivory', hex: '#FFFFF0' },
   { value: 'cream', label: 'Cream', hex: '#FFFDD0' },
   { value: 'beige', label: 'Beige', hex: '#F5F5DC' },
-  { value: 'taupe', label: 'Taupe', hex: '#8B8589' },
-  { value: 'stone', label: 'Stone', hex: '#D6D2C4' },
 
   // Blues
   { value: 'navy', label: 'Navy', hex: '#0B1C2D' },
   { value: 'blue', label: 'Blue', hex: '#0033A0' },
+  { value: 'denim', label: 'Denim', hex: '#3B5F8A' },
   { value: 'light-blue', label: 'Light Blue', hex: '#ADD8E6' },
   { value: 'sky-blue', label: 'Sky Blue', hex: '#87CEEB' },
   { value: 'teal', label: 'Teal', hex: '#008080' },
@@ -67,9 +68,6 @@ export const COLOR_OPTIONS: ColorOption[] = [
   { value: 'purple', label: 'Purple', hex: '#6A1B9A' },
   { value: 'lavender', label: 'Lavender', hex: '#C7B7E2' },
 
-  // Pattern / Special
-  { value: 'denim', label: 'Denim', hex: '#3B5F8A' },
-  { value: 'multicolor', label: 'Multicolor', hex: null },
 ];
 
 /**

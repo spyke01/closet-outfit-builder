@@ -15,6 +15,7 @@ import { OutfitGridLayout } from '@/components/outfit-grid-layout';
 import { useBillingEntitlements } from '@/lib/hooks/use-billing-entitlements';
 import { createClient } from '@/lib/supabase/client';
 import { createLogger } from '@/lib/utils/logger';
+import { isFreePlan } from '@/lib/services/billing/plan-labels';
 
 const logger = createLogger({ component: 'app-today-today-page-client' });
 
@@ -188,7 +189,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
   );
 
   const planCode = entitlementsLoading ? null : (entitlements?.effectivePlanCode ?? 'free');
-  const isPaidPlan = planCode === 'plus' || planCode === 'pro';
+  const isPaidPlan = planCode !== null && !isFreePlan(planCode);
 
   useEffect(() => {
     try {

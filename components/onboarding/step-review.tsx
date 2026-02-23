@@ -8,15 +8,11 @@ import type { GeneratedWardrobeItem } from '@/lib/types/onboarding';
 interface StepReviewProps {
   items: GeneratedWardrobeItem[];
   onUpdateItems: (items: GeneratedWardrobeItem[]) => void;
-  itemCapEnabled: boolean;
-  onToggleItemCap: (enabled: boolean) => void;
 }
 
 export function StepReview({
   items,
   onUpdateItems,
-  itemCapEnabled,
-  onToggleItemCap,
 }: StepReviewProps) {
   const [loadingImages, setLoadingImages] = useState<Set<string>>(new Set(items.map(item => item.id)));
 
@@ -67,21 +63,6 @@ export function StepReview({
           <p className="text-sm text-muted-foreground">
             {Object.keys(itemsByCategory).length} categories
           </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={itemCapEnabled}
-              onChange={(e) => onToggleItemCap(e.target.checked)}
-              className="w-4 h-4 rounded border-border text-primary focus:ring-ring bg-card"
-              id="item-cap-toggle"
-              aria-describedby="item-cap-description"
-            />
-            <span className="text-sm text-foreground" id="item-cap-description">
-              Limit to 50 items
-            </span>
-          </label>
         </div>
       </div>
 

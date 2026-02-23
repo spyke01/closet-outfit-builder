@@ -14,6 +14,7 @@ import { persistWardrobeItems } from '@/lib/services/onboarding-persister';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-client';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { useBillingEntitlements } from '@/lib/hooks/use-billing-entitlements';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import type { WizardState } from '@/lib/types/onboarding';
 import { INITIAL_WIZARD_STATE } from '@/lib/types/onboarding';
@@ -26,6 +27,8 @@ const StepSuccess = lazy(() => import('./step-success').then(m => ({ default: m.
 
 interface OnboardingWizardProps {
   onComplete?: () => void;
+  forceMode?: boolean;
+  forceFreshStart?: boolean;
 }
 
 const STEP_LABELS = [
@@ -58,12 +61,16 @@ function StepLoadingFallback() {
 /**
  * Load wizard state from session storage
  */
+function createInitialWizardState(): WizardState {
+  return {
+    ...INITIAL_WIZARD_STATE,
+    selectedCategories: getEssentialCategoryKeys(),
+  };
+}
+
 function loadWizardState(): WizardState {
   if (typeof window === 'undefined') {
-    return {
-      ...INITIAL_WIZARD_STATE,
-      selectedCategories: getEssentialCategoryKeys(),
-    };
+    return createInitialWizardState();
   }
 
   try {
@@ -80,10 +87,7 @@ function loadWizardState(): WizardState {
     logger.error('Failed to load wizard state from session storage:', error);
   }
 
-  return {
-    ...INITIAL_WIZARD_STATE,
-    selectedCategories: getEssentialCategoryKeys(),
-  };
+  return createInitialWizardState();
 }
 
 /**
@@ -117,19 +121,26 @@ function clearWizardState(): void {
   }
 }
 
-export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
+export function OnboardingWizard({ onComplete, forceMode = false, forceFreshStart = false }: OnboardingWizardProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { userId } = useAuth();
+  const { entitlements } = useBillingEntitlements(Boolean(userId));
   
   const [wizardState, setWizardState] = useState<WizardState>(() => {
-    // Initialize state from session storage on mount
+    // Initialize state from session storage on mount unless force mode requests a fresh start.
+    if (forceMode && forceFreshStart) {
+      return createInitialWizardState();
+    }
     return loadWizardState();
   });
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
+
+  const effectivePlanCode = entitlements?.effectivePlanCode ?? 'free';
+  const maxOnboardingItems = entitlements?.plan?.limits?.wardrobe_items ?? 100;
 
   // Mark component as hydrated after mount
   useEffect(() => {
@@ -142,6 +153,14 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       saveWizardState(wizardState);
     }
   }, [wizardState, isHydrated]);
+
+  // Force mode QA runs should always start from a clean session snapshot.
+  useEffect(() => {
+    if (isHydrated && forceMode && forceFreshStart) {
+      clearWizardState();
+      setWizardState(createInitialWizardState());
+    }
+  }, [isHydrated, forceMode, forceFreshStart]);
 
   /**
    * Validate if user can proceed from current step
@@ -199,8 +218,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
           wizardState.selectedSubcategories,
           wizardState.colorQuantitySelections,
           wizardState.styleBaseline,
-          wizardState.itemCapEnabled,
-          wizardState.itemCap
+          maxOnboardingItems !== null,
+          maxOnboardingItems ?? Number.MAX_SAFE_INTEGER
         );
 
         if (items.length === 0) {
@@ -227,7 +246,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       ...prev,
       step: prev.step + 1,
     }));
-  }, [canProceed, wizardState.step, wizardState.selectedCategories, wizardState.selectedSubcategories, wizardState.colorQuantitySelections, wizardState.styleBaseline, wizardState.itemCapEnabled, wizardState.itemCap]);
+  }, [canProceed, wizardState.step, wizardState.selectedCategories, wizardState.selectedSubcategories, wizardState.colorQuantitySelections, wizardState.styleBaseline, maxOnboardingItems]);
 
   /**
    * Navigate to previous step
@@ -340,10 +359,6 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     setWizardState(prev => ({ ...prev, generatedItems }));
   }, []);
 
-  const handleItemCapToggle = useCallback((itemCapEnabled: boolean) => {
-    setWizardState(prev => ({ ...prev, itemCapEnabled }));
-  }, []);
-
   /**
    * Render current step component
    * Memoized to prevent unnecessary re-renders
@@ -383,6 +398,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
               selectedSubcategories={wizardState.selectedSubcategories}
               colorQuantitySelections={wizardState.colorQuantitySelections}
               onChange={handleColorQuantityChange}
+              maxSelectableItems={maxOnboardingItems}
+              planCode={effectivePlanCode}
             />
           </Suspense>
         );
@@ -393,8 +410,6 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
             <StepReview
               items={wizardState.generatedItems}
               onUpdateItems={handleItemsUpdate}
-              itemCapEnabled={wizardState.itemCapEnabled}
-              onToggleItemCap={handleItemCapToggle}
             />
           </Suspense>
         );
@@ -420,14 +435,14 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     wizardState.selectedSubcategories,
     wizardState.colorQuantitySelections,
     wizardState.generatedItems,
-    wizardState.itemCapEnabled,
     handleStyleBaselineChange,
     handleCategoriesChange,
     handleSubcategoriesChange,
     handleColorQuantityChange,
     handleItemsUpdate,
-    handleItemCapToggle,
     handleRedirect,
+    maxOnboardingItems,
+    effectivePlanCode,
   ]);
 
   return (
@@ -455,6 +470,14 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
               <AlertDescription>
                 <p className="font-semibold">Error</p>
                 <p className="text-sm">{error}</p>
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {forceMode && (
+            <Alert variant="info" className="mb-6" aria-live="polite">
+              <AlertDescription>
+                QA force mode is enabled for this run. Onboarding started from a fresh state.
               </AlertDescription>
             </Alert>
           )}

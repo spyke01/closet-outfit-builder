@@ -5,7 +5,8 @@ import { createClient } from '@/lib/supabase/client';
 import { UserPreferences, UserPreferencesSchema } from '@/lib/schemas';
 import { useAuth } from './use-auth';
 
-// Default preferences
+// Default preferences for profile UX settings.
+// Billing entitlements are enforced separately via effectivePlanCode ('free' | 'plus' | 'pro').
 const defaultPreferences: Omit<UserPreferences, 'id' | 'user_id' | 'created_at' | 'updated_at'> = {
   theme: 'system',
   show_brands: true,

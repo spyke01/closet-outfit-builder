@@ -17,6 +17,7 @@ import { isAllowedImageUrl, moderateInput, moderateOutput } from '@/lib/services
 import { createAssistantPrediction, generateAssistantReply, resolveReplicateModelConfig } from '@/lib/services/assistant/providers/replicate';
 import { requireSameOrigin } from '@/lib/utils/request-security';
 import { createLogger } from '@/lib/utils/logger';
+import { isFreePlan } from '@/lib/services/billing/plan-labels';
 
 export const dynamic = 'force-dynamic';
 const log = createLogger({ component: 'api-assistant-chat' });
@@ -117,7 +118,7 @@ export async function POST(request: NextRequest) {
     }
 
     const entitlements = await resolveUserEntitlements(supabase, user.id);
-    const isPaidPlan = entitlements.effectivePlanCode === 'plus' || entitlements.effectivePlanCode === 'pro';
+    const isPaidPlan = !isFreePlan(entitlements.effectivePlanCode);
 
     if (!isPaidPlan) {
       return NextResponse.json({

@@ -203,12 +203,51 @@ describe('Step Components', () => {
 
       expect(onChange).toHaveBeenCalled();
     });
+
+    it('shows common colors by default and hides extended colors until toggled', () => {
+      const onChange = vi.fn();
+      const selectedCategories: CategoryKey[] = ['Tops'];
+      const selectedSubcategories = { Tops: ['T-Shirt'] };
+
+      render(
+        <StepColorsQuantity
+          selectedCategories={selectedCategories}
+          selectedSubcategories={selectedSubcategories}
+          colorQuantitySelections={{}}
+          onChange={onChange}
+        />
+      );
+
+      expect(screen.getByRole('button', { name: /navy/i })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /sky blue/i })).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /show all colors/i })).toBeInTheDocument();
+    });
+
+    it('shows extended colors after clicking show all colors toggle', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const selectedCategories: CategoryKey[] = ['Tops'];
+      const selectedSubcategories = { Tops: ['T-Shirt'] };
+
+      render(
+        <StepColorsQuantity
+          selectedCategories={selectedCategories}
+          selectedSubcategories={selectedSubcategories}
+          colorQuantitySelections={{}}
+          onChange={onChange}
+        />
+      );
+
+      await user.click(screen.getByRole('button', { name: /show all colors/i }));
+
+      expect(screen.getByRole('button', { name: /sky blue/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /show common colors/i })).toBeInTheDocument();
+    });
   });
 
   describe('StepReview', () => {
     it('renders generated items', () => {
       const onUpdateItems = vi.fn();
-      const onToggleItemCap = vi.fn();
       const items: GeneratedWardrobeItem[] = [
         {
           id: 'temp-1',
@@ -227,8 +266,6 @@ describe('Step Components', () => {
         <StepReview
           items={items}
           onUpdateItems={onUpdateItems}
-          itemCapEnabled={true}
-          onToggleItemCap={onToggleItemCap}
         />
       );
 
@@ -239,43 +276,18 @@ describe('Step Components', () => {
       expect(screen.getByText(/1 item/i)).toBeInTheDocument();
     });
 
-    it('shows item cap toggle', () => {
+    it('does not show item cap toggle UI', () => {
       const onUpdateItems = vi.fn();
-      const onToggleItemCap = vi.fn();
       const items: GeneratedWardrobeItem[] = [];
 
       render(
         <StepReview
           items={items}
           onUpdateItems={onUpdateItems}
-          itemCapEnabled={true}
-          onToggleItemCap={onToggleItemCap}
         />
       );
 
-      // Should show item cap toggle
-      expect(screen.getByRole('checkbox', { name: /limit to 50 items/i })).toBeInTheDocument();
-    });
-
-    it('calls onToggleItemCap when toggle is clicked', async () => {
-      const user = userEvent.setup();
-      const onUpdateItems = vi.fn();
-      const onToggleItemCap = vi.fn();
-      const items: GeneratedWardrobeItem[] = [];
-
-      render(
-        <StepReview
-          items={items}
-          onUpdateItems={onUpdateItems}
-          itemCapEnabled={true}
-          onToggleItemCap={onToggleItemCap}
-        />
-      );
-
-      const toggle = screen.getByRole('checkbox', { name: /limit to 50 items/i });
-      await user.click(toggle);
-
-      expect(onToggleItemCap).toHaveBeenCalledWith(false);
+      expect(screen.queryByRole('checkbox', { name: /limit to 50 items/i })).not.toBeInTheDocument();
     });
   });
 

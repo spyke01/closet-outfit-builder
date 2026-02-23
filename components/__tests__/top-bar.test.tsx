@@ -34,6 +34,13 @@ vi.mock('@/lib/hooks/use-billing-entitlements', () => ({
   }),
 }));
 
+vi.mock('@/lib/hooks/use-billing-admin-role', () => ({
+  useBillingAdminRole: () => ({
+    isBillingAdmin: false,
+    loading: false,
+  }),
+}));
+
 vi.mock('../weather-widget', () => ({
   WeatherWidget: () => <div data-testid="weather-widget">weather</div>,
 }));

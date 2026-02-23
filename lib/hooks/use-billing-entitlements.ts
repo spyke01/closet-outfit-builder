@@ -4,6 +4,11 @@ interface BillingEntitlements {
   effectivePlanCode: 'free' | 'plus' | 'pro';
   billingState: 'active' | 'past_due' | 'unpaid' | 'canceled' | 'trialing' | 'scheduled_cancel';
   isPaid: boolean;
+  plan?: {
+    limits?: {
+      wardrobe_items?: number | null;
+    };
+  };
 }
 
 export const BILLING_ENTITLEMENTS_REFRESH_EVENT = 'billing:entitlements-refresh';
