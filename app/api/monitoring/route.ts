@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createLogger } from '@/lib/utils/logger';
 import { sanitizeCredentials } from '@/lib/utils/security';
+import { requireSameOriginWithOptions } from '@/lib/utils/request-security';
 
 // Validation schemas
 const ErrorReportSchema = z.object({
@@ -67,8 +68,7 @@ function getClientIdentifier(request: NextRequest): string {
     request.headers.get('cf-connecting-ip') ||
     request.headers.get('x-nf-client-connection-ip') ||
     request.headers.get('x-real-ip');
-  const forwardedIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
-  const ip = trustedIp || forwardedIp || 'unknown';
+  const ip = trustedIp || 'unknown';
   const userAgent = (request.headers.get('user-agent') || 'unknown').slice(0, 160);
 
   return `${ip}:${userAgent}`;
@@ -144,12 +144,19 @@ export async function POST(request: NextRequest) {
     }
 
     const ingestionToken = process.env.MONITORING_INGESTION_TOKEN;
-    const hasBrowserOrigin = Boolean(request.headers.get('origin'));
-    if (ingestionToken && !hasBrowserOrigin) {
-      const authHeader = request.headers.get('authorization') || '';
-      const bearer = authHeader.startsWith('Bearer ') ? authHeader.slice('Bearer '.length) : '';
-      if (bearer !== ingestionToken) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const authHeader = request.headers.get('authorization') || '';
+    const bearer = authHeader.startsWith('Bearer ') ? authHeader.slice('Bearer '.length) : '';
+    const hasValidIngestionToken = Boolean(ingestionToken && bearer === ingestionToken);
+
+    if (!hasValidIngestionToken) {
+      const sameOriginError = requireSameOriginWithOptions(request, {
+        mode: (process.env.SECURITY_CSRF_MODE as 'off' | 'report' | 'enforce' | undefined) || 'enforce',
+        protectMethods: ['POST'],
+        reasonTag: 'monitoring_ingest',
+      });
+
+      if (sameOriginError) {
+        return sameOriginError;
       }
     }
 

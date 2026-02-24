@@ -99,7 +99,6 @@ export async function POST(request: NextRequest) {
     });
     return response;
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to start impersonation';
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to start impersonation' }, { status: 500 });
   }
 }
