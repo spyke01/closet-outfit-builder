@@ -4,7 +4,7 @@ import { createLogger } from '@/lib/utils/logger';
 
 const logger = createLogger({ component: 'components-top-bar' });
 import React from 'react';
-import { Settings, Shirt, Grid3X3, Ruler, Calendar, CalendarDays, LogOut, Menu, X, Monitor, Moon, Sun, CreditCard, Shield } from 'lucide-react';
+import { Settings, Shirt, Grid3X3, Ruler, Calendar, CalendarDays, LogOut, Menu, X, Monitor, Moon, Sun, CreditCard, Shield, LifeBuoy } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useUpdateUserPreferences, useUserPreferences } from '@/lib/hooks/use-user-preferences';
 
@@ -114,6 +114,10 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   const handleBilling = () => {
     router.push('/settings/billing');
+  };
+
+  const handleSupport = () => {
+    router.push('/support');
   };
 
   const handleAdminBilling = () => {
@@ -360,6 +364,10 @@ export const TopBar: React.FC<TopBarProps> = ({
                   <DropdownMenuItem onClick={handleBilling} className="text-sm">
                     <CreditCard className="mr-2 h-4 w-4" />
                     <span>Billing</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSupport} className="text-sm">
+                    <LifeBuoy className="mr-2 h-4 w-4" />
+                    <span>Support</span>
                   </DropdownMenuItem>
                   {!adminPortalLoading && isAdminPortalUser && (
                     <DropdownMenuItem onClick={handleAdminBilling} className="text-sm">

@@ -129,11 +129,17 @@ export default function AdminUserOverviewPage() {
             </div>
             <div className="rounded-xl border border-border bg-card p-4">
               <h2 className="text-lg font-semibold">Support Cases</h2>
+              <div className="mt-2">
+                <a href={`/admin/support?user_id=${encodeURIComponent(overview.user.id)}`} className="text-sm text-primary hover:underline">
+                  View all support cases for this user
+                </a>
+              </div>
               <div className="mt-2 space-y-2">
                 {overview.support_cases.map((item) => (
                   <div key={item.id} className="rounded-md border border-border px-3 py-2 text-sm">
                     <p className="font-medium">{item.priority} | {item.status}</p>
                     <p>{item.summary}</p>
+                    <a href={`/admin/support/${item.id}`} className="mt-1 inline-block text-xs text-primary hover:underline">Open case details</a>
                   </div>
                 ))}
                 {overview.support_cases.length === 0 && <p className="text-sm text-muted-foreground">No cases.</p>}

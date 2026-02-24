@@ -45,7 +45,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       admin.from('user_subscriptions').select('*').eq('user_id', id).maybeSingle(),
       admin.from('billing_issues').select('*').eq('user_id', id).order('opened_at', { ascending: false }).limit(10),
       admin.from('admin_notes').select('*').eq('user_id', id).order('created_at', { ascending: false }).limit(25),
-      admin.from('support_cases').select('*').eq('user_id', id).order('updated_at', { ascending: false }).limit(20),
+      admin.from('support_cases').select('*').eq('user_id', id).order('updated_at', { ascending: false }).limit(50),
       admin.from('billing_events').select('id, event_type, processing_status, created_at, error_text').eq('user_id', id).order('created_at', { ascending: false }).limit(20),
     ]);
 

@@ -2,73 +2,37 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { hasAdminPermission } from '@/lib/services/admin/permissions';
-import { enforceAdminRateLimitDurable, hasRecentAdminAuth } from '@/lib/services/billing/admin-security';
+import { enforceAdminRateLimitDurable } from '@/lib/services/billing/admin-security';
 import { writeAdminAuditLog } from '@/lib/services/admin/audit';
 import { requireSameOriginWithOptions } from '@/lib/utils/request-security';
 
 export const dynamic = 'force-dynamic';
 
 const CreateCaseSchema = z.object({
-  user_id: z.string().uuid(),
   subject: z.string().min(1).max(160),
   summary: z.string().min(1).max(2000),
   category: z.enum(['billing', 'account', 'bug', 'feature', 'other']).default('other'),
-  priority: z.enum(['low', 'normal', 'high', 'urgent']).default('normal'),
 });
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const canReadSupport = await hasAdminPermission(supabase, user.id, 'support.read');
-    if (!canReadSupport) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-
-    const hasRecentAuth = await hasRecentAdminAuth(supabase, { maxAgeSeconds: Number(process.env.ADMIN_LOW_RISK_MAX_AGE_SECONDS || 43_200) });
-    if (!hasRecentAuth) return NextResponse.json({ error: 'Recent authentication required', code: 'ADMIN_STEP_UP_REQUIRED' }, { status: 401 });
-
-    const rateLimit = await enforceAdminRateLimitDurable(user.id, 'admin-support-cases-list');
+    const rateLimit = await enforceAdminRateLimitDurable(user.id, 'user-support-cases-list');
     if (!rateLimit.allowed) return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
 
-    const q = request.nextUrl.searchParams;
-    const userId = q.get('user_id');
-    const status = q.get('status');
-    const category = q.get('category');
-    const limitRaw = Number(q.get('limit') || 100);
-    const limit = Number.isFinite(limitRaw) ? Math.max(1, Math.min(limitRaw, 500)) : 100;
-
     const admin = createAdminClient();
-    let query = admin
+    const { data, error } = await admin
       .from('support_cases')
       .select('*')
+      .eq('user_id', user.id)
       .order('updated_at', { ascending: false })
-      .limit(limit);
-
-    if (userId) query = query.eq('user_id', userId);
-    if (status) query = query.eq('status', status);
-    if (category) query = query.eq('category', category);
-
-    const { data, error } = await query;
+      .limit(200);
     if (error) return NextResponse.json({ error: 'Failed to load support cases' }, { status: 500 });
 
-    const rows = data || [];
-    const userIds = [...new Set(rows.map((row) => row.user_id))];
-    const userEntries = await Promise.all(
-      userIds.map(async (id) => {
-        const response = await admin.auth.admin.getUserById(id);
-        return [id, response.data.user?.email || null] as const;
-      })
-    );
-    const userEmailMap = new Map(userEntries);
-
-    const cases = rows.map((row) => ({
-      ...row,
-      user_email: userEmailMap.get(row.user_id) || null,
-    }));
-
-    return NextResponse.json({ cases });
+    return NextResponse.json({ cases: data || [] });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to load support cases';
     return NextResponse.json({ error: message }, { status: 500 });
@@ -79,7 +43,7 @@ export async function POST(request: NextRequest) {
   const sameOriginError = requireSameOriginWithOptions(request, {
     mode: (process.env.SECURITY_CSRF_MODE as 'off' | 'report' | 'enforce' | undefined) || 'enforce',
     protectMethods: ['POST'],
-    reasonTag: 'admin_support_case_create',
+    reasonTag: 'user_support_case_create',
   });
   if (sameOriginError) return sameOriginError;
 
@@ -88,15 +52,7 @@ export async function POST(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const canWriteSupport = await hasAdminPermission(supabase, user.id, 'support.write');
-    if (!canWriteSupport) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-
-    const hasRecentAuth = await hasRecentAdminAuth(supabase, {
-      maxAgeSeconds: Number(process.env.ADMIN_LOW_RISK_MAX_AGE_SECONDS || 43_200),
-    });
-    if (!hasRecentAuth) return NextResponse.json({ error: 'Recent authentication required', code: 'ADMIN_STEP_UP_REQUIRED' }, { status: 401 });
-
-    const rateLimit = await enforceAdminRateLimitDurable(user.id, 'admin-support-case-create');
+    const rateLimit = await enforceAdminRateLimitDurable(user.id, 'user-support-case-create');
     if (!rateLimit.allowed) return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
 
     const body = await request.json();
@@ -107,14 +63,13 @@ export async function POST(request: NextRequest) {
     const { data, error } = await admin
       .from('support_cases')
       .insert({
-        user_id: parsed.data.user_id,
+        user_id: user.id,
         subject: parsed.data.subject,
-        status: 'open',
-        priority: parsed.data.priority,
-        category: parsed.data.category,
-        owner_admin_user_id: user.id,
         summary: parsed.data.summary,
-        source: 'admin_portal',
+        category: parsed.data.category,
+        status: 'open',
+        priority: 'normal',
+        source: 'user_portal',
       })
       .select('*')
       .single();
@@ -122,12 +77,12 @@ export async function POST(request: NextRequest) {
 
     await writeAdminAuditLog({
       actorUserId: user.id,
-      targetUserId: parsed.data.user_id,
+      targetUserId: user.id,
       action: 'support.case.create',
       outcome: 'success',
       resourceType: 'support_case',
       resourceId: data.id,
-      metadata: { priority: data.priority, status: data.status },
+      metadata: { actor_role: 'user' },
     });
 
     return NextResponse.json({ case: data });

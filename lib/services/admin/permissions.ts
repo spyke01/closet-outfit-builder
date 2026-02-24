@@ -7,7 +7,7 @@ export interface AdminRoleRow {
 }
 
 const ROLE_PERMISSION_MAP: Record<string, string[]> = {
-  billing_admin: ['billing.read', 'billing.write', 'support.read', 'audit.read'],
+  billing_admin: ['billing.read', 'billing.write', 'support.read', 'support.write', 'audit.read'],
   support_admin: ['support.read', 'support.write', 'audit.read'],
   impersonation_admin: ['support.read', 'impersonation.start', 'impersonation.stop', 'audit.read'],
 };
