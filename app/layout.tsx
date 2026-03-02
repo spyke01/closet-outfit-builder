@@ -5,13 +5,10 @@ import { MonitoringProvider } from "@/lib/providers/monitoring-provider";
 import { SWRProvider } from "@/lib/providers/swr-config";
 import { PreloadInitializer } from "@/components/preload-initializer";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
+import { getCanonicalSiteUrl } from "@/lib/seo/site-url";
 import "./globals.css";
 
-const defaultUrl = process.env.NETLIFY_URL
-  ? `https://${process.env.NETLIFY_URL}`
-  : process.env.NETLIFY_URL
-    ? `https://${process.env.NETLIFY_URL}`
-    : "http://localhost:3000";
+const defaultUrl = getCanonicalSiteUrl();
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const metadata: Metadata = {
