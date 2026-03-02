@@ -284,9 +284,9 @@ async function sendToMonitoringService(type: string, data: Record<string, unknow
     }
 
     // Example: Send user events to Google Analytics (deferred loading)
-    if (type === 'event' && process.env.GOOGLE_ANALYTICS_ID) {
+    if (type === 'event' && (process.env.GOOGLE_ANALYTICS_ID || process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID)) {
       // Use Measurement Protocol for server-side GA events
-      const measurementId = process.env.GOOGLE_ANALYTICS_ID;
+      const measurementId = process.env.GOOGLE_ANALYTICS_ID || process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
       const apiSecret = process.env.GA_API_SECRET;
       
       if (apiSecret) {

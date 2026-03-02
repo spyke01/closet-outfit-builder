@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
       expires: new Date(result.expiresAt),
     });
     return response;
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to start impersonation' }, { status: 500 });
   }
 }

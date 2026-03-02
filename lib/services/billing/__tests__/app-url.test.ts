@@ -26,7 +26,7 @@ describe('resolveAppUrl', () => {
   });
 
   it('falls back to canonical configured origin when forwarded host is not allowlisted', () => {
-    process.env.NODE_ENV = 'production';
+    Object.assign(process.env, { NODE_ENV: 'production' });
     process.env.NEXT_PUBLIC_APP_URL = 'https://www.myaioutfit.com';
 
     const request = new NextRequest('https://www.myaioutfit.com/api/billing/portal', {
@@ -41,7 +41,7 @@ describe('resolveAppUrl', () => {
   });
 
   it('allows non-allowlisted host fallback only in development', () => {
-    process.env.NODE_ENV = 'development';
+    Object.assign(process.env, { NODE_ENV: 'development' });
     delete process.env.NEXT_PUBLIC_APP_URL;
     delete process.env.URL;
     delete process.env.DEPLOY_PRIME_URL;

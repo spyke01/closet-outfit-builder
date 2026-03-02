@@ -130,6 +130,8 @@ export async function createStripeCheckoutSession(input: {
   userId: string;
   email: string;
   appUrl: string;
+  planCode: 'plus' | 'pro';
+  interval: 'month' | 'year';
   customerId?: string | null;
   previousSubscriptionId?: string | null;
 }) {
@@ -137,7 +139,10 @@ export async function createStripeCheckoutSession(input: {
   payload.append('mode', 'subscription');
   payload.append('line_items[0][price]', input.priceId);
   payload.append('line_items[0][quantity]', '1');
-  payload.append('success_url', `${input.appUrl}/billing/updated?session_id={CHECKOUT_SESSION_ID}`);
+  payload.append(
+    'success_url',
+    `${input.appUrl}/billing/updated?session_id={CHECKOUT_SESSION_ID}&plan=${input.planCode}&interval=${input.interval}`
+  );
   payload.append('cancel_url', `${input.appUrl}/pricing`);
   payload.append('allow_promotion_codes', 'true');
   payload.append('metadata[user_id]', input.userId);

@@ -1,4 +1,5 @@
 import { createLogger } from '@/lib/utils/logger';
+import { isGtagAvailable, trackEvent } from '@/lib/analytics/gtag';
 
 const logger = createLogger({ component: 'lib-providers-third-party-integrations' });
 
@@ -15,8 +16,6 @@ interface SentryEventLike {
     }>;
   };
 }
-
-type GtagArgs = [string, ...unknown[]];
 
 interface WebVitalsMetric {
   name: string;
@@ -88,60 +87,7 @@ export async function initializeAnalytics() {
   // Only initialize in production
   if (process.env.NODE_ENV !== 'production') return;
 
-  try {
-    // Example: Initialize Google Analytics 4 (if configured)
-    if (process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID) {
-      // Load gtag script dynamically
-      const script = document.createElement('script');
-      script.src = `https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}`;
-      script.async = true;
-      document.head.appendChild(script);
-
-      // Initialize gtag
-      window.dataLayer = window.dataLayer || [];
-      function gtag(...args: GtagArgs) {
-        window.dataLayer.push(args);
-      }
-      gtag('js', new Date());
-      gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID, {
-        page_title: document.title,
-        page_location: window.location.href,
-      });
-
-      // Make gtag available globally for tracking
-      window.gtag = gtag;
-    }
-
-    // Example: Initialize Mixpanel (if configured)
-    // if (process.env.NEXT_PUBLIC_MIXPANEL_TOKEN) {
-    //   try {
-    //     const importMixpanel = new Function('return import("mixpanel-browser")');
-    //     const mixpanel = await importMixpanel().catch(() => null);
-    //     if (mixpanel) {
-    //       mixpanel.init(process.env.NEXT_PUBLIC_MIXPANEL_TOKEN, {
-    //         debug: process.env.NODE_ENV === 'development',
-    //       });
-    //     }
-    //   } catch (error) {
-    //     logger.warn('Mixpanel not available, skipping analytics setup');
-    //   }
-    // }
-
-    // Example: Initialize Amplitude (if configured)
-    // if (process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY) {
-    //   try {
-    //     const importAmplitude = new Function('return import("amplitude-js")');
-    //     const amplitude = await importAmplitude().catch(() => null);
-    //     if (amplitude) {
-    //       amplitude.getInstance().init(process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY);
-    //     }
-    //   } catch (error) {
-    //     logger.warn('Amplitude not available, skipping analytics setup');
-    //   }
-    // }
-  } catch (error) {
-    logger.warn('Failed to initialize analytics:', error);
-  }
+  // Google Analytics is initialized by the root GoogleAnalytics component.
 }
 
 /**
@@ -167,8 +113,8 @@ export async function initializePerformanceMonitoring() {
       // Send metrics to analytics service
       const sendToAnalytics = (metric: WebVitalsMetric) => {
         // Send to Google Analytics if available
-        if (window.gtag) {
-          window.gtag('event', metric.name, {
+        if (isGtagAvailable()) {
+          trackEvent(metric.name, {
             event_category: 'Web Vitals',
             event_label: metric.id,
             value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
@@ -202,13 +148,5 @@ export async function initializePerformanceMonitoring() {
     }
   } catch (error) {
     logger.warn('Failed to initialize performance monitoring:', error);
-  }
-}
-
-// Extend Window interface for TypeScript
-declare global {
-  interface Window {
-    dataLayer: GtagArgs[];
-    gtag: (...args: GtagArgs) => void;
   }
 }

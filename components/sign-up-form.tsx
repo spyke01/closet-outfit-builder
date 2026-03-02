@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AuthHeader } from "./auth-header";
 import { createLogger } from "@/lib/utils/logger";
+import { trackSignUp, trackSignUpStart } from "@/lib/analytics/gtag";
 
 const logger = createLogger({ component: "sign-up-form" });
 
@@ -56,7 +57,9 @@ export function SignUpForm({
       
       // Early return on error - don't navigate
       if (error) throw error;
-      
+
+      trackSignUp({ method: "email" });
+
       // Only navigate on success
       router.push("/auth/sign-up-success");
     } catch (error: unknown) {
@@ -96,7 +99,9 @@ export function SignUpForm({
       
       // Early return on error
       if (error) throw error;
-      
+
+      trackSignUpStart({ method: "google" });
+
       // Don't set loading to false here - let the redirect happen
     } catch (error: unknown) {
       logger.error('OAuth error:', error);

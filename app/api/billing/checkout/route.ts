@@ -61,6 +61,8 @@ export async function POST(request: NextRequest) {
     try {
       session = await createStripeCheckoutSession({
         ...baseCheckoutInput,
+        planCode: selected.plan,
+        interval: selected.interval,
         customerId: subscription?.stripe_customer_id || null,
       });
     } catch (error) {
@@ -83,6 +85,8 @@ export async function POST(request: NextRequest) {
 
       session = await createStripeCheckoutSession({
         ...baseCheckoutInput,
+        planCode: selected.plan,
+        interval: selected.interval,
         customerId: null,
       });
     }

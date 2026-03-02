@@ -90,6 +90,7 @@ const mockSupabaseClient = {
     })),
     signOut: vi.fn(),
     signInWithPassword: vi.fn(),
+    signInWithOAuth: vi.fn(),
     signUp: vi.fn(),
   },
 };
