@@ -103,6 +103,8 @@ export function requireSameOriginWithOptions(
 
   const hasValidOrigin = Boolean(origin && allowedOrigins.has(origin));
   const hasValidReferer = Boolean(refererOrigin && allowedOrigins.has(refererOrigin));
+  const fetchSite = request.headers.get('sec-fetch-site');
+  const hasAllowedFetchSite = Boolean(fetchSite && ALLOWED_FETCH_SITES.has(fetchSite));
   const requestPath = (() => {
     if (request.nextUrl?.pathname) return request.nextUrl.pathname;
     try {
@@ -112,13 +114,14 @@ export function requireSameOriginWithOptions(
     }
   })();
 
-  if (!hasValidOrigin && !hasValidReferer) {
+  if (!hasValidOrigin && !hasValidReferer && !hasAllowedFetchSite) {
     const metadata = {
       reason: 'origin_mismatch',
       method: request.method,
       path: requestPath,
       origin,
       refererOrigin,
+      fetchSite,
       allowedOrigins: [...allowedOrigins],
       tag: options.reasonTag || 'csrf',
     };
@@ -133,7 +136,6 @@ export function requireSameOriginWithOptions(
     );
   }
 
-  const fetchSite = request.headers.get('sec-fetch-site');
   if (fetchSite && !ALLOWED_FETCH_SITES.has(fetchSite)) {
     const metadata = {
       reason: 'fetch_site_block',

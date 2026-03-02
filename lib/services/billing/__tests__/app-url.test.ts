@@ -14,30 +14,30 @@ describe('resolveAppUrl', () => {
   });
 
   it('returns allowlisted request origin when available', () => {
-    process.env.NEXT_PUBLIC_APP_URL = 'https://myaioutfit.com';
+    process.env.NEXT_PUBLIC_APP_URL = 'https://www.myaioutfit.com';
 
-    const request = new NextRequest('https://myaioutfit.com/api/billing/checkout', {
+    const request = new NextRequest('https://www.myaioutfit.com/api/billing/checkout', {
       headers: {
-        host: 'myaioutfit.com',
+        host: 'www.myaioutfit.com',
       },
     });
 
-    expect(resolveAppUrl(request)).toBe('https://myaioutfit.com');
+    expect(resolveAppUrl(request)).toBe('https://www.myaioutfit.com');
   });
 
   it('falls back to canonical configured origin when forwarded host is not allowlisted', () => {
     process.env.NODE_ENV = 'production';
-    process.env.NEXT_PUBLIC_APP_URL = 'https://myaioutfit.com';
+    process.env.NEXT_PUBLIC_APP_URL = 'https://www.myaioutfit.com';
 
-    const request = new NextRequest('https://myaioutfit.com/api/billing/portal', {
+    const request = new NextRequest('https://www.myaioutfit.com/api/billing/portal', {
       headers: {
         'x-forwarded-host': 'attacker.example',
         'x-forwarded-proto': 'https',
-        host: 'myaioutfit.com',
+        host: 'www.myaioutfit.com',
       },
     });
 
-    expect(resolveAppUrl(request)).toBe('https://myaioutfit.com');
+    expect(resolveAppUrl(request)).toBe('https://www.myaioutfit.com');
   });
 
   it('allows non-allowlisted host fallback only in development', () => {

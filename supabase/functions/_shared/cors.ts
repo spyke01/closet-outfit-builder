@@ -35,7 +35,7 @@ function getAllowedOrigins(): string[] {
   }
   
   // Add your production domain here if environment variables aren't working
-  origins.push('https://myaioutfit.com');
+  origins.push('https://www.myaioutfit.com');
   
   return origins;
 }

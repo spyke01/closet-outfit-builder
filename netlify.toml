@@ -57,7 +57,7 @@
   # Next.js specific environment
   NEXT_TELEMETRY_DISABLED = "1"
   # CORS allowlist override for API endpoints (runtime URL/DEPLOY_PRIME_URL are auto-allowed)
-  CORS_ALLOWED_ORIGINS = "https://myaioutfit.com"
+  CORS_ALLOWED_ORIGINS = "https://www.myaioutfit.com"
 
 # Headers for security and performance
 [[headers]]

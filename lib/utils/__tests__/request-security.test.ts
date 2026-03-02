@@ -29,6 +29,27 @@ describe('requireSameOriginWithOptions', () => {
     expect(result?.status).toBe(403);
   });
 
+  it('allows POST when origin headers are absent but sec-fetch-site is same-origin', () => {
+    const request = new NextRequest('https://example.com/api/foo', {
+      method: 'POST',
+      headers: {
+        'sec-fetch-site': 'same-origin',
+      },
+    });
+
+    const result = requireSameOriginWithOptions(request, { mode: 'enforce' });
+    expect(result).toBeNull();
+  });
+
+  it('blocks POST when origin headers and sec-fetch-site are absent', () => {
+    const request = new NextRequest('https://example.com/api/foo', {
+      method: 'POST',
+    });
+
+    const result = requireSameOriginWithOptions(request, { mode: 'enforce' });
+    expect(result?.status).toBe(403);
+  });
+
   it('does not block in report mode', () => {
     const request = new NextRequest('https://example.com/api/foo', {
       method: 'POST',
@@ -55,4 +76,3 @@ describe('requireSameOriginWithOptions', () => {
     expect(result).toBeNull();
   });
 });
-
