@@ -3,11 +3,11 @@ import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 
 const baselineCsp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https: *.supabase.co",
   "font-src 'self' data:",
-  "connect-src 'self' https://api.openweathermap.org https://maps.googleapis.com https://*.supabase.co wss://*.supabase.co https://ahjwzpyammiqelloazvn.supabase.co",
+  "connect-src 'self' https://api.openweathermap.org https://maps.googleapis.com https://www.google-analytics.com https://region1.google-analytics.com https://*.supabase.co wss://*.supabase.co https://ahjwzpyammiqelloazvn.supabase.co",
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
@@ -91,13 +91,20 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/:path*',
+        source: '/_next/static/chunks/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
+        source: '/((?!_next/static|_next/image|.*\\..*).*)',
         headers: [
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'geolocation=(self), camera=(), microphone=(), payment=()' },
           { key: 'Content-Security-Policy', value: baselineCsp },
+          { key: 'Cache-Control', value: 'no-store, max-age=0, must-revalidate' },
         ],
       },
     ];

@@ -55,8 +55,6 @@ export function initializeGoogleAnalytics(measurementId: string): void {
     };
   }
 
-  window.gtag("js", new Date());
-  window.gtag("config", measurementId, { send_page_view: false });
   window.__gtagMeasurementIds = [...initializedMeasurementIds, measurementId];
 }
 

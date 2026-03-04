@@ -44,11 +44,11 @@ describe("gtag helpers", () => {
 
   it("initializes the GA shim once per measurement id", () => {
     initializeGoogleAnalytics("G-TEST123");
-    expect(window.dataLayer).toHaveLength(2);
+    expect(window.dataLayer).toEqual([]);
     expect(window.__gtagMeasurementIds).toEqual(["G-TEST123"]);
 
     initializeGoogleAnalytics("G-TEST123");
-    expect(window.dataLayer).toHaveLength(2);
+    expect(window.dataLayer).toEqual([]);
   });
 
   it("sends the expected GA4 event payloads", () => {

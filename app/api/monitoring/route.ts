@@ -150,7 +150,9 @@ export async function POST(request: NextRequest) {
 
     if (!hasValidIngestionToken) {
       const sameOriginError = requireSameOriginWithOptions(request, {
-        mode: (process.env.SECURITY_CSRF_MODE as 'off' | 'report' | 'enforce' | undefined) || 'enforce',
+        // Monitoring ingestion is telemetry-only and does not mutate user state,
+        // so report suspicious cross-origin requests without rejecting browser beacons.
+        mode: 'report',
         protectMethods: ['POST'],
         reasonTag: 'monitoring_ingest',
       });

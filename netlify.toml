@@ -32,6 +32,12 @@
 
 # API endpoint redirects
 [[redirects]]
+  from = "/_next/static/*"
+  to = "/_next/static/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/weather"
   to = "/.netlify/functions/weather"
   status = 200
@@ -40,12 +46,6 @@
 [[redirects]]
   from = "/api/*"
   to = "/api/:splat"
-  status = 200
-
-# Next.js catch-all for client-side routing
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
   status = 200
 
 # Build environment configuration
@@ -63,12 +63,13 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    X-XSS-Protection = "1; mode=block"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "geolocation=(self), camera=(), microphone=(), payment=()"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https: *.supabase.co; font-src 'self' data:; connect-src 'self' https://api.openweathermap.org https://maps.googleapis.com https://api.replicate.com https://*.supabase.co wss://*.supabase.co https://ahjwzpyammiqelloazvn.supabase.co; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none';"
+  X-Frame-Options = "DENY"
+  X-Content-Type-Options = "nosniff"
+  X-XSS-Protection = "1; mode=block"
+  Referrer-Policy = "strict-origin-when-cross-origin"
+  Permissions-Policy = "geolocation=(self), camera=(), microphone=(), payment=()"
+  Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https: *.supabase.co; font-src 'self' data:; connect-src 'self' https://api.openweathermap.org https://maps.googleapis.com https://api.replicate.com https://www.google-analytics.com https://region1.google-analytics.com https://*.supabase.co wss://*.supabase.co https://ahjwzpyammiqelloazvn.supabase.co; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none';"
+    Cache-Control = "no-store, max-age=0, must-revalidate"
 
 # Cache static assets with optimized headers
 [[headers]]
@@ -77,6 +78,11 @@
     Cache-Control = "public, max-age=31536000, immutable"
     # Enable compression
     Vary = "Accept-Encoding"
+
+[[headers]]
+  for = "/_next/static/chunks/*.js"
+  [headers.values]
+    Content-Type = "application/javascript"
 
 # Cache images
 [[headers]]

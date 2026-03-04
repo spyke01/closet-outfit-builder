@@ -47,7 +47,7 @@ type MonitoringData = ErrorReport | PerformanceMetrics | Record<string, unknown>
 
 class ProductionMonitoring {
   private isProduction = process.env.NODE_ENV === 'production';
-  private apiEndpoint = '/api/monitoring';
+  private apiEndpoint = '/api/monitoring/';
   private initialized = false;
 
   /**
@@ -252,6 +252,8 @@ class ProductionMonitoring {
       // Use fetch with no-cors for fire-and-forget
       await fetch(this.apiEndpoint, {
         method: 'POST',
+        mode: 'same-origin',
+        credentials: 'same-origin',
         headers: {
           'Content-Type': 'application/json',
         },

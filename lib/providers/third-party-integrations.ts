@@ -123,8 +123,10 @@ export async function initializePerformanceMonitoring() {
         }
 
         // Send to custom monitoring endpoint
-        fetch('/api/monitoring', {
+        fetch('/api/monitoring/', {
           method: 'POST',
+          mode: 'same-origin',
+          credentials: 'same-origin',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             type: 'metric',

@@ -10,18 +10,6 @@ vi.mock('next/link', () => ({
 }));
 
 describe('PlanSelector', () => {
-  it('uses Starter wording for public free-tier CTA', () => {
-    render(
-      <PlanSelector
-        context="public"
-        isAuthenticated={false}
-      />
-    );
-
-    expect(screen.getByRole('link', { name: /start starter/i })).toBeInTheDocument();
-    expect(screen.queryByText(/start free/i)).not.toBeInTheDocument();
-  });
-
   it('uses Starter wording for billing free-tier switch action', () => {
     render(
       <PlanSelector

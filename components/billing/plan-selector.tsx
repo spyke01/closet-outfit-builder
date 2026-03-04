@@ -194,7 +194,7 @@ export function PlanSelector({
                 ) : (
                   <Button asChild className="w-full" variant={plan.featured ? 'default' : 'outline'}>
                     <Link href={getPublicHref(plan.code, isAuthenticated)}>
-                      {plan.code === 'free' ? 'Start Starter' : 'Choose Plan'}
+                      Choose Plan
                     </Link>
                   </Button>
                 )}
