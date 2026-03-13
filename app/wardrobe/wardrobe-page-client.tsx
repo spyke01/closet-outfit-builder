@@ -10,15 +10,26 @@ import { WardrobeSearchFiltersWithErrorBoundary as WardrobeSearchFilters } from 
 import { Button } from '@/components/ui/button';
 import { CircleDashed, Loader2, Shirt } from 'lucide-react';
 
-
 import { WardrobeItem } from '@/lib/types/database';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useWalkthrough } from '@/lib/hooks/use-walkthrough';
+import { WalkthroughCoach } from '@/components/walkthrough/walkthrough-coach';
+import { WALKTHROUGH_STEPS } from '@/components/walkthrough/walkthrough-steps';
 
-export function WardrobePageClient() {
+interface WardrobePageClientProps {
+  initialWalkthroughCompleted?: boolean;
+}
+
+export function WardrobePageClient({ initialWalkthroughCompleted = true }: WardrobePageClientProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const searchParamsKey = searchParams.toString();
+
+  const walkthrough = useWalkthrough({
+    initialCompleted: initialWalkthroughCompleted,
+    totalSteps: WALKTHROUGH_STEPS.length,
+  });
 
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -176,6 +187,15 @@ export function WardrobePageClient() {
     
     return grouped;
   }, [filteredItems, categories]);
+
+  const firstItemId = useMemo(() => filteredItems[0]?.id ?? null, [filteredItems]);
+
+  // Auto-start walkthrough once items are loaded and walkthrough is pending
+  React.useEffect(() => {
+    if (!walkthrough.isActive && walkthrough.currentStep === 0 && filteredItems.length > 0) {
+      walkthrough.start();
+    }
+  }, [filteredItems.length, walkthrough]);
 
   const handleItemSelect = useCallback((item: WardrobeItem) => {
     // Navigate to item detail page
@@ -363,6 +383,7 @@ export function WardrobePageClient() {
                             }
                           }}
                           aria-label={`Select ${item.brand ? `${item.brand} ${item.name}` : item.name} for outfit building`}
+                          {...(item.id === firstItemId ? { 'data-walkthrough-id': 'wardrobe-item-first' } : {})}
                         >
                           {/* Image section */}
                           {renderImageSection(
@@ -565,6 +586,16 @@ export function WardrobePageClient() {
           </div>
         )}
       </div>
+
+      {walkthrough.isActive && (
+        <WalkthroughCoach
+          steps={WALKTHROUGH_STEPS}
+          currentStep={walkthrough.currentStep}
+          onNext={walkthrough.advance}
+          onDismiss={walkthrough.dismiss}
+          prefersReducedMotion={walkthrough.prefersReducedMotion}
+        />
+      )}
     </div>
   );
 }

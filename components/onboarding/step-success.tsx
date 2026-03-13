@@ -29,7 +29,7 @@ export function StepSuccess({
     if (onGenerateOutfits) {
       onGenerateOutfits();
     } else {
-      router.push('/today');
+      router.push('/wardrobe');
     }
   };
 

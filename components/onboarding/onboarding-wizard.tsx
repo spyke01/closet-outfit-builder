@@ -420,7 +420,7 @@ export function OnboardingWizard({ onComplete, forceMode = false, forceFreshStar
             <StepSuccess
               totalItems={wizardState.generatedItems.length}
               onViewWardrobe={() => handleRedirect('/wardrobe')}
-              onGenerateOutfits={() => handleRedirect('/today')}
+              onGenerateOutfits={() => handleRedirect('/wardrobe')}
             />
           </Suspense>
         );

@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useAccountSettings } from '@/lib/hooks/use-account-settings';
 import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,7 +24,9 @@ import {
   Link2,
   CheckCircle,
   AlertCircle,
+  HelpCircle,
 } from 'lucide-react';
+import { resetWalkthrough } from '@/lib/actions/walkthrough';
 
 interface UserPreferences {
   id: string;
@@ -87,6 +90,8 @@ function AnnotatedSection({
 export function SettingsPageClient() {
   const { userId } = useAuth();
   const { setTheme } = useTheme();
+  const router = useRouter();
+  const [walkthroughResetting, setWalkthroughResetting] = useState(false);
 
   const {
     loading: accountLoading,
@@ -604,6 +609,32 @@ export function SettingsPageClient() {
                   ))}
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        </AnnotatedSection>
+
+        <AnnotatedSection
+          title="Help"
+          description="Get help with app features."
+          icon={HelpCircle}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>App Walkthrough</CardTitle>
+              <CardDescription>Replay the guided tour of key app features.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                variant="outline"
+                disabled={walkthroughResetting}
+                onClick={async () => {
+                  setWalkthroughResetting(true);
+                  await resetWalkthrough();
+                  router.push('/wardrobe');
+                }}
+              >
+                {walkthroughResetting ? 'Resetting…' : 'Replay app walkthrough'}
+              </Button>
             </CardContent>
           </Card>
         </AnnotatedSection>

@@ -4,10 +4,13 @@ import { hasActiveWardrobeItems } from "@/lib/server/wardrobe-readiness";
 import { redirect } from "next/navigation";
 import { WardrobePageClient } from "./wardrobe-page-client";
 import { PageContentSkeleton } from "@/components/loading-skeleton";
+import { getWalkthroughCompleted } from "@/lib/actions/walkthrough";
 
 export const dynamic = "force-dynamic";
 
 export default async function WardrobePage() {
+  let walkthroughCompleted = true;
+
   try {
     const supabase = await createClient();
     const {
@@ -23,6 +26,9 @@ export default async function WardrobePage() {
     if (!hasItems) {
       redirect("/onboarding");
     }
+
+    const result = await getWalkthroughCompleted();
+    walkthroughCompleted = result.completed;
   } catch {
     // If auth bootstrap fails in SSR/CI, keep route safe and redirect to login.
     redirect("/auth/login");
@@ -30,7 +36,7 @@ export default async function WardrobePage() {
 
   return (
     <Suspense fallback={<PageContentSkeleton />}>
-      <WardrobePageClient />
+      <WardrobePageClient initialWalkthroughCompleted={walkthroughCompleted} />
     </Suspense>
   );
 }
