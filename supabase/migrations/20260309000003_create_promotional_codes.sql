@@ -19,13 +19,15 @@ CREATE INDEX idx_promotional_codes_stripe_coupon_id ON promotional_codes (stripe
 
 ALTER TABLE promotional_codes ENABLE ROW LEVEL SECURITY;
 
--- Admins (billing role) can manage all codes
+-- Admins with billing.write permission can manage all codes
 CREATE POLICY "Admins can manage promotional codes"
   ON promotional_codes FOR ALL
   USING (EXISTS (
     SELECT 1 FROM user_roles ur
     JOIN app_roles r ON ur.role_id = r.id
-    WHERE ur.user_id = auth.uid() AND r.name = 'billing'
+    JOIN admin_role_permissions arp ON arp.role_id = r.id
+    JOIN admin_permissions p ON arp.permission_id = p.id
+    WHERE ur.user_id = auth.uid() AND p.key = 'billing.write'
   ));
 
 -- Any authenticated user can read active (non-revoked) codes for validation

@@ -20,13 +20,15 @@ CREATE POLICY "Users can read their own redemptions"
   ON code_redemptions FOR SELECT
   USING (auth.uid() = user_id);
 
--- Admins can read all redemptions
+-- Admins with billing.read permission can read all redemptions
 CREATE POLICY "Admins can read all redemptions"
   ON code_redemptions FOR SELECT
   USING (EXISTS (
     SELECT 1 FROM user_roles ur
     JOIN app_roles r ON ur.role_id = r.id
-    WHERE ur.user_id = auth.uid() AND r.name = 'billing'
+    JOIN admin_role_permissions arp ON arp.role_id = r.id
+    JOIN admin_permissions p ON arp.permission_id = p.id
+    WHERE ur.user_id = auth.uid() AND p.key = 'billing.read'
   ));
 
 -- Service role only inserts (enforced at application layer via webhook handler)
