@@ -4,7 +4,7 @@ import { createLogger } from '@/lib/utils/logger';
 
 const logger = createLogger({ component: 'components-top-bar' });
 import React from 'react';
-import { Settings, Shirt, Grid3X3, Ruler, Calendar, CalendarDays, LogOut, Menu, X, Monitor, Moon, Sun, CreditCard, Shield, LifeBuoy } from 'lucide-react';
+import { Settings, Shirt, Grid3X3, Ruler, Calendar, CalendarDays, LogOut, Menu, X, Monitor, Moon, Sun, CreditCard, Shield, LifeBuoy, BarChart2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useUpdateUserPreferences, useUserPreferences } from '@/lib/hooks/use-user-preferences';
 
@@ -146,6 +146,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     if (pathname?.startsWith('/calendar')) return 'calendar';
     if (pathname?.startsWith('/wardrobe')) return 'wardrobe';
     if (pathname?.startsWith('/outfits')) return 'outfits';
+    if (pathname?.startsWith('/analytics')) return 'analytics';
     if (pathname?.startsWith('/sizes')) return 'sizes';
     return null;
   };
@@ -273,6 +274,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                   className={desktopNavLinkClass(currentView === 'today')}
                   aria-label="View today's outfit"
                   aria-current={currentView === 'today' ? 'page' : undefined}
+                  data-walkthrough-id="nav-today"
                   {...getNavigationProps('/today')}
                 >
                   <Calendar size={18} />
@@ -303,10 +305,22 @@ export const TopBar: React.FC<TopBarProps> = ({
                   className={desktopNavLinkClass(currentView === 'outfits')}
                   aria-label="View outfits"
                   aria-current={currentView === 'outfits' ? 'page' : undefined}
+                  data-walkthrough-id="nav-outfits"
                   {...getNavigationProps('/outfits')}
                 >
                   <Grid3X3 size={18} />
                   <span>Outfits</span>
+                </Link>
+                <Link
+                  href="/analytics"
+                  className={desktopNavLinkClass(currentView === 'analytics')}
+                  aria-label="View analytics"
+                  aria-current={currentView === 'analytics' ? 'page' : undefined}
+                  data-walkthrough-id="nav-analytics"
+                  {...getNavigationProps('/analytics')}
+                >
+                  <BarChart2 size={18} />
+                  <span>Analytics</span>
                 </Link>
                 <Link
                   href="/sizes"

@@ -9,6 +9,7 @@ import { normalizeWeatherContext } from '@/lib/utils/weather-normalization';
 import { regenerateOutfit, swapItem } from '@/lib/services/outfit-generator';
 import { GeneratedOutfit, WeatherContext } from '@/lib/types/generation';
 import { createOutfit } from '@/lib/actions/outfits';
+import { markTodayAiOutfitSaved } from '@/lib/actions/today';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import WeatherSnapshot from '@/components/weather-snapshot';
 import { OutfitGridLayout } from '@/components/outfit-grid-layout';
@@ -154,6 +155,8 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
   const [aiGenerating, setAiGenerating] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
   const [aiFormOpen, setAiFormOpen] = useState(false);
+  const [aiOutfitSaved, setAiOutfitSaved] = useState(false);
+  const [aiSaving, setAiSaving] = useState(false);
   const [eventType, setEventType] = useState('Work Day');
   const [stylePreset, setStylePreset] = useState('Smart Casual');
   const [styleCustom, setStyleCustom] = useState('');
@@ -449,6 +452,21 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
     });
   }, []);
 
+  const saveAiOutfit = useCallback(async () => {
+    if (aiOutfitSaved || aiSaving) return;
+    setAiSaving(true);
+    setSaveError(null);
+    try {
+      const result = await markTodayAiOutfitSaved();
+      if (!result.success) throw new Error(result.error || 'Failed to save AI outfit');
+      setAiOutfitSaved(true);
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : 'Failed to save AI outfit');
+    } finally {
+      setAiSaving(false);
+    }
+  }, [aiOutfitSaved, aiSaving]);
+
   const saveLook = useCallback(async (key: string, outfit: GeneratedOutfit, name: string) => {
     if (savingKey || savedLookKeys.has(key)) return;
     setSavingKey(key);
@@ -730,15 +748,29 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                     <h2 className="text-lg font-semibold text-foreground">AI Outfit</h2>
                   </div>
                   {todayAi && !aiFormOpen && !aiGenerating && (
-                    <button
-                      className="hidden md:inline-flex h-8 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-2 text-xs font-medium text-foreground"
-                      onClick={() => setAiFormOpen(true)}
-                      title="Regenerate this AI outfit"
-                      aria-label="Regenerate this AI outfit"
-                    >
-                      <RefreshCw className="h-4 w-4" />
-                      <span>Regenerate</span>
-                    </button>
+                    <div className="hidden md:flex items-center gap-2">
+                      {!aiOutfitSaved && (
+                        <button
+                          className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-2 text-xs font-medium text-foreground disabled:opacity-50"
+                          disabled={aiSaving}
+                          onClick={saveAiOutfit}
+                          title="Save this AI outfit"
+                          aria-label="Save this AI outfit"
+                        >
+                          <Save className="h-4 w-4" />
+                          <span>{aiSaving ? 'Saving…' : 'Save'}</span>
+                        </button>
+                      )}
+                      <button
+                        className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-2 text-xs font-medium text-foreground"
+                        onClick={() => { setAiFormOpen(true); setAiOutfitSaved(false); }}
+                        title="Regenerate this AI outfit"
+                        aria-label="Regenerate this AI outfit"
+                      >
+                        <RefreshCw className="h-4 w-4" />
+                        <span>Regenerate</span>
+                      </button>
+                    </div>
                   )}
                 </div>
 
@@ -935,15 +967,29 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                     <h2 className="text-lg font-semibold text-foreground">AI Outfit</h2>
                   </div>
                   {todayAi && !aiFormOpen && !aiGenerating && (
-                    <button
-                      className="hidden md:inline-flex h-8 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-2 text-xs font-medium text-foreground"
-                      onClick={() => setAiFormOpen(true)}
-                      title="Regenerate this AI outfit"
-                      aria-label="Regenerate this AI outfit"
-                    >
-                      <RefreshCw className="h-4 w-4" />
-                      <span>Regenerate</span>
-                    </button>
+                    <div className="hidden md:flex items-center gap-2">
+                      {!aiOutfitSaved && (
+                        <button
+                          className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-2 text-xs font-medium text-foreground disabled:opacity-50"
+                          disabled={aiSaving}
+                          onClick={saveAiOutfit}
+                          title="Save this AI outfit"
+                          aria-label="Save this AI outfit"
+                        >
+                          <Save className="h-4 w-4" />
+                          <span>{aiSaving ? 'Saving…' : 'Save'}</span>
+                        </button>
+                      )}
+                      <button
+                        className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-2 text-xs font-medium text-foreground"
+                        onClick={() => { setAiFormOpen(true); setAiOutfitSaved(false); }}
+                        title="Regenerate this AI outfit"
+                        aria-label="Regenerate this AI outfit"
+                      >
+                        <RefreshCw className="h-4 w-4" />
+                        <span>Regenerate</span>
+                      </button>
+                    </div>
                   )}
                 </div>
 
