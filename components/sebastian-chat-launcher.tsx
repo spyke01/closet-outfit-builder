@@ -337,6 +337,7 @@ export function SebastianChatLauncher({
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Ask Sebastian"
+          data-walkthrough-id="sebastian-button"
           className={cn(
             "fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] right-4 z-40 inline-flex h-[3.5rem] w-[3.5rem] items-center justify-center rounded-full border border-border bg-foreground text-background shadow-lg transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:border-border dark:bg-[#111A20] dark:text-white",
             floatingOffsetClassName,

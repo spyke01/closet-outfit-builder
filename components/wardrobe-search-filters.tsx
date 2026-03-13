@@ -98,7 +98,7 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
             More Filters
           </Button>
           
-          <Link href="/wardrobe/items">
+          <Link href="/wardrobe/items" data-walkthrough-id="wardrobe-add-button">
             <Button className="flex items-center gap-2">
               <Plus size={16} />
               Add Item
