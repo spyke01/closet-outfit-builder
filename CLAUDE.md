@@ -3,12 +3,12 @@
 Auto-generated from all feature plans. Last updated: 2026-02-13
 
 ## Active Technologies
+- TypeScript 5.5+ (strict mode) + Next.js (App Router), React 19, Supabase JS (001-onboarding-auth-gating)
 - TypeScript 5.5+ (strict mode) + Deno (Edge Functions) + Next.js (App Router), React 19, Supabase JS, Replicate API, TanStack Query (002-mobile-camera-bg-removal)
 - Supabase PostgreSQL + Supabase Storage (`wardrobe-images` bucket) (002-mobile-camera-bg-removal)
 - TypeScript 5.5+ (strict mode) + Deno (Edge Functions) + Next.js (App Router), React 19, Supabase JS, Replicate API (google-deepmind/imagen-4), TanStack Query (004-wardrobe-item-image-generation)
 - Supabase PostgreSQL + Supabase Storage (existing `wardrobe-images` bucket) (004-wardrobe-item-image-generation)
-
-- TypeScript 5.5+ (strict mode) + Next.js (App Router), React 19, Supabase JS (001-onboarding-auth-gating)
+- TypeScript 5.5+ strict, Next.js App Router, React 19, Deno (Edge Functions) + Supabase JS, Stripe Node SDK, TanStack Query, Radix UI, Tailwind CSS 4, Zod, Lucide React (direct imports) (005-beta-launch-readiness)
 
 ## Project Structure
 
@@ -25,8 +25,8 @@ npm test && npm run lint
 
 TypeScript 5.5+ (strict mode): Follow standard conventions
 
-- 004-wardrobe-item-image-generation: Added TypeScript 5.5+ (strict mode) + Deno (Edge Functions) + Next.js (App Router), React 19, Supabase JS, Replicate API (google-deepmind/imagen-4), TanStack Query
 - 002-mobile-camera-bg-removal: Added TypeScript 5.5+ (strict mode) + Deno (Edge Functions) + Next.js (App Router), React 19, Supabase JS, Replicate API, TanStack Query
+- 004-wardrobe-item-image-generation: Added TypeScript 5.5+ (strict mode) + Deno (Edge Functions) + Next.js (App Router), React 19, Supabase JS, Replicate API (google-deepmind/imagen-4), TanStack Query
 - 001-onboarding-auth-gating: Added TypeScript 5.5+ (strict mode) + Next.js (App Router), React 19, Supabase JS
 
 <!-- MANUAL ADDITIONS START -->
@@ -41,3 +41,6 @@ TypeScript 5.5+ (strict mode): Follow standard conventions
   - Informational notices: `variant="info"` + `AlertCircle`
 - Keep alert copy concise and action-oriented, consistent with wardrobe add/edit/detail screens.
 <!-- MANUAL ADDITIONS END -->
+
+## Recent Changes
+- 005-beta-launch-readiness: Added TypeScript 5.5+ strict, Next.js App Router, React 19, Deno (Edge Functions) + Supabase JS, Stripe Node SDK, TanStack Query, Radix UI, Tailwind CSS 4, Zod, Lucide React (direct imports)
