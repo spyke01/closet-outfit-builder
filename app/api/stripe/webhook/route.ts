@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { cancelStripeSubscriptionNow, getPlanFromStripePriceId, verifyStripeWebhookSignature } from '@/lib/services/billing/stripe';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger({ component: 'app-api-stripe-webhook-route' });
 
 export const dynamic = 'force-dynamic';
 
@@ -266,6 +269,52 @@ export async function POST(request: NextRequest) {
         && previousSubscriptionId !== subscriptionId
       ) {
         await cancelStripeSubscriptionNow(previousSubscriptionId);
+      }
+
+      // Promo code redemption tracking for checkout.session.completed
+      if (event.type === 'checkout.session.completed' && userId) {
+        try {
+          const session = object as unknown as {
+            discounts?: Array<{ coupon?: { id?: string } }>;
+          };
+          const couponId = session.discounts?.[0]?.coupon?.id;
+          if (couponId) {
+            const { data: promoCode } = await admin
+              .from('promotional_codes')
+              .select('id')
+              .eq('stripe_coupon_id', couponId)
+              .maybeSingle();
+
+            if (promoCode) {
+              const { error: insertError } = await admin
+                .from('code_redemptions')
+                .insert({
+                  code_id: promoCode.id,
+                  user_id: userId,
+                  stripe_subscription_id: subscriptionId,
+                });
+
+              // Only increment counter if insert succeeded (not a duplicate)
+              if (!insertError) {
+                const { data: currentCode } = await admin
+                  .from('promotional_codes')
+                  .select('current_redemptions')
+                  .eq('id', promoCode.id)
+                  .single();
+                if (currentCode) {
+                  await admin
+                    .from('promotional_codes')
+                    .update({ current_redemptions: currentCode.current_redemptions + 1 })
+                    .eq('id', promoCode.id);
+                }
+              }
+              // If insert fails with UNIQUE violation, it's a duplicate webhook — ignore
+            }
+          }
+        } catch (redemptionError) {
+          // Log but do not re-throw — subscription sync already succeeded
+          logger.error('Failed to track promo code redemption', { error: redemptionError instanceof Error ? redemptionError.message : 'unknown' });
+        }
       }
     }
 

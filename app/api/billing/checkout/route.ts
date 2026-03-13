@@ -16,6 +16,7 @@ export const dynamic = 'force-dynamic';
 const CheckoutSchema = z.object({
   plan: z.enum(['plus', 'pro']),
   interval: z.enum(['month', 'year']),
+  promotionCodeId: z.string().uuid().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -49,12 +50,44 @@ export async function POST(request: NextRequest) {
     const priceId = getStripePriceId({ code: selected.plan as PlanCode, interval: selected.interval });
     const appUrl = resolveAppUrl(request);
 
+    // Server-side re-validation of promo code if provided (security re-check)
+    let stripeCouponId: string | null = null;
+    if (selected.promotionCodeId) {
+      const { data: promoCode } = await supabase
+        .from('promotional_codes')
+        .select('id, stripe_coupon_id, discount_percent, max_redemptions, current_redemptions, expires_at, revoked_at')
+        .eq('id', selected.promotionCodeId)
+        .maybeSingle();
+
+      if (!promoCode || promoCode.revoked_at) {
+        return NextResponse.json({ error: 'Promo code is no longer valid.' }, { status: 400 });
+      }
+      if (promoCode.expires_at && new Date(promoCode.expires_at) <= new Date()) {
+        return NextResponse.json({ error: 'Promo code has expired.' }, { status: 400 });
+      }
+      if (promoCode.current_redemptions >= promoCode.max_redemptions) {
+        return NextResponse.json({ error: 'Promo code has reached its redemption limit.' }, { status: 400 });
+      }
+      const { data: existingRedemption } = await supabase
+        .from('code_redemptions')
+        .select('id')
+        .eq('code_id', promoCode.id)
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (existingRedemption) {
+        return NextResponse.json({ error: 'You have already used this promo code.' }, { status: 400 });
+      }
+
+      stripeCouponId = promoCode.stripe_coupon_id;
+    }
+
     const baseCheckoutInput = {
       priceId,
       userId: user.id,
       email: user.email,
       appUrl,
       previousSubscriptionId: subscription?.stripe_subscription_id || null,
+      stripeCouponId,
     };
 
     let session;

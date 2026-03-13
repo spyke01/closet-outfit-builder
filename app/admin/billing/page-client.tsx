@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
@@ -23,7 +23,23 @@ interface BillingUserDetail {
   open_case_count: number;
 }
 
+interface PromoCode {
+  id: string;
+  code: string;
+  discountPercent: number;
+  durationMonths: number;
+  maxRedemptions: number;
+  currentRedemptions: number;
+  expiresAt: string | null;
+  revokedAt: string | null;
+  createdAt: string;
+  isActive: boolean;
+}
+
 export function AdminBillingPageClient() {
+  const [activeTab, setActiveTab] = useState<'users' | 'promo-codes'>('users');
+
+  // Users tab state
   const [users, setUsers] = useState<BillingUser[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string>('');
   const [detail, setDetail] = useState<BillingUserDetail | null>(null);
@@ -33,6 +49,18 @@ export function AdminBillingPageClient() {
   const [noteInput, setNoteInput] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [resyncing, setResyncing] = useState(false);
+
+  // Promo codes tab state
+  const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [newCode, setNewCode] = useState('');
+  const [newDiscountPercent, setNewDiscountPercent] = useState('');
+  const [newDurationMonths, setNewDurationMonths] = useState('');
+  const [newMaxRedemptions, setNewMaxRedemptions] = useState('');
+  const [newExpiresAt, setNewExpiresAt] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [revoking, setRevoking] = useState<string | null>(null);
 
   const loadUsers = async () => {
     setLoading(true);
@@ -56,6 +84,74 @@ export function AdminBillingPageClient() {
     loadUsers().catch(() => undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const loadPromoCodes = async () => {
+    setPromoLoading(true);
+    setPromoError(null);
+    try {
+      const res = await fetch('/api/admin/billing/promo-codes');
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || 'Failed to load promo codes');
+      setPromoCodes(payload.codes || []);
+    } catch (err) {
+      setPromoError(err instanceof Error ? err.message : 'Failed to load promo codes');
+    } finally {
+      setPromoLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'promo-codes') {
+      loadPromoCodes().catch(() => undefined);
+    }
+  }, [activeTab]);
+
+  const createPromoCode = async () => {
+    if (!newCode.trim() || !newDiscountPercent || !newDurationMonths || !newMaxRedemptions) return;
+    setCreating(true);
+    setPromoError(null);
+    try {
+      const body: Record<string, unknown> = {
+        code: newCode.trim().toUpperCase(),
+        discountPercent: Number(newDiscountPercent),
+        durationMonths: Number(newDurationMonths),
+        maxRedemptions: Number(newMaxRedemptions),
+      };
+      if (newExpiresAt) body.expiresAt = new Date(newExpiresAt).toISOString();
+      const res = await fetch('/api/admin/billing/promo-codes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || 'Failed to create promo code');
+      setNewCode('');
+      setNewDiscountPercent('');
+      setNewDurationMonths('');
+      setNewMaxRedemptions('');
+      setNewExpiresAt('');
+      await loadPromoCodes();
+    } catch (err) {
+      setPromoError(err instanceof Error ? err.message : 'Failed to create promo code');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const revokePromoCode = async (id: string) => {
+    setRevoking(id);
+    setPromoError(null);
+    try {
+      const res = await fetch(`/api/admin/billing/promo-codes/${id}`, { method: 'DELETE' });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || 'Failed to revoke promo code');
+      await loadPromoCodes();
+    } catch (err) {
+      setPromoError(err instanceof Error ? err.message : 'Failed to revoke promo code');
+    } finally {
+      setRevoking(null);
+    }
+  };
 
   useEffect(() => {
     if (!selectedUserId) return;
@@ -119,9 +215,168 @@ export function AdminBillingPageClient() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-foreground">Admin Billing</h1>
-        <p className="text-muted-foreground mt-1">Inspect subscriptions, close billing issues, and handle webhook mismatches.</p>
+        <p className="text-muted-foreground mt-1">Inspect subscriptions, close billing issues, and manage promotional codes.</p>
       </div>
 
+      <div className="flex gap-1 border-b border-border">
+        <button
+          type="button"
+          onClick={() => setActiveTab('users')}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'users' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+        >
+          Users
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('promo-codes')}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'promo-codes' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+        >
+          Promotional Codes
+        </button>
+      </div>
+
+      {activeTab === 'promo-codes' && (
+        <div className="space-y-6">
+          {promoError && <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-destructive">{promoError}</div>}
+
+          <div className="bg-card border border-border rounded-xl p-4 space-y-4">
+            <h2 className="text-lg font-semibold text-foreground">Create Promo Code</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="space-y-1">
+                <label htmlFor="promo-code-name" className="text-xs text-muted-foreground">Code (4–20 uppercase chars)</label>
+                <input
+                  id="promo-code-name"
+                  value={newCode}
+                  onChange={(e) => setNewCode(e.target.value.toUpperCase())}
+                  placeholder="BETA50"
+                  maxLength={20}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm uppercase tracking-wider"
+                />
+              </div>
+              <div className="space-y-1">
+                <label htmlFor="promo-discount-pct" className="text-xs text-muted-foreground">Discount % (1–99)</label>
+                <input
+                  id="promo-discount-pct"
+                  type="number"
+                  value={newDiscountPercent}
+                  onChange={(e) => setNewDiscountPercent(e.target.value)}
+                  placeholder="50"
+                  min={1}
+                  max={99}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                />
+              </div>
+              <div className="space-y-1">
+                <label htmlFor="promo-duration" className="text-xs text-muted-foreground">Duration months (1–12)</label>
+                <input
+                  id="promo-duration"
+                  type="number"
+                  value={newDurationMonths}
+                  onChange={(e) => setNewDurationMonths(e.target.value)}
+                  placeholder="3"
+                  min={1}
+                  max={12}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                />
+              </div>
+              <div className="space-y-1">
+                <label htmlFor="promo-max-redemptions" className="text-xs text-muted-foreground">Max redemptions (1–10000)</label>
+                <input
+                  id="promo-max-redemptions"
+                  type="number"
+                  value={newMaxRedemptions}
+                  onChange={(e) => setNewMaxRedemptions(e.target.value)}
+                  placeholder="100"
+                  min={1}
+                  max={10000}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                />
+              </div>
+              <div className="space-y-1">
+                <label htmlFor="promo-expires-at" className="text-xs text-muted-foreground">Expires at (optional)</label>
+                <input
+                  id="promo-expires-at"
+                  type="date"
+                  value={newExpiresAt}
+                  onChange={(e) => setNewExpiresAt(e.target.value)}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                />
+              </div>
+            </div>
+            <Button
+              onClick={() => createPromoCode().catch(() => undefined)}
+              disabled={creating || !newCode.trim() || !newDiscountPercent || !newDurationMonths || !newMaxRedemptions}
+              className="flex items-center gap-1.5"
+            >
+              {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+              {creating ? 'Creating...' : 'Create Code'}
+            </Button>
+          </div>
+
+          <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-foreground">Promotional Codes</h2>
+              <Button variant="outline" size="sm" onClick={() => loadPromoCodes().catch(() => undefined)} disabled={promoLoading}>
+                {promoLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Refresh'}
+              </Button>
+            </div>
+
+            {promoLoading ? (
+              <p className="text-sm text-muted-foreground"><Loader2 className="w-4 h-4 animate-spin inline mr-2" />Loading...</p>
+            ) : promoCodes.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No promotional codes yet.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border text-xs text-muted-foreground">
+                      <th className="text-left pb-2 pr-4">Code</th>
+                      <th className="text-left pb-2 pr-4">Discount</th>
+                      <th className="text-left pb-2 pr-4">Duration</th>
+                      <th className="text-left pb-2 pr-4">Redemptions</th>
+                      <th className="text-left pb-2 pr-4">Expires</th>
+                      <th className="text-left pb-2 pr-4">Status</th>
+                      <th className="text-left pb-2">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {promoCodes.map((pc) => (
+                      <tr key={pc.id} className="py-2">
+                        <td className="py-2 pr-4 font-mono font-semibold text-foreground">{pc.code}</td>
+                        <td className="py-2 pr-4">{pc.discountPercent}%</td>
+                        <td className="py-2 pr-4">{pc.durationMonths}mo</td>
+                        <td className="py-2 pr-4">{pc.currentRedemptions}/{pc.maxRedemptions}</td>
+                        <td className="py-2 pr-4">{pc.expiresAt ? new Date(pc.expiresAt).toLocaleDateString() : '—'}</td>
+                        <td className="py-2 pr-4">
+                          <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${pc.isActive ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-muted text-muted-foreground'}`}>
+                            {pc.revokedAt ? 'Revoked' : pc.isActive ? 'Active' : 'Exhausted/Expired'}
+                          </span>
+                        </td>
+                        <td className="py-2">
+                          {pc.isActive && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => revokePromoCode(pc.id).catch(() => undefined)}
+                              disabled={revoking === pc.id}
+                              className="text-destructive hover:text-destructive h-7 px-2"
+                              aria-label={`Revoke ${pc.code}`}
+                            >
+                              {revoking === pc.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                            </Button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'users' && <>
       {error && <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-destructive">{error}</div>}
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -265,6 +520,7 @@ export function AdminBillingPageClient() {
           )}
         </div>
       </div>
+      </>}
     </div>
   );
 }

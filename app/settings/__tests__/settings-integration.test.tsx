@@ -4,6 +4,12 @@ import type { ReactNode } from 'react';
 import { SettingsPageClient } from '../settings-page-client';
 import { ThemeProvider } from 'next-themes';
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), back: vi.fn() }),
+  usePathname: () => '/settings',
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 beforeAll(() => {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,

@@ -134,6 +134,7 @@ export async function createStripeCheckoutSession(input: {
   interval: 'month' | 'year';
   customerId?: string | null;
   previousSubscriptionId?: string | null;
+  stripeCouponId?: string | null;
 }) {
   const payload = new URLSearchParams();
   payload.append('mode', 'subscription');
@@ -144,11 +145,14 @@ export async function createStripeCheckoutSession(input: {
     `${input.appUrl}/billing/updated?session_id={CHECKOUT_SESSION_ID}&plan=${input.planCode}&interval=${input.interval}`
   );
   payload.append('cancel_url', `${input.appUrl}/pricing`);
-  payload.append('allow_promotion_codes', 'true');
+  // Note: allow_promotion_codes removed — discounts are applied server-side via in-app promo code validation
   payload.append('metadata[user_id]', input.userId);
   payload.append('metadata[source]', 'web_pricing');
   if (input.previousSubscriptionId) {
     payload.append('metadata[previous_subscription_id]', input.previousSubscriptionId);
+  }
+  if (input.stripeCouponId) {
+    payload.append('discounts[0][coupon]', input.stripeCouponId);
   }
 
   if (input.customerId) {

@@ -7,6 +7,7 @@ import { BILLING_ENTITLEMENTS_REFRESH_EVENT } from '@/lib/hooks/use-billing-enti
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PlanSelector } from '@/components/billing/plan-selector';
+import { PromoCodeInput } from '@/components/billing/promo-code-input';
 
 interface EntitlementsResponse {
   entitlements: {
@@ -64,6 +65,9 @@ export function BillingPageClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyAction, setBusyAction] = useState<'plus-month' | 'plus-year' | 'pro-month' | 'pro-year' | 'portal' | 'switch-free' | null>(null);
+  const [promotionCodeId, setPromotionCodeId] = useState<string | null>(null);
+  const [pendingPlan, setPendingPlan] = useState<'plus' | 'pro' | null>(null);
+  const [pendingInterval, setPendingInterval] = useState<'month' | 'year'>('month');
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -100,12 +104,18 @@ export function BillingPageClient() {
   }, [authLoading, user, loadData]);
 
   const startCheckout = async (plan: 'plus' | 'pro', interval: 'month' | 'year') => {
+    setPendingPlan(plan);
+    setPendingInterval(interval);
     setBusyAction(`${plan}-${interval}`);
     try {
+      const checkoutBody: Record<string, unknown> = { plan, interval };
+      if (promotionCodeId && interval === 'month') {
+        checkoutBody.promotionCodeId = promotionCodeId;
+      }
       const response = await fetch('/api/billing/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan, interval }),
+        body: JSON.stringify(checkoutBody),
       });
       const payload = await response.json();
       if (!response.ok) {
@@ -236,6 +246,18 @@ export function BillingPageClient() {
           </Card>
         </div>
       )}
+
+      <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+        <div className="space-y-1">
+          <h2 className="text-lg font-semibold text-foreground">Have a promo code?</h2>
+          <p className="text-sm text-muted-foreground">Apply a discount code before selecting your plan (monthly plans only).</p>
+        </div>
+        <PromoCodeInput
+          plan={pendingPlan}
+          interval={pendingInterval}
+          onValidated={setPromotionCodeId}
+        />
+      </div>
 
       <PlanSelector
         context="billing"
