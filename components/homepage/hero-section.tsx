@@ -28,7 +28,7 @@ export function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left side - Content */}
           <div className="text-center lg:text-left animate-fade-in">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#294653] border border-[#3b6270] text-[#E8F0F2] rounded-full text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary border border-border text-foreground rounded-full text-sm font-medium mb-6">
               <Sparkles className="w-4 h-4" />
               Start your free trial
             </div>
@@ -47,7 +47,7 @@ export function HeroSection() {
               <Link href="/auth/sign-up">
                 <Button 
                   size="lg" 
-                  className="bg-[#D49E7C] text-[#1A2830] hover:bg-[#e1b08f] px-8 py-4 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group"
+                  className="bg-secondary text-secondary-foreground hover:bg-secondary/90 px-8 py-4 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group"
                 >
                   Get Started Free
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -58,7 +58,7 @@ export function HeroSection() {
                 variant="outline" 
                 size="lg"
                 onClick={scrollToDemo}
-                className="border-2 border-[#2f5664] bg-[#23414d] text-[#E8F0F2] hover:bg-[#2b4b57] px-8 py-4 text-lg font-semibold rounded-2xl transition-all duration-300"
+                className="border-2 border-border bg-card text-foreground hover:bg-card/80 px-8 py-4 text-lg font-semibold rounded-2xl transition-all duration-300"
               >
                 See How It Works
               </Button>

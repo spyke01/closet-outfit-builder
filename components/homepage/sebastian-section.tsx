@@ -20,7 +20,7 @@ export function SebastianSection() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-2xl">
           <div className="absolute -top-20 -right-20 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
-          <div className="absolute -bottom-16 -left-16 h-64 w-64 rounded-full bg-[#D49E7C]/25 blur-3xl" />
+          <div className="absolute -bottom-16 -left-16 h-64 w-64 rounded-full bg-secondary/25 blur-3xl" />
 
           <div className="relative grid lg:grid-cols-[1.2fr_0.8fr] gap-10 lg:gap-12 p-8 md:p-12 lg:p-14 items-center">
             <div>
@@ -66,7 +66,7 @@ export function SebastianSection() {
                 <Link href="/sebastian">
                   <Button
                     size="lg"
-                    className="bg-[#D49E7C] text-[#1A2830] hover:bg-[#e1b08f] px-8 py-4 text-base font-semibold rounded-2xl group"
+                    className="bg-secondary text-secondary-foreground hover:bg-secondary/90 px-8 py-4 text-base font-semibold rounded-2xl group"
                   >
                     Meet Sebastian
                     <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />

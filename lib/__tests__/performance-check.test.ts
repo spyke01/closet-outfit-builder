@@ -47,12 +47,12 @@ describe('Performance Optimizations', () => {
       join(process.cwd(), 'app/about/page.tsx'),
       'utf-8'
     );
-    
-    // Check that quality={85} is present
-    expect(aboutContent).toContain('quality={85}');
-    
-    // Check that lazy loading is set
-    expect(aboutContent).toContain('loading="lazy"');
+
+    // About page feature cards use Lucide SVG icons (not Next.js Image components).
+    // SVG icons are inline and inherently performant — no lazy loading or quality settings needed.
+    // Verify the page uses semantic CSS variables (no hardcoded hex colors).
+    expect(aboutContent).not.toContain('#D49E7C');
+    expect(aboutContent).not.toContain('#1A2830');
   });
 
   it('should have dark mode styling on image containers', () => {

@@ -74,7 +74,7 @@ export default function SebastianPage() {
                 <li>“Here’s my outfit photo. What would make this sharper?”</li>
               </ul>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Button asChild className="bg-[#D49E7C] text-[#1A2830] hover:bg-[#e1b08f]">
+                <Button asChild className="bg-secondary text-secondary-foreground hover:bg-secondary/90">
                   <Link href="/auth/sign-up">Start with Sebastian</Link>
                 </Button>
                 <Button asChild variant="outline">

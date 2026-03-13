@@ -61,8 +61,8 @@ export function HowItWorks() {
                     <span className="font-display text-6xl font-bold text-primary">
                       {step.number}
                     </span>
-                    <div className="w-16 h-16 rounded-2xl bg-secondary/20 border border-[#3b6270] bg-[#294653] flex items-center justify-center">
-                      <Icon className="w-8 h-8 text-[#E8F0F2]" />
+                    <div className="w-16 h-16 rounded-2xl bg-secondary/20 border border-border bg-primary flex items-center justify-center">
+                      <Icon className="w-8 h-8 text-foreground" />
                     </div>
                   </div>
                   
@@ -82,8 +82,8 @@ export function HowItWorks() {
                     {step.image === 'upload' && (
                       <div className="space-y-6">
                         <div className="text-center">
-                          <div className="w-24 h-24 rounded-3xl border border-[#3b6270] bg-[#294653] flex items-center justify-center mx-auto mb-4">
-                            <Upload className="w-12 h-12 text-[#E8F0F2]" />
+                          <div className="w-24 h-24 rounded-3xl border border-border bg-primary flex items-center justify-center mx-auto mb-4">
+                            <Upload className="w-12 h-12 text-foreground" />
                           </div>
                           <p className="text-muted-foreground text-foreground/80">Drag & drop your photos</p>
                         </div>
@@ -141,7 +141,7 @@ export function HowItWorks() {
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                           {finalOutfitItems.map((item, i) => (
-                            <div key={i} className="aspect-square rounded-2xl overflow-hidden shadow-sm border border-[#2b4f5d] bg-[#1e3641]">
+                            <div key={i} className="aspect-square rounded-2xl overflow-hidden shadow-sm border border-border bg-card">
                               <Image
                                 src={item.src}
                                 alt={item.alt}
@@ -153,8 +153,8 @@ export function HowItWorks() {
                           ))}
                         </div>
                         <div className="text-center">
-                          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border border-[#4f8092] bg-[#2d5563] text-[#EAF4F7]">
-                            <Sparkles className="w-4 h-4 text-[#EAF4F7]" />
+                          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border border-primary bg-primary/80 text-foreground">
+                            <Sparkles className="w-4 h-4 text-foreground" />
                             95% compatibility
                           </div>
                         </div>

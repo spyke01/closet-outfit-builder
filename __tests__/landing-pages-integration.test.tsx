@@ -104,14 +104,12 @@ describe('Landing Pages Integration Tests', () => {
 
     it('should have all feature card images loaded', () => {
       render(<AboutPage />);
-      
-      const images = screen.getAllByRole('img');
-      
-      // Should have at least 4 feature card images
-      const featureImages = images.filter(img => 
-        img.getAttribute('width') === '64'
-      );
-      expect(featureImages.length).toBeGreaterThanOrEqual(4);
+
+      // Feature cards now use Lucide SVG icons; verify by card headings
+      expect(screen.getByText('Personal & Secure')).toBeInTheDocument();
+      expect(screen.getByText('Custom Wardrobe')).toBeInTheDocument();
+      expect(screen.getByText('Smart Recommendations')).toBeInTheDocument();
+      expect(screen.getByText('Weather Integration')).toBeInTheDocument();
     });
 
     it('should have all feature cards present', () => {
@@ -200,14 +198,13 @@ describe('Landing Pages Integration Tests', () => {
     it('should have consistent CTA styling in components', () => {
       const hero = render(<HeroSection />);
       const heroButton = hero.getByRole('link', { name: /get started free/i });
-      expect(heroButton.querySelector('button')?.className).toContain('bg-[#D49E7C]');
-      expect(heroButton.querySelector('button')?.className).toContain('text-[#1A2830]');
+      // CTA buttons use semantic CSS variable classes (bg-secondary/text-secondary-foreground)
+      expect(heroButton.querySelector('button')?.className).toContain('bg-secondary');
       hero.unmount();
-      
+
       const about = render(<AboutPage />);
       const aboutButton = about.getByRole('link', { name: /get started today/i });
-      expect(aboutButton.className).toContain('bg-[#D49E7C]');
-      expect(aboutButton.className).toContain('text-[#1A2830]');
+      expect(aboutButton.className).toContain('bg-secondary');
       about.unmount();
     });
   });

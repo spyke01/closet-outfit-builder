@@ -49,7 +49,7 @@ export function Navigation() {
               </Button>
             </Link>
             <Link href="/auth/sign-up">
-              <Button className="bg-[#D49E7C] text-[#1A2830] hover:bg-[#e1b08f] rounded-xl">
+              <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-xl">
                 Get Started
               </Button>
             </Link>
@@ -110,7 +110,7 @@ export function Navigation() {
                 </Button>
               </Link>
               <Link href="/auth/sign-up" onClick={() => setIsMenuOpen(false)}>
-                <Button className="w-full bg-[#D49E7C] text-[#1A2830] hover:bg-[#e1b08f]">
+                <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90">
                   Get Started
                 </Button>
               </Link>
