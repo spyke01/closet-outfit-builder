@@ -16,6 +16,10 @@ interface Props {
 interface TooltipPosition {
   top: number;
   left: number;
+  /** Pixel offset from tooltip left edge to where the arrow should point */
+  arrowLeft: number;
+  /** Pixel offset from tooltip top edge to where the arrow should point */
+  arrowTop: number;
 }
 
 function computeTooltipPosition(
@@ -28,29 +32,36 @@ function computeTooltipPosition(
   const scrollY = window.scrollY;
   const scrollX = window.scrollX;
 
+  const targetCenterX = targetRect.left + scrollX + targetRect.width / 2;
+  const targetCenterY = targetRect.top + scrollY + targetRect.height / 2;
+
   let top = 0;
   let left = 0;
 
   if (position === 'bottom') {
     top = targetRect.bottom + scrollY + gap;
-    left = targetRect.left + scrollX + targetRect.width / 2 - tooltipRect.width / 2;
+    left = targetCenterX - tooltipRect.width / 2;
   } else if (position === 'top') {
     top = targetRect.top + scrollY - tooltipRect.height - gap;
-    left = targetRect.left + scrollX + targetRect.width / 2 - tooltipRect.width / 2;
+    left = targetCenterX - tooltipRect.width / 2;
   } else if (position === 'left') {
-    top = targetRect.top + scrollY + targetRect.height / 2 - tooltipRect.height / 2;
+    top = targetCenterY - tooltipRect.height / 2;
     left = targetRect.left + scrollX - tooltipRect.width - gap;
   } else {
-    top = targetRect.top + scrollY + targetRect.height / 2 - tooltipRect.height / 2;
+    top = targetCenterY - tooltipRect.height / 2;
     left = targetRect.right + scrollX + gap;
   }
 
   // Clamp to viewport
   const maxLeft = window.innerWidth + scrollX - tooltipRect.width - 8;
   const minLeft = scrollX + 8;
-  left = Math.max(minLeft, Math.min(left, maxLeft));
+  const clampedLeft = Math.max(minLeft, Math.min(left, maxLeft));
 
-  return { top, left };
+  // Arrow points at target center, clamped to tooltip bounds with padding
+  const arrowLeft = Math.max(16, Math.min(tooltipRect.width - 16, targetCenterX - clampedLeft));
+  const arrowTop = Math.max(16, Math.min(tooltipRect.height - 16, targetCenterY - top));
+
+  return { top, left: clampedLeft, arrowLeft, arrowTop };
 }
 
 export function WalkthroughCoach({ steps, currentStep, onNext, onDismiss, prefersReducedMotion }: Props) {
@@ -61,18 +72,29 @@ export function WalkthroughCoach({ steps, currentStep, onNext, onDismiss, prefer
   const step = stepIndex >= 0 && stepIndex < steps.length ? steps[stepIndex] : null;
   const isLast = currentStep === steps.length;
 
+  // Highlight the current target element with a ring
+  useEffect(() => {
+    if (!step) return;
+    const target = document.querySelector(`[data-walkthrough-id="${step.targetId}"]`) as HTMLElement | null;
+    if (!target) return;
+    target.setAttribute('data-walkthrough-active', 'true');
+    return () => target.removeAttribute('data-walkthrough-active');
+  }, [step]);
+
   useEffect(() => {
     if (!step || !tooltipRef.current) return;
 
     const target = document.querySelector(`[data-walkthrough-id="${step.targetId}"]`);
     if (!target) {
-      // If target not found, position in center of screen
-      setPos({ top: window.innerHeight / 2 - 80 + window.scrollY, left: window.innerWidth / 2 - 160 });
+      setPos({ top: window.innerHeight / 2 - 80 + window.scrollY, left: window.innerWidth / 2 - 160, arrowLeft: 160, arrowTop: 0 });
       return;
     }
 
     const rect = target.getBoundingClientRect();
-    target.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'center' });
+    // Only scroll for off-screen targets (not nav items already visible)
+    if (rect.top < 0 || rect.bottom > window.innerHeight) {
+      target.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'center' });
+    }
 
     // Recompute after scroll settles
     const timeout = setTimeout(() => {
@@ -119,6 +141,51 @@ export function WalkthroughCoach({ steps, currentStep, onNext, onDismiss, prefer
         ].join(' ')}
         style={pos ? { top: pos.top, left: pos.left } : { top: '-9999px', left: '-9999px' }}
       >
+        {/* Arrow pointing at target — SVG for crisp sharp edges */}
+        {pos && step.position === 'bottom' && (
+          <svg
+            className="absolute overflow-visible"
+            style={{ left: pos.arrowLeft - 7, top: -8 }}
+            width="14" height="8" viewBox="0 0 14 8"
+            aria-hidden="true"
+          >
+            <polygon points="0,8 7,0 14,8" style={{ fill: 'var(--card)' }} />
+            <polyline points="0,8 7,0 14,8" style={{ fill: 'none', stroke: 'var(--border)', strokeWidth: '1', strokeLinejoin: 'miter' }} />
+          </svg>
+        )}
+        {pos && step.position === 'top' && (
+          <svg
+            className="absolute overflow-visible"
+            style={{ left: pos.arrowLeft - 7, bottom: -8 }}
+            width="14" height="8" viewBox="0 0 14 8"
+            aria-hidden="true"
+          >
+            <polygon points="0,0 7,8 14,0" style={{ fill: 'var(--card)' }} />
+            <polyline points="0,0 7,8 14,0" style={{ fill: 'none', stroke: 'var(--border)', strokeWidth: '1', strokeLinejoin: 'miter' }} />
+          </svg>
+        )}
+        {pos && step.position === 'right' && (
+          <svg
+            className="absolute overflow-visible"
+            style={{ top: pos.arrowTop - 7, left: -8 }}
+            width="8" height="14" viewBox="0 0 8 14"
+            aria-hidden="true"
+          >
+            <polygon points="8,0 0,7 8,14" style={{ fill: 'var(--card)' }} />
+            <polyline points="8,0 0,7 8,14" style={{ fill: 'none', stroke: 'var(--border)', strokeWidth: '1', strokeLinejoin: 'miter' }} />
+          </svg>
+        )}
+        {pos && step.position === 'left' && (
+          <svg
+            className="absolute overflow-visible"
+            style={{ top: pos.arrowTop - 7, right: -8 }}
+            width="8" height="14" viewBox="0 0 8 14"
+            aria-hidden="true"
+          >
+            <polygon points="0,0 8,7 0,14" style={{ fill: 'var(--card)' }} />
+            <polyline points="0,0 8,7 0,14" style={{ fill: 'none', stroke: 'var(--border)', strokeWidth: '1', strokeLinejoin: 'miter' }} />
+          </svg>
+        )}
         <div className="flex items-start justify-between gap-2">
           <h3 className="text-sm font-semibold text-foreground">{step.title}</h3>
           <button
