@@ -20,6 +20,7 @@ import {
 } from '@/lib/types/generation';
 import { enrichItems } from '@/lib/utils/item-enrichment';
 import { calculateCompatibilityScore } from '@/lib/utils/compatibility-scoring';
+import { shirtSupportsUndershirt } from '@/lib/utils/undershirt-rules';
 
 /**
  * Category selection order for outfit generation
@@ -182,7 +183,7 @@ function groupItemsBySlot(items: EnrichedItem[]): Map<string, EnrichedItem[]> {
  * Based on weather context and available items:
  * - Always include: Shirt, Pants, Shoes
  * - Conditional: Jacket/Overshirt (if targetWeight >= 2)
- * - Conditional: Undershirt (if not hot)
+ * - Conditional: Undershirt (if not hot and the shirt supports layering)
  * - Conditional: Belt (if pants/shoes are formal)
  * - Conditional: Watch (if available)
  * 
@@ -214,7 +215,11 @@ function determineIncludedCategories(
   }
   
   // Include undershirt unless it's hot
-  if (!weatherContext.isHot && availableSlots.has('undershirt')) {
+  if (
+    !weatherContext.isHot &&
+    availableSlots.has('undershirt') &&
+    shirtSupportsUndershirt(selectedItems.shirt)
+  ) {
     included.push('undershirt');
   }
   
@@ -758,6 +763,10 @@ export function swapItem(options: SwapOptions): GeneratedOutfit {
     if (item) {
       selectedItemsMap.set(slot, slot === category ? newItem : item);
     }
+  }
+
+  if (category === 'shirt' && !shirtSupportsUndershirt(newItem)) {
+    selectedItemsMap.delete('undershirt');
   }
   
   // Build items object with proper typing

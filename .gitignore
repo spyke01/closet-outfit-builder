@@ -62,3 +62,4 @@ tsconfig.tsbuildinfo
 .lint-summary.json
 .bundle-trends/
 .typescript-trends/
+.lighthouseci/

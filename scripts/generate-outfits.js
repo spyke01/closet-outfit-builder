@@ -377,6 +377,58 @@ function pickById(ids) {
   return null;
 }
 
+function normalizeLayeringDescriptor(value = "") {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function shirtSupportsUndershirt(shirt) {
+  if (!shirt) return false;
+
+  const descriptor = normalizeLayeringDescriptor(
+    [shirt.subcategory, shirt.name, shirt.id].filter(Boolean).join(" ")
+  );
+  const paddedDescriptor = ` ${descriptor} `;
+
+  if (!descriptor) return false;
+
+  const blockedTokens = [
+    "henley",
+    "polo",
+    "waffle",
+    "waffle knit",
+    "waffleknit",
+    "crewneck",
+    "crew neck",
+    "sweater",
+    "mock neck",
+    "turtleneck",
+    "tee",
+    "t shirt",
+    "tshirt",
+    "tank",
+  ];
+
+  if (blockedTokens.some((token) => paddedDescriptor.includes(` ${token} `))) {
+    return false;
+  }
+
+  const allowedTokens = [
+    "ocbd",
+    "oxford",
+    "button down",
+    "button up",
+    "dress shirt",
+    "flannel",
+    "chambray",
+  ];
+
+  return allowedTokens.some((token) => paddedDescriptor.includes(` ${token} `));
+}
+
 /**
  * Determines if an undershirt should be added to an outfit
  * Undershirts are typically used for layering in casual or layered looks
@@ -384,6 +436,8 @@ function pickById(ids) {
  * @returns {Object|null} Selected undershirt item or null
  */
 function maybeUndershirt({ shirt, jacket, vibe }) {
+  if (!shirtSupportsUndershirt(shirt)) return null;
+
   // Only add undershirts for casual looks or when wearing a jacket
   if (!vibe.has("casual") && !jacket) return null;
 
@@ -709,7 +763,7 @@ function main() {
         const jacketOptions = [null, ...jackets]; // Include "no jacket" option
         
         const undershirt = maybeUndershirt({ shirt, jacket: jackets[0], vibe });
-        const undershirtOptions = [null, undershirt].filter(Boolean);
+        const undershirtOptions = undershirt ? [undershirt] : [];
 
         // Generate all possible combinations (Cartesian product)
         // This explores jacket × watch × undershirt combinations systematically

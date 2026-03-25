@@ -253,7 +253,7 @@ describe('generateOutfit', () => {
       expect(outfit.items.jacket).toBeUndefined();
     });
 
-    it('should include undershirt unless isHot', () => {
+    it('should include undershirt for layerable shirts when it is not hot', () => {
       const wardrobeWithUndershirt = [
         ...basicWardrobe,
         createMockItem({
@@ -276,6 +276,44 @@ describe('generateOutfit', () => {
       });
 
       expect(hotOutfit.items.undershirt).toBeUndefined();
+    });
+
+    it('should not include undershirt for shirts that do not layer well', () => {
+      const wardrobe = [
+        createMockItem({
+          id: 'shirt-polo',
+          name: 'Navy Polo',
+          category_id: 'cat-shirt',
+          category: mockCategories.shirt,
+          formality_score: 5,
+        }),
+        createMockItem({
+          id: 'pants-1',
+          name: 'Grey Chinos',
+          category_id: 'cat-pants',
+          category: mockCategories.pants,
+          formality_score: 5,
+        }),
+        createMockItem({
+          id: 'shoes-1',
+          name: 'Brown Leather Shoes',
+          category_id: 'cat-shoes',
+          category: mockCategories.shoes,
+          formality_score: 7,
+        }),
+        createMockItem({
+          id: 'undershirt-1',
+          name: 'White Undershirt',
+          category: mockCategories.undershirt,
+        }),
+      ];
+
+      const outfit = generateOutfit({
+        wardrobeItems: wardrobe,
+        weatherContext: mildWeather,
+      });
+
+      expect(outfit.items.undershirt).toBeUndefined();
     });
 
     it('should include belt when pants formality >= 5', () => {
@@ -991,6 +1029,57 @@ describe('swapItem', () => {
 
     // Should select the other shirt
     expect(swappedOutfit.items.shirt.id).not.toBe(originalShirtId);
+  });
+
+  it('should remove undershirt when swapping into a non-layerable shirt', () => {
+    const wardrobe = [
+      createMockItem({
+        id: 'shirt-ocbd',
+        name: 'Blue Oxford Shirt',
+        category: mockCategories.shirt,
+        formality_score: 6,
+      }),
+      createMockItem({
+        id: 'shirt-polo',
+        name: 'Navy Polo',
+        category: mockCategories.shirt,
+        formality_score: 5,
+      }),
+      createMockItem({
+        id: 'pants-1',
+        name: 'Grey Pants',
+        category: mockCategories.pants,
+        formality_score: 6,
+      }),
+      createMockItem({
+        id: 'shoes-1',
+        name: 'Brown Shoes',
+        category: mockCategories.shoes,
+        formality_score: 7,
+      }),
+      createMockItem({
+        id: 'undershirt-1',
+        name: 'White Undershirt',
+        category: mockCategories.undershirt,
+      }),
+    ];
+
+    const originalOutfit = generateOutfit({
+      wardrobeItems: wardrobe,
+      weatherContext: mildWeather,
+    });
+
+    expect(originalOutfit.items.undershirt).toBeDefined();
+
+    const swappedOutfit = swapItem({
+      currentOutfit: originalOutfit,
+      category: 'shirt',
+      wardrobeItems: wardrobe,
+      weatherContext: mildWeather,
+    });
+
+    expect(swappedOutfit.items.shirt.id).toBe('shirt-polo');
+    expect(swappedOutfit.items.undershirt).toBeUndefined();
   });
 
   it('should recalculate scores after swap', () => {
