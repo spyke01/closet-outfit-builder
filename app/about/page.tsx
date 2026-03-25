@@ -14,7 +14,7 @@ export default function AboutPage() {
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
               <h1 className="text-4xl font-bold text-foreground mb-4">About My AI Outfit</h1>
-              <p className="text-xl text-muted-foreground text-foreground/85 max-w-2xl mx-auto">
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                 Intelligent outfit composition for the modern wardrobe
               </p>
             </div>
@@ -22,7 +22,7 @@ export default function AboutPage() {
             <div className="prose prose-lg max-w-none">
               <section className="mb-12">
                 <h2 className="text-2xl font-semibold text-foreground mb-4">Our Mission</h2>
-                <p className="text-muted-foreground text-foreground/80 mb-6">
+                <p className="text-muted-foreground mb-6">
                   My AI Outfit helps fashion-conscious individuals organize their personal wardrobe digitally
                   and discover new outfit combinations from their existing clothes. Our intelligent outfit engine
                   uses compatibility algorithms to suggest combinations based on style, formality, and weather conditions.
@@ -37,35 +37,35 @@ export default function AboutPage() {
                       <Shield className="w-10 h-10 text-primary" />
                     </div>
                     <h3 className="font-semibold text-foreground mb-2">Personal & Secure</h3>
-                    <p className="text-muted-foreground text-foreground/80">Multi-user authentication with complete data privacy and isolation</p>
+                    <p className="text-muted-foreground">Multi-user authentication with complete data privacy and isolation</p>
                   </div>
                   <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
                     <div className="w-16 h-16 mb-4 mx-auto flex items-center justify-center">
                       <Shirt className="w-10 h-10 text-primary" />
                     </div>
                     <h3 className="font-semibold text-foreground mb-2">Custom Wardrobe</h3>
-                    <p className="text-muted-foreground text-foreground/80">Upload your own clothing photos with automatic background removal</p>
+                    <p className="text-muted-foreground">Upload your own clothing photos with automatic background removal</p>
                   </div>
                   <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
                     <div className="w-16 h-16 mb-4 mx-auto flex items-center justify-center">
                       <Sparkles className="w-10 h-10 text-primary" />
                     </div>
                     <h3 className="font-semibold text-foreground mb-2">Smart Recommendations</h3>
-                    <p className="text-muted-foreground text-foreground/80">AI-powered outfit suggestions based on style compatibility</p>
+                    <p className="text-muted-foreground">AI-powered outfit suggestions based on style compatibility</p>
                   </div>
                   <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
                     <div className="w-16 h-16 mb-4 mx-auto flex items-center justify-center">
                       <Cloud className="w-10 h-10 text-primary" />
                     </div>
                     <h3 className="font-semibold text-foreground mb-2">Weather Integration</h3>
-                    <p className="text-muted-foreground text-foreground/80">Location-based outfit recommendations considering weather forecasts</p>
+                    <p className="text-muted-foreground">Location-based outfit recommendations considering weather forecasts</p>
                   </div>
                   <div className="bg-card p-6 rounded-lg shadow-sm border border-border md:col-span-2">
                     <div className="w-16 h-16 mb-4 mx-auto flex items-center justify-center">
                       <MessageCircle className="w-10 h-10 text-primary" />
                     </div>
                     <h3 className="font-semibold text-foreground mb-2">Sebastian AI Stylist</h3>
-                    <p className="text-muted-foreground text-foreground/80">
+                    <p className="text-muted-foreground">
                       Get instant styling advice, outfit feedback, and trip planning from your personal AI assistant.
                       Available on all plans — upgrade for unlimited access.
                     </p>
@@ -75,7 +75,7 @@ export default function AboutPage() {
 
               <section className="mb-12">
                 <h2 className="text-2xl font-semibold text-foreground mb-4">How It Works</h2>
-                <p className="text-muted-foreground text-foreground/80 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Our app installs to your home screen for quick, native-like access on any device.
                   Add your wardrobe items, and our AI engine learns your style preferences to suggest
                   outfits that match your daily needs, weather, and occasions.

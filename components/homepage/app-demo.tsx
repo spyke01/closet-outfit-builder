@@ -16,7 +16,7 @@ export function AppDemo() {
           <h2 className="font-display text-4xl lg:text-5xl font-bold text-foreground mb-6">
             Built for your closet. Designed for your life.
           </h2>
-          <p className="text-xl text-muted-foreground text-foreground/85 max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             See how My AI Outfit transforms your daily outfit selection with intelligent recommendations.
           </p>
         </div>
@@ -29,9 +29,9 @@ export function AppDemo() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-display text-2xl font-bold text-foreground">Today&apos;s Outfit</h3>
-                  <p className="text-muted-foreground text-foreground/80">Perfect for 72°F, partly cloudy</p>
+                  <p className="text-muted-foreground">Perfect for 72°F, partly cloudy</p>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-primary border border-border text-foreground rounded-full text-sm font-medium">
+                <div className="flex items-center gap-2 px-4 py-2 bg-primary border border-border text-primary-foreground rounded-full text-sm font-medium">
                   <Sparkles className="w-4 h-4" />
                   95% Match
                 </div>
@@ -51,7 +51,7 @@ export function AppDemo() {
                       quality={85}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground text-foreground/80 text-center">Brown Tweed Blazer</p>
+                  <p className="text-xs text-muted-foreground text-center">Brown Tweed Blazer</p>
                 </div>
 
                 <div className="space-y-2">
@@ -66,7 +66,7 @@ export function AppDemo() {
                       quality={85}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground text-foreground/80 text-center">Blue Oxford Shirt</p>
+                  <p className="text-xs text-muted-foreground text-center">Blue Oxford Shirt</p>
                 </div>
 
                 <div className="space-y-2">
@@ -81,7 +81,7 @@ export function AppDemo() {
                       quality={85}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground text-foreground/80 text-center">Khaki Chinos</p>
+                  <p className="text-xs text-muted-foreground text-center">Khaki Chinos</p>
                 </div>
 
                 <div className="space-y-2">
@@ -96,7 +96,7 @@ export function AppDemo() {
                       quality={85}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground text-foreground/80 text-center">Tan Suede Loafers</p>
+                  <p className="text-xs text-muted-foreground text-center">Tan Suede Loafers</p>
                 </div>
               </div>
 
@@ -105,7 +105,7 @@ export function AppDemo() {
                 <h4 className="font-semibold text-foreground">Compatibility Breakdown</h4>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground text-foreground/85">Style Harmony</span>
+                    <span className="text-sm text-muted-foreground">Style Harmony</span>
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
                         <div className="w-15 h-full bg-primary rounded-full"></div>
@@ -114,7 +114,7 @@ export function AppDemo() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground text-foreground/85">Weather Appropriate</span>
+                    <span className="text-sm text-muted-foreground">Weather Appropriate</span>
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
                         <div className="w-full h-full bg-primary rounded-full"></div>
@@ -123,7 +123,7 @@ export function AppDemo() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground text-foreground/85">Formality Match</span>
+                    <span className="text-sm text-muted-foreground">Formality Match</span>
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
                         <div className="w-14 h-full bg-primary rounded-full"></div>
@@ -164,7 +164,7 @@ export function AppDemo() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-foreground">72°F</p>
-                  <p className="text-xs text-muted-foreground text-foreground/80">Partly Cloudy</p>
+                  <p className="text-xs text-muted-foreground">Partly Cloudy</p>
                 </div>
               </div>
             </div>

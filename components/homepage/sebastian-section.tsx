@@ -24,7 +24,7 @@ export function SebastianSection() {
 
           <div className="relative grid lg:grid-cols-[1.2fr_0.8fr] gap-10 lg:gap-12 p-8 md:p-12 lg:p-14 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/15 text-primary text-sm font-semibold mb-5">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-app-badge-bg text-app-badge-text border border-app-badge-border text-sm font-semibold mb-5">
                 <Sparkles className="w-4 h-4" />
                 Meet Sebastian
               </div>
@@ -55,7 +55,7 @@ export function SebastianSection() {
 
               <div className="space-y-3 mb-8">
                 {sebastianSellingPoints.map((point) => (
-                  <p key={point} className="flex items-start gap-3 text-foreground/90">
+                  <p key={point} className="flex items-start gap-3 text-muted-foreground">
                     <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 shrink-0" />
                     <span>{point}</span>
                   </p>

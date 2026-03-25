@@ -38,7 +38,7 @@ export function HowItWorks() {
           <h2 className="font-display text-4xl lg:text-5xl font-bold text-foreground mb-6">
             How it works
           </h2>
-          <p className="text-xl text-muted-foreground text-foreground/85 max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Getting started is effortless. Three simple steps to transform your daily outfit selection.
           </p>
         </div>
@@ -70,7 +70,7 @@ export function HowItWorks() {
                     {step.title}
                   </h3>
                   
-                  <p className="text-xl text-muted-foreground text-foreground/80 leading-relaxed mb-8">
+            <p className="text-xl text-muted-foreground leading-relaxed mb-8">
                     {step.description}
                   </p>
                 </div>
@@ -85,7 +85,7 @@ export function HowItWorks() {
                           <div className="w-24 h-24 rounded-3xl border border-border bg-primary flex items-center justify-center mx-auto mb-4">
                             <Upload className="w-12 h-12 text-foreground" />
                           </div>
-                          <p className="text-muted-foreground text-foreground/80">Drag & drop your photos</p>
+                  <p className="text-muted-foreground">Drag & drop your photos</p>
                         </div>
                         <div className="grid grid-cols-3 gap-3">
                           {uploadStepItems.map((item, i) => (
@@ -153,7 +153,7 @@ export function HowItWorks() {
                           ))}
                         </div>
                         <div className="text-center">
-                          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border border-primary bg-primary/80 text-foreground">
+                          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border border-primary bg-primary/80 text-primary-foreground">
                             <Sparkles className="w-4 h-4 text-foreground" />
                             95% compatibility
                           </div>
