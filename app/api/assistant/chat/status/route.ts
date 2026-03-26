@@ -6,6 +6,7 @@ import { getAssistantPredictionStatus } from '@/lib/services/assistant/providers
 import { moderateOutput } from '@/lib/services/assistant/moderation';
 import { SEBASTIAN_REFUSAL_TEMPLATES } from '@/lib/services/assistant/persona';
 import { requireSameOriginWithOptions } from '@/lib/utils/request-security';
+import { mapPublicAiError } from '@/lib/utils/public-ai-errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -182,9 +183,12 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to poll assistant status';
-    if (message.toLowerCase().includes('timeout')) {
-      return NextResponse.json({ error: 'Upstream timeout', code: 'UPSTREAM_TIMEOUT' }, { status: 504 });
-    }
-    return NextResponse.json({ error: message, code: 'UPSTREAM_ERROR' }, { status: 502 });
+    const mapped = mapPublicAiError(message, {
+      timeout: 'Sebastian took too long to respond. Please try again.',
+      unavailable: 'Sebastian is temporarily unavailable. Please try again shortly.',
+      rateLimit: 'Sebastian is handling high demand right now. Please retry in a moment.',
+      generic: 'Failed to poll assistant status',
+    });
+    return NextResponse.json({ error: mapped.error, code: mapped.code }, { status: mapped.status });
   }
 }

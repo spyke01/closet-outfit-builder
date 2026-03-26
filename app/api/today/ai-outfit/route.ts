@@ -25,6 +25,7 @@ import type { AssistantContextPack } from '@/lib/services/assistant/types';
 import { createLogger } from '@/lib/utils/logger';
 import type { WardrobeItem } from '@/lib/types/database';
 import { isFreePlan } from '@/lib/services/billing/plan-labels';
+import { mapPublicAiError } from '@/lib/utils/public-ai-errors';
 
 const log = createLogger({ component: 'api-today-ai-outfit' });
 export const dynamic = 'force-dynamic';
@@ -411,7 +412,6 @@ async function generateAiOutfit(
   }
 
   const prompt = buildTodayOutfitPrompt(input, wardrobe);
-  const modelConfig = resolveReplicateModelConfig();
   const assistantContext: AssistantContextPack = {
     userId,
     wardrobe: wardrobe.slice(0, 80).map((item) => ({
@@ -433,18 +433,26 @@ async function generateAiOutfit(
     },
   };
 
-  const result = await generateAssistantReply({
-    model: modelConfig.defaultModel,
-    systemPrompt: `${buildSebastianSystemPrompt()}\nReturn JSON only when asked.`,
-    userPrompt: prompt,
-    context: assistantContext,
-    history: [],
-  });
+  let modelItemIds: string[] = [];
+  try {
+    const modelConfig = resolveReplicateModelConfig();
+    const result = await generateAssistantReply({
+      model: modelConfig.defaultModel,
+      systemPrompt: `${buildSebastianSystemPrompt()}\nReturn JSON only when asked.`,
+      userPrompt: prompt,
+      context: assistantContext,
+      history: [],
+    });
 
-  const parsed = extractJsonObject(result.text || '');
-  const modelItemIds = Array.isArray(parsed?.itemIds)
-    ? parsed!.itemIds.filter((value): value is string => typeof value === 'string')
-    : [];
+    const parsed = extractJsonObject(result.text || '');
+    modelItemIds = Array.isArray(parsed?.itemIds)
+      ? parsed.itemIds.filter((value): value is string => typeof value === 'string')
+      : [];
+  } catch (error) {
+    log.warn('Today AI assistant selection failed; using local fallback generator', {
+      error: error instanceof Error ? error.message : 'unknown_error',
+    });
+  }
 
   const signatureSet = new Set(input.currentTodaySignatures || []);
   const savedSignatures = await getSavedOutfitSignatures(supabase, userId);
@@ -628,7 +636,15 @@ async function handleWrite(request: NextRequest) {
         code: 'FORMALITY_MISMATCH',
       }, { status: 422 });
     }
-    return NextResponse.json({ error: error instanceof Error ? error.message : 'Failed to generate AI outfit' }, { status: 500 });
+    if (error instanceof Error && error.message === 'INSUFFICIENT_WARDROBE') {
+      return NextResponse.json({
+        error: 'Add a few more active wardrobe items before generating an outfit.',
+        code: 'INSUFFICIENT_WARDROBE',
+      }, { status: 422 });
+    }
+
+    const mapped = mapPublicAiError(error instanceof Error ? error.message : '');
+    return NextResponse.json({ error: mapped.error, code: mapped.code }, { status: mapped.status });
   }
 }
 

@@ -18,6 +18,7 @@ import { createAssistantPrediction, generateAssistantReply, resolveReplicateMode
 import { requireSameOrigin } from '@/lib/utils/request-security';
 import { createLogger } from '@/lib/utils/logger';
 import { isFreePlan } from '@/lib/services/billing/plan-labels';
+import { mapPublicAiError } from '@/lib/utils/public-ai-errors';
 
 export const dynamic = 'force-dynamic';
 const log = createLogger({ component: 'api-assistant-chat' });
@@ -323,38 +324,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Thread not found', code: 'THREAD_NOT_FOUND' }, { status: 404 });
     }
 
-    if (message.toLowerCase().includes('timeout')) {
-      return NextResponse.json({ error: 'Upstream timeout', code: 'UPSTREAM_TIMEOUT' }, { status: 504 });
-    }
-
-    if (message.includes('422')) {
-      return NextResponse.json({
-        error: 'Sebastian could not process this request format. Please retry, or send text-only once.',
-        code: 'UPSTREAM_INVALID_REQUEST',
-      }, { status: 502 });
-    }
-
-    if (message.includes('UPSTREAM_CIRCUIT_OPEN')) {
-      return NextResponse.json({
-        error: 'Sebastian is temporarily at capacity. Please try again in about a minute.',
-        code: 'UPSTREAM_UNAVAILABLE',
-      }, { status: 503 });
-    }
-
-    if (message.includes('429')) {
-      return NextResponse.json({
-        error: 'Sebastian is handling high demand right now. Please retry in a moment.',
-        code: 'UPSTREAM_RATE_LIMIT',
-      }, { status: 503 });
-    }
-
-    if (message.includes('CONFIG_ERROR')) {
-      return NextResponse.json({ error: message, code: 'CONFIG_ERROR' }, { status: 500 });
-    }
-
     log.error('Assistant chat request failed', {
       error: error instanceof Error ? error.message : 'unknown_error',
     });
-    return NextResponse.json({ error: 'Failed to generate assistant response', code: 'UPSTREAM_ERROR' }, { status: 502 });
+
+    const mapped = mapPublicAiError(message, {
+      timeout: 'Sebastian took too long to respond. Please try again.',
+      invalidRequest: 'Sebastian could not process this request format. Please retry, or send text-only once.',
+      unavailable: 'Sebastian is temporarily unavailable. Please try again shortly.',
+      rateLimit: 'Sebastian is handling high demand right now. Please retry in a moment.',
+      generic: 'Failed to generate assistant response',
+    });
+    return NextResponse.json({ error: mapped.error, code: mapped.code }, { status: mapped.status });
   }
 }
