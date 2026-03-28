@@ -3,6 +3,8 @@ import { CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getPlanByCodeAndInterval } from '@/lib/services/billing/plans';
 import { BillingUpdatedTracker } from './billing-updated-tracker';
+import { TopBarWrapper } from '@/components/top-bar-wrapper';
+import { createClient } from '@/lib/supabase/server';
 
 type BillingUpdatedPageProps = {
   searchParams: Promise<{
@@ -13,6 +15,8 @@ type BillingUpdatedPageProps = {
 };
 
 export default async function BillingUpdatedPage({ searchParams }: BillingUpdatedPageProps) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
   const params = await searchParams;
   const sessionId = typeof params.session_id === 'string' ? params.session_id : null;
   const planCode = params.plan === 'plus' || params.plan === 'pro' ? params.plan : null;
@@ -23,27 +27,30 @@ export default async function BillingUpdatedPage({ searchParams }: BillingUpdate
     : null;
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6">
-      <BillingUpdatedTracker
-        sessionId={sessionId}
-        planCode={planCode}
-        planInterval={planInterval}
-        priceCents={plan?.priceCents ?? null}
-        planName={plan?.name ?? null}
-      />
-      <div className="max-w-xl w-full rounded-xl border border-border bg-card p-6 space-y-4">
-        <h1 className="text-2xl font-bold text-foreground">Membership Updated</h1>
-        <p className="text-muted-foreground">
-          <CheckCircle2 className="w-4 h-4 inline mr-1" />
-          Your billing update was successful. Your plan benefits are now active.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          <Button asChild>
-            <Link href="/settings/billing">View Billing</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/today">Back to App</Link>
-          </Button>
+    <div className="min-h-screen bg-background text-foreground">
+      <TopBarWrapper user={user} />
+      <div className="flex items-center justify-center p-6">
+        <BillingUpdatedTracker
+          sessionId={sessionId}
+          planCode={planCode}
+          planInterval={planInterval}
+          priceCents={plan?.priceCents ?? null}
+          planName={plan?.name ?? null}
+        />
+        <div className="max-w-xl w-full rounded-xl border border-border bg-card p-6 space-y-4">
+          <h1 className="text-2xl font-bold text-foreground">Membership Updated</h1>
+          <p className="text-muted-foreground">
+            <CheckCircle2 className="w-4 h-4 inline mr-1" />
+            Your billing update was successful. Your plan benefits are now active.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild>
+              <Link href="/settings/billing">View Billing</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/today">Back to App</Link>
+            </Button>
+          </div>
         </div>
       </div>
     </div>
