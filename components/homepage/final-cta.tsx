@@ -1,19 +1,17 @@
-'use client';
-
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from 'lucide-react';
 import Link from "next/link";
 
 export function FinalCTA() {
   return (
-    <section className="relative py-20 lg:py-32">
+    <section className="relative py-16 lg:py-24">
       <div className="mx-auto max-w-[1240px] px-6">
-        <div className="glass-surface card-glow-blue app-section section-delay-1 rounded-[var(--radius-xl)] px-8 py-14 text-center">
+        <div className="glass-surface card-glow-blue app-section section-delay-1 rounded-[var(--radius-xl)] px-8 py-12 text-center lg:py-14">
           <h2 className="font-display mb-6 text-4xl font-normal text-foreground lg:text-5xl">
             Ready to transform your wardrobe?
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Join thousands who&apos;ve already simplified their daily outfit selection with AI-powered styling.
+            Build smarter outfits faster with AI guidance grounded in your real wardrobe.
           </p>
           
           <Link href="/auth/sign-up">
@@ -24,7 +22,7 @@ export function FinalCTA() {
           </Link>
           
           <p className="text-sm text-muted-foreground mt-4">
-            No credit card required • Start your free trial
+            No credit card required. Start your free trial.
           </p>
         </div>
       </div>

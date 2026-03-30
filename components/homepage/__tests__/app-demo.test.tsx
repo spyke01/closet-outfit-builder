@@ -154,10 +154,10 @@ describe('AppDemo - Unit Tests', () => {
   });
 
   describe('Layout and Styling', () => {
-    it('should use 4-column grid for outfit items', () => {
+    it('should use a responsive grid for outfit items', () => {
       const { container } = render(<AppDemo />);
       
-      const gridContainer = container.querySelector('.grid.grid-cols-4');
+      const gridContainer = container.querySelector('.grid.grid-cols-2.md\\:grid-cols-4');
       
       expect(gridContainer).toBeInTheDocument();
     });
@@ -193,7 +193,7 @@ describe('AppDemo - Unit Tests', () => {
     it('should have proper spacing between grid items', () => {
       const { container } = render(<AppDemo />);
       
-      const gridContainer = container.querySelector('.grid.grid-cols-4');
+      const gridContainer = container.querySelector('.grid.grid-cols-2.md\\:grid-cols-4');
       
       expect(gridContainer?.className).toContain('gap-4');
     });

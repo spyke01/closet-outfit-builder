@@ -99,7 +99,7 @@ describe('Landing Pages Integration Tests', () => {
       
       expect(screen.getByText('About My AI Outfit')).toBeInTheDocument();
       expect(screen.getByText('Our Mission')).toBeInTheDocument();
-      expect(screen.getByText('Key Features')).toBeInTheDocument();
+      expect(screen.getByText('What Makes It Different')).toBeInTheDocument();
     });
 
     it('should have all feature card images loaded', () => {
@@ -132,8 +132,7 @@ describe('Landing Pages Integration Tests', () => {
     it('should have consistent card styling', () => {
       const { container } = render(<AboutPage />);
       
-      // Check for feature cards
-      const cards = container.querySelectorAll('.bg-card');
+      const cards = container.querySelectorAll('.glass-surface');
       expect(cards.length).toBeGreaterThanOrEqual(4);
     });
   });
@@ -198,13 +197,12 @@ describe('Landing Pages Integration Tests', () => {
     it('should have consistent CTA styling in components', () => {
       const hero = render(<HeroSection />);
       const heroButton = hero.getByRole('link', { name: /get started free/i });
-      // CTA buttons use semantic CSS variable classes (bg-secondary/text-secondary-foreground)
-      expect(heroButton.querySelector('button')?.className).toContain('bg-secondary');
+      expect(heroButton.querySelector('button')?.className).toContain('rounded-[var(--radius-pill)]');
       hero.unmount();
 
       const about = render(<AboutPage />);
       const aboutButton = about.getByRole('link', { name: /get started today/i });
-      expect(aboutButton.className).toContain('bg-secondary');
+      expect(aboutButton.className).toContain('inline-flex');
       about.unmount();
     });
   });

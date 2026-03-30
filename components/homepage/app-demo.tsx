@@ -1,5 +1,3 @@
-'use client';
-
 import Image from 'next/image';
 import { Sparkles, Heart, Thermometer } from 'lucide-react';
 import { appDemoOutfit } from '@/lib/data/landing-page-images';
@@ -10,9 +8,9 @@ import { appDemoOutfit } from '@/lib/data/landing-page-images';
 
 export function AppDemo() {
   return (
-    <section className="relative py-20 lg:py-32">
+    <section className="relative py-16 lg:py-24">
       <div className="mx-auto max-w-[1240px] px-6">
-        <div className="app-section section-delay-1 mb-16 text-center">
+        <div className="app-section section-delay-1 mb-12 text-center lg:mb-14">
           <h2 className="font-display mb-6 text-4xl font-normal text-foreground lg:text-5xl">
             Built for your closet. Designed for your life.
           </h2>
@@ -23,10 +21,10 @@ export function AppDemo() {
 
         <div className="relative mx-auto max-w-4xl">
           {/* Main app mockup */}
-          <div className="glass-surface card-glow-blue relative rounded-[var(--radius-xl)] p-8">
-            <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)] p-6 space-y-6">
+          <div className="glass-surface card-glow-blue relative rounded-[var(--radius-xl)] p-6 lg:p-8">
+            <div className="space-y-6 rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)] p-5 lg:p-6">
               {/* Header */}
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h3 className="font-display text-2xl font-normal text-foreground">Today&apos;s Outfit</h3>
                   <p className="text-muted-foreground">Perfect for 72°F, partly cloudy</p>
@@ -38,7 +36,7 @@ export function AppDemo() {
               </div>
 
               {/* Outfit grid */}
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                 <div className="space-y-2">
                   <div className="aspect-square overflow-hidden rounded-[var(--radius-lg)] border border-[var(--item-img-border)] bg-[var(--item-img-bg)]">
                     <Image
@@ -135,8 +133,8 @@ export function AppDemo() {
               </div>
 
               {/* Action buttons */}
-              <div className="flex gap-3">
-                <button className="inline-flex min-h-11 flex-1 items-center justify-center rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] px-5 py-3 font-semibold text-primary-foreground shadow-[var(--shadow-accent)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:-translate-y-px hover:shadow-[var(--shadow-accent-hover)]">
+              <div className="flex flex-wrap gap-3">
+                <button className="inline-flex min-h-11 flex-1 items-center justify-center rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] px-5 py-3 font-semibold text-primary-foreground shadow-[var(--shadow-accent)] transition-[transform,box-shadow,background-color,color] duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:-translate-y-px hover:shadow-[var(--shadow-accent-hover)]">
                   Wear This Outfit
                 </button>
                 <button
@@ -157,7 +155,7 @@ export function AppDemo() {
             </div>
 
             {/* Floating weather widget */}
-            <div className="glass-surface absolute -top-4 -right-4 rounded-[var(--radius-lg)] p-4">
+            <div className="glass-surface absolute right-4 top-4 rounded-[var(--radius-lg)] p-4 lg:right-5 lg:top-5">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--accent)_16%,transparent)] bg-[var(--accent-muted)]">
                   <Thermometer className="w-5 h-5 text-primary" />
@@ -171,7 +169,7 @@ export function AppDemo() {
           </div>
 
           {/* Floating elements */}
-          <div className="absolute -top-6 left-1/4 flex h-16 w-16 items-center justify-center rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--accent)_16%,transparent)] bg-[var(--accent-muted)] shadow-[var(--shadow-card)]">
+          <div className="absolute left-4 top-4 hidden h-16 w-16 items-center justify-center rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--accent)_16%,transparent)] bg-[var(--accent-muted)] shadow-[var(--shadow-card)] lg:flex">
             <Sparkles className="w-8 h-8 text-primary" />
           </div>
         </div>

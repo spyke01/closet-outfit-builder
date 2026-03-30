@@ -1,5 +1,3 @@
-'use client';
-
 import Image from 'next/image';
 import { Sparkles, Thermometer, Layers } from 'lucide-react';
 import { featureImages } from '@/lib/data/landing-page-images';
@@ -33,9 +31,9 @@ const features = [
 
 export function FeatureHighlights() {
   return (
-    <section className="relative py-20 lg:py-32">
+    <section className="relative py-16 lg:py-24">
       <div className="mx-auto max-w-[1240px] px-6">
-        <div className="app-section section-delay-1 mb-16 text-center">
+        <div className="app-section section-delay-1 mb-12 text-center lg:mb-14">
           <h2 className="font-display mb-6 text-4xl font-normal text-foreground lg:text-5xl">
             Your wardrobe, reimagined
           </h2>
@@ -44,13 +42,13 @@ export function FeatureHighlights() {
           </p>
         </div>
         
-        <div className="grid gap-8 md:grid-cols-3 lg:gap-10">
+        <div className="grid gap-6 md:grid-cols-3 lg:gap-8">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
               <div 
                 key={feature.title}
-                className="glass-surface app-section group p-8 text-center"
+                className="glass-surface app-section group p-6 text-center lg:p-8"
                 style={{ animationDelay: `${0.08 + index * 0.08}s` }}
               >
                 <div className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-[var(--radius-xl)] border border-[var(--border-subtle)] ${feature.tileClass} shadow-[var(--shadow-card)] transition-transform duration-300 group-hover:scale-105`}>

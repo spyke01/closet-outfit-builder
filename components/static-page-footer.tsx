@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Logo } from "@/components/logo";
 
 export function StaticPageFooter() {
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="relative z-[1] border-t border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] backdrop-blur-[18px]">
       <div className="mx-auto max-w-[1240px] px-6 py-12">
@@ -9,7 +11,7 @@ export function StaticPageFooter() {
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground">Product</h3>
             <div className="space-y-2">
-              <Link href="/how-it-works" className="block text-muted-foreground transition-colors hover:text-foreground">
+              <Link href="/#how-it-works" className="block text-muted-foreground transition-colors hover:text-foreground">
                 How it works
               </Link>
               <Link href="/sebastian" className="block text-muted-foreground transition-colors hover:text-foreground">
@@ -59,7 +61,7 @@ export function StaticPageFooter() {
           <Link href="/" className="flex items-center">
             <Logo className="h-10 w-auto" />
           </Link>
-          <p className="text-sm text-muted-foreground">&copy; 2024 My AI Outfit. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">&copy; {currentYear} My AI Outfit. All rights reserved.</p>
         </div>
       </div>
     </footer>

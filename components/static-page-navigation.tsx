@@ -28,16 +28,16 @@ export function StaticPageNavigation() {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-2">
-            <Link href="/how-it-works" className="rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground">
+            <Link href="/#how-it-works" className="rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-[background-color,color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground">
               How it works
             </Link>
-            <Link href="/sebastian" className="rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground">
+            <Link href="/sebastian" className="rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-[background-color,color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground">
               Sebastian
             </Link>
-            <Link href="/pricing" className="rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground">
+            <Link href="/pricing" className="rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-[background-color,color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground">
               Pricing
             </Link>
-            <Link href="/about" className="rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground">
+            <Link href="/about" className="rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-[background-color,color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground">
               About
             </Link>
           </div>
@@ -74,30 +74,30 @@ export function StaticPageNavigation() {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="space-y-4 border-t border-[var(--nav-border)] py-4 md:hidden">
-            <Link 
-              href="/how-it-works" 
-              className="block rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground"
+              <Link 
+              href="/#how-it-works" 
+              className="block rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-[background-color,color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground"
               onClick={() => setIsMenuOpen(false)}
             >
               How it works
             </Link>
             <Link 
               href="/sebastian" 
-              className="block rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground"
+              className="block rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-[background-color,color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground"
               onClick={() => setIsMenuOpen(false)}
             >
               Sebastian
             </Link>
             <Link 
               href="/pricing" 
-              className="block rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground"
+              className="block rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-[background-color,color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground"
               onClick={() => setIsMenuOpen(false)}
             >
               Pricing
             </Link>
             <Link 
               href="/about" 
-              className="block rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground"
+              className="block rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-[background-color,color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground"
               onClick={() => setIsMenuOpen(false)}
             >
               About

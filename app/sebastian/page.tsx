@@ -11,7 +11,7 @@ export default function SebastianPage() {
       <StaticPageNavigation />
 
       <main className="pt-20">
-        <section className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+        <section className="mx-auto grid max-w-[1240px] grid-cols-1 gap-10 px-6 py-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:py-16">
           <div className="space-y-8">
             <div className="inline-flex items-center gap-2 rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-2 text-sm text-muted-foreground backdrop-blur-[var(--blur-glass)]">
               <MessageCircle className="h-4 w-4 text-primary" />
@@ -32,11 +32,11 @@ export default function SebastianPage() {
             </div>
 
             <div className="space-y-5">
-              <h1 className="text-4xl font-bold leading-tight text-foreground md:text-5xl">
+              <h1 className="font-display text-4xl font-normal leading-tight text-foreground md:text-5xl lg:text-6xl">
                 I’m Sebastian.
                 <span className="block text-primary">Let’s make your wardrobe work harder.</span>
               </h1>
-              <p className="max-w-2xl text-lg text-muted-foreground">
+              <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground">
                 I help you get dressed with clarity. Ask me styling questions, build outfits from what you already own, and get
                 thoughtful feedback when you upload a look.
               </p>
@@ -66,7 +66,7 @@ export default function SebastianPage() {
               </article>
             </div>
 
-            <div className="glass-surface p-6">
+            <div className="glass-surface p-6 lg:p-7">
               <h2 className="text-xl font-semibold text-foreground">How to ask me</h2>
               <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
                 <li>“What should I wear with my navy blazer for a client dinner?”</li>

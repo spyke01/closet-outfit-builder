@@ -10,80 +10,98 @@ export default function AboutPage() {
       <StaticPageNavigation />
       
       <main className="pt-20">
-        <div className="mx-auto max-w-[1240px] px-6 py-16">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <h1 className="font-display mb-4 text-4xl font-normal text-foreground">About My AI Outfit</h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Intelligent outfit composition for the modern wardrobe
-              </p>
-            </div>
+        <div className="mx-auto max-w-[1240px] px-6 py-14 lg:py-16">
+          <div className="mx-auto max-w-5xl space-y-10">
+            <section className="glass-surface card-glow-blue rounded-[var(--radius-xl)] px-8 py-10 text-center lg:px-12 lg:py-14">
+              <div className="mx-auto max-w-3xl">
+                <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-primary">
+                  About My AI Outfit
+                </p>
+                <h1 className="font-display mb-4 text-4xl font-normal text-foreground lg:text-5xl">
+                  Outfit planning that starts with the wardrobe you already have.
+                </h1>
+                <p className="mx-auto max-w-2xl text-lg leading-relaxed text-muted-foreground lg:text-xl">
+                  My AI Outfit helps you organize your closet, discover stronger combinations, and get out the door
+                  with more confidence and less friction.
+                </p>
+              </div>
+            </section>
 
-            <div className="prose prose-lg max-w-none">
-              <section className="mb-12">
-                <h2 className="text-2xl font-semibold text-foreground mb-4">Our Mission</h2>
-                <p className="text-muted-foreground mb-6">
-                  My AI Outfit helps fashion-conscious individuals organize their personal wardrobe digitally
-                  and discover new outfit combinations from their existing clothes. Our intelligent outfit engine
-                  uses compatibility algorithms to suggest combinations based on style, formality, and weather conditions.
+            <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+              <section className="glass-surface rounded-[var(--radius-xl)] p-8">
+                <h2 className="mb-4 text-2xl font-semibold text-foreground">Our Mission</h2>
+                <p className="text-base leading-7 text-muted-foreground">
+                  We built My AI Outfit to solve a practical problem: most people own enough clothing to dress well,
+                  but they still waste time deciding what works together. The product turns your closet into a living,
+                  searchable wardrobe and uses compatibility logic to surface combinations that fit your style, plans,
+                  and forecast.
                 </p>
               </section>
 
-              <section className="mb-12">
-                <h2 className="text-2xl font-semibold text-foreground mb-4">Key Features</h2>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="glass-surface p-6">
-                    <div className="w-16 h-16 mb-4 mx-auto flex items-center justify-center">
-                      <Shield className="w-10 h-10 text-primary" />
-                    </div>
-                    <h3 className="font-semibold text-foreground mb-2">Personal & Secure</h3>
-                    <p className="text-muted-foreground">Multi-user authentication with complete data privacy and isolation</p>
-                  </div>
-                  <div className="glass-surface p-6">
-                    <div className="w-16 h-16 mb-4 mx-auto flex items-center justify-center">
-                      <Shirt className="w-10 h-10 text-primary" />
-                    </div>
-                    <h3 className="font-semibold text-foreground mb-2">Custom Wardrobe</h3>
-                    <p className="text-muted-foreground">Upload your own clothing photos with automatic background removal</p>
-                  </div>
-                  <div className="glass-surface p-6">
-                    <div className="w-16 h-16 mb-4 mx-auto flex items-center justify-center">
-                      <Sparkles className="w-10 h-10 text-primary" />
-                    </div>
-                    <h3 className="font-semibold text-foreground mb-2">Smart Recommendations</h3>
-                    <p className="text-muted-foreground">AI-powered outfit suggestions based on style compatibility</p>
-                  </div>
-                  <div className="glass-surface p-6">
-                    <div className="w-16 h-16 mb-4 mx-auto flex items-center justify-center">
-                      <Cloud className="w-10 h-10 text-primary" />
-                    </div>
-                    <h3 className="font-semibold text-foreground mb-2">Weather Integration</h3>
-                    <p className="text-muted-foreground">Location-based outfit recommendations considering weather forecasts</p>
-                  </div>
-                  <div className="glass-surface p-6 md:col-span-2">
-                    <div className="w-16 h-16 mb-4 mx-auto flex items-center justify-center">
-                      <MessageCircle className="w-10 h-10 text-primary" />
-                    </div>
-                    <h3 className="font-semibold text-foreground mb-2">Sebastian AI Stylist</h3>
-                    <p className="text-muted-foreground">
-                      Get instant styling advice, outfit feedback, and trip planning from your personal AI assistant.
-                      Available on all plans — upgrade for unlimited access.
-                    </p>
-                  </div>
+              <section className="glass-surface rounded-[var(--radius-xl)] p-8">
+                <h2 className="mb-4 text-2xl font-semibold text-foreground">What Makes It Different</h2>
+                <p className="text-base leading-7 text-muted-foreground">
+                  Instead of recommending generic looks, the app works from your real items. That keeps suggestions
+                  grounded, useful, and realistic enough to improve daily dressing habits rather than inspire
+                  wish-list shopping.
+                </p>
+              </section>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              <section className="glass-surface p-6">
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-[var(--radius-lg)] bg-[var(--accent-muted)]">
+                  <Shield className="h-9 w-9 text-primary" />
                 </div>
+                <h3 className="mb-2 text-lg font-semibold text-foreground">Personal & Secure</h3>
+                <p className="text-muted-foreground">Multi-user authentication with complete data privacy and isolation.</p>
               </section>
 
-              <section className="mb-12">
-                <h2 className="text-2xl font-semibold text-foreground mb-4">How It Works</h2>
-                <p className="text-muted-foreground mb-4">
-                  Our app installs to your home screen for quick, native-like access on any device.
-                  Add your wardrobe items, and our AI engine learns your style preferences to suggest
-                  outfits that match your daily needs, weather, and occasions.
-                </p>
+              <section className="glass-surface p-6">
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-[var(--radius-lg)] bg-[var(--accent-muted)]">
+                  <Shirt className="h-9 w-9 text-primary" />
+                </div>
+                <h3 className="mb-2 text-lg font-semibold text-foreground">Custom Wardrobe</h3>
+                <p className="text-muted-foreground">Upload your own clothing photos with automatic background removal.</p>
+              </section>
+
+              <section className="glass-surface p-6">
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-[var(--radius-lg)] bg-[var(--accent-muted)]">
+                  <Sparkles className="h-9 w-9 text-primary" />
+                </div>
+                <h3 className="mb-2 text-lg font-semibold text-foreground">Smart Recommendations</h3>
+                <p className="text-muted-foreground">AI-powered outfit suggestions based on style, formality, and context.</p>
+              </section>
+
+              <section className="glass-surface p-6">
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-[var(--radius-lg)] bg-[var(--accent-muted)]">
+                  <Cloud className="h-9 w-9 text-primary" />
+                </div>
+                <h3 className="mb-2 text-lg font-semibold text-foreground">Weather Integration</h3>
+                <p className="text-muted-foreground">Location-based recommendations that factor in real forecasts.</p>
               </section>
             </div>
 
-            <div className="text-center mt-12">
+            <section className="glass-surface rounded-[var(--radius-xl)] p-8">
+              <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
+                <div>
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-[var(--radius-lg)] bg-[var(--accent-muted)]">
+                    <MessageCircle className="h-9 w-9 text-primary" />
+                  </div>
+                  <h2 className="mb-3 text-2xl font-semibold text-foreground">Sebastian AI Stylist</h2>
+                  <p className="text-muted-foreground">
+                    Get instant styling advice, outfit feedback, and trip planning from your personal AI assistant.
+                  </p>
+                </div>
+                <p className="text-base leading-7 text-muted-foreground">
+                  Sebastian extends the core wardrobe experience with conversational help. Ask what to wear for a
+                  client dinner, how to sharpen an outfit photo, or what to pack for a weekend trip. It keeps the
+                  product useful after setup, not just during onboarding.
+                </p>
+              </div>
+            </section>
+
+            <div className="pt-2 text-center">
               <Button asChild size="lg">
                 <Link href="/auth/sign-up">
                   Get Started Today

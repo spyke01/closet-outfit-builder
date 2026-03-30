@@ -7,7 +7,7 @@ export function PricingSection() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <section className="relative py-20 lg:py-28">
+    <section className="relative py-16 lg:py-24">
       <div className="mx-auto max-w-[1240px] px-6 space-y-12">
         <div className="text-center space-y-3">
           <h2 className="font-display text-4xl font-normal text-foreground lg:text-5xl">Simple, transparent pricing</h2>

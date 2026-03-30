@@ -1,5 +1,3 @@
-'use client';
-
 import { Star } from 'lucide-react';
 
 
@@ -30,9 +28,9 @@ const testimonials = [
 
 export function Testimonials() {
   return (
-    <section className="relative py-20 lg:py-32">
+    <section className="relative py-16 lg:py-24">
       <div className="mx-auto max-w-[1240px] px-6">
-        <div className="app-section section-delay-1 mb-16 text-center">
+        <div className="app-section section-delay-1 mb-12 text-center lg:mb-14">
           <h2 className="font-display mb-6 text-4xl font-normal text-foreground lg:text-5xl">
             Loved by style enthusiasts
           </h2>
@@ -41,11 +39,11 @@ export function Testimonials() {
           </p>
         </div>
         
-        <div className="grid gap-8 md:grid-cols-3 lg:gap-10">
+        <div className="grid gap-6 md:grid-cols-3 lg:gap-8">
           {testimonials.map((testimonial, index) => (
             <div 
               key={testimonial.author}
-              className="glass-surface app-section p-8"
+              className="glass-surface app-section p-6 lg:p-8"
               style={{ animationDelay: `${0.08 + index * 0.08}s` }}
             >
               {/* Rating */}

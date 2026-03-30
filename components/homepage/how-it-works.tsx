@@ -1,5 +1,3 @@
-'use client';
-
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
@@ -32,9 +30,9 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="relative py-20 lg:py-32">
+    <section id="how-it-works" className="relative scroll-mt-28 py-16 lg:scroll-mt-24 lg:py-24">
       <div className="mx-auto max-w-[1240px] px-6">
-        <div className="app-section section-delay-1 mb-16 text-center">
+        <div className="app-section section-delay-1 mb-12 text-center lg:mb-14">
           <h2 className="font-display mb-6 text-4xl font-normal text-foreground lg:text-5xl">
             How it works
           </h2>
@@ -43,7 +41,7 @@ export function HowItWorks() {
           </p>
         </div>
         
-        <div className="space-y-20 lg:space-y-28">
+        <div className="space-y-14 lg:space-y-18">
           {steps.map((step, index) => {
             const Icon = step.icon;
             const isEven = index % 2 === 0;
@@ -51,13 +49,13 @@ export function HowItWorks() {
             return (
               <div 
                 key={step.number}
-                className={`grid items-center gap-12 lg:grid-cols-2 lg:gap-20 ${
+                className={`grid items-center gap-10 lg:grid-cols-2 lg:gap-14 ${
                   isEven ? '' : 'lg:grid-flow-col-dense'
                 }`}
               >
                 {/* Content */}
                 <div className="app-section">
-                  <div className="flex items-center gap-4 mb-6">
+                  <div className="mb-6 flex items-center gap-4">
                     <span className="font-display text-6xl font-normal text-primary">
                       {step.number}
                     </span>
@@ -70,7 +68,7 @@ export function HowItWorks() {
                     {step.title}
                   </h3>
                   
-            <p className="text-xl text-muted-foreground leading-relaxed mb-8">
+                  <p className="mb-8 text-xl leading-relaxed text-muted-foreground">
                     {step.description}
                   </p>
                 </div>
@@ -106,7 +104,7 @@ export function HowItWorks() {
                     {step.image === 'ai' && (
                       <div className="space-y-6">
                         <div className="flex items-center justify-between">
-                          <span className="text-foreground font-semibold">Generating outfits...</span>
+                          <span className="font-semibold text-foreground">Generating outfits…</span>
                           <Sparkles className="w-6 h-6 text-primary animate-pulse" />
                         </div>
                         <div className="space-y-3">
@@ -123,7 +121,7 @@ export function HowItWorks() {
                               </div>
                               <div className="h-2 flex-1 overflow-hidden rounded-full bg-[var(--bg-surface-active)]">
                                 <div 
-                                  className="h-full bg-primary rounded-full transition-all duration-1000"
+                                  className="h-full rounded-full bg-primary transition-[width] duration-1000"
                                   style={{ width: `${80 + i * 5}%` }}
                                 ></div>
                               </div>
@@ -167,7 +165,7 @@ export function HowItWorks() {
           })}
         </div>
         
-        <div className="text-center mt-16">
+        <div className="mt-12 text-center">
           <Link href="/auth/sign-up">
             <Button size="lg" className="px-8 py-4 text-lg">
               Start Your Free Trial

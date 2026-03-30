@@ -1,5 +1,3 @@
-'use client';
-
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
@@ -15,7 +13,7 @@ export function SebastianSection() {
   return (
     <section
       id="sebastian"
-      className="relative py-20 lg:py-28"
+      className="relative py-16 lg:py-24"
     >
       <div className="mx-auto max-w-[1240px] px-6">
         <div className="glass-surface card-glow-blue relative overflow-hidden rounded-[var(--radius-xl)]">

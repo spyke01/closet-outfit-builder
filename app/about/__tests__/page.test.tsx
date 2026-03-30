@@ -20,13 +20,13 @@ describe('AboutPage - Unit Tests', () => {
       render(<AboutPage />);
       
       const heading = screen.getByRole('heading', { level: 1 });
-      expect(heading).toHaveTextContent('About My AI Outfit');
+      expect(heading).toHaveTextContent('Outfit planning that starts with the wardrobe you already have.');
     });
 
     it('should display page description', () => {
       render(<AboutPage />);
       
-      expect(screen.getByText(/intelligent outfit composition/i)).toBeInTheDocument();
+      expect(screen.getByText(/outfit planning that starts with the wardrobe you already have/i)).toBeInTheDocument();
     });
   });
 
@@ -84,8 +84,8 @@ describe('AboutPage - Unit Tests', () => {
       
       expect(screen.getByText(/multi-user authentication with complete data privacy/i)).toBeInTheDocument();
       expect(screen.getByText(/upload your own clothing photos with automatic background removal/i)).toBeInTheDocument();
-      expect(screen.getByText(/ai-powered outfit suggestions based on style compatibility/i)).toBeInTheDocument();
-      expect(screen.getByText(/location-based outfit recommendations considering weather/i)).toBeInTheDocument();
+      expect(screen.getByText(/ai-powered outfit suggestions based on style, formality, and context/i)).toBeInTheDocument();
+      expect(screen.getByText(/location-based recommendations that factor in real forecasts/i)).toBeInTheDocument();
     });
   });
 
@@ -101,16 +101,15 @@ describe('AboutPage - Unit Tests', () => {
     it('should have consistent card styling', () => {
       const { container } = render(<AboutPage />);
       
-      const cards = container.querySelectorAll('.bg-card');
+      const cards = container.querySelectorAll('.glass-surface');
       
-      // Should have 4 feature cards
       expect(cards.length).toBeGreaterThanOrEqual(4);
     });
 
     it('should have consistent card borders', () => {
       const { container } = render(<AboutPage />);
       
-      const cards = container.querySelectorAll('.border.border-border');
+      const cards = container.querySelectorAll('.glass-surface');
       
       expect(cards.length).toBeGreaterThanOrEqual(4);
     });
@@ -126,7 +125,7 @@ describe('AboutPage - Unit Tests', () => {
     it('should have consistent card rounded corners', () => {
       const { container } = render(<AboutPage />);
       
-      const cards = container.querySelectorAll('.rounded-lg');
+      const cards = container.querySelectorAll('.glass-surface');
       
       expect(cards.length).toBeGreaterThanOrEqual(4);
     });
@@ -134,26 +133,25 @@ describe('AboutPage - Unit Tests', () => {
     it('should center images within cards', () => {
       const { container } = render(<AboutPage />);
 
-      const imageContainers = container.querySelectorAll('.w-16.h-16.mb-4.mx-auto');
+      const imageContainers = container.querySelectorAll('.h-16.w-16');
 
-      // At least 4 feature cards have icon containers
       expect(imageContainers.length).toBeGreaterThanOrEqual(4);
     });
 
     it('should have proper spacing between sections', () => {
       const { container } = render(<AboutPage />);
       
-      const sections = container.querySelectorAll('section.mb-12');
+      const sections = container.querySelectorAll('section');
       
       expect(sections.length).toBeGreaterThanOrEqual(3);
     });
   });
 
   describe('Dark Mode Support', () => {
-    it('should have dark mode background gradient', () => {
+    it('should have shared page shell styling', () => {
       const { container } = render(<AboutPage />);
       
-      const mainContainer = container.querySelector('.min-h-screen.bg-gradient-to-br');
+      const mainContainer = container.querySelector('.page-shell.min-h-screen');
       
       expect(mainContainer).toBeInTheDocument();
     });
@@ -183,7 +181,7 @@ describe('AboutPage - Unit Tests', () => {
     it('should have dark mode card backgrounds', () => {
       const { container } = render(<AboutPage />);
       
-      const cards = container.querySelectorAll('.bg-card');
+      const cards = container.querySelectorAll('.glass-surface');
       
       expect(cards.length).toBeGreaterThanOrEqual(4);
     });
@@ -191,7 +189,7 @@ describe('AboutPage - Unit Tests', () => {
     it('should have dark mode card borders', () => {
       const { container } = render(<AboutPage />);
       
-      const cards = container.querySelectorAll('.border-border');
+      const cards = container.querySelectorAll('.glass-surface');
       
       expect(cards.length).toBeGreaterThanOrEqual(4);
     });
@@ -202,20 +200,19 @@ describe('AboutPage - Unit Tests', () => {
       render(<AboutPage />);
       
       expect(screen.getByText('Our Mission')).toBeInTheDocument();
-      expect(screen.getByText(/helps fashion-conscious individuals organize/i)).toBeInTheDocument();
+      expect(screen.getByText(/most people own enough clothing to dress well/i)).toBeInTheDocument();
     });
 
-    it('should have Key Features section', () => {
+    it('should have What Makes It Different section', () => {
       render(<AboutPage />);
       
-      expect(screen.getByText('Key Features')).toBeInTheDocument();
+      expect(screen.getByText('What Makes It Different')).toBeInTheDocument();
     });
 
-    it('should have Technology section', () => {
+    it('should have Sebastian AI Stylist section', () => {
       render(<AboutPage />);
-
-      // Section was renamed from "Technology" to "How It Works"
-      expect(screen.getByText('How It Works')).toBeInTheDocument();
+      
+      expect(screen.getByText('Sebastian AI Stylist')).toBeInTheDocument();
     });
   });
 
@@ -234,9 +231,8 @@ describe('AboutPage - Unit Tests', () => {
 
       const button = screen.getByRole('link', { name: /get started today/i });
 
-      // CTA button uses semantic CSS variable classes (no hardcoded hex)
-      expect(button.className).toContain('bg-secondary');
-      expect(button.className).toContain('text-secondary-foreground');
+      expect(button.className).toContain('inline-flex');
+      expect(button.className).toContain('rounded-[var(--radius-pill)]');
     });
 
     it('should have dark mode button styling', () => {
@@ -244,7 +240,7 @@ describe('AboutPage - Unit Tests', () => {
 
       const button = screen.getByRole('link', { name: /get started today/i });
 
-      expect(button.className).toContain('hover:bg-secondary');
+      expect(button.className).toContain('hover:-translate-y-px');
     });
   });
 
@@ -339,7 +335,7 @@ describe('AboutPage - Unit Tests', () => {
     it('should have max-width container for content', () => {
       const { container } = render(<AboutPage />);
       
-      const maxWidthContainer = container.querySelector('.max-w-4xl');
+      const maxWidthContainer = container.querySelector('.max-w-5xl');
       
       expect(maxWidthContainer).toBeInTheDocument();
     });
@@ -347,7 +343,7 @@ describe('AboutPage - Unit Tests', () => {
     it('should have responsive padding', () => {
       const { container } = render(<AboutPage />);
       
-      const paddedContainer = container.querySelector('.px-6.py-16');
+      const paddedContainer = container.querySelector('.px-6.py-14');
       
       expect(paddedContainer).toBeInTheDocument();
     });

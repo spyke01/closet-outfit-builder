@@ -1,21 +1,12 @@
-'use client';
-
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { heroOutfit } from '@/lib/data/landing-page-images';
 
-
-
 export function HeroSection() {
-  const scrollToDemo = () => {
-    const demoSection = document.getElementById('how-it-works');
-    demoSection?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
+    <section className="relative flex min-h-[calc(100svh-4rem)] items-center justify-center overflow-hidden pt-16">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute inset-0" style={{
@@ -24,8 +15,8 @@ export function HeroSection() {
         }}></div>
       </div>
       
-      <div className="relative mx-auto max-w-[1240px] px-6 py-24 lg:py-32">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      <div className="relative mx-auto max-w-[1240px] px-6 py-16 lg:py-24">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           {/* Left side - Content */}
           <div className="app-section section-delay-1 text-center lg:text-left">
             <div className="mb-6 inline-flex items-center gap-2 rounded-[var(--radius-pill)] border border-[color-mix(in_srgb,var(--accent)_16%,transparent)] bg-[var(--accent-muted)] px-4 py-2 text-sm font-medium text-[var(--accent)]">
@@ -35,12 +26,12 @@ export function HeroSection() {
             
             <h1 className="font-display mb-6 text-5xl font-normal leading-tight text-foreground lg:text-7xl">
               Never wonder{' '}
-              <span className="text-primary">My AI Outfit</span>{' '}
+              <span className="text-primary">what to wear</span>{' '}
               again.
             </h1>
             
             <p className="text-balance mb-8 max-w-2xl text-xl leading-relaxed text-muted-foreground lg:text-2xl">
-              Your personal AI stylist that builds outfits from your real wardrobe — instantly.
+              Your personal AI stylist builds polished outfits from the clothes you already own.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-6">
@@ -55,17 +46,17 @@ export function HeroSection() {
               </Link>
               
               <Button 
+                asChild
                 variant="outline" 
                 size="lg"
-                onClick={scrollToDemo}
                 className="min-h-12 px-7 text-base font-medium"
               >
-                See How It Works
+                <Link href="#how-it-works">See How It Works</Link>
               </Button>
             </div>
             
             <p className="text-sm text-muted-foreground">
-              No credit card required • Start free
+              No credit card required. Start free.
             </p>
           </div>
           
@@ -90,6 +81,7 @@ export function HeroSection() {
                       height={200}
                       className="w-full h-full object-contain p-4"
                       priority
+                      sizes="(max-width: 1024px) 40vw, 18vw"
                       quality={85}
                     />
                   </div>
@@ -100,7 +92,7 @@ export function HeroSection() {
                       width={200}
                       height={200}
                       className="w-full h-full object-contain p-4"
-                      priority
+                      sizes="(max-width: 1024px) 40vw, 18vw"
                       quality={85}
                     />
                   </div>
@@ -111,7 +103,7 @@ export function HeroSection() {
                       width={200}
                       height={200}
                       className="w-full h-full object-contain p-4"
-                      priority
+                      sizes="(max-width: 1024px) 40vw, 18vw"
                       quality={85}
                     />
                   </div>
@@ -122,7 +114,7 @@ export function HeroSection() {
                       width={200}
                       height={200}
                       className="w-full h-full object-contain p-4"
-                      priority
+                      sizes="(max-width: 1024px) 40vw, 18vw"
                       quality={85}
                     />
                   </div>

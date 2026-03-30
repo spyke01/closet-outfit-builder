@@ -202,7 +202,7 @@ describe('HowItWorks - Unit Tests', () => {
     it('should have progress bar animations', () => {
       const { container } = render(<HowItWorks />);
       
-      const progressBars = container.querySelectorAll('.transition-all.duration-1000');
+      const progressBars = container.querySelectorAll('.transition-\\[width\\].duration-1000');
       
       expect(progressBars.length).toBeGreaterThanOrEqual(3);
     });

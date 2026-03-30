@@ -217,28 +217,22 @@ describe('HeroSection - Unit Tests', () => {
       expect(getStartedButton).toHaveAttribute('href', '/auth/sign-up');
     });
 
-    it('should have "See How It Works" button', () => {
+    it('should have "See How It Works" link', () => {
       render(<HeroSection />);
       
-      const howItWorksButton = screen.getByRole('button', { name: /see how it works/i });
+      const howItWorksLink = screen.getByRole('link', { name: /see how it works/i });
       
-      expect(howItWorksButton).toBeInTheDocument();
+      expect(howItWorksLink).toBeInTheDocument();
+      expect(howItWorksLink).toHaveAttribute('href', '#how-it-works');
     });
 
-    it('should scroll to demo section when "See How It Works" is clicked', () => {
-      // Mock scrollIntoView
-      const mockScrollIntoView = vi.fn();
-      const mockElement = { scrollIntoView: mockScrollIntoView };
-      
-      vi.spyOn(document, 'getElementById').mockReturnValue(mockElement as never);
-      
+    it('should link to the homepage demo section when "See How It Works" is clicked', () => {
       render(<HeroSection />);
       
-      const howItWorksButton = screen.getByRole('button', { name: /see how it works/i });
-      fireEvent.click(howItWorksButton);
+      const howItWorksLink = screen.getByRole('link', { name: /see how it works/i });
+      fireEvent.click(howItWorksLink);
       
-      expect(document.getElementById).toHaveBeenCalledWith('how-it-works');
-      expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
+      expect(howItWorksLink).toHaveAttribute('href', '#how-it-works');
     });
   });
 
@@ -247,7 +241,7 @@ describe('HeroSection - Unit Tests', () => {
       render(<HeroSection />);
       
       expect(screen.getByText(/never wonder/i)).toBeInTheDocument();
-      expect(screen.getByText(/my ai outfit/i)).toBeInTheDocument();
+      expect(screen.getByText(/what to wear/i)).toBeInTheDocument();
     });
 
     it('should display compatibility score', () => {
