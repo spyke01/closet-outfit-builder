@@ -436,9 +436,9 @@ describe('MySizesClient', () => {
       );
 
       // Check container classes
-      const mainContainer = container.querySelector('.container');
+      const mainContainer = container.querySelector('.page-shell-content');
       expect(mainContainer).toBeInTheDocument();
-      expect(mainContainer).toHaveClass('mx-auto', 'px-4', 'py-8');
+      expect(mainContainer).toHaveClass('mx-auto', 'px-6', 'py-8');
 
       // Check spacing between sections
       const contentWrapper = container.querySelector('.space-y-8');

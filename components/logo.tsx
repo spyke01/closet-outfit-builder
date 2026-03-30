@@ -13,7 +13,7 @@ export const Logo: React.FC<LogoProps> = ({
   className = 'h-12 w-auto',
   title = 'My AI Outfit',
 }) => {
-  const { resolvedTheme } = useTheme();
+  const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
 
   // Avoid hydration mismatch by only rendering after mount
@@ -22,9 +22,11 @@ export const Logo: React.FC<LogoProps> = ({
   }, []);
 
   // Use light-background logo in light mode and dark-background logo in dark mode
-  const logoSrc = resolvedTheme === 'dark' 
-    ? '/my-ai-outfit-logo-dark-bg.png'
-    : '/my-ai-outfit-logo-light-bg.png';
+  const effectiveTheme = theme === 'system' ? resolvedTheme : theme;
+
+  const logoSrc = effectiveTheme === 'light'
+    ? '/my-ai-outfit-logo-light-bg.png'
+    : '/my-ai-outfit-logo-dark-bg.png';
 
   // Show a placeholder during SSR to avoid layout shift
   if (!mounted) {

@@ -627,10 +627,10 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
 
   if (!requiredCategoriesAvailable) {
     return (
-      <div className="container mx-auto p-4 pt-24">
-        <h1 className="text-2xl font-bold mb-6 text-foreground">Today&apos;s Outfit</h1>
-        <div className="text-center py-12">
-          <p className="text-lg mb-4 text-muted-foreground">
+      <div className="page-shell-content">
+        <h1 className="mb-6 font-display text-4xl font-normal tracking-[-0.03em] text-foreground">Today&apos;s Outfit</h1>
+        <div className="glass-surface p-10 text-center">
+          <p className="mb-4 text-lg text-muted-foreground">
             You need at least one Shirt, Pants, and Shoes to generate outfits.
           </p>
           <Link href="/wardrobe" className="text-primary hover:underline">
@@ -642,11 +642,11 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl pb-32 md:pb-8">
-      <h1 className="text-2xl font-bold mb-6 text-foreground">Today&apos;s Outfit</h1>
+    <div className="page-shell-content">
+      <h1 className="mb-8 font-display text-4xl font-normal tracking-[-0.03em] text-foreground">Today&apos;s Outfit</h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
-        <div>
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[280px_1fr_1fr] xl:grid-rows-[auto_auto]">
+        <div className="app-section section-delay-1 xl:[grid-row:1/3]">
           <WeatherSnapshot current={current} forecast={forecast} loading={weatherLoading} error={weatherError} />
           {saveError && (
             <Alert variant="destructive" className="mt-4">
@@ -662,22 +662,22 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
           )}
         </div>
 
-        <div className="space-y-6">
+        <div className="app-section section-delay-2 space-y-4 xl:[grid-column:2/4]">
           {entitlementsLoading && (
-            <div className="border border-border rounded-xl bg-card p-4 text-sm text-muted-foreground flex items-center gap-2">
+            <div className="glass-surface flex items-center gap-2 p-4 text-sm text-muted-foreground">
               <Loader2 className="w-4 h-4 animate-spin" />
               Loading your plan features...
             </div>
           )}
 
           {!entitlementsLoading && !isPaidPlan && (
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-              <article className="border border-border rounded-xl bg-card p-4 flex flex-col gap-3">
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+              <article className="glass-surface flex flex-col gap-4 p-6">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-foreground">Today&apos;s Outfit</h2>
+                  <h2 className="font-display text-[1.3rem] font-normal tracking-[-0.02em] text-foreground">Today&apos;s Outfit</h2>
                   <div className="hidden md:flex items-center gap-2">
                     <button
-                      className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-2 text-xs font-medium text-foreground disabled:opacity-50"
+                      className="glass-pill inline-flex h-8 items-center justify-center gap-1.5 px-3 text-xs font-medium disabled:opacity-50"
                       disabled={!freeOutfit || savingKey === 'free' || savedLookKeys.has('free')}
                       onClick={() => freeOutfit && saveLook('free', freeOutfit, `Today's Outfit - ${new Date().toLocaleDateString()}`)}
                       title="Save this outfit"
@@ -688,7 +688,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                       <span>Save</span>
                     </button>
                     <button
-                      className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-2 text-xs font-medium text-foreground disabled:opacity-50"
+                      className="glass-pill inline-flex h-8 items-center justify-center gap-1.5 px-3 text-xs font-medium disabled:opacity-50"
                       disabled={generatingLookId === 'free' || !freeOutfit}
                       onClick={regenerateFree}
                       title="Regenerate this outfit"
@@ -699,7 +699,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                     </button>
                   </div>
                 </div>
-                <div className="rounded-lg border border-border/70 p-2 bg-background/20">
+                <div className="rounded-[var(--radius-md)] border border-[var(--item-img-border)] bg-[var(--item-img-bg)] p-2">
                   {freeOutfit ? (
                     <OutfitGridLayout
                       items={Object.values(freeOutfit.items).filter(Boolean) as WardrobeItem[]}
@@ -708,14 +708,14 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                       onItemClick={swapFreeItem}
                     />
                   ) : (
-                    <div className="h-40 rounded-lg border border-dashed border-border flex items-center justify-center text-sm text-muted-foreground">
+                    <div className="flex h-40 items-center justify-center rounded-[var(--radius-md)] border border-dashed border-[var(--border-subtle)] text-sm text-muted-foreground">
                       Generating look...
                     </div>
                   )}
                 </div>
-                <div className="mt-auto grid grid-cols-2 md:hidden items-center gap-2">
+                <div className="mt-auto grid grid-cols-2 items-center gap-2 md:hidden">
                   <button
-                    className="w-full inline-flex h-9 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-3 text-sm font-medium text-foreground disabled:opacity-50"
+                    className="glass-pill inline-flex h-9 w-full items-center justify-center gap-1.5 px-3 text-sm font-medium disabled:opacity-50"
                     disabled={!freeOutfit || savingKey === 'free' || savedLookKeys.has('free')}
                     onClick={() => freeOutfit && saveLook('free', freeOutfit, `Today's Outfit - ${new Date().toLocaleDateString()}`)}
                     title="Save this outfit"
@@ -726,7 +726,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                     <span>Save</span>
                   </button>
                   <button
-                    className={`w-full inline-flex h-9 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-3 text-sm font-medium text-foreground disabled:opacity-50 ${savedLookKeys.has('free') ? 'col-span-2' : ''}`}
+                    className={`glass-pill inline-flex h-9 w-full items-center justify-center gap-1.5 px-3 text-sm font-medium disabled:opacity-50 ${savedLookKeys.has('free') ? 'col-span-2' : ''}`}
                     disabled={generatingLookId === 'free' || !freeOutfit}
                     onClick={regenerateFree}
                     title="Regenerate this outfit"
@@ -741,17 +741,19 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                 )}
               </article>
 
-              <article className="border border-border rounded-xl bg-card p-4 flex flex-col gap-3">
+              <article className="glass-surface card-glow-green flex flex-col gap-4 p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-primary" />
-                    <h2 className="text-lg font-semibold text-foreground">AI Outfit</h2>
+                    <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--accent)_12%,transparent)] bg-[linear-gradient(135deg,var(--accent-muted),var(--accent-3-muted))]">
+                      <Sparkles className="h-4 w-4 text-primary" />
+                    </div>
+                    <h2 className="font-display text-[1.2rem] font-normal tracking-[-0.02em] text-foreground">AI Outfit</h2>
                   </div>
                   {todayAi && !aiFormOpen && !aiGenerating && (
                     <div className="hidden md:flex items-center gap-2">
                       {!aiOutfitSaved && (
                         <button
-                          className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-2 text-xs font-medium text-foreground disabled:opacity-50"
+                          className="glass-pill inline-flex h-8 items-center justify-center gap-1.5 px-3 text-xs font-medium disabled:opacity-50"
                           disabled={aiSaving}
                           onClick={saveAiOutfit}
                           title="Save this AI outfit"
@@ -762,7 +764,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                         </button>
                       )}
                       <button
-                        className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-2 text-xs font-medium text-foreground"
+                        className="glass-pill inline-flex h-8 items-center justify-center gap-1.5 px-3 text-xs font-medium"
                         onClick={() => { setAiFormOpen(true); setAiOutfitSaved(false); }}
                         title="Regenerate this AI outfit"
                         aria-label="Regenerate this AI outfit"
@@ -774,16 +776,16 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                   )}
                 </div>
 
-                <div className="rounded-lg border border-border/70 p-2 bg-background/20">
+                <div className="rounded-[var(--radius-md)] border border-[var(--item-img-border)] bg-[var(--item-img-bg)] p-2">
                   {aiGenerating || aiLoading ? (
-                    <div className="h-40 rounded-lg border border-dashed border-border flex items-center justify-center text-sm text-muted-foreground">
+                    <div className="flex h-40 items-center justify-center rounded-[var(--radius-md)] border border-dashed border-[var(--border-subtle)] text-sm text-muted-foreground">
                       <Loader2 className="w-4 h-4 animate-spin mr-2" />
                       {todayAi ? 'Regenerating AI outfit...' : 'Loading AI state...'}
                     </div>
                   ) : !shouldShowAiForm && todayAi && aiOutfitItems.length > 0 ? (
                     <OutfitGridLayout items={aiOutfitItems} showLabels />
                   ) : (
-                    <div className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
+                    <div className="rounded-[var(--radius-md)] border border-dashed border-[var(--border-subtle)] p-4 text-sm text-muted-foreground">
                       Fill out your preferences and generate an AI look for today.
                     </div>
                   )}
@@ -794,9 +796,9 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                 )}
 
                 {!aiGenerating && !shouldShowAiForm && todayAi && (
-                  <div className="mt-auto grid grid-cols-2 md:hidden items-center gap-2">
+                  <div className="mt-auto grid grid-cols-2 items-center gap-2 md:hidden">
                     <button
-                      className="w-full inline-flex h-9 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-3 text-sm font-medium text-foreground"
+                      className="glass-pill inline-flex h-9 w-full items-center justify-center gap-1.5 px-3 text-sm font-medium"
                       onClick={() => setAiFormOpen(true)}
                       title="Regenerate this AI outfit"
                       aria-label="Regenerate this AI outfit"
@@ -804,7 +806,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                       <RefreshCw className="h-4 w-4" />
                       <span>Regenerate</span>
                     </button>
-                    <div className="h-9 w-full rounded-md border border-transparent px-2 text-xs text-muted-foreground inline-flex items-center justify-center">
+                    <div className="inline-flex h-9 w-full items-center justify-center rounded-[var(--radius-pill)] border border-transparent px-2 text-xs text-muted-foreground">
                       {`Free trial ${aiUsage?.trialUsed || 0}/${aiUsage?.trialLimit || 1}`}
                     </div>
                   </div>
@@ -812,11 +814,11 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
 
                 {shouldShowAiForm && !aiGenerating && (
                   <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                       <select
                         value={eventType}
                         onChange={(e) => setEventType(e.target.value)}
-                        className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+                        className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm"
                       >
                         {(aiOptions?.eventPresets || ['Work Day', 'Date Night', 'Social Event']).map((option) => (
                           <option key={option} value={option}>{option}</option>
@@ -825,7 +827,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                       <select
                         value={stylePreset}
                         onChange={(e) => setStylePreset(e.target.value)}
-                        className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+                        className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm"
                       >
                         {(aiOptions?.stylePresets || ['Smart Casual', 'Ivy', 'Minimal']).map((option) => (
                           <option key={option} value={option}>{option}</option>
@@ -834,13 +836,13 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                       <input
                         value={styleCustom}
                         onChange={(e) => setStyleCustom(e.target.value)}
-                        className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+                        className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm"
                         placeholder="Custom style note (optional)"
                       />
                       <select
                         value={formality}
                         onChange={(e) => setFormality(e.target.value as 'casual' | 'smart' | 'formal')}
-                        className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+                        className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm"
                       >
                         <option value="casual">Casual</option>
                         <option value="smart">Smart</option>
@@ -850,20 +852,20 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
 
                     <div className="mt-auto flex flex-wrap gap-2">
                       <button
-                        className="px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm disabled:opacity-50"
+                        className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-accent)] disabled:opacity-50"
                         disabled={aiGenerating || !canUseFreeTrial}
                         onClick={() => generateAiLook(todayAi ? 'PATCH' : 'POST')}
                       >
                         {canUseFreeTrial ? (todayAi ? 'Regenerate with AI' : 'Generate with AI') : 'Upgrade for AI'}
                       </button>
                       {!canUseFreeTrial && (
-                        <Link href="/settings/billing" className="px-3 py-2 rounded-lg border border-border bg-card text-foreground text-sm">
+                        <Link href="/settings/billing" className="glass-pill inline-flex min-h-11 items-center justify-center px-4 py-2.5 text-sm font-medium">
                           View plans
                         </Link>
                       )}
                       {todayAi && (
                         <button
-                          className="px-3 py-2 rounded-lg border border-border bg-card text-foreground text-sm"
+                          className="glass-pill inline-flex min-h-11 items-center justify-center px-4 py-2.5 text-sm font-medium"
                           onClick={() => setAiFormOpen(false)}
                           title="Cancel and return to the current AI outfit"
                         >
@@ -884,17 +886,17 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
           )}
 
           {!entitlementsLoading && isPaidPlan && (
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
               {LOOK_CONFIGS.map((look) => {
                 const outfit = paidLooks[look.id];
                 const lookItems = outfit ? Object.values(outfit.items).filter(Boolean) as WardrobeItem[] : [];
                 return (
-                  <article key={look.id} className="border border-border rounded-xl bg-card p-4 flex flex-col gap-3">
+                  <article key={look.id} className="glass-surface flex flex-col gap-4 p-6">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-lg font-semibold text-foreground">{look.label}</h2>
+                      <h2 className="font-display text-[1.3rem] font-normal tracking-[-0.02em] text-foreground">{look.label}</h2>
                       <div className="hidden md:flex items-center gap-2">
                         <button
-                          className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-2 text-xs font-medium text-foreground disabled:opacity-50"
+                          className="glass-pill inline-flex h-8 items-center justify-center gap-1.5 px-3 text-xs font-medium disabled:opacity-50"
                           disabled={!outfit || savingKey === look.id || savedLookKeys.has(look.id)}
                           onClick={() => outfit && saveLook(look.id, outfit, `${look.label} - ${new Date().toLocaleDateString()}`)}
                           title="Save this outfit"
@@ -905,7 +907,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                           <span>Save</span>
                         </button>
                         <button
-                          className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-2 text-xs font-medium text-foreground disabled:opacity-50"
+                          className="glass-pill inline-flex h-8 items-center justify-center gap-1.5 px-3 text-xs font-medium disabled:opacity-50"
                           disabled={generatingLookId === look.id}
                           onClick={() => regeneratePaidLook(look)}
                           title="Regenerate this outfit"
@@ -916,7 +918,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                         </button>
                       </div>
                     </div>
-                    <div className="rounded-lg border border-border/70 p-2 bg-background/20">
+                    <div className="rounded-[var(--radius-md)] border border-[var(--item-img-border)] bg-[var(--item-img-bg)] p-2">
                       {outfit ? (
                         <OutfitGridLayout
                           items={lookItems}
@@ -925,14 +927,14 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                           onItemClick={(item) => swapPaidItem(look.id, item)}
                         />
                       ) : (
-                        <div className="h-40 rounded-lg border border-dashed border-border flex items-center justify-center text-sm text-muted-foreground">
+                        <div className="flex h-40 items-center justify-center rounded-[var(--radius-md)] border border-dashed border-[var(--border-subtle)] text-sm text-muted-foreground">
                           Generating look...
                         </div>
                       )}
                     </div>
-                    <div className="mt-auto grid grid-cols-2 md:hidden items-center gap-2">
+                    <div className="mt-auto grid grid-cols-2 items-center gap-2 md:hidden">
                       <button
-                        className="w-full inline-flex h-9 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-3 text-sm font-medium text-foreground disabled:opacity-50"
+                        className="glass-pill inline-flex h-9 w-full items-center justify-center gap-1.5 px-3 text-sm font-medium disabled:opacity-50"
                         disabled={!outfit || savingKey === look.id || savedLookKeys.has(look.id)}
                         onClick={() => outfit && saveLook(look.id, outfit, `${look.label} - ${new Date().toLocaleDateString()}`)}
                         title="Save this outfit"
@@ -943,7 +945,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                         <span>Save</span>
                       </button>
                       <button
-                        className={`w-full inline-flex h-9 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-3 text-sm font-medium text-foreground disabled:opacity-50 ${savedLookKeys.has(look.id) ? 'col-span-2' : ''}`}
+                        className={`glass-pill inline-flex h-9 w-full items-center justify-center gap-1.5 px-3 text-sm font-medium disabled:opacity-50 ${savedLookKeys.has(look.id) ? 'col-span-2' : ''}`}
                         disabled={generatingLookId === look.id}
                         onClick={() => regeneratePaidLook(look)}
                         title="Regenerate this outfit"
@@ -960,17 +962,19 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                 );
               })}
 
-              <article className="border border-border rounded-xl bg-card p-4 flex flex-col gap-3">
+              <article className="glass-surface card-glow-green flex flex-col gap-4 p-6 xl:col-span-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-primary" />
-                    <h2 className="text-lg font-semibold text-foreground">AI Outfit</h2>
+                    <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--accent)_12%,transparent)] bg-[linear-gradient(135deg,var(--accent-muted),var(--accent-3-muted))]">
+                      <Sparkles className="h-4 w-4 text-primary" />
+                    </div>
+                    <h2 className="font-display text-[1.2rem] font-normal tracking-[-0.02em] text-foreground">AI Outfit</h2>
                   </div>
                   {todayAi && !aiFormOpen && !aiGenerating && (
                     <div className="hidden md:flex items-center gap-2">
                       {!aiOutfitSaved && (
                         <button
-                          className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-2 text-xs font-medium text-foreground disabled:opacity-50"
+                          className="glass-pill inline-flex h-8 items-center justify-center gap-1.5 px-3 text-xs font-medium disabled:opacity-50"
                           disabled={aiSaving}
                           onClick={saveAiOutfit}
                           title="Save this AI outfit"
@@ -981,7 +985,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                         </button>
                       )}
                       <button
-                        className="inline-flex h-8 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-2 text-xs font-medium text-foreground"
+                        className="glass-pill inline-flex h-8 items-center justify-center gap-1.5 px-3 text-xs font-medium"
                         onClick={() => { setAiFormOpen(true); setAiOutfitSaved(false); }}
                         title="Regenerate this AI outfit"
                         aria-label="Regenerate this AI outfit"
@@ -993,16 +997,16 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                   )}
                 </div>
 
-                <div className="rounded-lg border border-border/70 p-2 bg-background/20">
+                <div className="rounded-[var(--radius-md)] border border-[var(--item-img-border)] bg-[var(--item-img-bg)] p-2">
                   {aiGenerating || aiLoading ? (
-                    <div className="h-40 rounded-lg border border-dashed border-border flex items-center justify-center text-sm text-muted-foreground">
+                    <div className="flex h-40 items-center justify-center rounded-[var(--radius-md)] border border-dashed border-[var(--border-subtle)] text-sm text-muted-foreground">
                       <Loader2 className="w-4 h-4 animate-spin mr-2" />
                       {todayAi ? 'Regenerating AI outfit...' : 'Loading AI state...'}
                     </div>
                   ) : !shouldShowAiForm && todayAi && aiOutfitItems.length > 0 ? (
                     <OutfitGridLayout items={aiOutfitItems} showLabels />
                   ) : (
-                    <div className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
+                    <div className="rounded-[var(--radius-md)] border border-dashed border-[var(--border-subtle)] p-4 text-sm text-muted-foreground">
                       Fill out your preferences and generate an AI look for today.
                     </div>
                   )}
@@ -1013,9 +1017,9 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                 )}
 
                 {!aiGenerating && !shouldShowAiForm && todayAi && (
-                  <div className="mt-auto grid grid-cols-2 md:hidden items-center gap-2">
+                  <div className="mt-auto grid grid-cols-2 items-center gap-2 md:hidden">
                     <button
-                      className="w-full inline-flex h-9 items-center justify-center gap-1.5 rounded-md border border-border bg-background/40 px-3 text-sm font-medium text-foreground"
+                      className="glass-pill inline-flex h-9 w-full items-center justify-center gap-1.5 px-3 text-sm font-medium"
                       onClick={() => setAiFormOpen(true)}
                       title="Regenerate this AI outfit"
                       aria-label="Regenerate this AI outfit"
@@ -1023,7 +1027,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                       <RefreshCw className="h-4 w-4" />
                       <span>Regenerate</span>
                     </button>
-                    <div className="h-9 w-full rounded-md border border-transparent px-2 text-xs text-muted-foreground inline-flex items-center justify-center">
+                    <div className="inline-flex h-9 w-full items-center justify-center rounded-[var(--radius-pill)] border border-transparent px-2 text-xs text-muted-foreground">
                       {`Monthly ${aiUsage?.monthlyUsed || 0}/${aiUsage?.monthlyLimit ?? '∞'}`}
                     </div>
                   </div>
@@ -1031,11 +1035,11 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
 
                 {shouldShowAiForm && !aiGenerating && (
                   <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                       <select
                         value={eventType}
                         onChange={(e) => setEventType(e.target.value)}
-                        className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+                        className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm"
                       >
                         {(aiOptions?.eventPresets || ['Work Day', 'Date Night', 'Social Event']).map((option) => (
                           <option key={option} value={option}>{option}</option>
@@ -1044,7 +1048,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                       <select
                         value={stylePreset}
                         onChange={(e) => setStylePreset(e.target.value)}
-                        className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+                        className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm"
                       >
                         {(aiOptions?.stylePresets || ['Smart Casual', 'Ivy', 'Minimal']).map((option) => (
                           <option key={option} value={option}>{option}</option>
@@ -1053,13 +1057,13 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                       <input
                         value={styleCustom}
                         onChange={(e) => setStyleCustom(e.target.value)}
-                        className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+                        className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm"
                         placeholder="Custom style note (optional)"
                       />
                       <select
                         value={formality}
                         onChange={(e) => setFormality(e.target.value as 'casual' | 'smart' | 'formal')}
-                        className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+                        className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm"
                       >
                         <option value="casual">Casual</option>
                         <option value="smart">Smart</option>
@@ -1069,7 +1073,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
 
                     <div className="mt-auto flex flex-wrap gap-2">
                       <button
-                        className="px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm disabled:opacity-50"
+                        className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-accent)] disabled:opacity-50"
                         disabled={aiGenerating}
                         onClick={() => generateAiLook(todayAi ? 'PATCH' : 'POST')}
                       >
@@ -1077,7 +1081,7 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
                       </button>
                       {todayAi && (
                         <button
-                          className="px-3 py-2 rounded-lg border border-border bg-card text-foreground text-sm"
+                          className="glass-pill inline-flex min-h-11 items-center justify-center px-4 py-2.5 text-sm font-medium"
                           onClick={() => setAiFormOpen(false)}
                           title="Cancel and return to the current AI outfit"
                         >

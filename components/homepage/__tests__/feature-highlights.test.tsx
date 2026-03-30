@@ -63,7 +63,7 @@ describe('FeatureHighlights - Unit Tests', () => {
     it('should render icon containers with themed backgrounds', () => {
       const { container } = render(<FeatureHighlights />);
       
-      const iconContainers = container.querySelectorAll('.rounded-3xl.shadow-lg');
+      const iconContainers = container.querySelectorAll('[class*="bg-secondary/20"], [class*="bg-primary/15"], [class*="bg-muted"]');
       
       // Should have 3 icon containers
       expect(iconContainers.length).toBeGreaterThanOrEqual(3);
@@ -86,7 +86,7 @@ describe('FeatureHighlights - Unit Tests', () => {
       const images = screen.getAllByRole('img');
       
       images.forEach((img) => {
-        expect(img.className).toContain('opacity-80');
+        expect(img.className).toContain('opacity-85');
         expect(img.className).toContain('group-hover:opacity-100');
         expect(img.className).toContain('transition-opacity');
       });
@@ -104,7 +104,7 @@ describe('FeatureHighlights - Unit Tests', () => {
     it('should have scale transition on icon containers', () => {
       const { container } = render(<FeatureHighlights />);
       
-      const iconContainers = container.querySelectorAll('.group-hover\\:scale-110');
+      const iconContainers = container.querySelectorAll('.group-hover\\:scale-105');
       
       // Should have 3 icon containers with scale transition
       expect(iconContainers.length).toBeGreaterThanOrEqual(3);
@@ -210,7 +210,7 @@ describe('FeatureHighlights - Unit Tests', () => {
       const imageContainers = container.querySelectorAll('.w-32.h-32');
       
       imageContainers.forEach((imgContainer) => {
-        expect(imgContainer.className).toContain('mb-4');
+        expect(imgContainer.className).toContain('mb-5');
       });
     });
 
@@ -357,7 +357,9 @@ describe('FeatureHighlights - Unit Tests', () => {
     it('should have animation delay for staggered entrance', () => {
       const { container } = render(<FeatureHighlights />);
       
-      const animatedCards = container.querySelectorAll('.animate-slide-up');
+      const animatedCards = Array.from(container.querySelectorAll('.app-section')).filter((element) =>
+        element.getAttribute('style')?.includes('animation-delay')
+      );
       
       // Should have animated cards
       expect(animatedCards.length).toBeGreaterThanOrEqual(3);

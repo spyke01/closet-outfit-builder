@@ -136,8 +136,8 @@ export function OutfitFlatLayout({
                       <Link href={`/wardrobe/items/${item.id}`}>
                         <Button
                           size="sm"
-                          variant="secondary"
-                          className="h-8 w-8 p-0 bg-card/95 border border-border text-foreground hover:bg-secondary/70 hover:border-foreground/25 shadow-sm"
+                          variant="action"
+                          className="h-8 w-8 p-0 shadow-sm"
                           onClick={(e) => handleViewDetails(item.id, e)}
                         >
                           <Eye className="h-3 w-3" />

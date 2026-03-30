@@ -77,10 +77,10 @@ export function PinnedCardsSection({
   // Requirements: 12.1
   if (sortedPreferences.length === 0) {
     return (
-      <div className="pinned-cards-empty-state bg-muted bg-background border-2 border-dashed border-border rounded-lg p-8 text-center">
+      <div className="pinned-cards-empty-state glass-surface border-dashed p-8 text-center">
         <div className="max-w-md mx-auto space-y-4">
           <div className="flex justify-center">
-            <div className="bg-muted rounded-full p-4">
+            <div className="rounded-full border border-[var(--item-img-border)] bg-[var(--item-img-bg)] p-4">
               <Settings 
                 className="h-8 w-8 text-muted-foreground" 
                 aria-hidden="true"
@@ -100,7 +100,7 @@ export function PinnedCardsSection({
           {onCustomize && (
             <button
               onClick={onCustomize}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:opacity-90 text-primary-foreground font-medium rounded-lg transition-colors"
+              className="inline-flex min-h-11 items-center gap-2 rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] px-4 py-2 font-medium text-primary-foreground shadow-[var(--shadow-accent)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:-translate-y-px hover:shadow-[var(--shadow-accent-hover)]"
               style={{ minHeight: '44px' }} // ✅ 44x44px touch target
               aria-label="Customize pinned categories"
             >
@@ -124,7 +124,7 @@ export function PinnedCardsSection({
         {onCustomize && (
           <button
             onClick={onCustomize}
-            className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted rounded-lg transition-colors"
+            className="glass-pill inline-flex min-h-11 items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground"
             style={{ minHeight: '44px' }} // ✅ 44x44px touch target
             aria-label="Customize pinned categories"
           >

@@ -6,14 +6,14 @@ import { StaticPageFooter } from "@/components/static-page-footer";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-card to-background">
+    <div className="page-shell min-h-screen">
       <StaticPageNavigation />
-
-      <main className="pt-16">
-        <div className="container mx-auto px-6 py-16">
+      
+      <main className="pt-20">
+        <div className="mx-auto max-w-[1240px] px-6 py-16">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h1 className="text-4xl font-bold text-foreground mb-4">About My AI Outfit</h1>
+              <h1 className="font-display mb-4 text-4xl font-normal text-foreground">About My AI Outfit</h1>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                 Intelligent outfit composition for the modern wardrobe
               </p>
@@ -32,35 +32,35 @@ export default function AboutPage() {
               <section className="mb-12">
                 <h2 className="text-2xl font-semibold text-foreground mb-4">Key Features</h2>
                 <div className="grid md:grid-cols-2 gap-6">
-                  <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
+                  <div className="glass-surface p-6">
                     <div className="w-16 h-16 mb-4 mx-auto flex items-center justify-center">
                       <Shield className="w-10 h-10 text-primary" />
                     </div>
                     <h3 className="font-semibold text-foreground mb-2">Personal & Secure</h3>
                     <p className="text-muted-foreground">Multi-user authentication with complete data privacy and isolation</p>
                   </div>
-                  <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
+                  <div className="glass-surface p-6">
                     <div className="w-16 h-16 mb-4 mx-auto flex items-center justify-center">
                       <Shirt className="w-10 h-10 text-primary" />
                     </div>
                     <h3 className="font-semibold text-foreground mb-2">Custom Wardrobe</h3>
                     <p className="text-muted-foreground">Upload your own clothing photos with automatic background removal</p>
                   </div>
-                  <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
+                  <div className="glass-surface p-6">
                     <div className="w-16 h-16 mb-4 mx-auto flex items-center justify-center">
                       <Sparkles className="w-10 h-10 text-primary" />
                     </div>
                     <h3 className="font-semibold text-foreground mb-2">Smart Recommendations</h3>
                     <p className="text-muted-foreground">AI-powered outfit suggestions based on style compatibility</p>
                   </div>
-                  <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
+                  <div className="glass-surface p-6">
                     <div className="w-16 h-16 mb-4 mx-auto flex items-center justify-center">
                       <Cloud className="w-10 h-10 text-primary" />
                     </div>
                     <h3 className="font-semibold text-foreground mb-2">Weather Integration</h3>
                     <p className="text-muted-foreground">Location-based outfit recommendations considering weather forecasts</p>
                   </div>
-                  <div className="bg-card p-6 rounded-lg shadow-sm border border-border md:col-span-2">
+                  <div className="glass-surface p-6 md:col-span-2">
                     <div className="w-16 h-16 mb-4 mx-auto flex items-center justify-center">
                       <MessageCircle className="w-10 h-10 text-primary" />
                     </div>
@@ -84,7 +84,7 @@ export default function AboutPage() {
             </div>
 
             <div className="text-center mt-12">
-              <Button asChild size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-xl">
+              <Button asChild size="lg">
                 <Link href="/auth/sign-up">
                   Get Started Today
                 </Link>

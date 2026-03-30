@@ -31,7 +31,7 @@ export default async function OnboardingPage({ searchParams }: OnboardingPagePro
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-muted bg-background">
+    <div className="page-shell min-h-screen flex flex-col">
       <TopBarWrapper user={user} />
       
       <main className="flex-1">

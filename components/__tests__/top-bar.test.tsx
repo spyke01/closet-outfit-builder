@@ -63,15 +63,14 @@ describe('TopBar', () => {
     app_metadata: {},
   };
 
-  it('uses aria-current and border indicator style for active nav item', () => {
+  it('uses aria-current and glass active styling for the active nav item', () => {
     render(<TopBar user={user} />);
 
     const outfitsLink = screen.getByRole('link', { name: "View outfits" });
     expect(outfitsLink).toHaveAttribute('aria-current', 'page');
-    expect(outfitsLink.className).toContain('border-[var(--app-nav-border-active)]');
-    expect(outfitsLink.className).toContain('font-semibold');
+    expect(outfitsLink.className).toContain('bg-[var(--bg-surface)]');
+    expect(outfitsLink.className).toContain('border-[var(--border-subtle)]');
     expect(outfitsLink.className).toContain('cursor-pointer');
-    expect(outfitsLink.className).not.toContain('bg-primary');
   });
 
   it('renders floating Sebastian launcher for entitled users', () => {

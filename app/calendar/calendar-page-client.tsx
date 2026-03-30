@@ -687,21 +687,22 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
   const canSaveEntry = hasFormChanges && hasValidEntrySelection && !isSaving;
 
   const commonButtonBase =
-    'h-10 rounded-lg px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2';
-  const primaryButtonClass = `${commonButtonBase} bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed`;
-  const secondaryButtonClass = `${commonButtonBase} border border-border bg-card text-foreground hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed`;
+    'rounded-[var(--radius-pill)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2';
+  const primaryButtonClass = `${commonButtonBase} inline-flex items-center justify-center gap-2 px-[22px] py-[11px] text-[0.82rem] font-semibold bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-[var(--text-on-accent)] shadow-[var(--shadow-accent)] hover:-translate-y-px hover:shadow-[var(--shadow-accent-hover)] active:translate-y-0 active:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed`;
+  const secondaryButtonClass = `${commonButtonBase} inline-flex items-center justify-center gap-2 border border-[var(--border-default)] bg-[var(--bg-surface)] px-[16px] py-[9px] text-[0.79rem] font-medium text-[var(--text-2)] backdrop-blur-[var(--blur-glass)] [-webkit-backdrop-filter:blur(var(--blur-glass))] hover:border-[var(--border-strong)] hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-1)] active:bg-[var(--bg-surface-active)] disabled:opacity-50 disabled:cursor-not-allowed`;
+  const tertiaryButtonClass = `${commonButtonBase} inline-flex items-center justify-center gap-1.5 border border-transparent bg-transparent px-[12px] py-[6px] text-[0.72rem] font-medium text-[var(--text-2)] hover:border-[var(--border-subtle)] hover:bg-[var(--button-tertiary-hover)] hover:text-[var(--text-1)] active:bg-[var(--button-tertiary-active)] disabled:opacity-50 disabled:cursor-not-allowed`;
   const iconTertiaryClass =
-    'h-9 w-9 inline-flex items-center justify-center rounded-md border border-border bg-card text-foreground hover:bg-muted transition-colors disabled:opacity-50';
+    'inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-pill)] border border-transparent bg-transparent text-[var(--text-2)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-[var(--border-subtle)] hover:bg-[var(--button-tertiary-hover)] hover:text-[var(--text-1)] active:bg-[var(--button-tertiary-active)] disabled:opacity-50';
   const destructiveIconTertiaryClass =
-    'h-9 w-9 inline-flex items-center justify-center rounded-md border border-border bg-card text-foreground hover:bg-destructive/10 hover:text-destructive hover:border-destructive/40 transition-colors disabled:opacity-50';
+    'inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-pill)] border border-transparent bg-transparent text-[var(--text-2)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-destructive/30 hover:bg-destructive/10 hover:text-destructive disabled:opacity-50';
 
   return (
-    <div className="max-w-7xl mx-auto p-4 sm:p-6 space-y-5 sm:space-y-6">
+    <div className="page-shell-content mx-auto max-w-[1240px] space-y-5 px-6 py-8 sm:space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <div className="inline-flex items-center rounded-lg border border-border bg-card p-1 mb-3">
-            <span className="px-3 py-1.5 rounded-md text-sm bg-primary text-primary-foreground">Calendar</span>
-            <Link href="/calendar/trips" className="px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:bg-muted">
+          <div className="mb-3 inline-flex items-center rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)] p-1">
+            <span className="rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] px-3 py-1.5 text-sm text-primary-foreground">Calendar</span>
+            <Link href="/calendar/trips" className="rounded-[var(--radius-pill)] px-3 py-1.5 text-sm text-muted-foreground hover:bg-[var(--bg-surface-hover)] hover:text-foreground">
               Trips
             </Link>
           </div>
@@ -711,7 +712,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
           </p>
         </div>
         <div className="grid grid-cols-2 gap-2 sm:block sm:text-right sm:space-y-2">
-          <div className="col-span-1 rounded-lg border border-border bg-card px-3 py-2 sm:border-0 sm:bg-transparent sm:p-0">
+          <div className="glass-surface col-span-1 px-3 py-2 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none">
             <p className="text-sm text-muted-foreground">Worn Entries This Month</p>
             <p className="text-2xl font-semibold text-foreground">{calendarMonthData?.wornEntriesThisMonth || 0}</p>
           </div>
@@ -719,7 +720,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
             type="button"
             onClick={() => setShowGenerateModal(true)}
             disabled={!hasRequiredItems || isGeneratingWeek}
-            className="col-span-1 sm:col-span-2 px-3 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 text-sm w-full inline-flex items-center justify-center gap-2"
+            className={`col-span-1 w-full sm:col-span-2 ${primaryButtonClass}`}
           >
             <AIIcon className="w-4 h-4" />
             {isGeneratingWeek ? 'Generating...' : 'Generate Outfits'}
@@ -728,7 +729,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
       </div>
 
       {isGeneratingWeek && weekGenerationProgress && (
-        <div className="rounded-lg border border-primary/40 bg-primary/10 px-4 py-3 space-y-2">
+        <div className="glass-surface space-y-2 border-[color-mix(in_srgb,var(--accent)_22%,transparent)] bg-[var(--accent-muted)] px-4 py-3">
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-2 text-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -738,7 +739,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
               {weekGenerationProgress.completed}/{weekGenerationProgress.total}
             </span>
           </div>
-          <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--bg-surface-active)]">
             <div
               className="h-full bg-primary transition-all duration-300"
               style={{
@@ -757,16 +758,16 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
       )}
 
       {weekGenerationMessage && (
-        <div className="rounded-lg border border-border bg-card px-4 py-3 text-sm text-foreground">
+        <div className="glass-surface px-4 py-3 text-sm text-foreground">
           {weekGenerationMessage}
         </div>
       )}
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
-        <div className="xl:col-span-2 bg-card border border-border rounded-xl p-4">
+        <div className="glass-surface xl:col-span-2 rounded-[var(--radius-xl)] p-4">
           <div className="flex items-center justify-between mb-4">
             <button
-              className="p-2 rounded-lg hover:bg-muted"
+              className="glass-pill p-2"
               onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}
               aria-label="Previous month"
             >
@@ -774,7 +775,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
             </button>
             <h2 className="text-xl font-semibold text-foreground">{formatMonthTitle(month)}</h2>
             <button
-              className="p-2 rounded-lg hover:bg-muted"
+              className="glass-pill p-2"
               onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}
               aria-label="Next month"
             >
@@ -812,14 +813,14 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                     type="button"
                     onClick={() => setSelectedDate(day)}
                     className={`relative min-h-20 sm:min-h-24 rounded-lg border p-1.5 sm:p-2 text-left transition-colors ${
-                      isSelected ? 'border-primary bg-primary/10' : 'border-border hover:bg-muted/50'
+                      isSelected ? 'border-primary bg-[var(--accent-muted)]' : 'border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]'
                     } ${inCurrentMonth ? 'text-foreground' : 'text-muted-foreground/50'}`}
                   >
                     <span className="absolute top-1.5 left-1.5 text-sm font-medium">
                       {day.getDate()}
                     </span>
                     {forecastDay && (
-                      <span className="absolute top-1.5 right-1.5 text-[9px] sm:text-[10px] font-semibold px-1 sm:px-1.5 py-0.5 rounded border border-border bg-card/90 text-foreground shadow-sm">
+                      <span className="absolute top-1.5 right-1.5 rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_88%,transparent)] px-1 py-0.5 text-[9px] font-semibold text-foreground shadow-[var(--shadow-nav)] sm:px-1.5 sm:text-[10px]">
                         {Math.round(forecastDay.temperature.high)}F
                       </span>
                     )}
@@ -845,7 +846,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
         </div>
 
         <div className="space-y-3 sm:space-y-4">
-          <div className="bg-card border border-border rounded-xl p-4">
+          <div className="glass-surface rounded-[var(--radius-xl)] p-4">
             <h3 className="text-lg font-semibold text-foreground">
               {selectedDate.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
             </h3>
@@ -854,17 +855,17 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
               <span>
                 {weatherDisplay.conditionLabel}, {Math.round(weatherForSelectedDate.lowTemp)}F/{Math.round(weatherForSelectedDate.highTemp)}F
               </span>
-              <span className="text-xs px-2 py-0.5 rounded bg-muted">{weatherDisplay.sourceLabel}</span>
+              <span className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-0.5 text-xs text-[var(--tag-text)]">{weatherDisplay.sourceLabel}</span>
             </div>
           </div>
 
-          <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+          <div className="glass-surface rounded-[var(--radius-xl)] p-4 space-y-3">
             <div className="flex items-center justify-between">
               <h4 className="font-semibold text-foreground">Entries ({selectedDateEntries.length})</h4>
               <button
                 type="button"
                 onClick={handleNewEntryClick}
-                className={`${commonButtonBase} bg-secondary text-secondary-foreground hover:opacity-90`}
+                className={secondaryButtonClass}
               >
                 <Plus className="w-3 h-3 inline mr-1" />
                 New Entry
@@ -876,7 +877,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
             ) : (
               <div className="space-y-2">
                 {selectedDateEntries.map((entry) => (
-                  <div key={entry.id} className="group border border-border rounded-lg p-2 space-y-2">
+                  <div key={entry.id} className="group rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] p-2 space-y-2">
                     <div className="flex items-center justify-between">
                       <span
                         className={`text-xs uppercase tracking-wide rounded-full px-2 py-0.5 border ${
@@ -937,7 +938,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
           </div>
 
           {isEntryFormOpen && (
-            <div ref={entryFormRef} className="bg-card border border-border rounded-xl p-4 space-y-3">
+            <div ref={entryFormRef} className="glass-surface rounded-[var(--radius-xl)] p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <h4 className="font-semibold text-foreground">{editingEntryId ? 'Edit Entry' : 'Create Entry'}</h4>
                 <button
@@ -946,20 +947,20 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                     setIsEntryFormOpen(false);
                     resetForm();
                   }}
-                  className={secondaryButtonClass}
+                  className={tertiaryButtonClass}
                 >
                   Close
                 </button>
               </div>
 
-              <div className="inline-flex w-full rounded-lg border border-border bg-card p-1">
+              <div className="inline-flex w-full rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)] p-1">
                 {(['planned', 'worn'] as EntryStatus[]).map((status) => (
                   <button
                     key={status}
                     type="button"
                     onClick={() => setEntryStatus(status)}
                     className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors ${
-                      entryStatus === status ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'
+                      entryStatus === status ? 'rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-primary-foreground' : 'rounded-[var(--radius-pill)] text-muted-foreground hover:bg-[var(--bg-surface-hover)]'
                     }`}
                   >
                     {status}
@@ -969,12 +970,12 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
 
               <div className="space-y-2">
                 <p className="text-sm font-medium text-foreground">Source</p>
-                <div className="inline-flex w-full rounded-lg border border-border bg-card p-1">
+                <div className="inline-flex w-full rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)] p-1">
                   <button
                     type="button"
                     onClick={() => setEntrySource('existing')}
                     className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors ${
-                      entrySource === 'existing' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'
+                      entrySource === 'existing' ? 'rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-primary-foreground' : 'rounded-[var(--radius-pill)] text-muted-foreground hover:bg-[var(--bg-surface-hover)]'
                     }`}
                   >
                     Existing Outfit
@@ -983,7 +984,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                     type="button"
                     onClick={() => setEntrySource('generated')}
                     className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors inline-flex items-center justify-center gap-1.5 ${
-                      entrySource === 'generated' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'
+                      entrySource === 'generated' ? 'rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-primary-foreground' : 'rounded-[var(--radius-pill)] text-muted-foreground hover:bg-[var(--bg-surface-hover)]'
                     }`}
                   >
                     <AIIcon className="w-3.5 h-3.5" />
@@ -1003,7 +1004,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                           type="button"
                           onClick={() => setSelectedOutfitId(outfit.id)}
                           className={`w-full text-left p-2 rounded-lg border transition-colors ${
-                            selected ? 'border-primary bg-primary/10' : 'border-border hover:bg-muted'
+                            selected ? 'border-primary bg-[var(--accent-muted)]' : 'border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]'
                           }`}
                         >
                           <div className="flex items-center justify-between mb-1">
@@ -1012,7 +1013,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                                 {outfit.name || `Outfit ${outfit.id.slice(0, 6)}`}
                               </p>
                               {selected && (
-                                <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-secondary-foreground">
+                                <span className="rounded-[var(--radius-pill)] border border-[color-mix(in_srgb,var(--accent)_16%,transparent)] bg-[var(--accent-muted)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--accent)]">
                                   Selected
                                 </span>
                               )}
@@ -1051,7 +1052,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                     </p>
                   )}
                   {generatedPreviewItems.length > 0 && (
-                    <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-2">
+                    <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_76%,transparent)] p-3 space-y-2">
                       <div className="flex items-center justify-between gap-2">
                         <p className="text-sm font-medium text-foreground">Generated Preview</p>
                         <span className="text-xs text-muted-foreground">
@@ -1063,7 +1064,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                         {generatedPreviewItems.map((item) => (
                           <span
                             key={item.id}
-                            className="text-[11px] rounded-full border border-border px-2 py-0.5 text-muted-foreground"
+                            className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] px-2 py-0.5 text-[11px] text-[var(--tag-text)]"
                           >
                             {(item.category?.name || 'Item')}: {item.name}
                           </span>
@@ -1087,7 +1088,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                   type="text"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value.replace(/[^A-Za-z0-9\s]/g, '').slice(0, 500))}
-                  className="w-full mt-1 border border-border rounded-lg px-3 py-2 bg-background text-foreground"
+                  className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-foreground"
                   placeholder="Example Office meeting 2pm"
                   autoComplete="off"
                 />
@@ -1128,21 +1129,21 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
       </div>
 
       {showGenerateModal && (
-        <div className="fixed inset-0 z-50 bg-black/45 flex items-center justify-center p-4">
-          <div className="w-full max-w-2xl rounded-xl border border-border bg-card shadow-xl">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(6,10,16,0.72)] p-4 backdrop-blur-[8px]">
+          <div className="glass-surface w-full max-w-2xl rounded-[var(--radius-xl)]">
+            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-4 py-3">
               <div>
                 <h3 className="text-lg font-semibold text-foreground">Generate Outfits</h3>
                 <p className="text-sm text-muted-foreground">
                   Configure AI planning options, then generate planned entries from {selectedDate.toLocaleDateString()} onward.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => setShowGenerateModal(false)}
-                className="p-2 rounded hover:bg-muted"
-                aria-label="Close generate modal"
-              >
+                <button
+                  type="button"
+                  onClick={() => setShowGenerateModal(false)}
+                  className={iconTertiaryClass}
+                  aria-label="Close generate modal"
+                >
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -1157,7 +1158,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                   max={14}
                   value={generationCount}
                   onChange={(e) => setGenerationCount(Math.max(1, Math.min(14, Number(e.target.value) || 1)))}
-                  className="w-full mt-1 border border-border rounded-lg px-2 py-1.5 bg-background text-foreground"
+                  className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-2 py-1.5 text-foreground"
                 />
               </div>
 
@@ -1167,7 +1168,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                   id="existing-policy"
                   value={existingPolicy}
                   onChange={(e) => setExistingPolicy(e.target.value as ExistingPolicy)}
-                  className="w-full mt-1 border border-border rounded-lg px-2 py-1.5 bg-background text-foreground"
+                  className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-2 py-1.5 text-foreground"
                 >
                   <option value="skip">Skip existing</option>
                   <option value="overwrite">Overwrite existing</option>
@@ -1180,7 +1181,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                   id="mix-strategy"
                   value={mixStrategy}
                   onChange={(e) => setMixStrategy(e.target.value as MixStrategy)}
-                  className="w-full mt-1 border border-border rounded-lg px-2 py-1.5 bg-background text-foreground"
+                  className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-2 py-1.5 text-foreground"
                 >
                   <option value="saved-heavy">Saved heavy</option>
                   <option value="balanced">Balanced</option>
@@ -1194,7 +1195,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                   id="lookback-days"
                   value={lookbackDays}
                   onChange={(e) => setLookbackDays(Number(e.target.value))}
-                  className="w-full mt-1 border border-border rounded-lg px-2 py-1.5 bg-background text-foreground"
+                  className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-2 py-1.5 text-foreground"
                 >
                   <option value={7}>7 days</option>
                   <option value={14}>14 days</option>
@@ -1214,11 +1215,11 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
               </div>
             </div>
 
-            <div className="px-4 py-3 border-t border-border flex items-center justify-end gap-2">
+            <div className="flex items-center justify-end gap-2 border-t border-[var(--border-subtle)] px-4 py-3">
               <button
                 type="button"
                 onClick={() => setShowGenerateModal(false)}
-                className="px-3 py-2 rounded-lg border border-border bg-card hover:bg-secondary/70 hover:border-foreground/25 text-foreground"
+                className={tertiaryButtonClass}
                 disabled={isGeneratingWeek}
               >
                 Cancel
@@ -1227,7 +1228,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                 type="button"
                 onClick={() => onGenerateWeekOutfits()}
                 disabled={isGeneratingWeek || !hasRequiredItems}
-                className="px-3 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 inline-flex items-center gap-2"
+                className={primaryButtonClass}
               >
                 {isGeneratingWeek ? 'Generating...' : 'Generate Outfits'}
               </button>

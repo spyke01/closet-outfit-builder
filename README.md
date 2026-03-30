@@ -2,6 +2,20 @@
 
 A Next.js full-stack wardrobe management and outfit generation application that helps users create and discover clothing combinations from their personal wardrobe. The app features multi-user authentication, persistent data storage, custom image upload with background removal, and an intelligent outfit engine that generates combinations based on style compatibility, seasonal appropriateness, and user preferences, enhanced with real-time weather integration for location-based outfit recommendations.
 
+## Design System
+
+The current UI uses an Apple Liquid Glass design language across both the public site and the authenticated app.
+
+- Dark mode is the default baseline; light mode is activated with `html[data-theme="light"]`.
+- Shared design tokens live in [app/globals.css](/Volumes/workplace/closet-outfit-builder/app/globals.css).
+- The visual system is built around:
+  - ambient background orbs behind all page content
+  - glass surfaces for nav, cards, popovers, and controls
+  - restrained use of blur (`24px` for standard glass, `32px` for nav)
+  - consistent pill controls for buttons, filters, and badges
+- Existing project fonts are preserved. Do not swap typography families when extending the UI.
+- When updating UI, prefer the shared Liquid Glass primitives over older semantic utility combinations like `bg-card`, `bg-background`, and `bg-muted`.
+
 ## Features
 
 - **Multi-User Authentication**: Secure user accounts with email/password and Google OAuth via Supabase Auth

@@ -9,15 +9,13 @@ interface AuthHeaderProps {
 
 export function AuthHeader({ className = "" }: AuthHeaderProps) {
   return (
-    <div className={`flex flex-col items-center space-y-4 mb-8 ${className}`}>
-      <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+    <div className={`mb-8 flex flex-col items-center space-y-4 text-center ${className}`}>
+      <Link href="/" className="flex items-center space-x-2 transition-opacity duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:opacity-80">
         <Logo className="h-12 w-auto" />
       </Link>
-      <div className="text-center">
-        <p className="text-sm text-muted-foreground">
-          Intelligent outfit composition for the modern wardrobe
-        </p>
-      </div>
+      <p className="max-w-xs text-sm text-muted-foreground">
+        Intelligent outfit composition for the modern wardrobe
+      </p>
     </div>
   );
 }

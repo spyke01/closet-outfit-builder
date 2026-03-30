@@ -3,19 +3,19 @@ import { Logo } from "@/components/logo";
 
 export function StaticPageFooter() {
   return (
-    <footer className="bg-card border-t border-border">
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="relative z-[1] border-t border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] backdrop-blur-[18px]">
+      <div className="mx-auto max-w-[1240px] px-6 py-12">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground">Product</h3>
             <div className="space-y-2">
-              <Link href="/how-it-works" className="block text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/how-it-works" className="block text-muted-foreground transition-colors hover:text-foreground">
                 How it works
               </Link>
-              <Link href="/sebastian" className="block text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/sebastian" className="block text-muted-foreground transition-colors hover:text-foreground">
                 Sebastian
               </Link>
-              <Link href="/pricing" className="block text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/pricing" className="block text-muted-foreground transition-colors hover:text-foreground">
                 Pricing
               </Link>
             </div>
@@ -24,7 +24,7 @@ export function StaticPageFooter() {
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground">Company</h3>
             <div className="space-y-2">
-              <Link href="/about" className="block text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/about" className="block text-muted-foreground transition-colors hover:text-foreground">
                 About
               </Link>
             </div>
@@ -33,10 +33,10 @@ export function StaticPageFooter() {
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground">Legal</h3>
             <div className="space-y-2">
-              <Link href="/privacy" className="block text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/privacy" className="block text-muted-foreground transition-colors hover:text-foreground">
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="block text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/terms" className="block text-muted-foreground transition-colors hover:text-foreground">
                 Terms of Service
               </Link>
             </div>
@@ -45,21 +45,21 @@ export function StaticPageFooter() {
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground">Get Started</h3>
             <div className="space-y-2">
-              <Link href="/auth/sign-up" className="block text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/auth/sign-up" className="block text-muted-foreground transition-colors hover:text-foreground">
                 Create Account
               </Link>
-              <Link href="/auth/login" className="block text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/auth/login" className="block text-muted-foreground transition-colors hover:text-foreground">
                 Sign In
               </Link>
             </div>
           </div>
         </div>
-        
-        <div className="mt-8 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
+
+        <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-[var(--border-subtle)] pt-8 md:flex-row">
           <Link href="/" className="flex items-center">
             <Logo className="h-10 w-auto" />
           </Link>
-          <p className="text-muted-foreground text-sm">&copy; 2024 My AI Outfit. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">&copy; 2024 My AI Outfit. All rights reserved.</p>
         </div>
       </div>
     </footer>

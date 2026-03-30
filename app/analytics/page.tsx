@@ -25,7 +25,7 @@ export default async function AnalyticsPage() {
   const data = await getAnalyticsDashboard();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="page-shell min-h-screen">
       <TopBarWrapper user={user} />
       <Suspense fallback={<PageContentSkeleton />}>
         <AnalyticsDashboard data={data} />

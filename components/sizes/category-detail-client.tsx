@@ -153,7 +153,7 @@ export function CategoryDetailClient({
   
   return (
     <div 
-      className="min-h-screen bg-muted bg-background"
+      className="page-shell min-h-screen"
       onKeyDown={handleKeyDown}
       role="region"
       tabIndex={0}

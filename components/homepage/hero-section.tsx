@@ -15,7 +15,7 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-card to-background">
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute inset-0" style={{
@@ -24,22 +24,22 @@ export function HeroSection() {
         }}></div>
       </div>
       
-      <div className="relative max-w-7xl mx-auto px-6 py-20 lg:py-32">
+      <div className="relative mx-auto max-w-[1240px] px-6 py-24 lg:py-32">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left side - Content */}
-          <div className="text-center lg:text-left animate-fade-in">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary border border-border text-foreground rounded-full text-sm font-medium mb-6">
+          <div className="app-section section-delay-1 text-center lg:text-left">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-[var(--radius-pill)] border border-[color-mix(in_srgb,var(--accent)_16%,transparent)] bg-[var(--accent-muted)] px-4 py-2 text-sm font-medium text-[var(--accent)]">
               <Sparkles className="w-4 h-4" />
               Start your free trial
             </div>
             
-            <h1 className="font-display text-5xl lg:text-7xl font-bold text-foreground leading-tight mb-6">
+            <h1 className="font-display mb-6 text-5xl font-normal leading-tight text-foreground lg:text-7xl">
               Never wonder{' '}
               <span className="text-primary">My AI Outfit</span>{' '}
               again.
             </h1>
             
-            <p className="text-xl lg:text-2xl text-muted-foreground mb-8 leading-relaxed max-w-2xl">
+            <p className="text-balance mb-8 max-w-2xl text-xl leading-relaxed text-muted-foreground lg:text-2xl">
               Your personal AI stylist that builds outfits from your real wardrobe — instantly.
             </p>
             
@@ -47,7 +47,7 @@ export function HeroSection() {
               <Link href="/auth/sign-up">
                 <Button 
                   size="lg" 
-                  className="bg-secondary text-secondary-foreground hover:bg-secondary/90 px-8 py-4 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group"
+                  className="group min-h-12 px-7 text-base"
                 >
                   Get Started Free
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -58,7 +58,7 @@ export function HeroSection() {
                 variant="outline" 
                 size="lg"
                 onClick={scrollToDemo}
-                className="border-2 border-border bg-card text-foreground hover:bg-card/80 px-8 py-4 text-lg font-semibold rounded-2xl transition-all duration-300"
+                className="min-h-12 px-7 text-base font-medium"
               >
                 See How It Works
               </Button>
@@ -70,19 +70,19 @@ export function HeroSection() {
           </div>
           
           {/* Right side - Hero mockup */}
-          <div className="relative animate-slide-in-right">
-            <div className="relative bg-card rounded-3xl shadow-2xl p-8 border border-border">
+          <div className="app-section section-delay-2 relative">
+            <div className="glass-surface relative rounded-[var(--radius-xl)] p-8">
               {/* Mock app interface */}
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <p className="font-semibold text-foreground">Today&apos;s Outfit</p>
-                  <div className="w-8 h-8 bg-secondary/20 rounded-full flex items-center justify-center">
-                    <Sparkles className="w-4 h-4 text-secondary-foreground" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--accent)_18%,transparent)] bg-[var(--accent-muted)]">
+                    <Sparkles className="w-4 h-4 text-[var(--accent)]" />
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="aspect-square bg-muted rounded-2xl overflow-hidden shadow-sm">
+                  <div className="aspect-square overflow-hidden rounded-[var(--radius-lg)] border border-[var(--item-img-border)] bg-[var(--item-img-bg)]">
                     <Image
                       src={heroOutfit.shirt.src}
                       alt={heroOutfit.shirt.alt}
@@ -93,7 +93,7 @@ export function HeroSection() {
                       quality={85}
                     />
                   </div>
-                  <div className="aspect-square bg-muted rounded-2xl overflow-hidden shadow-sm">
+                  <div className="aspect-square overflow-hidden rounded-[var(--radius-lg)] border border-[var(--item-img-border)] bg-[var(--item-img-bg)]">
                     <Image
                       src={heroOutfit.pants.src}
                       alt={heroOutfit.pants.alt}
@@ -104,7 +104,7 @@ export function HeroSection() {
                       quality={85}
                     />
                   </div>
-                  <div className="aspect-square bg-muted rounded-2xl overflow-hidden shadow-sm">
+                  <div className="aspect-square overflow-hidden rounded-[var(--radius-lg)] border border-[var(--item-img-border)] bg-[var(--item-img-bg)]">
                     <Image
                       src={heroOutfit.shoes.src}
                       alt={heroOutfit.shoes.alt}
@@ -115,7 +115,7 @@ export function HeroSection() {
                       quality={85}
                     />
                   </div>
-                  <div className="aspect-square bg-muted rounded-2xl overflow-hidden shadow-sm">
+                  <div className="aspect-square overflow-hidden rounded-[var(--radius-lg)] border border-[var(--item-img-border)] bg-[var(--item-img-bg)]">
                     <Image
                       src={heroOutfit.accessory!.src}
                       alt={heroOutfit.accessory!.alt}
@@ -128,11 +128,11 @@ export function HeroSection() {
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between pt-4 border-t border-border">
+                <div className="flex items-center justify-between border-t border-[var(--border-subtle)] pt-4">
                   <span className="text-sm text-muted-foreground">Compatibility Score</span>
                   <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
-                      <div className="w-14 h-full bg-primary rounded-full"></div>
+                    <div className="h-2 w-16 overflow-hidden rounded-full bg-[var(--bg-surface-active)]">
+                      <div className="h-full w-14 rounded-full bg-primary"></div>
                     </div>
                     <span className="text-sm font-semibold text-foreground">92%</span>
                   </div>

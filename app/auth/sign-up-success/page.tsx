@@ -9,8 +9,8 @@ import { AuthHeader } from "@/components/auth-header";
 
 export default function Page() {
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
+    <main id="main-content" role="main" className="page-shell-content flex min-h-svh w-full items-center justify-center px-6 py-16 md:px-10">
+      <div className="w-full max-w-md">
         <div className="flex flex-col gap-6">
           <AuthHeader />
           <Card>
@@ -29,6 +29,6 @@ export default function Page() {
           </Card>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

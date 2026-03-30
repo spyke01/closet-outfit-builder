@@ -173,14 +173,14 @@ export function PinnedCard({
   if (isLoading) {
     return (
       <div 
-        className="pinned-card-skeleton bg-muted rounded-lg p-4 animate-pulse w-[85vw] md:w-auto"
+        className="pinned-card-skeleton w-[85vw] animate-pulse rounded-[var(--radius-lg)] border border-[var(--item-img-border)] bg-[var(--item-img-bg)] p-4 md:w-auto"
         style={{ minHeight: '120px' }}
         aria-busy="true"
         aria-label="Loading category information"
       >
-        <div className="h-6 bg-muted rounded w-3/4 mb-3"></div>
-        <div className="h-8 bg-muted rounded w-1/2 mb-2"></div>
-        <div className="h-4 bg-muted rounded w-1/3"></div>
+        <div className="mb-3 h-6 w-3/4 rounded bg-[color-mix(in_srgb,var(--bg-surface-active)_80%,transparent)]"></div>
+        <div className="mb-2 h-8 w-1/2 rounded bg-[color-mix(in_srgb,var(--bg-surface-active)_80%,transparent)]"></div>
+        <div className="h-4 w-1/3 rounded bg-[color-mix(in_srgb,var(--bg-surface-active)_80%,transparent)]"></div>
       </div>
     );
   }
@@ -294,7 +294,7 @@ export function PinnedCard({
     >
       <div
         ref={cardRef}
-        className="pinned-card bg-card border border-border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer w-[85vw] md:w-auto"
+        className="pinned-card glass-surface w-[85vw] cursor-pointer p-4 md:w-auto"
         style={{
           minHeight: '120px', // ✅ Ensures 44x44px minimum touch target
         }}
@@ -321,7 +321,7 @@ export function PinnedCard({
                 e.stopPropagation();
                 onLongPress();
               }}
-              className="icon-button p-2 hover:bg-muted rounded-md transition-colors"
+              className="icon-button glass-pill p-2"
               style={{ minWidth: '44px', minHeight: '44px' }} // ✅ 44x44px touch target
               aria-label={`Options for ${category.name}`}
               type="button"

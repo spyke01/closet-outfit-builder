@@ -14,6 +14,7 @@ interface OutfitGridLayoutProps {
   size?: 'small' | 'medium' | 'large';
   showLabels?: boolean;
   interactive?: boolean;
+  previewVariant?: 'framed' | 'bare';
   onItemClick?: (item: WardrobeItem) => void;
 }
 
@@ -23,6 +24,7 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
   size = 'medium',
   showLabels = false,
   interactive = false,
+  previewVariant = 'framed',
   onItemClick
 }) => {
   // Define size classes for responsive sizing - updated for proper card layout
@@ -50,9 +52,9 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
         type="button"
         key={item.id}
         className={`
-          relative bg-card rounded-lg
-          transition-transform duration-200 overflow-hidden
-          ${isClickable ? 'cursor-pointer hover:scale-105 will-change-transform' : ''}
+          relative overflow-hidden rounded-[var(--radius-md)] border border-[var(--item-img-border)] bg-[var(--item-img-bg)]
+          transition-all duration-[var(--duration-normal)] ease-[var(--ease-out)]
+          ${isClickable ? 'cursor-pointer will-change-transform hover:-translate-y-1 hover:border-[var(--border-default)]' : ''}
           w-full h-full max-w-[125px] max-h-[125px]
         `}
         style={{ aspectRatio: '1' }}
@@ -79,7 +81,7 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
             />
           </div>
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-muted">
+          <div className="flex h-full w-full items-center justify-center bg-[var(--item-img-bg)]">
             {item.bg_removal_status === 'processing' ? (
               <div className="flex flex-col items-center gap-1 text-muted-foreground">
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -97,7 +99,7 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
         )}
         
         {showLabels && (
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 min-w-0">
+          <div className="absolute bottom-0 left-0 right-0 min-w-0 bg-gradient-to-t from-black/70 to-transparent p-2">
             <p className="text-white text-xs font-semibold truncate" title={item.name}>
               {item.name}
             </p>
@@ -109,16 +111,23 @@ export const OutfitGridLayout: React.FC<OutfitGridLayoutProps> = ({
 
   return (
     <div className={`${sizeClasses[size]} ${className}`}>
-      <div className="w-full h-full p-3">
-        {/* Flexible Grid Layout - up to 3 rows, 2-3 columns for 8 categories */}
-        <div className="h-full grid gap-2 place-items-center" style={{
-          gridTemplateColumns: items.length <= 2 ? 'repeat(2, 1fr)' : 
-                              items.length <= 6 ? 'repeat(3, 1fr)' : 
-                              'repeat(3, 1fr)',
-          gridTemplateRows: items.length <= 3 ? '1fr' :
-                           items.length <= 6 ? 'repeat(2, 1fr)' :
-                           'repeat(3, 1fr)'
-        }}>
+      <div
+        className={
+          previewVariant === 'bare'
+            ? 'h-full w-full p-0'
+            : 'h-full w-full rounded-[var(--radius-lg)] border-y border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_76%,transparent)] p-3'
+        }
+      >
+        <div
+          className="grid h-full"
+          style={{
+            gap: previewVariant === 'bare' ? 'var(--space-md)' : 'var(--space-sm)',
+            gridTemplateColumns: items.length <= 3 ? 'repeat(3, 1fr)' : 'repeat(3, 1fr)',
+            gridTemplateRows: items.length <= 3 ? '1fr' :
+              items.length <= 6 ? 'repeat(2, 1fr)' :
+              'repeat(3, 1fr)'
+          }}
+        >
           {items.map((item) => renderItem(item))}
         </div>
       </div>

@@ -135,7 +135,7 @@ export function WalkthroughCoach({ steps, currentStep, onNext, onDismiss, prefer
         aria-modal="false"
         aria-label={step.title}
         className={[
-          'fixed z-[9999] w-72 bg-card border border-border rounded-lg shadow-lg p-4 flex flex-col gap-3',
+          'fixed z-[9999] flex w-72 flex-col gap-3 rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--popover)] p-4 shadow-[var(--shadow-card)] backdrop-blur-[var(--blur-glass)] [-webkit-backdrop-filter:blur(var(--blur-glass))]',
           prefersReducedMotion ? '' : 'transition-opacity duration-200',
           pos ? 'opacity-100' : 'opacity-0',
         ].join(' ')}
@@ -149,8 +149,8 @@ export function WalkthroughCoach({ steps, currentStep, onNext, onDismiss, prefer
             width="14" height="8" viewBox="0 0 14 8"
             aria-hidden="true"
           >
-            <polygon points="0,8 7,0 14,8" style={{ fill: 'var(--card)' }} />
-            <polyline points="0,8 7,0 14,8" style={{ fill: 'none', stroke: 'var(--border)', strokeWidth: '1', strokeLinejoin: 'miter' }} />
+            <polygon points="0,8 7,0 14,8" style={{ fill: 'var(--popover)' }} />
+            <polyline points="0,8 7,0 14,8" style={{ fill: 'none', stroke: 'var(--border-subtle)', strokeWidth: '1', strokeLinejoin: 'miter' }} />
           </svg>
         )}
         {pos && step.position === 'top' && (
@@ -160,8 +160,8 @@ export function WalkthroughCoach({ steps, currentStep, onNext, onDismiss, prefer
             width="14" height="8" viewBox="0 0 14 8"
             aria-hidden="true"
           >
-            <polygon points="0,0 7,8 14,0" style={{ fill: 'var(--card)' }} />
-            <polyline points="0,0 7,8 14,0" style={{ fill: 'none', stroke: 'var(--border)', strokeWidth: '1', strokeLinejoin: 'miter' }} />
+            <polygon points="0,0 7,8 14,0" style={{ fill: 'var(--popover)' }} />
+            <polyline points="0,0 7,8 14,0" style={{ fill: 'none', stroke: 'var(--border-subtle)', strokeWidth: '1', strokeLinejoin: 'miter' }} />
           </svg>
         )}
         {pos && step.position === 'right' && (
@@ -171,8 +171,8 @@ export function WalkthroughCoach({ steps, currentStep, onNext, onDismiss, prefer
             width="8" height="14" viewBox="0 0 8 14"
             aria-hidden="true"
           >
-            <polygon points="8,0 0,7 8,14" style={{ fill: 'var(--card)' }} />
-            <polyline points="8,0 0,7 8,14" style={{ fill: 'none', stroke: 'var(--border)', strokeWidth: '1', strokeLinejoin: 'miter' }} />
+            <polygon points="8,0 0,7 8,14" style={{ fill: 'var(--popover)' }} />
+            <polyline points="8,0 0,7 8,14" style={{ fill: 'none', stroke: 'var(--border-subtle)', strokeWidth: '1', strokeLinejoin: 'miter' }} />
           </svg>
         )}
         {pos && step.position === 'left' && (
@@ -182,8 +182,8 @@ export function WalkthroughCoach({ steps, currentStep, onNext, onDismiss, prefer
             width="8" height="14" viewBox="0 0 8 14"
             aria-hidden="true"
           >
-            <polygon points="0,0 8,7 0,14" style={{ fill: 'var(--card)' }} />
-            <polyline points="0,0 8,7 0,14" style={{ fill: 'none', stroke: 'var(--border)', strokeWidth: '1', strokeLinejoin: 'miter' }} />
+            <polygon points="0,0 8,7 0,14" style={{ fill: 'var(--popover)' }} />
+            <polyline points="0,0 8,7 0,14" style={{ fill: 'none', stroke: 'var(--border-subtle)', strokeWidth: '1', strokeLinejoin: 'miter' }} />
           </svg>
         )}
         <div className="flex items-start justify-between gap-2">

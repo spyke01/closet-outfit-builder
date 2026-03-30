@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { Image as ImageIcon, MessageCircle, Paperclip, Send, Sparkles, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -330,7 +331,7 @@ export function SebastianChatLauncher({
       });
   };
 
-  return (
+  const launcherContent = (
     <>
       {variant === 'floating' ? (
         <button
@@ -350,7 +351,7 @@ export function SebastianChatLauncher({
       ) : (
         <Button
           type="button"
-          variant="secondary"
+          variant="outline"
           className={className}
           onClick={() => setOpen(true)}
           aria-label="Ask Sebastian"
@@ -511,4 +512,10 @@ export function SebastianChatLauncher({
       )}
     </>
   );
+
+  if (variant === 'floating' && typeof document !== 'undefined') {
+    return createPortal(launcherContent, document.body);
+  }
+
+  return launcherContent;
 }

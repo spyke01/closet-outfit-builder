@@ -1,6 +1,7 @@
 'use client';
 
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { Button } from "@/components/ui/button";
 import { SimpleThemeToggle } from "@/components/simple-theme-toggle";
 import { Logo } from "@/components/logo";
@@ -11,28 +12,32 @@ import { useState } from "react";
 
 export function StaticPageNavigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navGlassStyle: CSSProperties = {
+    backdropFilter: 'blur(32px) saturate(1.4)',
+    WebkitBackdropFilter: 'blur(32px) saturate(1.4)',
+  };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-lg border-b border-border">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center justify-between h-16">
+    <nav className="glass-nav fixed left-0 right-0 top-0 z-50" style={navGlassStyle}>
+      <div className="mx-auto max-w-[1240px] px-6 py-2">
+        <div className="flex min-h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <Logo className="h-12 w-auto" />
           </Link>
           
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link href="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
+          <div className="hidden md:flex items-center gap-2">
+            <Link href="/how-it-works" className="rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground">
               How it works
             </Link>
-            <Link href="/sebastian" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link href="/sebastian" className="rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground">
               Sebastian
             </Link>
-            <Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link href="/pricing" className="rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground">
               Pricing
             </Link>
-            <Link href="/about" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link href="/about" className="rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground">
               About
             </Link>
           </div>
@@ -45,7 +50,7 @@ export function StaticPageNavigation() {
               </Button>
             </Link>
             <Link href="/auth/sign-up">
-              <Button className="bg-[#D49E7C] text-[#1A2830] hover:bg-[#e1b08f] rounded-xl">
+              <Button>
                 Get Started
               </Button>
             </Link>
@@ -68,43 +73,43 @@ export function StaticPageNavigation() {
         
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden border-t border-border py-4 space-y-4">
+          <div className="space-y-4 border-t border-[var(--nav-border)] py-4 md:hidden">
             <Link 
               href="/how-it-works" 
-              className="block text-muted-foreground hover:text-foreground transition-colors"
+              className="block rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground"
               onClick={() => setIsMenuOpen(false)}
             >
               How it works
             </Link>
             <Link 
               href="/sebastian" 
-              className="block text-muted-foreground hover:text-foreground transition-colors"
+              className="block rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground"
               onClick={() => setIsMenuOpen(false)}
             >
               Sebastian
             </Link>
             <Link 
               href="/pricing" 
-              className="block text-muted-foreground hover:text-foreground transition-colors"
+              className="block rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground"
               onClick={() => setIsMenuOpen(false)}
             >
               Pricing
             </Link>
             <Link 
               href="/about" 
-              className="block text-muted-foreground hover:text-foreground transition-colors"
+              className="block rounded-[var(--radius-pill)] px-3 py-2 text-muted-foreground transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-[var(--bg-surface)] hover:text-foreground"
               onClick={() => setIsMenuOpen(false)}
             >
               About
             </Link>
-            <div className="flex flex-col gap-2 pt-4 border-t border-border">
+            <div className="flex flex-col gap-2 border-t border-[var(--nav-border)] pt-4">
               <Link href="/auth/login" onClick={() => setIsMenuOpen(false)}>
                 <Button variant="ghost" className="w-full justify-start text-muted-foreground">
                   Sign In
                 </Button>
               </Link>
               <Link href="/auth/sign-up" onClick={() => setIsMenuOpen(false)}>
-                <Button className="w-full bg-[#D49E7C] text-[#1A2830] hover:bg-[#e1b08f]">
+                <Button className="w-full">
                   Get Started
                 </Button>
               </Link>

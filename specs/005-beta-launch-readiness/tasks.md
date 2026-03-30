@@ -240,6 +240,8 @@
 
 ## Phase 7: User Story 5 — UI/UX Visual Consistency (Priority: P3)
 
+> Historical note: the implementation notes below describe the earlier semantic-token migration pass. The current visual source of truth is the Apple Liquid Glass system in `app/globals.css` and the updated repo guidance docs, not the older `bg-card` / `bg-background` migration language in this task list.
+
 **Goal**: All 8 files with hardcoded hex color values are updated to use semantic CSS variable classes from the design system. All pages render correctly in dark mode.
 
 **Independent Test**: A reviewer inspects all updated files and finds no hardcoded hex values (`#...` or `[#...]`). All pages render in dark mode with no elements that appear with hardcoded light-mode colors.

@@ -4,7 +4,7 @@
 
 - **Frontend Framework**: Next.js 15 with React 19 and TypeScript
 - **Build Tool**: Next.js with Turbopack for fast development builds
-- **Styling**: Tailwind CSS 4 with dark mode support (`darkMode: 'class'`)
+- **Styling**: Tailwind CSS 4 with CSS custom properties in `app/globals.css` and dark-by-default theming via `html[data-theme="light"]`
 - **Icons**: Lucide React
 - **Testing**: Vitest with Testing Library and jsdom
 - **Linting**: ESLint with Next.js config and TypeScript support
@@ -105,7 +105,7 @@ npm run audit:setup-hooks    # Setup Git hooks for auditing
 
 - **Next.js Config**: Optimized with Turbopack, package imports optimization, server external packages
 - **TypeScript**: Strict mode enabled with Next.js plugin, path mapping for imports
-- **Tailwind**: Content scanning for app/, components/, lib/ directories with dark mode class support
+- **Tailwind**: Content scanning for app/, components/, lib/ directories with Liquid Glass tokens surfaced through CSS variables
 - **ESLint**: Next.js config with React hooks, TypeScript, and accessibility (jsx-a11y) plugins
 - **Netlify**: Functions bundled with esbuild, Node 20 runtime, optimized headers and caching
 - **Vitest**: Test environment with jsdom, global test utilities, and coverage reporting
@@ -113,7 +113,7 @@ npm run audit:setup-hooks    # Setup Git hooks for auditing
 
 ## Theming Standard
 
-This project uses a **semantic token-first theming system**. Treat direct color classes as exceptions, not defaults.
+This project uses the Apple Liquid Glass system. Shared tokens and shell primitives are the source of truth.
 
 ### Source of truth
 
@@ -122,50 +122,29 @@ This project uses a **semantic token-first theming system**. Treat direct color 
 
 ### Required token usage
 
-- Use semantic tokens for app UI:
-  - `bg-background`, `bg-card`, `bg-muted`
-  - `text-foreground`, `text-muted-foreground`
-  - `border-border`
-  - `bg-primary`, `text-primary-foreground`
-  - `bg-secondary`, `text-secondary-foreground`
-  - `ring-ring`
-- Prefer semantic state tokens when applicable:
-  - `text-destructive`, `bg-destructive/10`, `border-destructive/30`
-  - `text-primary` for inline action links
+- Prefer Liquid Glass tokens directly for product UI:
+  - `--bg-deep`, `--bg-base`, `--bg-surface`, `--bg-surface-hover`, `--bg-surface-active`, `--bg-input`
+  - `--border-subtle`, `--border-default`, `--border-strong`, `--border-focus`
+  - `--text-1`, `--text-2`, `--text-3`
+  - `--accent`, `--accent-muted`, `--accent-2`, `--accent-2-muted`, `--accent-3`, `--accent-3-muted`
+  - `--radius-*`, `--space-*`, `--blur-glass`, `--blur-nav`
+- Older semantic aliases such as `bg-card`, `bg-background`, `bg-muted`, and `border-border` remain compatibility helpers during migration, but they are not the final visual spec by themselves.
 
 ### Prohibited patterns in app UI
 
-- Do not use neutral scale theming classes: `slate-*`, `stone-*`, `gray-*`.
-- Do not mix conflicting surface classes in one element:
-  - `bg-white bg-card`
-  - `bg-muted bg-card`
-  - `bg-white bg-background`
-- Do not rely on `dark:*` color overrides when semantic tokens already handle both themes.
-
-### Active palette (reference)
-
-- Dark mode (app interface):
-  - `--background: #1A2830`
-  - `--card: #233A45`
-  - `--border: #2D4A58`
-  - `--foreground: #E8F0F2`
-  - `--primary: #D49E7C`
-  - `--secondary: #5A97AC`
-- Light mode (marketing/public):
-  - `--background: #F1E2C4`
-  - `--foreground: #231F20`
-  - `--card: #FFFFFF`
-  - `--border: #C8B895`
-  - `--primary: #194957`
-  - `--secondary: #D49E7C`
+- Do not use legacy palette values as current guidance.
+- Do not assume class-based dark mode such as `.dark` or `darkMode: 'class'`.
+- Do not wrap every toolbar or filter area in an extra glass card by default.
+- Do not create card-within-card stacks unless the nested surface communicates a real hierarchy.
+- Do not rely on generated CSS alone when a critical visual rule is known to be unstable in local builds.
 
 ### Navigation/loading consistency requirement
 
-- Any nav/top-bar fallback rendered during route transitions (for example Suspense skeletons) must use semantic nav surfaces (`bg-card`, `border-border`) to prevent flash-of-wrong-theme.
+- Any nav/top-bar fallback rendered during route transitions (for example Suspense skeletons) must match the shared Liquid Glass nav treatment so the app does not flash an older theme surface.
 
 ### Test alignment
 
-- UI tests should assert semantic class usage and user-visible behavior, not legacy palette class names.
+- UI tests should assert shared shell primitives, selected states, and user-visible behavior, not obsolete palette recipes.
 
 ### AI icon consistency requirement
 
@@ -190,5 +169,5 @@ Filter/search interfaces must follow the project filtering contract in:
 Required baseline:
 - Always-visible primary search in toolbar
 - Progressive disclosure for advanced filters
-- Active filter chips + `Clear all`
+- Highlighted selected tags/facets in place
 - URL-synced filter state via App Router query params

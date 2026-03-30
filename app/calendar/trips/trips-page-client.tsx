@@ -107,15 +107,15 @@ function shouldPreferSavedOutfit(index: number, strategy: MixStrategy): boolean 
 }
 
 const BUTTON_PRIMARY =
-  'px-3 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 inline-flex items-center justify-center gap-2 transition-colors';
+  'inline-flex items-center justify-center gap-2 rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] px-[22px] py-[11px] text-[0.82rem] font-semibold text-[var(--text-on-accent)] shadow-[var(--shadow-accent)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:-translate-y-px hover:shadow-[var(--shadow-accent-hover)] active:translate-y-0 active:opacity-90 disabled:opacity-50';
 const BUTTON_SECONDARY =
-  'px-3 py-2 rounded-lg bg-card border border-border text-foreground hover:bg-secondary/70 hover:border-foreground/25 disabled:opacity-50 inline-flex items-center justify-center gap-2 transition-colors';
+  'inline-flex items-center justify-center gap-2 rounded-[var(--radius-pill)] border border-[var(--border-default)] bg-[var(--bg-surface)] px-[16px] py-[9px] text-[0.79rem] font-medium text-[var(--text-2)] backdrop-blur-[var(--blur-glass)] [-webkit-backdrop-filter:blur(var(--blur-glass))] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-1)] active:bg-[var(--bg-surface-active)] disabled:opacity-50';
 const BUTTON_SUBTLE =
-  'text-xs px-2.5 py-1.5 rounded-md bg-card border border-border text-foreground hover:bg-secondary/70 hover:border-foreground/25 disabled:opacity-50 inline-flex items-center justify-center gap-1.5 transition-colors';
+  'inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-pill)] border border-transparent bg-transparent px-[12px] py-[6px] text-[0.72rem] font-medium text-[var(--text-2)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-[var(--border-subtle)] hover:bg-[var(--button-tertiary-hover)] hover:text-[var(--text-1)] active:bg-[var(--button-tertiary-active)] disabled:opacity-50';
 const BUTTON_INLINE_SECONDARY =
-  'text-xs px-3 py-1.5 rounded-md bg-secondary text-secondary-foreground border border-border hover:opacity-90 disabled:opacity-50 inline-flex items-center justify-center gap-1.5 font-medium transition-colors';
+  'inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_78%,transparent)] px-[12px] py-[6px] text-[0.72rem] font-medium text-[var(--text-2)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-[var(--border-default)] hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-1)] active:bg-[var(--bg-surface-active)] disabled:opacity-50';
 const BUTTON_INLINE_PRIMARY =
-  'text-xs px-3 py-1.5 rounded-md bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 inline-flex items-center justify-center gap-1.5 font-semibold shadow-sm transition-colors';
+  'inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] px-[12px] py-[6px] text-[0.72rem] font-semibold text-[var(--text-on-accent)] shadow-[var(--shadow-accent)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:-translate-y-px hover:shadow-[var(--shadow-accent-hover)] active:translate-y-0 active:opacity-90 disabled:opacity-50';
 const BUTTON_DANGER =
   'px-3 py-2 rounded-lg border border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/20 disabled:opacity-50 inline-flex items-center justify-center gap-2 transition-colors';
 
@@ -724,14 +724,14 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
   }, [wardrobeItems]);
 
   return (
-    <div className="max-w-7xl mx-auto p-4 sm:p-6 space-y-5 sm:space-y-6">
+    <div className="page-shell-content mx-auto max-w-[1240px] space-y-5 px-6 py-8 sm:space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <div className="inline-flex items-center rounded-lg border border-border bg-card p-1 mb-3">
-            <Link href="/calendar" className="px-3 py-1.5 rounded-md text-sm text-muted-foreground hover:bg-muted">
+          <div className="mb-3 inline-flex items-center rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)] p-1">
+            <Link href="/calendar" className="rounded-[var(--radius-pill)] px-3 py-1.5 text-sm text-muted-foreground hover:bg-[var(--bg-surface-hover)] hover:text-foreground">
               Calendar
             </Link>
-            <span className="px-3 py-1.5 rounded-md text-sm bg-primary text-primary-foreground">Trips</span>
+            <span className="rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] px-3 py-1.5 text-sm text-[var(--text-on-accent)]">Trips</span>
           </div>
           <h1 className="text-3xl font-bold text-foreground">Trip Planner</h1>
           <p className="text-muted-foreground mt-1">Plan trip outfits and packing with destination weather and seasonal fallback.</p>
@@ -740,7 +740,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
         <div className="space-y-4">
-          <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+          <div className="glass-surface rounded-[var(--radius-xl)] p-4 space-y-3">
             <h2 className="text-lg font-semibold text-foreground">Create Trip</h2>
 
             <input
@@ -748,20 +748,20 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
               value={tripName}
               onChange={(e) => setTripName(e.target.value)}
               placeholder="Trip name"
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring shadow-sm"
+              className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
             <div className="grid grid-cols-2 gap-2">
               <input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring shadow-sm"
+                className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
               <input
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring shadow-sm"
+                className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
             <div className="space-y-2">
@@ -770,7 +770,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                 value={destinationText}
                 onChange={(e) => setDestinationText(e.target.value)}
                 placeholder="Destination (city, state/country)"
-                className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring shadow-sm"
+                className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
               <button
                 type="button"
@@ -819,7 +819,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
             </div>
           </div>
 
-          <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+          <div className="glass-surface rounded-[var(--radius-xl)] p-4 space-y-3">
             <h3 className="text-base font-semibold text-foreground">Trips</h3>
             {isTripsLoading ? (
               <div className="text-sm text-muted-foreground">Loading trips...</div>
@@ -832,7 +832,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                     key={trip.id}
                     type="button"
                     onClick={() => setSelectedTripId(trip.id)}
-                    className={`w-full text-left border rounded-lg p-2.5 transition-colors ${selectedTripId === trip.id ? 'border-primary bg-primary/10' : 'border-border hover:bg-muted'}`}
+                    className={`w-full rounded-[var(--radius-lg)] border p-2.5 text-left transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] ${selectedTripId === trip.id ? 'border-primary bg-[var(--accent-muted)]' : 'border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]'}`}
                   >
                     <p className="text-sm font-semibold text-foreground truncate">{trip.name}</p>
                     <p className="text-xs text-muted-foreground truncate">{trip.destination_text}</p>
@@ -860,21 +860,21 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
 
         <div className="xl:col-span-2 space-y-4">
           {!selectedTripId ? (
-            <div className="bg-card border border-border rounded-xl p-8 text-center text-muted-foreground">
+            <div className="glass-surface rounded-[var(--radius-xl)] p-8 text-center text-muted-foreground">
               Select a trip to view planner.
             </div>
           ) : tripDetailQuery.isLoading ? (
-            <div className="bg-card border border-border rounded-xl p-8 text-center text-muted-foreground">
+            <div className="glass-surface rounded-[var(--radius-xl)] p-8 text-center text-muted-foreground">
               <Loader2 className="w-4 h-4 animate-spin inline mr-2" />
               Loading trip details...
             </div>
           ) : !tripDetail ? (
-            <div className="bg-card border border-border rounded-xl p-8 text-center text-muted-foreground">
+            <div className="glass-surface rounded-[var(--radius-xl)] p-8 text-center text-muted-foreground">
               Trip not found.
             </div>
           ) : (
             <>
-              <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+              <section className="space-y-3 border-b border-[var(--border-subtle)] pb-4">
                 <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <h2 className="text-lg font-semibold text-foreground">{tripDetail.name}</h2>
@@ -886,7 +886,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                             type="date"
                             value={editStartDate}
                             onChange={(e) => setEditStartDate(e.target.value)}
-                            className="w-full rounded-md border border-border bg-background px-2 py-1.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring shadow-sm text-xs"
+                            className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-2 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                           />
                           <input
                             type="date"
@@ -958,7 +958,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                 </div>
                 {!hasRequiredItems && <p className="text-xs text-amber-600 dark:text-amber-400">Add Shirt, Pants, and Shoes to generate outfits.</p>}
                 {planningInFlight && planningProgress && (
-                  <div className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-3 space-y-2">
+                <div className="glass-surface space-y-2 border-[color-mix(in_srgb,var(--accent)_22%,transparent)] bg-[var(--accent-muted)] px-3 py-3">
                     <div className="flex items-center justify-between text-sm">
                       <div className="inline-flex items-center gap-2 text-foreground">
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -968,7 +968,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                         {planningProgress.completed}/{planningProgress.total}
                       </span>
                     </div>
-                    <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--bg-surface-active)]">
                       <div
                         className="h-full bg-primary transition-all duration-300"
                         style={{
@@ -984,9 +984,9 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                 {planningMessage && <p className="text-sm text-foreground">{planningMessage}</p>}
                 {weatherLoading && <p className="text-xs text-muted-foreground">Loading destination forecast...</p>}
                 {weatherError && <p className="text-xs text-amber-600 dark:text-amber-400">{weatherError}. Seasonal fallback will still be used.</p>}
-              </div>
+              </section>
 
-              <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+              <section className="space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="text-base font-semibold text-foreground">Planner</h3>
                   <div className="text-xs text-muted-foreground inline-flex items-center gap-1">
@@ -999,7 +999,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                 ) : (
                   <div className="space-y-3">
                     {groupedTripDays.map(({ date, slots }) => (
-                      <div key={date} className="border border-border rounded-lg p-3 space-y-2">
+                      <div key={date} className="glass-surface rounded-[var(--radius-xl)] p-3 space-y-3">
                         <div className="flex items-center justify-between">
                           <p className="text-sm font-semibold text-foreground">{parseDateKey(date).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}</p>
                           <button
@@ -1015,7 +1015,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                         {slots.map((day) => {
                           const weather = resolveTripDayWeather(day.day_date);
                           return (
-                            <div key={day.id} className="border border-border rounded-md p-2.5 space-y-2">
+                            <div key={day.id} className="rounded-[var(--radius-md)] p-2.5 space-y-2">
                               <div className="flex items-center justify-between gap-2">
                                 <div className="text-xs text-muted-foreground flex items-center gap-1.5">
                                   <CloudSun className="w-3.5 h-3.5" />
@@ -1073,7 +1073,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                                       key={outfit.id}
                                       type="button"
                                       onClick={() => handleAssignExistingOutfit(day, outfit.id).catch(() => undefined)}
-                                      className={`text-left border rounded-md p-2 ${day.outfit_id === outfit.id ? 'border-primary bg-primary/10' : 'border-border hover:bg-muted'}`}
+                                      className={`rounded-[var(--radius-md)] border p-2 text-left ${day.outfit_id === outfit.id ? 'border-primary bg-[var(--accent-muted)]' : 'border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]'}`}
                                     >
                                       <p className="text-sm font-medium text-foreground truncate">{outfit.name || `Outfit ${outfit.id.slice(0, 6)}`}</p>
                                       <OutfitThumbs items={outfit.items || []} />
@@ -1088,9 +1088,9 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                     ))}
                   </div>
                 )}
-              </div>
+              </section>
 
-              <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+              <section className="space-y-3 border-t border-[var(--border-subtle)] pt-4">
                 <h3 className="text-base font-semibold text-foreground">Packing Checklist</h3>
                 <div className="flex gap-2">
                   <input
@@ -1098,7 +1098,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                     value={manualPackItem}
                     onChange={(e) => setManualPackItem(e.target.value.replace(/[^A-Za-z0-9\s]/g, '').slice(0, 120))}
                     placeholder="Add manual item (text and numbers only)"
-                    className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring shadow-sm"
+                    className="flex-1 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   />
                   <button
                     type="button"
@@ -1124,7 +1124,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                 ) : (
                   <div className="space-y-2">
                     {tripDetail.pack_items.map((item) => (
-                      <div key={item.id} className="border border-border rounded-lg p-2 flex items-center justify-between gap-2">
+                      <div key={item.id} className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_42%,transparent)] p-2 flex items-center justify-between gap-2">
                         <label className="flex items-center gap-2 min-w-0">
                           <input
                             type="checkbox"
@@ -1140,7 +1140,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                           <button
                             type="button"
                             onClick={() => deleteTripPackItemMutation.mutateAsync({ tripPackItemId: item.id, tripId: item.trip_id }).catch(() => undefined)}
-                            className="p-1.5 rounded-md border border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors"
+                            className="inline-flex items-center justify-center rounded-[var(--radius-pill)] border border-destructive/30 bg-transparent p-1.5 text-[var(--text-2)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-destructive/10 hover:text-destructive"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -1149,16 +1149,16 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                     ))}
                   </div>
                 )}
-              </div>
+              </section>
             </>
           )}
         </div>
       </div>
 
       {showGenerateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4">
-          <div className="w-full max-w-2xl rounded-xl border border-border bg-card shadow-xl">
-            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(6,10,16,0.72)] p-4 backdrop-blur-[8px]">
+          <div className="glass-surface w-full max-w-2xl rounded-[var(--radius-xl)]">
+            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-4 py-3">
               <div>
                 <h3 className="text-lg font-semibold text-foreground">Generate Outfits</h3>
                 <p className="text-sm text-muted-foreground">Configure planning options, then generate trip outfits.</p>
@@ -1166,7 +1166,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
               <button
                 type="button"
                 onClick={() => setShowGenerateModal(false)}
-                className="rounded-md p-2 hover:bg-muted"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-pill)] border border-transparent bg-transparent text-[var(--text-2)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-[var(--border-subtle)] hover:bg-[var(--button-tertiary-hover)] hover:text-[var(--text-1)]"
                 aria-label="Close generate modal"
               >
                 <X className="h-4 w-4" />
@@ -1180,7 +1180,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                   id="trip-existing-policy"
                   value={existingPolicy}
                   onChange={(e) => setExistingPolicy(e.target.value as ExistingPolicy)}
-                  className="mt-1 w-full rounded-md border border-border bg-background px-2 py-1.5 text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring shadow-sm"
+                  className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-2 py-1.5 text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   <option value="skip">Skip existing</option>
                   <option value="overwrite">Overwrite existing</option>
@@ -1192,7 +1192,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                   id="trip-ai-mix"
                   value={mixStrategy}
                   onChange={(e) => setMixStrategy(e.target.value as MixStrategy)}
-                  className="mt-1 w-full rounded-md border border-border bg-background px-2 py-1.5 text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring shadow-sm"
+                  className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-2 py-1.5 text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   <option value="saved-heavy">Saved heavy</option>
                   <option value="balanced">Balanced</option>
@@ -1205,7 +1205,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                   id="trip-lookback-days"
                   value={lookbackDays}
                   onChange={(e) => setLookbackDays(Number(e.target.value))}
-                  className="mt-1 w-full rounded-md border border-border bg-background px-2 py-1.5 text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring shadow-sm"
+                  className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-2 py-1.5 text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   <option value={7}>7 days</option>
                   <option value={14}>14 days</option>
@@ -1218,7 +1218,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
               </label>
             </div>
 
-            <div className="flex items-center justify-end gap-2 border-t border-border px-4 py-3">
+            <div className="flex items-center justify-end gap-2 border-t border-[var(--border-subtle)] px-4 py-3">
               <button type="button" onClick={() => setShowGenerateModal(false)} className={BUTTON_SECONDARY}>
                 Cancel
               </button>

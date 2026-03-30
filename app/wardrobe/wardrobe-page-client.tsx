@@ -20,6 +20,14 @@ interface WardrobePageClientProps {
   initialWalkthroughCompleted?: boolean;
 }
 
+function setsEqual(a: Set<string>, b: Set<string>) {
+  if (a.size !== b.size) return false;
+  for (const value of a) {
+    if (!b.has(value)) return false;
+  }
+  return true;
+}
+
 export function WardrobePageClient({ initialWalkthroughCompleted = true }: WardrobePageClientProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -69,10 +77,12 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
 
     const tags = tagsParam ? tagsParam.split(',').filter(Boolean) : [];
     const categoryIds = categoriesParam ? categoriesParam.split(',').filter(Boolean) : [];
+    const nextTagSet = new Set(tags);
+    const nextCategorySet = new Set(categoryIds);
 
     setSearchTerm(prev => (prev === q ? prev : q));
-    setSelectedTags(new Set(tags));
-    setSelectedCategories(new Set(categoryIds));
+    setSelectedTags(prev => (setsEqual(prev, nextTagSet) ? prev : nextTagSet));
+    setSelectedCategories(prev => (setsEqual(prev, nextCategorySet) ? prev : nextCategorySet));
     setSortBy(sortParam === 'name-asc' || sortParam === 'name-desc' ? sortParam : 'default');
   }, [searchParamsKey]);
 
@@ -142,6 +152,32 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
 
     return () => window.clearTimeout(timeoutId);
   }, [searchTerm, searchParamsKey, updateQueryParams]);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      const params = new URLSearchParams(searchParamsKey);
+      const currentTags = params.get('tags') ?? '';
+      const nextTags = Array.from(selectedTags).sort().join(',');
+      if (currentTags !== nextTags) {
+        updateQueryParams({ tags: nextTags || null });
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [selectedTags, searchParamsKey, updateQueryParams]);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      const params = new URLSearchParams(searchParamsKey);
+      const currentCategories = params.get('categories') ?? '';
+      const nextCategories = Array.from(selectedCategories).sort().join(',');
+      if (currentCategories !== nextCategories) {
+        updateQueryParams({ categories: nextCategories || null });
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [selectedCategories, searchParamsKey, updateQueryParams]);
 
   // Filter items by search term, tags, and categories
   const filteredItems = useMemo(() => {
@@ -218,12 +254,10 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
         } else {
           newTags.add(tag);
         }
-        const serialized = Array.from(newTags).sort().join(',');
-        updateQueryParams({ tags: serialized || null });
         return newTags;
       });
     });
-  }, [updateQueryParams]);
+  }, []);
 
   const handleCategoryToggle = useCallback((categoryId: string) => {
     startTransition(() => {
@@ -234,12 +268,10 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
         } else {
           newCategories.add(categoryId);
         }
-        const serialized = Array.from(newCategories).sort().join(',');
-        updateQueryParams({ categories: serialized || null });
         return newCategories;
       });
     });
-  }, [updateQueryParams]);
+  }, []);
 
   const clearAllFilters = useCallback(() => {
     setSearchTerm('');
@@ -257,7 +289,7 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
   const renderImageSection = useCallback((item: WardrobeItem, alt: string, sizes: string) => {
     if (item.image_url) {
       return (
-        <div className="relative w-full h-48 bg-card">
+        <div className="relative h-48 w-full bg-[var(--item-img-bg)]">
           <Image
             src={item.image_url}
             alt={alt}
@@ -276,7 +308,7 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
     const isProcessing = status === 'processing';
 
     return (
-      <div className="relative w-full h-48 bg-muted/30 border-b border-border flex items-center justify-center">
+      <div className="relative flex h-48 w-full items-center justify-center border-b border-[var(--item-img-border)] bg-[var(--item-img-bg)]">
         {isProcessing ? (
           <div className="flex flex-col items-center gap-2 text-muted-foreground">
             <Loader2 className="h-5 w-5 animate-spin" />
@@ -299,7 +331,7 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
 
   if (categoriesError || itemsError) {
     return (
-      <div className="flex-1 w-full max-w-7xl mx-auto p-6">
+      <div className="page-shell-content">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <h3 className="text-lg font-medium text-red-600 mb-2">Error Loading Wardrobe</h3>
@@ -317,7 +349,7 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
 
   if (categoriesLoading || itemsLoading) {
     return (
-      <div className="flex-1 w-full max-w-7xl mx-auto p-6">
+      <div className="page-shell-content">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border mx-auto mb-4"></div>
@@ -329,8 +361,8 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
   }
 
   return (
-    <div className="flex-1 w-full max-w-7xl mx-auto p-6">
-      <div className="flex flex-col gap-6">
+    <div className="page-shell-content">
+      <div className="flex flex-col gap-8">
         {/* Unified Search and Filters */}
         <WardrobeSearchFilters
           searchTerm={searchTerm}
@@ -358,22 +390,22 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
                 
                 return (
                   <div key={category.id} className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-semibold text-foreground">
+                    <div className="flex items-baseline justify-between border-b border-[var(--border-subtle)] pb-[10px]">
+                      <h2 className="font-display text-[1.35rem] font-normal tracking-[-0.02em] text-foreground">
                         {category.name}
                       </h2>
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-[0.76rem] text-[var(--text-3)]">
                         {categoryItems.length} item{categoryItems.length !== 1 ? 's' : ''}
                       </span>
                     </div>
                     
                     {/* Grid without search/filters since they're now at the top */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+                    <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3">
                       {categoryItems.map(item => (
                         <div
                           key={item.id}
                           onClick={() => handleItemSelect(item)}
-                          className="border border-border rounded-lg bg-card shadow-sm overflow-hidden transition-all duration-200 cursor-pointer hover:shadow-md active:scale-95"
+                          className="glass-surface cursor-pointer overflow-hidden rounded-[var(--radius-md)]"
                           role="button"
                           tabIndex={0}
                           onKeyDown={(e) => {
@@ -393,9 +425,9 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
                           )}
                           
                           {/* Item info */}
-                          <div className="p-3 border-t border-border">
-                            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{category.name}</p>
-                            <p className="text-sm font-medium text-foreground line-clamp-2 mb-2">
+                          <div className="border-t border-[var(--item-img-border)] px-[14px] py-3">
+                            <p className="mb-1 text-[0.62rem] font-semibold uppercase tracking-[0.06em] text-[var(--text-3)]">{category.name}</p>
+                            <p className="mb-2 line-clamp-2 text-[0.82rem] font-medium text-foreground">
                               {item.brand ? `${item.brand} ${item.name}` : item.name}
                             </p>
                             
@@ -404,13 +436,13 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
                                 {item.capsule_tags.slice(0, 3).map(tag => (
                                   <span
                                     key={tag}
-                                    className="px-2 py-1 text-xs rounded-md bg-muted text-muted-foreground truncate"
+                                    className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-1 text-[0.65rem] font-medium text-[var(--tag-text)] truncate"
                                   >
                                     {tag}
                                   </span>
                                 ))}
                                 {item.capsule_tags.length > 3 && (
-                                  <span className="px-2 py-1 text-xs rounded-md bg-muted text-muted-foreground">
+                                  <span className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-1 text-[0.65rem] font-medium text-[var(--tag-text)]">
                                     +{item.capsule_tags.length - 3}
                                   </span>
                                 )}
@@ -428,14 +460,14 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
             // Show selected categories in grid - group by category if multiple selected
             selectedCategories.size === 1 ? (
               // Single category selected - show as flat grid
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3">
                 {filteredItems.map(item => {
                   const category = categories.find(c => c.id === item.category_id);
                   return (
                     <div
                       key={item.id}
                       onClick={() => handleItemSelect(item)}
-                      className="border border-border rounded-lg bg-card shadow-sm overflow-hidden transition-all duration-200 cursor-pointer hover:shadow-md active:scale-95"
+                      className="glass-surface cursor-pointer overflow-hidden rounded-[var(--radius-md)]"
                       role="button"
                       tabIndex={0}
                       onKeyDown={(e) => {
@@ -454,9 +486,9 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
                       )}
                       
                       {/* Item info */}
-                      <div className="p-3 border-t border-border">
-                        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{category?.name || 'Item'}</p>
-                        <p className="text-sm font-medium text-foreground line-clamp-2 mb-2">
+                      <div className="border-t border-[var(--item-img-border)] px-[14px] py-3">
+                        <p className="mb-1 text-[0.62rem] font-semibold uppercase tracking-[0.06em] text-[var(--text-3)]">{category?.name || 'Item'}</p>
+                        <p className="mb-2 line-clamp-2 text-[0.82rem] font-medium text-foreground">
                           {item.brand ? `${item.brand} ${item.name}` : item.name}
                         </p>
                         
@@ -465,13 +497,13 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
                             {item.capsule_tags.slice(0, 3).map((tag: string) => (
                               <span
                                 key={tag}
-                                className="px-2 py-1 text-xs rounded-md bg-muted text-muted-foreground"
+                                className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-1 text-[0.65rem] font-medium text-[var(--tag-text)]"
                               >
                                 {tag}
                               </span>
                             ))}
                             {item.capsule_tags.length > 3 && (
-                              <span className="px-2 py-1 text-xs rounded-md bg-muted text-muted-foreground">
+                              <span className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-1 text-[0.65rem] font-medium text-[var(--tag-text)]">
                                 +{item.capsule_tags.length - 3}
                               </span>
                             )}
@@ -494,21 +526,21 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
                     
                     return (
                       <div key={category.id} className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h2 className="text-xl font-semibold text-foreground">
+                        <div className="flex items-baseline justify-between border-b border-[var(--border-subtle)] pb-[10px]">
+                          <h2 className="font-display text-[1.35rem] font-normal tracking-[-0.02em] text-foreground">
                             {category.name}
                           </h2>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-[0.76rem] text-[var(--text-3)]">
                             {categoryItems.length} item{categoryItems.length !== 1 ? 's' : ''}
                           </span>
                         </div>
                         
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+                        <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3">
                           {categoryItems.map(item => (
                             <div
                               key={item.id}
                               onClick={() => handleItemSelect(item)}
-                              className="border border-border rounded-lg bg-card shadow-sm overflow-hidden transition-all duration-200 cursor-pointer hover:shadow-md active:scale-95"
+                              className="glass-surface cursor-pointer overflow-hidden rounded-[var(--radius-md)]"
                               role="button"
                               tabIndex={0}
                               onKeyDown={(e) => {
@@ -527,9 +559,9 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
                               )}
                               
                               {/* Item info */}
-                              <div className="p-3 border-t border-border">
-                                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{category.name}</p>
-                                <p className="text-sm font-medium text-foreground line-clamp-2 mb-2">
+                              <div className="border-t border-[var(--item-img-border)] px-[14px] py-3">
+                                <p className="mb-1 text-[0.62rem] font-semibold uppercase tracking-[0.06em] text-[var(--text-3)]">{category.name}</p>
+                                <p className="mb-2 line-clamp-2 text-[0.82rem] font-medium text-foreground">
                                   {item.brand ? `${item.brand} ${item.name}` : item.name}
                                 </p>
                                 
@@ -538,13 +570,13 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
                                     {item.capsule_tags.slice(0, 3).map(tag => (
                                       <span
                                         key={tag}
-                                        className="px-2 py-1 text-xs rounded-md bg-muted text-muted-foreground"
+                                        className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-1 text-[0.65rem] font-medium text-[var(--tag-text)]"
                                       >
                                         {tag}
                                       </span>
                                     ))}
                                     {item.capsule_tags.length > 3 && (
-                                      <span className="px-2 py-1 text-xs rounded-md bg-muted text-muted-foreground">
+                                      <span className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-1 text-[0.65rem] font-medium text-[var(--tag-text)]">
                                         +{item.capsule_tags.length - 3}
                                       </span>
                                     )}

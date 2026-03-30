@@ -1,6 +1,6 @@
 # closet-outfit-builder Development Guidelines
 
-Last updated: 2026-03-13
+Last updated: 2026-03-30
 
 ## Tech Stack
 
@@ -75,6 +75,23 @@ For each new API route or server action, verify:
 - Server Actions: `'use server'` directive, validate input with Zod, authenticate before acting
 - Client Components: `'use client'` directive, use TanStack Query for server state
 - `next/dynamic` with `ssr: false` must live in a Client Component, not a Server Component
+
+## UI / Design Steering
+
+The active UI direction is the Apple Liquid Glass system used across both marketing and authenticated pages.
+
+- Keep the existing project font choices. Do not introduce new typefaces.
+- Dark mode is the default baseline. Light mode is opt-in via `html[data-theme="light"]`.
+- Prefer shared Liquid Glass tokens from `app/globals.css` (`--bg-surface`, `--border-subtle`, `--accent`, `--radius-*`, `--space-*`, `--blur-*`, etc.) instead of page-local visual values.
+- Use glass selectively for navigation, toolbars, cards, popovers, and controls. Do not apply backdrop blur to dense text blocks, list rows inside cards, or general content containers.
+- Every major page should inherit the shared ambient shell (`ambient-background`, `page-shell`, `page-shell-content`) instead of painting its own route-level background color.
+- Reuse shared interaction patterns:
+  - Primary CTA: gradient accent fill
+  - Secondary button: bordered glass surface
+  - Tertiary button: transparent at rest
+  - Filter tags: pill glass controls with accent-muted selected state
+- Avoid old semantic recipes as visual targets. Classes like `bg-card`, `bg-background`, and `bg-muted` may still exist for compatibility, but they are not sufficient design guidance by themselves.
+- When Turbopack drops or rewrites critical visual CSS (for example `backdrop-filter`), prefer component-level inline style fallbacks for the affected property rather than letting the visual regression persist.
 
 ## UI Alert Styling Standard
 

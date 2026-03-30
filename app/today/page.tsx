@@ -40,7 +40,7 @@ export default async function TodayPage() {
   if (wardrobeError) {
     logger.error('Failed to fetch wardrobe:', wardrobeError);
     return (
-      <div className="min-h-screen bg-background">
+      <div className="page-shell min-h-screen">
         <TopBarWrapper user={user} />
         <div className="container mx-auto p-4 pt-24">
           <h1 className="text-2xl font-bold mb-4 text-foreground">Today&apos;s Outfit</h1>
@@ -55,7 +55,7 @@ export default async function TodayPage() {
   }
   
   return (
-    <div className="min-h-screen bg-background">
+    <div className="page-shell min-h-screen">
       <TopBarWrapper user={user} />
       <TodayPageClient wardrobeItems={wardrobeItems || []} />
     </div>

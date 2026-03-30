@@ -18,7 +18,6 @@ import {
   AlertCircle,
   Shirt,
   Trash2,
-  X
 } from 'lucide-react';
 import Link from 'next/link';
 import { Outfit } from '@/lib/types/database';
@@ -31,6 +30,67 @@ type FilterBy = (typeof FILTER_OPTIONS)[number];
 type SortBy = (typeof SORT_OPTIONS)[number];
 
 export function OutfitsPageClient() {
+  const getFilterTagStyle = (selected: boolean): React.CSSProperties => ({
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '7px 14px',
+    borderRadius: 'var(--radius-pill)',
+    border: selected ? '1px solid var(--accent)' : '1px solid var(--border-default)',
+    background: selected ? 'var(--accent-muted)' : 'var(--bg-surface)',
+    backdropFilter: 'blur(24px)',
+    WebkitBackdropFilter: 'blur(24px)',
+    fontSize: '0.76rem',
+    fontWeight: 500,
+    color: selected ? 'var(--accent)' : 'var(--text-2)',
+    cursor: 'pointer',
+    transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
+  });
+  const outfitCardStyle: React.CSSProperties = {
+    borderRadius: 'var(--radius-lg)',
+    border: '1px solid var(--border-subtle)',
+    background: 'var(--bg-surface)',
+    backdropFilter: 'blur(24px)',
+    WebkitBackdropFilter: 'blur(24px)',
+    boxShadow: 'var(--shadow-card)',
+    overflow: 'hidden',
+    cursor: 'pointer',
+    display: 'flex',
+    flexDirection: 'column',
+    transition: 'all 0.28s cubic-bezier(0.16, 1, 0.3, 1)',
+  };
+  const outfitCardHeaderStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '12px 16px',
+    background: 'var(--card-header-bg, rgba(255, 255, 255, 0.03))',
+    borderBottom: '1px solid var(--border-subtle)',
+  };
+  const outfitCardBodyStyle: React.CSSProperties = {
+    padding: '14px 16px',
+    flex: '1 1 auto',
+  };
+  const outfitCardFooterStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '10px 16px',
+    borderTop: '1px solid var(--border-subtle)',
+  };
+  const outfitDeleteButtonStyle: React.CSSProperties = {
+    width: '28px',
+    height: '28px',
+    borderRadius: 'var(--radius-sm)',
+    border: '1px solid transparent',
+    background: 'transparent',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    flexShrink: 0,
+    transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
+  };
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -47,8 +107,6 @@ export function OutfitsPageClient() {
   // Fetch data
   const { data: outfits = [], isLoading, error } = useOutfits();
   const deleteOutfitMutation = useDeleteOutfit();
-
-  const hasActiveFilters = Boolean(searchTerm || filterBy !== 'all' || sortBy !== 'newest');
 
   const updateQueryParams = useCallback((updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParamsKey);
@@ -161,9 +219,6 @@ export function OutfitsPageClient() {
     updateQueryParams({ q: null, filter: null, sort: null });
   };
 
-  const filterPillBase =
-    'h-10 px-4 rounded-lg border text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
-
   const handleDeleteOutfit = async (outfit: Outfit) => {
     setOutfitToDelete(outfit);
     setShowDeleteConfirm(true);
@@ -183,7 +238,7 @@ export function OutfitsPageClient() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 w-full max-w-7xl mx-auto p-6">
+      <div className="page-shell-content mx-auto w-full max-w-[1240px] px-6 py-8">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border mx-auto mb-4"></div>
@@ -196,7 +251,7 @@ export function OutfitsPageClient() {
 
   if (error) {
     return (
-      <div className="flex-1 w-full max-w-7xl mx-auto p-6">
+      <div className="page-shell-content mx-auto w-full max-w-[1240px] px-6 py-8">
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
@@ -208,7 +263,7 @@ export function OutfitsPageClient() {
   }
 
   return (
-    <div className="flex-1 w-full max-w-7xl mx-auto p-6">
+    <div className="page-shell-content mx-auto w-full max-w-[1240px] px-6 py-8">
       <div className="flex flex-col gap-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -224,7 +279,7 @@ export function OutfitsPageClient() {
               variant="outline"
               size="default"
               onClick={() => setShowFilters(!showFilters)}
-              className="h-10 px-4 flex items-center gap-2 bg-card border-border text-foreground hover:bg-muted"
+              className="glass-pill h-10 px-4 flex items-center gap-2"
               aria-label={showFilters ? 'Hide advanced filters' : 'Show advanced filters'}
               aria-expanded={showFilters}
             >
@@ -232,7 +287,7 @@ export function OutfitsPageClient() {
               More Filters
             </Button>
             
-            <div className="flex border border-border rounded-lg">
+            <div className="inline-flex rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)] p-1">
               <Button
                 variant={layoutType === 'grid' ? 'default' : 'ghost'}
                 size="default"
@@ -262,127 +317,83 @@ export function OutfitsPageClient() {
           </div>
         </div>
 
-        <Card className="rounded-lg bg-card border-border">
-          <CardContent className="p-4 space-y-4">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-              <div className="relative lg:col-span-2">
-                <label htmlFor="outfit-search" className="sr-only">
-                  Search outfits
-                </label>
-                <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-                <input
-                  id="outfit-search"
-                  type="search"
-                  name="search"
-                  autoComplete="off"
-                  spellCheck={false}
-                  placeholder="Search outfits by name, item, or brand..."
-                  value={searchTerm}
-                  onChange={(e) => handleSearchChange(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
-                  aria-label="Search outfits by name, item, or brand"
-                />
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {FILTER_OPTIONS.map(option => {
-                  const labelMap: Record<FilterBy, string> = {
-                    all: 'All',
-                    loved: 'Loved',
-                    curated: 'Curated',
-                    generated: 'Generated',
-                  };
-                  const selected = filterBy === option;
-                  return (
-                    <button
-                      key={option}
-                      onClick={() => handleFilterChange(option)}
-                      aria-pressed={selected}
-                      className={`${filterPillBase} ${
-                        selected
-                          ? 'bg-primary text-primary-foreground border-primary'
-                          : 'bg-card text-muted-foreground border-border hover:bg-muted'
-                      }`}
-                    >
-                      {labelMap[option]}
-                    </button>
-                  );
-                })}
-              </div>
+        <div className="space-y-4">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 max-[980px]:grid-cols-1">
+            <div className="relative flex-1">
+              <label htmlFor="outfit-search" className="sr-only">
+                Search outfits
+              </label>
+              <Search
+                size={18}
+                className="pointer-events-none absolute left-3 top-1/2 z-[1] -translate-y-1/2 text-[var(--text-3)]"
+              />
+              <input
+                id="outfit-search"
+                type="search"
+                name="search"
+                autoComplete="off"
+                spellCheck={false}
+                placeholder="Search outfits by name, item, or brand..."
+                value={searchTerm}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="w-full rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-surface)] py-[11px] pl-10 pr-4 text-foreground backdrop-blur-[var(--blur-glass)] [-webkit-backdrop-filter:blur(var(--blur-glass))] focus:outline-none focus:ring-2 focus:ring-ring"
+                aria-label="Search outfits by name, item, or brand"
+              />
             </div>
 
-            {hasActiveFilters && (
-              <div className="flex flex-wrap items-center gap-2 text-sm">
-                <span className="text-muted-foreground">Active:</span>
-                {searchTerm && (
+            <div className="flex flex-wrap items-center gap-2">
+              {FILTER_OPTIONS.map(option => {
+                const labelMap: Record<FilterBy, string> = {
+                  all: 'All',
+                  loved: 'Loved',
+                  curated: 'Curated',
+                  generated: 'Generated',
+                };
+                const selected = filterBy === option;
+                return (
                   <button
-                    onClick={() => handleSearchChange('')}
-                    className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-secondary/70 hover:border-foreground/25 transition-colors"
-                    aria-label="Clear search filter"
+                    key={option}
+                    type="button"
+                    onClick={() => handleFilterChange(option)}
+                    aria-pressed={selected}
+                    className={`filter-tag focus-visible:outline-none ${selected ? 'active' : ''}`}
+                    style={getFilterTagStyle(selected)}
                   >
-                    Search: {searchTerm}
-                    <X size={14} />
+                    {labelMap[option]}
                   </button>
-                )}
-                {filterBy !== 'all' && (
-                  <button
-                    onClick={() => handleFilterChange('all')}
-                    className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-secondary/70 hover:border-foreground/25 transition-colors"
-                    aria-label="Clear type filter"
-                  >
-                    Type: {filterBy}
-                    <X size={14} />
-                  </button>
-                )}
-                {sortBy !== 'newest' && (
-                  <button
-                    onClick={() => handleSortChange('newest')}
-                    className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-secondary/70 hover:border-foreground/25 transition-colors"
-                    aria-label="Reset sort order"
-                  >
-                    Sort: {sortBy}
-                    <X size={14} />
-                  </button>
-                )}
-                <Button variant="ghost" size="default" className="h-10 px-4" onClick={clearFilters}>
-                  Clear all
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                );
+              })}
+            </div>
+          </div>
+        </div>
 
         {/* Advanced Filters */}
         {showFilters && (
-          <Card className="rounded-lg bg-card border-border">
-            <CardContent className="p-4">
-              <div className="flex flex-wrap items-center gap-2">
-                <label htmlFor="outfit-sort" className="text-sm font-medium text-muted-foreground">
-                  Sort by
-                </label>
-                <select
-                  id="outfit-sort"
-                  value={sortBy}
-                  onChange={(e) => handleSortChange(e.target.value as SortBy)}
-                  className="h-10 min-w-[220px] px-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
-                  aria-label="Sort outfits by criteria"
-                >
-                  <option value="newest">Newest First</option>
-                  <option value="oldest">Oldest First</option>
-                  <option value="score">Highest Score</option>
-                  <option value="name">Name</option>
-                </select>
-                <Button
-                  variant="outline"
-                  size="default"
-                  onClick={clearFilters}
-                  className="h-10 px-4 bg-card border-border text-foreground hover:bg-muted"
-                >
-                  Clear Filters
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <section className="flex flex-wrap items-center gap-2 border-t border-[var(--border-subtle)] pt-4">
+            <label htmlFor="outfit-sort" className="text-sm font-medium text-muted-foreground">
+              Sort by
+            </label>
+            <select
+              id="outfit-sort"
+              value={sortBy}
+              onChange={(e) => handleSortChange(e.target.value as SortBy)}
+              className="h-10 min-w-[220px] rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-surface)] pl-3 pr-10 text-foreground backdrop-blur-[var(--blur-glass)] [-webkit-backdrop-filter:blur(var(--blur-glass))] focus:outline-none focus:ring-2 focus:ring-ring"
+              aria-label="Sort outfits by criteria"
+            >
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="score">Highest Score</option>
+              <option value="name">Name</option>
+            </select>
+            <Button
+              variant="outline"
+              size="default"
+              onClick={clearFilters}
+              className="glass-pill h-10 px-4 text-foreground"
+            >
+              Clear Filters
+            </Button>
+          </section>
         )}
 
         {/* Results count */}
@@ -434,11 +445,12 @@ export function OutfitsPageClient() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAndSortedOutfits.map(outfit => (
               <div
                 key={outfit.id}
-                className="border border-border rounded-lg bg-card shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-all duration-200"
+                className="outfit-card"
+                style={outfitCardStyle}
                 onClick={() => handleOutfitSelect(outfit)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' || event.key === ' ') {
@@ -448,36 +460,71 @@ export function OutfitsPageClient() {
                 }}
                 role="button"
                 tabIndex={0}
+                onMouseEnter={(event) => {
+                  event.currentTarget.style.transform = 'translateY(-3px)';
+                  event.currentTarget.style.borderColor = 'var(--border-default)';
+                  event.currentTarget.style.boxShadow = 'var(--shadow-card-hover)';
+                }}
+                onMouseLeave={(event) => {
+                  event.currentTarget.style.transform = 'translateY(0)';
+                  event.currentTarget.style.borderColor = 'var(--border-subtle)';
+                  event.currentTarget.style.boxShadow = 'var(--shadow-card)';
+                }}
               >
                 {/* Card Header */}
-                <div className="p-3 border-b border-border">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-semibold text-foreground text-base truncate flex-1 mr-2">
+                <div style={outfitCardHeaderStyle}>
+                  <div className="flex w-full min-w-0 items-center justify-between gap-2">
+                    <h3
+                      className="mr-2 flex-1 truncate whitespace-nowrap text-[0.82rem] font-semibold text-[var(--text-1)]"
+                      style={{ maxWidth: 'calc(100% - 36px)' }}
+                    >
                       {outfit.name || 'Untitled Outfit'}
                     </h3>
-                    
+                  
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDeleteOutfit(outfit);
                         }}
-                        className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                        className="outfit-card-delete"
+                        style={{ ...outfitDeleteButtonStyle, color: 'var(--danger, #f55b5b)' }}
                         aria-label="Delete outfit"
+                        onMouseEnter={(event) => {
+                          event.currentTarget.style.background = 'var(--danger-muted, rgba(245, 91, 91, 0.12))';
+                          event.currentTarget.style.borderColor = 'var(--danger-muted, rgba(245, 91, 91, 0.12))';
+                          event.currentTarget.style.color = 'var(--danger, #f55b5b)';
+                          const icon = event.currentTarget.querySelector('svg');
+                          if (icon instanceof SVGElement) {
+                            icon.style.opacity = '1';
+                          }
+                        }}
+                        onMouseLeave={(event) => {
+                          event.currentTarget.style.background = 'transparent';
+                          event.currentTarget.style.borderColor = 'transparent';
+                          event.currentTarget.style.color = 'var(--danger, #f55b5b)';
+                          const icon = event.currentTarget.querySelector('svg');
+                          if (icon instanceof SVGElement) {
+                            icon.style.opacity = '0.55';
+                          }
+                        }}
                       >
-                        <Trash2 size={18} />
+                        <Trash2 size={18} style={{ color: 'currentColor', opacity: 0.55, transition: 'opacity 0.18s' }} />
                       </button>
                     </div>
                   </div>
                 </div>
                 
-                {/* Visual Layout - no extra background, let the layout component handle it */}
-                <div className="relative h-80">
+                {/* Card Body */}
+                <div style={outfitCardBodyStyle}>
+                  <div className="relative h-80">
                   {layoutType === 'grid' && (
                     <OutfitGridLayout
                       items={outfit.items || []}
                       size="medium"
                       className="w-full h-full"
+                      previewVariant="bare"
+                      showLabels
                     />
                   )}
                   {layoutType === 'visual' && (
@@ -487,29 +534,49 @@ export function OutfitsPageClient() {
                       className="w-full h-full"
                     />
                   )}
+                  </div>
                 </div>
                 
                 {/* Card Footer */}
-                <div className="p-3 border-t border-border">
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <div style={outfitCardFooterStyle}>
+                  <div className="flex w-full items-center justify-between gap-3 text-xs text-muted-foreground">
                     <div className="flex items-center gap-2">
-                      <span>{outfit.source === 'curated' ? 'Curated' : 'Generated'}</span>
-                      {outfit.tuck_style && (
-                        <>
-                          <span>•</span>
-                          <span>{outfit.tuck_style}</span>
-                        </>
-                      )}
-                      {outfit.loved && (
-                        <>
-                          <span>•</span>
-                          <Heart className="h-3 w-3 fill-current text-red-500" />
-                        </>
-                      )}
+                      <span
+                        className={`inline-flex items-center gap-[5px] rounded-[var(--radius-pill)] text-[0.65rem] font-medium ${
+                          outfit.loved
+                            ? ''
+                            : outfit.source === 'curated'
+                              ? ''
+                              : ''
+                        }`}
+                        style={{
+                          padding: '3px 10px',
+                          background: outfit.loved
+                            ? 'var(--accent-2-muted)'
+                            : outfit.source === 'curated'
+                              ? 'var(--accent-muted)'
+                              : 'var(--accent-3-muted)',
+                          color: outfit.loved
+                            ? 'var(--accent-2)'
+                            : outfit.source === 'curated'
+                              ? 'var(--accent)'
+                              : 'var(--accent-3)',
+                          border: `1px solid ${
+                            outfit.loved
+                              ? 'color-mix(in srgb, var(--accent-2) 10%, transparent)'
+                              : outfit.source === 'curated'
+                                ? 'color-mix(in srgb, var(--accent) 10%, transparent)'
+                                : 'color-mix(in srgb, var(--accent-3) 10%, transparent)'
+                          }`,
+                        }}
+                      >
+                        {outfit.loved ? 'Loved' : outfit.source === 'curated' ? 'Curated' : 'Generated'}
+                        {outfit.loved && <Heart className="h-[11px] w-[11px] fill-current" />}
+                      </span>
                     </div>
                     
                     {outfit.items && outfit.items.length > 0 && (
-                      <span>
+                      <span className="tabular-nums text-[0.74rem] text-[var(--text-3)]">
                         {outfit.items.length} item{outfit.items.length !== 1 ? 's' : ''}
                       </span>
                     )}
@@ -522,7 +589,7 @@ export function OutfitsPageClient() {
 
         {/* Delete Confirmation Dialog */}
         {showDeleteConfirm && outfitToDelete && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(6,10,16,0.72)] p-4 backdrop-blur-[8px]">
             <Card className="w-full max-w-md mx-4">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-red-600">

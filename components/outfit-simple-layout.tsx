@@ -184,7 +184,7 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
 
   if (items.length === 0) {
     return (
-      <div className={`${sizeClass} ${className} flex items-center justify-center bg-gradient-to-br from-card via-muted to-card rounded-lg border-2 border-dashed border-border`}>
+      <div className={`${sizeClass} ${className} flex items-center justify-center rounded-[var(--radius-lg)] border border-dashed border-[var(--border-default)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)]`}>
         <div className="text-center text-muted-foreground">
           <div className="text-2xl mb-2">👔</div>
           <div className="text-sm">No items</div>
@@ -195,7 +195,7 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
 
   return (
     <div 
-      className={`${sizeClass} ${className} relative bg-gradient-to-br from-card via-muted to-card rounded-lg border border-border overflow-hidden`}
+      className={`${sizeClass} ${className} relative overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)]`}
     >
       {/* Render clothing item placeholders */}
       {Object.entries(itemsByCategory).map(([category, item], index) => {
@@ -221,7 +221,7 @@ export const OutfitSimpleLayout: React.FC<OutfitSimpleLayoutProps> = ({
                   />
                 </div>
               ) : (
-                <div className="w-full h-full bg-muted rounded-lg flex items-center justify-center border-2 border-border shadow-sm">
+                <div className="flex h-full w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--item-img-border)] bg-[var(--item-img-bg)]">
                   <div className="text-muted-foreground">
                     {getCategoryIcon(category)}
                   </div>

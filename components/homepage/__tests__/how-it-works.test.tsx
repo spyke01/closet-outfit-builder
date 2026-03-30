@@ -95,7 +95,7 @@ describe('HowItWorks - Unit Tests', () => {
       const { container } = render(<HowItWorks />);
       
       // Find progress bar containers
-      const progressBars = container.querySelectorAll('.bg-muted.rounded-full');
+      const progressBars = container.querySelectorAll('.bg-\\[var\\(--bg-surface-active\\)\\].rounded-full');
       
       // Should have at least 3 progress bars (one for each item)
       expect(progressBars.length).toBeGreaterThanOrEqual(3);
@@ -182,7 +182,7 @@ describe('HowItWorks - Unit Tests', () => {
     it('should have icon containers for each step', () => {
       const { container } = render(<HowItWorks />);
       
-      const iconContainers = container.querySelectorAll('.rounded-2xl.bg-secondary\\/20');
+      const iconContainers = container.querySelectorAll('.bg-\\[var\\(--accent-muted\\)\\]');
       
       // Should have 3 icon containers
       expect(iconContainers.length).toBeGreaterThanOrEqual(3);
@@ -193,7 +193,7 @@ describe('HowItWorks - Unit Tests', () => {
     it('should have animation classes on step containers', () => {
       const { container } = render(<HowItWorks />);
       
-      const animatedElements = container.querySelectorAll('[class*="animate-slide-in"]');
+      const animatedElements = container.querySelectorAll('.app-section');
       
       // Should have animated elements
       expect(animatedElements.length).toBeGreaterThanOrEqual(3);
@@ -273,7 +273,7 @@ describe('HowItWorks - Unit Tests', () => {
     it('should use semantic themed container classes', () => {
       const { container } = render(<HowItWorks />);
       
-      const themedContainers = container.querySelectorAll('.bg-card, .bg-background, .bg-muted');
+      const themedContainers = container.querySelectorAll('.glass-surface');
       
       expect(themedContainers.length).toBeGreaterThanOrEqual(3);
     });
@@ -289,7 +289,7 @@ describe('HowItWorks - Unit Tests', () => {
     it('should use semantic image container backgrounds', () => {
       const { container } = render(<HowItWorks />);
       
-      const imageContainers = container.querySelectorAll('.bg-card');
+      const imageContainers = container.querySelectorAll('.bg-\\[var\\(--item-img-bg\\)\\]');
       
       expect(imageContainers.length).toBeGreaterThanOrEqual(3);
     });

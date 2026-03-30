@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, startTransition, useDeferredValue } from 'react';
-import { Search, Tag, Plus, Filter, X } from 'lucide-react';
+import { Search, Plus, Filter } from 'lucide-react';
 
 
 
@@ -43,6 +43,22 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
   totalCount,
 }) => {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const getFilterTagStyle = (selected: boolean): React.CSSProperties => ({
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '7px 14px',
+    borderRadius: 'var(--radius-pill)',
+    border: selected ? '1px solid var(--accent)' : '1px solid var(--border-default)',
+    background: selected ? 'var(--accent-muted)' : 'var(--bg-surface)',
+    backdropFilter: 'blur(24px)',
+    WebkitBackdropFilter: 'blur(24px)',
+    fontSize: '0.76rem',
+    fontWeight: 500,
+    color: selected ? 'var(--accent)' : 'var(--text-2)',
+    cursor: 'pointer',
+    transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
+  });
   
   // Use deferred values for expensive filtering operations
   const deferredSearchTerm = useDeferredValue(searchTerm);
@@ -75,11 +91,11 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
     .map(category => category.name);
 
   return (
-    <div className="space-y-4">
+    <div className="app-section section-delay-1 space-y-5">
       {/* Header with Add Item button */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">My Wardrobe</h1>
+          <h1 className="font-display text-4xl font-normal tracking-[-0.03em] text-foreground">My Wardrobe</h1>
           <p className="text-muted-foreground mt-1">
             {totalCount} item{totalCount !== 1 ? 's' : ''} across {categories.length} categor{categories.length !== 1 ? 'ies' : 'y'}
           </p>
@@ -90,7 +106,7 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
             variant="outline"
             size="sm"
             onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 px-4 py-[9px] text-[0.79rem]"
             aria-label={showAdvancedFilters ? 'Hide advanced filters' : 'Show advanced filters'}
             aria-expanded={showAdvancedFilters}
           >
@@ -98,21 +114,24 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
             More Filters
           </Button>
           
-          <Link href="/wardrobe/items" data-walkthrough-id="wardrobe-add-button">
-            <Button className="flex items-center gap-2">
+          <Button asChild className="flex items-center gap-2 px-4 py-[9px] text-[0.82rem]">
+            <Link href="/wardrobe/items" data-walkthrough-id="wardrobe-add-button">
               <Plus size={16} />
               Add Item
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
 
       {/* Search and quick filters */}
-      <div className="rounded-lg border border-border bg-card p-4 space-y-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-          <div className="relative lg:col-span-2">
+      <div className="space-y-4">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 max-[980px]:grid-cols-1">
+          <div className="relative flex-1">
             <label htmlFor="wardrobe-search" className="sr-only">Search items</label>
-            <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+            <Search
+              size={18}
+              className="pointer-events-none absolute left-3 top-1/2 z-[1] -translate-y-1/2 text-[var(--text-3)]"
+            />
             <input
               id="wardrobe-search"
               type="search"
@@ -122,7 +141,7 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
               placeholder="Search items across all categories..."
               value={searchTerm}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full pl-10 pr-20 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring min-h-[44px] bg-card text-foreground placeholder:text-muted-foreground transition-colors [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none"
+              className="w-full rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-surface)] py-[11px] pl-10 pr-20 text-foreground backdrop-blur-[var(--blur-glass)] [-webkit-backdrop-filter:blur(var(--blur-glass))] placeholder:text-[var(--text-3)] [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none"
               aria-label="Search items across all categories"
             />
             {searchTerm && (
@@ -136,9 +155,9 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <Tag size={16} className="text-muted-foreground flex-shrink-0" />
             {capsuleTags.map(tag => (
               <button
+                type="button"
                 key={tag}
                 onClick={() => toggleTag(tag)}
                 onKeyDown={(e) => {
@@ -147,11 +166,8 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
                     toggleTag(tag);
                   }
                 }}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-[background-color,color,box-shadow] duration-200 min-h-[44px] flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                  selectedTags.has(tag)
-                    ? 'bg-primary text-primary-foreground border border-primary shadow-sm'
-                    : 'bg-card text-muted-foreground border border-border hover:bg-secondary/70 hover:border-foreground/25 hover:shadow-sm'
-                } ${isFiltering ? 'opacity-75' : 'opacity-100'}`}
+                className={`filter-tag flex-shrink-0 focus-visible:outline-none ${selectedTags.has(tag) ? 'active' : ''} ${isFiltering ? 'opacity-75' : 'opacity-100'}`}
+                style={getFilterTagStyle(selectedTags.has(tag))}
                 disabled={isFiltering}
                 aria-label={`Filter by ${tag}`}
                 aria-pressed={selectedTags.has(tag)}
@@ -161,65 +177,11 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
             ))}
           </div>
         </div>
-
-        {hasActiveFilters && (
-          <div className="flex flex-wrap items-center gap-2 text-sm">
-            <span className="text-muted-foreground">Active:</span>
-            {searchTerm && (
-              <button
-                onClick={() => handleSearchChange('')}
-                className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-secondary/70 hover:border-foreground/25 transition-colors"
-                aria-label="Clear search filter"
-              >
-                Search: {searchTerm}
-                <X size={14} />
-              </button>
-            )}
-            {selectedTags.size > 0 && Array.from(selectedTags).map(tag => (
-              <button
-                key={tag}
-                onClick={() => toggleTag(tag as CapsuleTagType)}
-                className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-secondary/70 hover:border-foreground/25 transition-colors"
-                aria-label={`Remove ${tag} tag filter`}
-              >
-                Tag: {tag}
-                <X size={14} />
-              </button>
-            ))}
-            {selectedCategoryNames.map(name => (
-              <button
-                key={name}
-                onClick={() => {
-                  const category = categories.find(c => c.name === name);
-                  if (category) onCategoryToggle(category.id);
-                }}
-                className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-secondary/70 hover:border-foreground/25 transition-colors"
-                aria-label={`Remove ${name} category filter`}
-              >
-                Category: {name}
-                <X size={14} />
-              </button>
-            ))}
-            {sortBy !== 'default' && (
-              <button
-                onClick={() => onSortChange?.('default')}
-                className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-1 text-foreground hover:bg-secondary/70 hover:border-foreground/25 transition-colors"
-                aria-label="Reset sort order"
-              >
-                Sort: {sortBy === 'name-asc' ? 'Name A-Z' : 'Name Z-A'}
-                <X size={14} />
-              </button>
-            )}
-            <Button variant="ghost" size="sm" onClick={onClearAll}>
-              Clear all
-            </Button>
-          </div>
-        )}
       </div>
 
       {/* Advanced filters */}
       {showAdvancedFilters && (
-      <div className="space-y-4 rounded-lg border border-border bg-card p-4">
+      <section className="space-y-4 border-t border-[var(--border-subtle)] pt-4">
         <div className="flex flex-wrap items-center gap-2">
           <label htmlFor="wardrobe-sort" className="text-sm font-medium text-muted-foreground">
             Sort by
@@ -228,7 +190,7 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
             id="wardrobe-sort"
             value={sortBy}
             onChange={(e) => onSortChange?.(e.target.value as 'default' | 'name-asc' | 'name-desc')}
-            className="h-10 min-w-[180px] px-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
+            className="min-h-10 min-w-[180px] rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] pl-3 pr-10 text-foreground"
             aria-label="Sort wardrobe items"
           >
             <option value="default">Default</option>
@@ -279,7 +241,7 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
             ))}
           </div>
         </div>
-      </div>
+      </section>
       )}
 
       {/* Results count */}

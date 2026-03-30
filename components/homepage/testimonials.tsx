@@ -30,10 +30,10 @@ const testimonials = [
 
 export function Testimonials() {
   return (
-    <section className="py-20 lg:py-32 bg-background">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="font-display text-4xl lg:text-5xl font-bold text-foreground mb-6">
+    <section className="relative py-20 lg:py-32">
+      <div className="mx-auto max-w-[1240px] px-6">
+        <div className="app-section section-delay-1 mb-16 text-center">
+          <h2 className="font-display mb-6 text-4xl font-normal text-foreground lg:text-5xl">
             Loved by style enthusiasts
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -41,12 +41,12 @@ export function Testimonials() {
           </p>
         </div>
         
-        <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
+        <div className="grid gap-8 md:grid-cols-3 lg:gap-10">
           {testimonials.map((testimonial, index) => (
             <div 
               key={testimonial.author}
-              className="bg-card border border-border rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 animate-slide-up"
-              style={{ animationDelay: `${index * 0.2}s` }}
+              className="glass-surface app-section p-8"
+              style={{ animationDelay: `${0.08 + index * 0.08}s` }}
             >
               {/* Rating */}
               <div className="flex items-center gap-1 mb-6">
@@ -62,7 +62,7 @@ export function Testimonials() {
               
               {/* Author */}
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accent-muted)] text-primary font-semibold">
                   {testimonial.avatar}
                 </div>
                 <div>

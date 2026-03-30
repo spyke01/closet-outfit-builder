@@ -15,10 +15,10 @@ export default async function PricingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-card to-background">
+    <div className="page-shell min-h-screen">
       <StaticPageNavigation />
 
-      <main className="pt-16">
+      <main className="pt-20">
         <PricingSection />
       </main>
 

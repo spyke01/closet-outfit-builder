@@ -33,10 +33,10 @@ const features = [
 
 export function FeatureHighlights() {
   return (
-    <section className="py-20 lg:py-32 bg-background">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="font-display text-4xl lg:text-5xl font-bold text-foreground mb-6">
+    <section className="relative py-20 lg:py-32">
+      <div className="mx-auto max-w-[1240px] px-6">
+        <div className="app-section section-delay-1 mb-16 text-center">
+          <h2 className="font-display mb-6 text-4xl font-normal text-foreground lg:text-5xl">
             Your wardrobe, reimagined
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -44,33 +44,33 @@ export function FeatureHighlights() {
           </p>
         </div>
         
-        <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
+        <div className="grid gap-8 md:grid-cols-3 lg:gap-10">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
               <div 
                 key={feature.title}
-                className="group text-center animate-slide-up"
-                style={{ animationDelay: `${index * 0.2}s` }}
+                className="glass-surface app-section group p-8 text-center"
+                style={{ animationDelay: `${0.08 + index * 0.08}s` }}
               >
-                <div className={`w-20 h-20 ${feature.tileClass} rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                <div className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-[var(--radius-xl)] border border-[var(--border-subtle)] ${feature.tileClass} shadow-[var(--shadow-card)] transition-transform duration-300 group-hover:scale-105`}>
                   <Icon className={`w-10 h-10 ${feature.iconColor}`} />
                 </div>
                 
                 {/* Product image */}
-                <div className="w-32 h-32 mx-auto mb-4 relative">
+                <div className="relative mx-auto mb-5 h-32 w-32 rounded-[var(--radius-lg)] border border-[var(--item-img-border)] bg-[var(--item-img-bg)] p-3">
                   <Image
                     src={feature.image.src}
                     alt={feature.image.alt}
                     width={128}
                     height={128}
-                    className="w-full h-full object-contain opacity-80 group-hover:opacity-100 transition-opacity"
+                    className="h-full w-full object-contain opacity-85 transition-opacity group-hover:opacity-100"
                     loading="lazy"
                     quality={85}
                   />
                 </div>
                 
-                <h3 className="font-display text-2xl font-semibold text-foreground mb-4">
+                <h3 className="font-display mb-4 text-2xl font-normal text-foreground">
                   {feature.title}
                 </h3>
                 

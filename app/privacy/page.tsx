@@ -3,18 +3,18 @@ import { StaticPageFooter } from "@/components/static-page-footer";
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-card to-background">
+    <div className="page-shell min-h-screen">
       <StaticPageNavigation />
       
-      <main className="pt-16">
-        <div className="container mx-auto px-6 py-16">
+      <main className="pt-20">
+        <div className="mx-auto max-w-[1240px] px-6 py-16">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h1 className="text-4xl font-bold text-foreground mb-4">Privacy Policy</h1>
+              <h1 className="font-display mb-4 text-4xl font-normal text-foreground">Privacy Policy</h1>
               <p className="text-muted-foreground">Last updated: February 25, 2026</p>
             </div>
 
-            <div className="prose prose-lg max-w-none bg-card p-8 rounded-lg shadow-sm border border-border">
+            <div className="legal-panel prose prose-lg max-w-none p-8 text-[var(--text-2)]">
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold text-foreground mb-4">Scope and Overview</h2>
                 <p className="text-muted-foreground mb-4">

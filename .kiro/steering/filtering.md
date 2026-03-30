@@ -14,16 +14,17 @@ Use a two-layer filter model:
 2. Advanced filters (progressive disclosure)
 - Secondary controls behind a toggle button (for example "More Filters")
 - Use `aria-expanded` on the toggle button
-- Keep advanced controls in a bordered card/surface under the toolbar
+- Advanced controls may be a lighter section under the toolbar instead of a full card
 
 ## 2) Active filter feedback
 
-When any filter is active:
-- Show active-filter chips/tokens near the toolbar
-- Each chip must be removable directly
-- Provide a single `Clear all` action
+Selected quick tags/facets should usually communicate state directly through their highlighted appearance.
 
-Do not require users to reopen advanced controls to understand current filter state.
+Rules:
+- Use `aria-pressed` for toggle-style quick filters
+- Highlight the selected state in place instead of requiring a separate active-chip row
+- `Clear all` is optional and should appear only when it improves the workflow
+- Do not force a second summary row if the selected tags are already obvious in the primary toolbar
 
 ## 3) URL state contract (Vercel/Next.js style)
 
@@ -35,12 +36,12 @@ Rules:
 - Remove params for default values (do not keep noisy defaults in URL)
 - Keep parameter names short and stable (for example `q`, `filter`, `sort`, `tags`, `categories`, `view`, `layout`)
 
-## 4) shadcn-style interaction patterns
+## 4) Interaction patterns
 
-Follow shadcn data-table toolbar conventions:
+Follow the product's Liquid Glass toolbar conventions:
 - Compact control groups
 - Clear visual selected state for facet buttons (`aria-pressed` where applicable)
-- Reset actions only shown when filters are active
+- Search and quick tags should share one row on desktop when space allows
 - Prefer small, composable controls over one large form
 
 ## 5) Accessibility requirements
@@ -52,14 +53,15 @@ Follow shadcn data-table toolbar conventions:
 
 ## 6) Theming requirements
 
-Use semantic tokens only:
-- `bg-card`, `bg-background`, `bg-muted`
-- `text-foreground`, `text-muted-foreground`
-- `border-border`
-- `bg-primary`, `text-primary-foreground`
-- `focus:ring-ring`
-
-Avoid hardcoded neutral palette classes for filter UI.
+Use the Liquid Glass filter treatment:
+- Search inputs use the shared input/search tokens and keep the icon explicitly visible
+- Quick filters use the `filter-tag` styling:
+  - `padding: 7px 14px`
+  - pill radius
+  - glass background
+  - subtle border at rest
+  - accent-muted selected state with accent border/text
+- Avoid hardcoded neutral palette classes for filter UI
 
 ## 7) Performance requirements
 
@@ -72,7 +74,6 @@ Avoid hardcoded neutral palette classes for filter UI.
 Tests must verify:
 - Search is available without opening advanced filters
 - Advanced controls toggle correctly
-- Active filters are represented and removable
-- `Clear all` resets state
+- Selected quick filters expose clear pressed/selected state
+- `Clear all` behavior only when that control exists on the page
 - URL-state sync for key filters where implemented
-

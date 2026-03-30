@@ -4,16 +4,21 @@
  */
 
 export function TopBarSkeleton() {
+  const navGlassStyle = {
+    backdropFilter: 'blur(32px) saturate(1.4)',
+    WebkitBackdropFilter: 'blur(32px) saturate(1.4)',
+  } as const;
+
   return (
-    <div className="sticky top-0 z-50 w-full border-b border-border bg-card shadow-sm">
-      <div className="flex items-center justify-between px-4 py-3">
+    <div className="glass-nav sticky top-0 z-50 w-full" style={navGlassStyle}>
+      <div className="mx-auto flex max-w-[1240px] items-center justify-between px-4 py-3">
         <div className="flex items-center gap-4">
-          <div className="h-8 w-8 bg-muted rounded animate-pulse" />
-          <div className="h-6 w-32 bg-muted rounded animate-pulse" />
+          <div className="h-8 w-8 animate-pulse rounded bg-muted" />
+          <div className="h-6 w-32 animate-pulse rounded bg-muted" />
         </div>
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 bg-muted rounded-full animate-pulse" />
-          <div className="h-8 w-8 bg-muted rounded-full animate-pulse" />
+          <div className="h-8 w-8 animate-pulse rounded-full bg-muted" />
+          <div className="h-8 w-8 animate-pulse rounded-full bg-muted" />
         </div>
       </div>
     </div>

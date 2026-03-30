@@ -55,6 +55,10 @@ export const TopBar: React.FC<TopBarProps> = ({
   onTitleClick,
   onSettingsClick,
 }) => {
+  const navGlassStyle: React.CSSProperties = {
+    backdropFilter: 'blur(32px) saturate(1.4)',
+    WebkitBackdropFilter: 'blur(32px) saturate(1.4)',
+  };
   const pathname = usePathname();
   const router = useRouter();
   const { getNavigationProps } = useNavigationPreloading();
@@ -156,16 +160,16 @@ export const TopBar: React.FC<TopBarProps> = ({
   const { isAdminPortalUser, loading: adminPortalLoading } = useAdminPortalAccess(validatedUser?.id);
   const canAccessSebastian = entitlements?.effectivePlanCode === 'plus' || entitlements?.effectivePlanCode === 'pro';
   const desktopNavLinkClass = (isActive: boolean) =>
-    `flex cursor-pointer items-center gap-2 px-4 h-16 -mb-1 border-b-2 text-sm transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+    `inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-[var(--radius-pill)] px-4 py-2 text-sm transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] focus-visible:outline-none ${
       isActive
-        ? 'border-[var(--app-nav-border-active)] text-foreground font-semibold'
-        : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+        ? 'border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-foreground'
+        : 'border border-transparent text-muted-foreground hover:bg-[var(--bg-surface)] hover:text-foreground'
     }`;
   const mobileNavLinkClass = (isActive: boolean) =>
-    `flex cursor-pointer items-center gap-3 px-4 py-3 rounded-lg text-base transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+    `flex min-h-[44px] cursor-pointer items-center gap-3 rounded-[var(--radius-pill)] px-4 py-3 text-base transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] focus-visible:outline-none ${
       isActive
-        ? 'text-foreground font-semibold border-l-2 border-[var(--app-nav-border-strong)]'
-        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+        ? 'border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-foreground'
+        : 'border border-transparent text-muted-foreground hover:bg-[var(--bg-surface)] hover:text-foreground'
     }`;
 
   // Get user initials for avatar
@@ -232,16 +236,16 @@ export const TopBar: React.FC<TopBarProps> = ({
   };
 
   return (
-    <div className="bg-card border-b-2 border-[var(--app-nav-border-strong)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+    <div className="glass-nav sticky top-0 z-[100] w-full" style={navGlassStyle}>
+      <div className="mx-auto w-full max-w-[1240px] px-4 py-2 sm:px-6 lg:px-8">
+        <div className="flex min-h-16 items-center justify-between gap-3">
           {/* Left: Logo + Mobile Menu Button + Desktop Navigation */}
           <div className="flex items-center gap-3">
             {/* Mobile menu button - traditional left position */}
             {validatedUser && (
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="icon-button glass-pill md:hidden h-10 w-10 justify-center p-0"
                 aria-label="Toggle mobile menu"
                 aria-expanded={mobileMenuOpen}
               >
@@ -261,14 +265,14 @@ export const TopBar: React.FC<TopBarProps> = ({
                   handleTitleClick();
                 }
               }}
-              className="hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg"
+              className="rounded-[var(--radius-md)] transition-opacity hover:opacity-80 focus-visible:outline-none"
               aria-label="Navigate to home"
             >
               <Logo className="h-12 w-auto" />
             </button>
 
             {validatedUser && (
-              <nav className="hidden md:flex items-center gap-1 ml-6">
+              <nav className="ml-4 hidden items-center gap-2 md:flex">
                 <Link
                   href="/today"
                   className={desktopNavLinkClass(currentView === 'today')}
@@ -337,7 +341,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           </div>
 
           {/* Right: Weather + User Menu or Auth Buttons */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {/* Weather widget - always visible when enabled */}
             <WeatherWidget className="text-sm" compact />
 
@@ -347,7 +351,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 <DropdownMenuTrigger asChild>
                   <button
                     id={userMenuTriggerId}
-                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="icon-button glass-pill flex h-10 w-10 items-center justify-center rounded-full p-0"
                     aria-label="User menu"
                   >
                     {avatarUrl ? (
@@ -355,16 +359,16 @@ export const TopBar: React.FC<TopBarProps> = ({
                       <img
                         src={avatarUrl}
                         alt="Profile avatar"
-                        className="w-8 h-8 rounded-full object-cover"
+                        className="h-8 w-8 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground">
                         {getUserInitials()}
                       </div>
                     )}
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-card border-border">
+                <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel className="pb-2">
                     <p className="text-xs leading-none text-muted-foreground truncate">
                       {validatedUser.email}
@@ -451,8 +455,8 @@ export const TopBar: React.FC<TopBarProps> = ({
       </div>
 
       {impersonationSession && (
-        <div className="border-t border-amber-300/40 bg-amber-100/80">
-          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-2 text-xs text-amber-900 sm:px-6 lg:px-8">
+        <div className="border-t border-amber-500/20 bg-amber-500/10 backdrop-blur-[18px]">
+          <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-3 px-4 py-2 text-xs text-amber-200 sm:px-6 lg:px-8">
             <p className="truncate">
               Read-only impersonation active | target <span className="font-mono">{impersonationSession.target_user_id}</span>
               {impersonationSession.ticket_id ? <> | ticket <span className="font-mono">{impersonationSession.ticket_id}</span></> : null}
@@ -466,8 +470,8 @@ export const TopBar: React.FC<TopBarProps> = ({
 
       {/* Mobile Navigation Menu */}
       {validatedUser && mobileMenuOpen && (
-        <div className="md:hidden border-t border-border bg-card">
-          <nav className="px-4 py-3 space-y-1">
+        <div className="border-t border-[var(--nav-border)] bg-[color-mix(in_srgb,var(--nav-bg)_86%,transparent)] md:hidden">
+          <nav className="mx-auto flex max-w-[1240px] flex-col gap-2 px-4 py-3">
             <Link
               href="/today"
               onClick={() => setMobileMenuOpen(false)}

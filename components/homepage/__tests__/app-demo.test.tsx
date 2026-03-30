@@ -146,7 +146,7 @@ describe('AppDemo - Unit Tests', () => {
       const { container } = render(<AppDemo />);
       
       // Find all progress bar containers
-      const progressBars = container.querySelectorAll('.bg-muted.rounded-full');
+      const progressBars = container.querySelectorAll('.bg-\\[var\\(--bg-surface-active\\)\\].rounded-full');
       
       // Should have 3 progress bars (one for each metric)
       expect(progressBars.length).toBeGreaterThanOrEqual(3);
@@ -206,7 +206,7 @@ describe('AppDemo - Unit Tests', () => {
       const imageContainers = container.querySelectorAll('.aspect-square');
       
       imageContainers.forEach((containerEl) => {
-        expect(containerEl.className).toContain('bg-muted');
+        expect(containerEl.className).toContain('bg-[var(--item-img-bg)]');
       });
     });
 

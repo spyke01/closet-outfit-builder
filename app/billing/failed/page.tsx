@@ -9,10 +9,10 @@ export default async function BillingFailedPage() {
   const { data: { user } } = await supabase.auth.getUser();
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="page-shell min-h-screen text-foreground">
       <TopBarWrapper user={user} />
-      <div className="flex items-center justify-center p-6">
-        <div className="max-w-xl w-full rounded-xl border border-border bg-card p-6 space-y-4">
+      <div className="page-shell-content flex items-center justify-center px-6 py-16">
+        <div className="glass-surface w-full max-w-xl space-y-4 p-8">
           <h1 className="text-2xl font-bold text-foreground">Billing Issue</h1>
           <p className="text-muted-foreground">
             <AlertTriangle className="w-4 h-4 inline mr-1" />

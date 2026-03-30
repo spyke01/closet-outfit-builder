@@ -188,13 +188,13 @@ describe('HeroSection - Unit Tests', () => {
   });
 
   describe('Dark Mode Support', () => {
-    it('should use semantic muted surfaces on image containers', () => {
+    it('should use themed image container surfaces', () => {
       const { container } = render(<HeroSection />);
       
       const imageContainers = container.querySelectorAll('.aspect-square');
       
       imageContainers.forEach((containerEl) => {
-        expect(containerEl.className).toContain('bg-muted');
+        expect(containerEl.className).toContain('bg-[var(--item-img-bg)]');
       });
     });
 

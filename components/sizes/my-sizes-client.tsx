@@ -118,11 +118,11 @@ export function MySizesClient({
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="page-shell-content mx-auto max-w-[1240px] px-6 py-8">
         <div className="animate-pulse space-y-8">
           {/* Loading message for seeding */}
           {seedCategories.isPending && (
-            <div className="mb-6 rounded-lg bg-secondary/20 p-4 border border-secondary/40">
+            <div className="glass-surface mb-6 p-4">
               <div className="flex items-center gap-3">
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                 <p className="text-sm text-foreground font-medium">
@@ -134,12 +134,12 @@ export function MySizesClient({
 
           {/* Pinned cards skeleton */}
           <div className="space-y-4">
-            <div className="h-8 w-48 bg-muted rounded" />
+            <div className="h-8 w-48 rounded bg-[var(--item-img-bg)]" />
             <div className="flex gap-4 overflow-x-auto">
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="h-32 w-64 flex-shrink-0 bg-muted rounded-lg"
+                  className="h-32 w-64 flex-shrink-0 rounded-[var(--radius-lg)] bg-[var(--item-img-bg)]"
                 />
               ))}
             </div>
@@ -147,12 +147,12 @@ export function MySizesClient({
 
           {/* Category grid skeleton */}
           <div className="space-y-4">
-            <div className="h-8 w-64 bg-muted rounded" />
+            <div className="h-8 w-64 rounded bg-[var(--item-img-bg)]" />
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
-                  className="h-32 bg-muted rounded-lg"
+                  className="h-32 rounded-[var(--radius-lg)] bg-[var(--item-img-bg)]"
                 />
               ))}
             </div>
@@ -163,7 +163,7 @@ export function MySizesClient({
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="page-shell-content mx-auto max-w-[1240px] px-6 py-8">
       {/* Page header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-foreground mb-2">
@@ -203,10 +203,10 @@ export function MySizesClient({
         {/* Category Grid Section */}
         {/* Requirements: 1.1, 1.3 - Category grid with empty state */}
         <section aria-labelledby="all-categories-heading">
-          <div className="mb-4">
+          <div className="mb-4 flex items-center justify-between border-b border-[var(--border-subtle)] pb-[10px]">
             <h2
               id="all-categories-heading"
-              className="text-xl font-bold text-foreground"
+              className="font-display text-[1.35rem] font-normal tracking-[-0.02em] text-foreground"
             >
               All Categories
             </h2>

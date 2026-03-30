@@ -148,6 +148,19 @@ __tests__/            # Test files
 - **Testing**: Vitest + Testing Library
 - **Icons**: Lucide React
 
+### UI Guidance
+
+- The active design system is Apple Liquid Glass. Check `app/globals.css` before creating new visual tokens or one-off classes.
+- Dark mode is the default baseline. Light mode is enabled with `html[data-theme="light"]`.
+- Use the shared shell and surface primitives:
+  - `ambient-background`
+  - `page-shell`
+  - `page-shell-content`
+  - glass nav / glass card / pill control patterns
+- Keep the existing project fonts. Do not introduce new font families in feature work.
+- Treat old semantic classes such as `bg-card`, `bg-background`, and `bg-muted` as compatibility layers, not as the final visual spec.
+- If a critical CSS effect is lost in Turbopack output, prefer a localized inline-style fallback for that property rather than shipping a visual mismatch.
+
 ### Key Concepts
 
 #### Server vs Client Components

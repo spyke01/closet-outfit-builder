@@ -1,5 +1,7 @@
 # Feature Specification: Beta Launch Readiness
 
+> Historical note: this spec records the beta-launch cleanup scope at the time it was written. Current UI steering has since moved to the Apple Liquid Glass design system defined in `app/globals.css` and repo guidance docs such as `CLAUDE.md`. Where this spec references older palette/font/theming guidance, treat those references as historical context rather than the current source of truth.
+
 **Feature Branch**: `005-beta-launch-readiness`
 **Created**: 2026-03-09
 **Status**: Draft

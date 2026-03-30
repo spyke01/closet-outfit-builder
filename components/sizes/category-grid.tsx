@@ -74,7 +74,7 @@ export function CategoryGrid({
   if (categories.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-        <div className="mb-6 rounded-full bg-muted p-6 bg-card">
+        <div className="mb-6 rounded-full border border-[var(--item-img-border)] bg-[var(--item-img-bg)] p-6">
           <svg 
             className="h-12 w-12 text-muted-foreground" 
             fill="none" 
@@ -105,7 +105,7 @@ export function CategoryGrid({
         <Link
           key={category.id}
           href={`/sizes/${category.id}`}
-          className="group relative flex min-h-[120px] flex-col justify-between rounded-lg border border-border bg-card p-4 transition-all hover:border-border hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="glass-surface group relative flex min-h-[120px] flex-col justify-between rounded-[var(--radius-lg)] p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           style={{
             contentVisibility: categories.length > 50 ? 'auto' : undefined,
             containIntrinsicSize: categories.length > 50 ? '0 120px' : undefined,

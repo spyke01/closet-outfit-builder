@@ -43,7 +43,7 @@ function getWeatherIcon(condition: string) {
 export default function WeatherSnapshot({ current, forecast, loading, error }: WeatherSnapshotProps) {
   if (loading) {
     return (
-      <div className="bg-card border border-border rounded-lg p-6 mb-4">
+      <div className="glass-surface card-glow-blue mb-4 p-6">
         <div className="animate-pulse">
           <div className="h-8 bg-muted rounded w-24 mb-2"></div>
           <div className="h-4 bg-muted rounded w-32"></div>
@@ -54,7 +54,7 @@ export default function WeatherSnapshot({ current, forecast, loading, error }: W
   
   if (error || !current) {
     return (
-      <div className="bg-card border border-border rounded-lg p-6 mb-4">
+      <div className="glass-surface card-glow-blue mb-4 p-6">
         <div className="flex items-center gap-2 mb-4">
           <Cloud className="w-6 h-6 text-muted-foreground" aria-hidden="true" />
           <div>
@@ -70,16 +70,16 @@ export default function WeatherSnapshot({ current, forecast, loading, error }: W
   const WeatherIcon = getWeatherIcon(current.condition);
   
   return (
-    <div className="bg-card border border-border rounded-lg p-6 mb-4">
+    <div className="glass-surface card-glow-blue mb-4 p-6">
       <div className="flex items-start gap-3 mb-4">
         <WeatherIcon className="w-8 h-8 text-secondary flex-shrink-0 mt-1" aria-hidden="true" />
         <div className="flex-1">
-          <p className="text-3xl font-bold text-foreground">{Math.round(current.temperature)}°F</p>
+          <p className="font-display text-5xl font-normal tracking-[-0.04em] text-foreground">{Math.round(current.temperature)}°F</p>
           <p className="text-sm text-muted-foreground">{current.condition}</p>
         </div>
       </div>
       
-      <div className="space-y-1 text-sm border-t border-border pt-4">
+      <div className="space-y-1 border-t border-[var(--border-subtle)] pt-4 text-sm">
         {current.feelsLike !== undefined && (
           <div className="flex justify-between">
             <span className="text-muted-foreground">Feels like:</span>
@@ -106,7 +106,7 @@ export default function WeatherSnapshot({ current, forecast, loading, error }: W
         )}
       </div>
       
-      <p className="text-xs text-muted-foreground mt-4 italic">
+      <p className="mt-4 rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--accent)_10%,transparent)] bg-[color-mix(in_srgb,var(--accent)_6%,transparent)] px-4 py-3 text-xs italic text-muted-foreground">
         A {current.condition.toLowerCase()} day calls for versatile layering.
       </p>
     </div>

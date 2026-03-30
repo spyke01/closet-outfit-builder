@@ -7,6 +7,7 @@ import { SWRProvider } from "@/lib/providers/swr-config";
 import { PreloadInitializer } from "@/components/preload-initializer";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
+import { ThemeDomSync } from "@/components/theme-dom-sync";
 import { getCanonicalSiteUrl } from "@/lib/seo/site-url";
 import "./globals.css";
 
@@ -78,13 +79,18 @@ export default function RootLayout({
           <QueryProvider>
             <SWRProvider>
               <ThemeProvider
-                attribute="class"
+                attribute="data-mode"
                 defaultTheme="system"
                 enableSystem
+                storageKey="theme-v2"
               >
+                <ThemeDomSync />
                 <PreloadInitializer />
                 <ServiceWorkerRegistration />
-                {children}
+                <div className="ambient-background" aria-hidden="true" />
+                <div className="page-shell">
+                  {children}
+                </div>
               </ThemeProvider>
             </SWRProvider>
           </QueryProvider>

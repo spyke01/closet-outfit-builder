@@ -1,179 +1,148 @@
 # Theming Implementation Standard
 
-This document defines the required color and surface implementation patterns for all app UI.
+This document defines the required visual implementation patterns for all product UI.
 
-## 1) Principle: semantic tokens first
+## 1) Source of truth
 
-Always use semantic Tailwind tokens backed by CSS variables in `app/globals.css`.
+The active design system is Apple Liquid Glass.
 
-Use:
-- `bg-background`, `bg-card`, `bg-muted`
-- `text-foreground`, `text-muted-foreground`
-- `border-border`
-- `bg-primary`, `text-primary-foreground`
-- `bg-secondary`, `text-secondary-foreground`
-- `ring-ring`
+- Tokens live in `app/globals.css`
+- Shared shell/surface primitives also live in `app/globals.css`
+- If this file conflicts with older specs or migration notes, treat this file and `CLAUDE.md` as the current source of truth
 
-Avoid:
-- `slate-*`, `stone-*`, `gray-*` for app theming
-- hardcoded `bg-white`, `text-white`, `border-gray-*` for primary UI surfaces
+## 2) Theme model
 
-## 2) Never combine conflicting background classes
+- Dark mode is the default baseline
+- Light mode is enabled with `html[data-theme="light"]`
+- Do not use class-based dark mode assumptions such as `.dark` or `darkMode: 'class'`
+- Avoid route-level background paints that fight the shared shell
 
-Do not combine multiple base surface classes on the same element.
+Required shell primitives:
+- `ambient-background`
+- `page-shell`
+- `page-shell-content`
 
-Invalid:
-- `bg-white bg-card`
-- `bg-muted bg-card`
-- `bg-white bg-background`
+## 3) Core tokens
 
-Valid:
-- `bg-card`
-- `bg-background`
-- `bg-muted`
+Prefer Liquid Glass tokens directly when styling product UI:
 
-## 3) Light/dark handling
+- Surfaces:
+  - `--bg-deep`
+  - `--bg-base`
+  - `--bg-surface`
+  - `--bg-surface-hover`
+  - `--bg-surface-active`
+  - `--bg-input`
+- Borders:
+  - `--border-subtle`
+  - `--border-default`
+  - `--border-strong`
+  - `--border-focus`
+- Text:
+  - `--text-1`
+  - `--text-2`
+  - `--text-3`
+- Accents:
+  - `--accent`
+  - `--accent-muted`
+  - `--accent-2`
+  - `--accent-2-muted`
+  - `--accent-3`
+  - `--accent-3-muted`
+- Shape/spacing:
+  - `--radius-*`
+  - `--space-*`
+- Blur/shadow:
+  - `--blur-glass`
+  - `--blur-nav`
+  - `--shadow-card`
+  - `--shadow-card-hover`
+  - `--shadow-nav`
+  - `--shadow-focus`
 
-Semantic tokens already map light/dark via CSS variables.  
-Do not add redundant `dark:*` color overrides unless there is a true, intentional variant that tokens cannot express.
+Older semantic aliases like `bg-card`, `bg-background`, and `bg-muted` still exist for compatibility, but they are not enough by themselves to define the intended visual result.
 
-## 4) Component recipes
+## 4) Surface rules
 
-### App page shell
-- Page root: `bg-background text-foreground`
-- Section/card: `bg-card border border-border rounded-lg`
+### App shell
+- Let the shared shell provide the page backdrop
+- Do not add per-route `bg-background` / `bg-muted` wrappers unless the screen is intentionally different
 
-### Image wells/placeholders
-- Use `bg-muted` (not `bg-card` + `bg-muted` together)
+### Glass surfaces
+Use glass for:
+- nav bars
+- cards
+- toolbars
+- popovers
+- search/filter controls
+- modals
+
+Do not use glass blur for:
+- dense text blocks
+- legal copy containers
+- list rows inside a card
+- inner content wrappers that create card-within-card layering without purpose
+
+### Navigation
+- Full-width glass surface
+- `32px` blur with saturation boost
+- sticky at top
+- no rounded outer corners
+
+### Cards
+- Main shell uses `--bg-surface`, subtle border, Liquid Glass blur, and shared card shadow
+- Hover lift is `translateY(-3px)` with border/shadow elevation
+- Inner card content should usually sit directly inside the shell; avoid unnecessary nested framed panels
+
+## 5) Controls
 
 ### Buttons
-- Use this hierarchy in all product UI:
-  - `primary`: high-importance, state-changing actions (for example `Save Changes`, `Generate New`)
-  - `secondary`: supportive non-destructive actions (for example `Close`, `Existing Outfit`)
-  - `tertiary`: low-emphasis contextual actions (for example per-row `Edit`, `Delete`)
 
-#### Primary
-- Visual: solid fill, strongest contrast
-- Class baseline: `bg-primary text-primary-foreground hover:opacity-90`
-- May include icon + label
+Use the shared three-tier button hierarchy:
 
-#### Secondary
-- Visual: outline/subtle fill, lower contrast than primary
-- Class baseline: `bg-card border border-border text-foreground hover:bg-muted`
-- Must use same base dimensions as primary
+- Primary:
+  - gradient accent fill
+  - strongest emphasis
+- Secondary:
+  - bordered glass surface
+  - medium emphasis
+- Tertiary:
+  - transparent at rest
+  - reveals on hover
 
-#### Tertiary
-- Visual: ghost or icon-only; no persistent heavy fill
-- Class baseline: `text-foreground hover:bg-muted` (destructive can shift red on hover only)
-- For destructive tertiary actions: neutral default, `text-destructive`/destructive background on hover
-- In dense rows/cards, mobile-first visibility is required:
-  - On touch/small screens, tertiary edit/delete controls must be visible by default.
-  - Hover-reveal behavior is allowed only at `md` and up, and must include keyboard focus parity.
-  - Recommended pattern: `opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100`
+Do not invent one-off button color systems for individual pages.
 
-#### Segmented controls (required for mode/state toggles)
-- Use shared segmented container + equal-size segments for mode/state switches
-- Required examples:
-  - `Planned | Worn`
-  - `Existing Outfit | Generate New`
-- Active segment: filled
-- Inactive segment: subtle/outline
+### Filter tags
 
-#### Dimension consistency (required)
-- Within the same view, button variants must share:
-  - height
-  - border radius
-  - font size
-  - padding scale
-- Variation allowed only by emphasis (fill/outline/ghost and color intensity)
+Filter bars should use the shared `filter-tag` behavior:
+- pill radius
+- glass background
+- selected state via accent-muted background + accent border/text
 
-#### Icon consistency (required)
-- Primary: label + optional icon
-- Secondary: label with optional icon
-- Tertiary: icon-only preferred
-- Do not mix icon-only and labeled buttons at the same emphasis level in the same control group
+Selection can be communicated directly through the highlighted tag state; do not require separate active-chip rows unless the UX truly benefits from them.
 
-#### Save behavior (required where applicable)
-- Save/commit buttons should be disabled until user has changes (dirty state)
-- Enable with clear state transition when form becomes valid + dirty
-- Show explicit confirmation feedback on successful save
+### Inputs/selects
+- Inputs use the shared glass/input tokens
+- Native select chrome needs enough right padding for the caret
+- Search fields should keep icons explicitly visible above the input content
 
-### Inputs/selects/textarea
-- Match this baseline:
-  - `bg-background border border-border text-foreground placeholder:text-muted-foreground`
-  - `focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring`
-  - `rounded-md shadow-sm`
+## 6) Layout guidance
 
-### Alerts/messages
-- Success/info in app context:
-  - prefer token surfaces (for example `bg-secondary/20 border-secondary/40`)
-- Error:
-  - `bg-destructive/10 border-destructive/30 text-destructive`
+- Maximum content width: `1240px`
+- Prefer `page-shell-content`
+- Search + tag bars should not be wrapped in an extra card unless there is a clear grouping reason
+- Advanced filter sections should usually read as a lighter sub-section under the main toolbar, not an unrelated nested panel
 
-### Top bar and nav
-- `bg-card border-b border-border`
-- Active nav item:
-  - `bg-primary text-primary-foreground`
-- Inactive nav item:
-  - `text-muted-foreground hover:bg-muted hover:text-foreground`
+## 7) Turbopack / generated CSS caveat
 
-### Loading/skeleton states
-- Fallback nav/skeleton surfaces must use semantic tokens:
-  - `bg-card` for bar backgrounds
-  - `bg-muted` for pulsing blocks
-- This prevents white flashes during route transitions.
+If Turbopack strips or rewrites a critical visual rule (for example `backdrop-filter`), use a localized inline-style fallback for the affected property on the component. Do not leave a visual regression in place just because the source CSS looks correct.
 
-### Filter toolbars
-- Toolbar container: `bg-card border border-border rounded-lg`
-- Search input: semantic input recipe (`bg-card border-border text-foreground focus:ring-ring`)
-- Quick filter pills:
-  - Selected: `bg-primary text-primary-foreground border-primary`
-  - Unselected: `bg-card text-muted-foreground border-border hover:bg-muted`
-- Active filter chips:
-  - `bg-card border border-border text-foreground`
+## 8) Testing guidance
 
-## 5) Route transition + Suspense rule
-
-Any layout `Suspense` fallback that visually replaces themed UI must use the same semantic token surfaces as the final component.
-
-Required check:
-- No fallback should include `bg-white` for app-shell elements.
-
-## 6) AI affordance icon standard
-
-Use one shared icon for AI-specific UI affordances:
-- Component: `components/ai-icon.tsx`
-- API: `<AIIcon className="w-4 h-4" />`
-- Visual meaning: "this action/state is AI-driven"
-
-Use `AIIcon` for:
-- AI generation/regeneration CTAs
-- AI planning buttons
-- AI alerts/messages where the message itself is AI-originated
-
-Do **not** use `AIIcon` for:
-- Generic submit/save/update buttons
-- Generic cancel/close/back actions
-- Non-AI destructive actions (delete/remove)
-
-Implementation rules:
-- Keep icon placement consistent: left of label with `inline-flex items-center gap-2`.
-- Reuse `AIIcon`; do not introduce alternate AI icons (`Wand2`, custom sparkles, etc.) in product UI.
-
-## 7) Testing rules for theming
-
-When testing themed components:
-- Assert semantic classes (`bg-card`, `text-foreground`, `border-border`) where class checks are needed.
-- Prefer behavior and accessibility assertions over exact class chains.
-- Do not assert legacy palette scale classes (`text-blue-*`, `dark:text-gray-*`, etc.) unless explicitly intentional.
-
-## 8) Migration checklist for touched files
-
-For any modified UI file:
-1. Remove hardcoded neutral scale colors.
-2. Remove conflicting dual surface classes.
-3. Verify form controls use the standard input recipe.
-4. Verify buttons use primary/secondary token recipes.
-5. Verify skeletons/fallbacks use semantic surfaces.
-6. Update tests if they assert obsolete color classes.
-7. If adding AI-specific CTA/alert UI, use `AIIcon` and avoid AI icon usage on generic submit/cancel flows.
+When tests need UI-style assertions:
+- Prefer assertions against shared design-system intent rather than stale palette assumptions
+- Good examples:
+  - Liquid Glass primitives exist (`glass-nav`, shell classes, explicit style props)
+  - buttons follow primary/secondary/tertiary roles
+  - tags expose selected state via `aria-pressed`
+- Avoid asserting obsolete class recipes like `bg-card border border-border rounded-lg` as if they were the visual spec

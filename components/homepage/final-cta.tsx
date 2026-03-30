@@ -6,10 +6,10 @@ import Link from "next/link";
 
 export function FinalCTA() {
   return (
-    <section className="py-20 lg:py-32 bg-background">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center">
-          <h2 className="font-display text-4xl lg:text-5xl font-bold text-foreground mb-6">
+    <section className="relative py-20 lg:py-32">
+      <div className="mx-auto max-w-[1240px] px-6">
+        <div className="glass-surface card-glow-blue app-section section-delay-1 rounded-[var(--radius-xl)] px-8 py-14 text-center">
+          <h2 className="font-display mb-6 text-4xl font-normal text-foreground lg:text-5xl">
             Ready to transform your wardrobe?
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
@@ -17,10 +17,7 @@ export function FinalCTA() {
           </p>
           
           <Link href="/auth/sign-up">
-            <Button 
-              size="lg"
-              className="bg-secondary text-secondary-foreground hover:bg-secondary/90 px-8 py-4 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group"
-            >
+            <Button size="lg" className="group min-h-12 px-7 text-base">
               Get Started Free
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>

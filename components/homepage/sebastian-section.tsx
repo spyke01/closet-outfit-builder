@@ -15,23 +15,22 @@ export function SebastianSection() {
   return (
     <section
       id="sebastian"
-      className="py-20 lg:py-28 bg-gradient-to-b from-background via-card/30 to-background"
+      className="relative py-20 lg:py-28"
     >
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-2xl">
-          <div className="absolute -top-20 -right-20 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
-          <div className="absolute -bottom-16 -left-16 h-64 w-64 rounded-full bg-secondary/25 blur-3xl" />
+      <div className="mx-auto max-w-[1240px] px-6">
+        <div className="glass-surface card-glow-blue relative overflow-hidden rounded-[var(--radius-xl)]">
+          <div className="absolute -bottom-16 -left-16 h-64 w-64 rounded-full bg-[var(--accent-2-muted)] blur-3xl" />
 
           <div className="relative grid lg:grid-cols-[1.2fr_0.8fr] gap-10 lg:gap-12 p-8 md:p-12 lg:p-14 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-app-badge-bg text-app-badge-text border border-app-badge-border text-sm font-semibold mb-5">
+              <div className="mb-5 inline-flex items-center gap-2 rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-4 py-2 text-sm font-semibold text-[var(--tag-text)]">
                 <Sparkles className="w-4 h-4" />
                 Meet Sebastian
               </div>
 
               <div className="relative mx-auto w-full max-w-xs sm:max-w-sm mb-6 lg:hidden">
-                <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-t from-primary/20 to-transparent blur-2xl" />
-                <div className="relative rounded-[2rem] border border-border/70 bg-background/70 px-4 pt-4 pb-0 shadow-xl overflow-hidden flex items-end">
+                <div className="absolute inset-0 rounded-[2rem] bg-[radial-gradient(circle,color-mix(in_srgb,var(--accent)_10%,transparent)_0%,transparent_72%)] blur-2xl" />
+                <div className="relative flex items-end overflow-hidden rounded-[2rem] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_88%,transparent)] px-4 pt-4 pb-0 shadow-[var(--shadow-card)]">
                   <Image
                     src="/images/sebastian/sebastian-half.png"
                     alt="Sebastian, your personal AI fashion assistant"
@@ -44,7 +43,7 @@ export function SebastianSection() {
                 </div>
               </div>
 
-              <h2 className="font-display text-4xl lg:text-5xl font-bold text-foreground leading-tight mb-5">
+              <h2 className="font-display mb-5 text-4xl font-normal leading-tight text-foreground lg:text-5xl">
                 Your own personal stylist, on demand.
               </h2>
 
@@ -64,16 +63,13 @@ export function SebastianSection() {
 
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link href="/sebastian">
-                  <Button
-                    size="lg"
-                    className="bg-secondary text-secondary-foreground hover:bg-secondary/90 px-8 py-4 text-base font-semibold rounded-2xl group"
-                  >
+                  <Button size="lg" className="group px-8 py-4 text-base">
                     Meet Sebastian
                     <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </Link>
                 <Link href="/pricing">
-                  <Button variant="outline" size="lg" className="rounded-2xl px-8 py-4 text-base">
+                  <Button variant="outline" size="lg" className="px-8 py-4 text-base">
                     View plans with Sebastian
                   </Button>
                 </Link>
@@ -81,8 +77,8 @@ export function SebastianSection() {
             </div>
 
             <div className="relative mx-auto w-full max-w-md hidden lg:block">
-              <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-t from-primary/20 to-transparent blur-2xl" />
-              <div className="relative rounded-[2rem] border border-border/70 bg-background/70 px-4 pt-4 pb-0 shadow-xl overflow-hidden flex items-end">
+              <div className="absolute inset-0 rounded-[2rem] bg-[radial-gradient(circle,color-mix(in_srgb,var(--accent)_10%,transparent)_0%,transparent_72%)] blur-2xl" />
+              <div className="relative flex items-end overflow-hidden rounded-[2rem] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_88%,transparent)] px-4 pt-4 pb-0 shadow-[var(--shadow-card)]">
                 <Image
                   src="/images/sebastian/sebastian-half.png"
                   alt="Sebastian, your personal AI fashion assistant"

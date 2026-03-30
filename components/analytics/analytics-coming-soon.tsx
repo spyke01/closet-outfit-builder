@@ -2,7 +2,7 @@ import { Sparkles } from 'lucide-react';
 
 export function AnalyticsComingSoon() {
   return (
-    <section className="bg-card border border-border rounded-lg p-6 flex flex-col gap-3">
+    <section className="glass-surface flex flex-col gap-3 p-6">
       <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
         <Sparkles className="w-4 h-4" /> Coming Soon
       </h2>
