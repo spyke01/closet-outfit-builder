@@ -67,11 +67,21 @@ export type WeatherData = z.infer<typeof WeatherDataSchema>;
 export type WeatherResponse = z.infer<typeof WeatherResponseSchema>;
 export type WeatherError = z.infer<typeof WeatherErrorSchema>;
 
+export interface WeatherLocationLabel {
+  name: string;
+  state?: string;
+  country?: string;
+  label: string;
+}
+
 interface UseWeatherReturn {
   forecast: WeatherData[];
   current: WeatherResponse['current'] | null;
   hourly: NonNullable<WeatherResponse['hourly']>;
   alerts: NonNullable<WeatherResponse['alerts']>;
+  coordinates: { latitude: number; longitude: number } | null;
+  locationLabel: WeatherLocationLabel | null;
+  timezone: string | null;
   loading: boolean;
   error: WeatherError | null;
   retry: () => void;
@@ -228,6 +238,42 @@ async function fetchWeatherData(latitude: number, longitude: number): Promise<We
   }
 }
 
+async function fetchLocationLabel(latitude: number, longitude: number): Promise<WeatherLocationLabel | null> {
+  try {
+    const response = await fetch(`/api/geocode?lat=${latitude}&lon=${longitude}`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const payload = await response.json() as {
+      best?: {
+        name?: string;
+        state?: string;
+        country?: string;
+        label?: string;
+      } | null;
+    };
+
+    const best = payload.best;
+    if (!best?.name) return null;
+
+    return {
+      name: best.name,
+      state: best.state || undefined,
+      country: best.country || undefined,
+      label: best.label || [best.name, best.state].filter(Boolean).join(', '),
+    };
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Get user-friendly error message based on HTTP status code
  */
@@ -261,6 +307,9 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
   const [current, setCurrent] = useState<WeatherResponse['current'] | null>(null);
   const [hourly, setHourly] = useState<NonNullable<WeatherResponse['hourly']>>([]);
   const [alerts, setAlerts] = useState<NonNullable<WeatherResponse['alerts']>>([]);
+  const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [locationLabel, setLocationLabel] = useState<WeatherLocationLabel | null>(null);
+  const [timezone, setTimezone] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<WeatherError | null>(null);
   const [retryCount, setRetryCount] = useState(0);
@@ -299,14 +348,23 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
       }
 
       setLocationPermissionDenied(false);
+      setCoordinates({
+        latitude: location.latitude,
+        longitude: location.longitude,
+      });
+
+      const locationPromise = fetchLocationLabel(location.latitude, location.longitude);
       
       try {
         const weatherData = await fetchWeatherData(location.latitude, location.longitude);
+        const resolvedLocation = await locationPromise;
         
         setForecast(weatherData.forecast);
         setCurrent(weatherData.current);
         setHourly(weatherData.hourly ?? []);
         setAlerts(weatherData.alerts ?? []);
+        setTimezone(weatherData.timezone ?? null);
+        setLocationLabel(resolvedLocation);
         setRetryCount(0); // Reset retry count on success
         setUsingFallback(false);
       } catch (weatherError) {
@@ -315,10 +373,13 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
           logger.info('Main weather service failed, attempting fallback');
           try {
             const fallbackData = await generateFallbackWeather(location.latitude, location.longitude);
+            const resolvedLocation = await locationPromise;
             setForecast(fallbackData.forecast);
             setCurrent(fallbackData.current);
             setHourly([]);
             setAlerts([]);
+            setTimezone(fallbackData.timezone ?? null);
+            setLocationLabel(resolvedLocation);
             setUsingFallback(true);
             setError({
               error: 'Using estimated weather data. Actual weather service is temporarily unavailable.',
@@ -376,6 +437,7 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
         setCurrent(null);
         setHourly([]);
         setAlerts([]);
+        setTimezone(null);
       }
 
       // Increment retry count for rate limiting
@@ -427,6 +489,9 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
       setCurrent(null);
       setHourly([]);
       setAlerts([]);
+      setCoordinates(null);
+      setLocationLabel(null);
+      setTimezone(null);
       setError(null);
       setLoading(false);
     }
@@ -437,6 +502,9 @@ export function useWeather(enabled: boolean = true): UseWeatherReturn {
     current,
     hourly,
     alerts,
+    coordinates,
+    locationLabel,
+    timezone,
     loading,
     error,
     retry,

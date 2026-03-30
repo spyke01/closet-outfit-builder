@@ -373,20 +373,35 @@ export function SebastianChatLauncher({
             role="dialog"
             aria-modal="true"
             aria-label="Sebastian chat"
-            className="fixed bottom-4 right-4 z-50 flex h-[540px] w-[min(420px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl"
+            className="fixed bottom-4 right-4 z-50 flex h-[540px] w-[min(420px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border shadow-2xl"
+            style={{
+              background: 'var(--bg-surface-active)',
+              borderColor: 'var(--border-default)',
+              backdropFilter: 'blur(var(--blur-glass))',
+              WebkitBackdropFilter: 'blur(var(--blur-glass))',
+              boxShadow: 'var(--shadow-card-hover)',
+              isolation: 'isolate',
+            }}
           >
-            <header className="flex items-center justify-between border-b border-border px-4 py-3">
+            <header
+              className="flex items-center justify-between border-b px-4 py-3"
+              style={{
+                borderColor: 'var(--border-subtle)',
+                background: 'var(--card-header-bg, rgba(255, 255, 255, 0.03))',
+              }}
+            >
               <div className="flex items-center gap-2">
                 <SebastianAvatar className="h-9 w-9 border-primary/50" />
                 <div>
-                  <h2 className="text-sm font-semibold text-foreground">Sebastian</h2>
-                  <p className="text-xs text-muted-foreground">Personal Style Assistant</p>
+                  <h2 className="text-sm font-semibold text-[var(--text-1)]">Sebastian</h2>
+                  <p className="text-xs text-[var(--text-2)]">Personal Style Assistant</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                style={{ color: 'var(--text-2)' }}
                 aria-label="Close chat"
               >
                 <X className="h-4 w-4" />
@@ -398,27 +413,58 @@ export function SebastianChatLauncher({
                 {messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`max-w-[88%] rounded-2xl px-3 py-2 text-sm ${
+                    className={`max-w-[88%] rounded-2xl px-3 py-2 text-sm whitespace-pre-line ${
                       message.role === 'assistant'
-                        ? 'bg-muted text-foreground whitespace-pre-line'
-                        : 'ml-auto bg-primary text-primary-foreground whitespace-pre-line'
+                        ? ''
+                        : 'ml-auto'
                     }`}
+                    style={
+                      message.role === 'assistant'
+                        ? {
+                            background: 'rgba(255, 255, 255, 0.06)',
+                            border: '1px solid var(--border-subtle)',
+                            color: 'var(--text-1)',
+                          }
+                        : {
+                            background: 'linear-gradient(135deg, var(--accent), #7eb8ff)',
+                            color: 'var(--text-on-accent)',
+                          }
+                    }
                   >
                     {message.text}
                   </div>
                 ))}
                 {isResponding && (
-                  <div className="inline-flex items-center gap-2 rounded-2xl bg-muted px-3 py-2 text-xs text-muted-foreground">
+                  <div
+                    className="inline-flex items-center gap-2 rounded-2xl px-3 py-2 text-xs"
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.06)',
+                      border: '1px solid var(--border-subtle)',
+                      color: 'var(--text-2)',
+                    }}
+                  >
                     <MessageCircle className="h-3.5 w-3.5" />
                     Sebastian is thinking...
                   </div>
                 )}
               </div>
 
-              <div className="border-t border-border px-4 py-3">
+              <div
+                className="border-t px-4 py-3"
+                style={{
+                  borderColor: 'var(--border-subtle)',
+                  background: 'rgba(255, 255, 255, 0.02)',
+                }}
+              >
                 {attachedImageUrl && (
-                  <div className="mb-2 flex items-center justify-between rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs">
-                    <div className="flex items-center gap-2 text-muted-foreground">
+                  <div
+                    className="mb-2 flex items-center justify-between rounded-lg px-3 py-2 text-xs"
+                    style={{
+                      border: '1px solid var(--border-subtle)',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                    }}
+                  >
+                    <div className="flex items-center gap-2 text-[var(--text-2)]">
                       <ImageIcon className="h-3.5 w-3.5" />
                       <span className="truncate max-w-[220px]">{attachedImageName || 'Image attached'}</span>
                     </div>
@@ -437,7 +483,7 @@ export function SebastianChatLauncher({
                 )}
 
                 {uploadError && (
-                  <p className="mb-2 text-xs text-destructive">{uploadError}</p>
+                  <p className="mb-2 text-xs" style={{ color: 'var(--danger, #f55b5b)' }}>{uploadError}</p>
                 )}
 
                 <form onSubmit={handleSubmit} className="flex items-center gap-2">
@@ -467,22 +513,30 @@ export function SebastianChatLauncher({
                       onChange={handleFilePick}
                       disabled={requiresUpgrade || isResponding || isUploadingImage}
                     />
-                    <span className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-border px-2 py-1 text-[11px] text-muted-foreground hover:bg-muted">
+                    <span
+                      className="inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-[11px]"
+                      style={{
+                        border: '1px solid var(--border-subtle)',
+                        color: 'var(--text-2)',
+                        background: 'rgba(255, 255, 255, 0.04)',
+                      }}
+                    >
                       <Paperclip className="h-3.5 w-3.5" />
                       Attach
                     </span>
                   </label>
                   {isUploadingImage && (
-                    <span className="text-[11px] text-muted-foreground">Uploading...</span>
+                    <span className="text-[11px] text-[var(--text-2)]">Uploading...</span>
                   )}
                 </div>
                 <div className="mt-2 flex items-center justify-between gap-2">
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-[11px] text-[var(--text-2)]">
                     Ask styling, wardrobe, trip, or outfit-photo questions.
                   </p>
                   <Link
                     href="/sebastian"
-                    className="text-[11px] font-medium text-primary underline-offset-2 hover:underline"
+                    className="text-[11px] font-medium underline-offset-2 hover:underline"
+                    style={{ color: 'var(--accent)' }}
                   >
                     Who is Sebastian?
                   </Link>
@@ -490,10 +544,18 @@ export function SebastianChatLauncher({
               </div>
 
               {requiresUpgrade && (
-                <div className="absolute inset-0 z-10 flex items-center justify-center bg-card/85 px-6 text-center backdrop-blur-[1px]">
-                  <div className="max-w-[280px] rounded-xl border border-border bg-card p-4 shadow-lg">
-                    <h3 className="text-sm font-semibold text-foreground">Unlock Sebastian</h3>
-                    <p className="mt-2 text-xs text-muted-foreground">
+                <div className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center backdrop-blur-[12px]" style={{ background: 'rgba(6, 10, 16, 0.7)' }}>
+                  <div
+                    className="max-w-[280px] rounded-xl p-4 shadow-lg"
+                    style={{
+                      border: '1px solid var(--border-default)',
+                      background: 'var(--bg-surface-active)',
+                      backdropFilter: 'blur(var(--blur-glass))',
+                      WebkitBackdropFilter: 'blur(var(--blur-glass))',
+                    }}
+                  >
+                    <h3 className="text-sm font-semibold text-[var(--text-1)]">Unlock Sebastian</h3>
+                    <p className="mt-2 text-xs text-[var(--text-2)]">
                       Free plans do not include Sebastian. Upgrade to Plus or Pro for full AI stylist access.
                     </p>
                     <Button asChild className="mt-3 w-full" size="sm">

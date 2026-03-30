@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { AlertCircle, Loader2, RefreshCw, Save, Sparkles, X } from 'lucide-react';
+import { AlertCircle, Cloud, CloudRain, CloudSnow, CloudSun, Loader2, RefreshCw, Save, Sparkles, Sun, X } from 'lucide-react';
 import { WardrobeItem } from '@/lib/types/database';
 import { useWeather } from '@/lib/hooks/use-weather';
 import { normalizeWeatherContext } from '@/lib/utils/weather-normalization';
@@ -11,17 +11,18 @@ import { GeneratedOutfit, WeatherContext } from '@/lib/types/generation';
 import { createOutfit } from '@/lib/actions/outfits';
 import { markTodayAiOutfitSaved } from '@/lib/actions/today';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import WeatherSnapshot from '@/components/weather-snapshot';
 import { OutfitGridLayout } from '@/components/outfit-grid-layout';
 import { useBillingEntitlements } from '@/lib/hooks/use-billing-entitlements';
 import { createClient } from '@/lib/supabase/client';
 import { createLogger } from '@/lib/utils/logger';
 import { isFreePlan } from '@/lib/services/billing/plan-labels';
+import { getGreetingCopy, getTodayStylingTip } from '@/lib/services/today/presentation';
 
 const logger = createLogger({ component: 'app-today-today-page-client' });
 
 interface TodayPageClientProps {
   wardrobeItems: WardrobeItem[];
+  userName?: string | null;
 }
 
 interface LookConfig {
@@ -114,6 +115,63 @@ const CATEGORY_TO_SLOT: Record<string, string> = {
   Watch: 'watch',
 };
 
+function getWeatherIcon(condition: string) {
+  const lowerCondition = condition.toLowerCase();
+
+  if (lowerCondition.includes('rain') || lowerCondition.includes('drizzle')) {
+    return CloudRain;
+  }
+  if (lowerCondition.includes('snow') || lowerCondition.includes('sleet')) {
+    return CloudSnow;
+  }
+  if (lowerCondition.includes('cloud') || lowerCondition.includes('overcast')) {
+    return Cloud;
+  }
+  if (lowerCondition.includes('partly') || lowerCondition.includes('scattered')) {
+    return CloudSun;
+  }
+  if (lowerCondition.includes('clear') || lowerCondition.includes('sunny')) {
+    return Sun;
+  }
+
+  return Cloud;
+}
+
+function formatDateInTimeZone(date: Date, timezone?: string | null) {
+  return new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    ...(timezone ? { timeZone: timezone } : {}),
+  }).format(date);
+}
+
+function getHourInTimeZone(date: Date, timezone?: string | null) {
+  const formatted = new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    hour12: false,
+    ...(timezone ? { timeZone: timezone } : {}),
+  }).format(date);
+
+  return Number.parseInt(formatted, 10);
+}
+
+function getBadgeLabel(look: LookConfig) {
+  if (look.preferredFormalityBand === 'casual') return 'Casual';
+  if (look.preferredFormalityBand === 'refined') return 'Refined';
+  return 'Smart';
+}
+
+function getBadgeClass(look: LookConfig) {
+  if (look.preferredFormalityBand === 'casual') {
+    return 'border border-[color-mix(in_srgb,var(--accent)_15%,transparent)] bg-[var(--accent-muted)] text-[var(--accent)]';
+  }
+  if (look.preferredFormalityBand === 'refined') {
+    return 'border border-[color-mix(in_srgb,var(--accent-3)_15%,transparent)] bg-[var(--accent-3-muted)] text-[var(--accent-3)]';
+  }
+  return 'border border-[color-mix(in_srgb,var(--accent-2)_15%,transparent)] bg-[var(--accent-2-muted)] text-[var(--accent-2)]';
+}
+
 function getOutfitSignature(outfit: GeneratedOutfit): string {
   return Object.entries(outfit.items)
     .filter(([, item]) => Boolean(item?.id))
@@ -131,8 +189,8 @@ function hasRequiredCategories(items: WardrobeItem[]): boolean {
   return categories.has('Shirt') && categories.has('Pants') && categories.has('Shoes');
 }
 
-export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps) {
-  const { current, forecast, loading: weatherLoading, error: weatherError } = useWeather(true);
+export default function TodayPageClient({ wardrobeItems, userName }: TodayPageClientProps) {
+  const { current, forecast, loading: weatherLoading, error: weatherError, locationLabel, timezone } = useWeather(true);
   const { entitlements, loading: entitlementsLoading } = useBillingEntitlements(true);
   const [freeOutfit, setFreeOutfit] = useState<GeneratedOutfit | null>(null);
   const [paidLooks, setPaidLooks] = useState<Record<LookConfig['id'], GeneratedOutfit | null>>({
@@ -190,6 +248,30 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
     () => hasRequiredCategories(wardrobeItems),
     [wardrobeItems]
   );
+
+  const now = useMemo(() => new Date(), []);
+  const greetingDate = useMemo(() => {
+    const hour = getHourInTimeZone(now, timezone);
+    if (Number.isNaN(hour)) return now;
+
+    const adjusted = new Date(now);
+    adjusted.setHours(hour, adjusted.getMinutes(), adjusted.getSeconds(), adjusted.getMilliseconds());
+    return adjusted;
+  }, [now, timezone]);
+  const greeting = useMemo(() => getGreetingCopy(greetingDate, userName), [greetingDate, userName]);
+  const dateLine = useMemo(() => {
+    const formattedDate = formatDateInTimeZone(now, timezone);
+    return locationLabel?.label ? `${formattedDate} · ${locationLabel.label}` : formattedDate;
+  }, [locationLabel?.label, now, timezone]);
+  const stylingTip = useMemo(
+    () => getTodayStylingTip(weatherContext, { weatherUnavailable: Boolean(weatherError || !current) }),
+    [current, weatherContext, weatherError]
+  );
+  const todayForecast = forecast[0];
+  const WeatherIcon = getWeatherIcon(current?.condition || 'cloudy');
+  const precipitationLine = todayForecast?.precipitationProbability && todayForecast.precipitationProbability > 0
+    ? `${Math.round(todayForecast.precipitationProbability * 100)}% rain`
+    : 'No rain expected';
 
   const planCode = entitlementsLoading ? null : (entitlements?.effectivePlanCode ?? 'free');
   const isPaidPlan = planCode !== null && !isFreePlan(planCode);
@@ -624,6 +706,12 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
     return deduped;
   }, [todayAi, wardrobeById]);
   const shouldShowAiForm = !todayAi || aiFormOpen;
+  const primaryButtonClass = 'inline-flex items-center justify-center gap-2 rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] px-[22px] py-[11px] text-[0.82rem] font-semibold text-[var(--text-on-accent)] shadow-[var(--shadow-accent)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:-translate-y-px hover:shadow-[var(--shadow-accent-hover)] active:translate-y-0 active:opacity-90 disabled:cursor-not-allowed disabled:opacity-50';
+  const secondaryButtonClass = 'inline-flex items-center justify-center gap-2 rounded-[var(--radius-pill)] border border-[var(--border-default)] bg-[var(--bg-surface)] px-[16px] py-[9px] text-[0.79rem] font-medium text-[var(--text-2)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-1)] active:bg-[var(--bg-surface-active)] disabled:cursor-not-allowed disabled:opacity-50';
+  const tertiaryButtonClass = 'inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-pill)] border border-transparent bg-transparent px-[12px] py-[6px] text-[0.72rem] font-medium text-[var(--text-2)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-[var(--border-subtle)] hover:bg-[var(--button-tertiary-hover)] hover:text-[var(--text-1)] active:bg-[var(--button-tertiary-active)] disabled:cursor-not-allowed disabled:opacity-50';
+  const usageLabel = isPaidPlan
+    ? `Monthly ${aiUsage?.monthlyUsed || 0}/${aiUsage?.monthlyLimit ?? '∞'}`
+    : `Free trial ${aiUsage?.trialUsed || 0}/${aiUsage?.trialLimit || 1}`;
 
   if (!requiredCategoriesAvailable) {
     return (
@@ -641,466 +729,311 @@ export default function TodayPageClient({ wardrobeItems }: TodayPageClientProps)
     );
   }
 
-  return (
-    <div className="page-shell-content">
-      <h1 className="mb-8 font-display text-4xl font-normal tracking-[-0.03em] text-foreground">Today&apos;s Outfit</h1>
+  const renderLookCard = (
+    look: LookConfig,
+    outfit: GeneratedOutfit | null,
+    options: {
+      saveKey: string;
+      onRegenerate: () => void;
+      onSwap: (item: WardrobeItem) => void;
+      saveName: string;
+    }
+  ) => {
+    const lookItems = outfit ? Object.values(outfit.items).filter(Boolean) as WardrobeItem[] : [];
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[280px_1fr_1fr] xl:grid-rows-[auto_auto]">
-        <div className="app-section section-delay-1 xl:[grid-row:1/3]">
-          <WeatherSnapshot current={current} forecast={forecast} loading={weatherLoading} error={weatherError} />
-          {saveError && (
-            <Alert variant="destructive" className="mt-4">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{saveError}</AlertDescription>
-            </Alert>
-          )}
-          {aiError && (
-            <Alert variant="destructive" className="mt-4">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{aiError}</AlertDescription>
-            </Alert>
+    return (
+      <article
+        key={look.id}
+        className="glass-surface flex h-full flex-col gap-4 p-5"
+        style={{ backdropFilter: 'blur(var(--blur-glass))', WebkitBackdropFilter: 'blur(var(--blur-glass))' }}
+      >
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 whitespace-nowrap">
+              <h2 className="font-display text-[1.3rem] font-normal tracking-[-0.02em] text-[var(--text-1)]">
+                {look.label}
+              </h2>
+              <span className={`inline-flex flex-shrink-0 rounded-[var(--radius-pill)] px-2 py-[2px] text-[0.65rem] font-medium uppercase tracking-[0.04em] ${getBadgeClass(look)}`}>
+                {getBadgeLabel(look)}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center justify-end gap-1">
+            <button
+              className={tertiaryButtonClass}
+              disabled={!outfit || savingKey === options.saveKey || savedLookKeys.has(options.saveKey)}
+              onClick={() => outfit && saveLook(options.saveKey, outfit, options.saveName)}
+              aria-label={`Save ${look.label}`}
+              style={{ display: savedLookKeys.has(options.saveKey) ? 'none' : 'inline-flex' }}
+            >
+              <Save className="h-3.5 w-3.5" />
+              <span>Save</span>
+            </button>
+            <button
+              className={tertiaryButtonClass}
+              disabled={generatingLookId === look.id || !outfit}
+              onClick={options.onRegenerate}
+              aria-label={`Refresh ${look.label}`}
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              <span>Refresh</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="flex-1">
+          {outfit ? (
+            <OutfitGridLayout
+              items={lookItems}
+              showLabels
+              interactive
+              previewVariant="bare"
+              onItemClick={options.onSwap}
+            />
+          ) : (
+            <div className="flex min-h-[240px] items-center justify-center rounded-[var(--radius-md)] border border-dashed border-[var(--border-subtle)] text-sm text-[var(--text-2)]">
+              Generating look...
+            </div>
           )}
         </div>
 
-        <div className="app-section section-delay-2 space-y-4 xl:[grid-column:2/4]">
-          {entitlementsLoading && (
-            <div className="glass-surface flex items-center gap-2 p-4 text-sm text-muted-foreground">
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Loading your plan features...
-            </div>
-          )}
+        {saveFeedbackByKey[options.saveKey] && (
+          <p className="text-sm text-emerald-400">{saveFeedbackByKey[options.saveKey]}</p>
+        )}
+      </article>
+    );
+  };
 
-          {!entitlementsLoading && !isPaidPlan && (
-            <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-              <article className="glass-surface flex flex-col gap-4 p-6">
-                <div className="flex items-center justify-between">
-                  <h2 className="font-display text-[1.3rem] font-normal tracking-[-0.02em] text-foreground">Today&apos;s Outfit</h2>
-                  <div className="hidden md:flex items-center gap-2">
-                    <button
-                      className="glass-pill inline-flex h-8 items-center justify-center gap-1.5 px-3 text-xs font-medium disabled:opacity-50"
-                      disabled={!freeOutfit || savingKey === 'free' || savedLookKeys.has('free')}
-                      onClick={() => freeOutfit && saveLook('free', freeOutfit, `Today's Outfit - ${new Date().toLocaleDateString()}`)}
-                      title="Save this outfit"
-                      aria-label="Save this outfit"
-                      style={{ visibility: savedLookKeys.has('free') ? 'hidden' : 'visible' }}
+  return (
+    <div className="page-shell-content">
+      <div
+        className="app-section section-delay-1 overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-[var(--shadow-card)]"
+        style={{ backdropFilter: 'blur(var(--blur-glass))', WebkitBackdropFilter: 'blur(var(--blur-glass))' }}
+      >
+        <div className="md:flex md:items-stretch md:justify-between">
+          <div className="min-w-0 flex-1 px-6 py-6">
+            <h1
+              className="font-display font-normal text-[var(--text-1)]"
+              style={{
+                fontSize: 'clamp(2.1rem, 3.2vw, 2.5rem)',
+                lineHeight: '1.02',
+                letterSpacing: '-0.05em',
+              }}
+            >
+              Good{' '}
+              <span className="italic text-[var(--accent)]">{greeting.period}</span>
+              {userName?.trim() ? `, ${userName.trim()}` : ''}
+            </h1>
+            <p className="mt-1 text-[0.84rem] text-[var(--text-2)]">{dateLine}</p>
+          </div>
+
+          <div className="px-6 py-6 md:w-[420px] md:flex-shrink-0">
+            <div className="flex h-full flex-col items-start justify-center gap-2 text-left md:items-end md:justify-center md:text-right">
+              <div className="flex flex-wrap items-center gap-1.5 text-[0.84rem] text-[var(--text-2)] [font-variant-numeric:tabular-nums] md:justify-end">
+                <WeatherIcon className="h-4 w-4 text-[var(--text-2)]" />
+                {weatherLoading ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    Loading weather...
+                  </span>
+                ) : (
+                  <>
+                    <span className="font-semibold text-[var(--text-1)]">{Math.round(current?.temperature ?? weatherContext?.currentTemp ?? 65)}°F</span>
+                    <span>· Feels {Math.round(current?.feelsLike ?? current?.temperature ?? weatherContext?.currentTemp ?? 65)}°</span>
+                    <span>· High {Math.round(todayForecast?.temperature.high ?? weatherContext?.highTemp ?? 70)}°</span>
+                    <span>· Low {Math.round(todayForecast?.temperature.low ?? weatherContext?.lowTemp ?? 60)}°</span>
+                  </>
+                )}
+              </div>
+              <p className="mt-[3px] text-[0.78rem] text-[var(--text-3)]">{precipitationLine}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="app-section section-delay-2 mt-5 space-y-3">
+        <div className="flex items-center gap-2 px-1 text-[0.82rem] text-[var(--text-2)]">
+          <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--accent)] opacity-80" />
+          <p>
+            {stylingTip}
+            {!weatherLoading && current?.condition ? (
+              <span className="text-[var(--text-3)]"> {' '}— {current.condition.toLowerCase()} and steady conditions through the day.</span>
+            ) : null}
+          </p>
+        </div>
+
+        {saveError && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{saveError}</AlertDescription>
+          </Alert>
+        )}
+        {aiError && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{aiError}</AlertDescription>
+          </Alert>
+        )}
+        {entitlementsLoading && (
+          <div className="flex items-center gap-2 text-sm text-[var(--text-2)]">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Loading your plan features...
+          </div>
+        )}
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {!entitlementsLoading && !isPaidPlan && (
+          <div className="app-section section-delay-3">
+            {renderLookCard(FREE_TODAY_LOOK, freeOutfit, {
+              saveKey: 'free',
+              onRegenerate: regenerateFree,
+              onSwap: swapFreeItem,
+              saveName: `Today's Outfit - ${new Date().toLocaleDateString()}`,
+            })}
+          </div>
+        )}
+
+        {!entitlementsLoading && isPaidPlan && LOOK_CONFIGS.map((look) => (
+          <div key={look.id} className="app-section section-delay-3">
+            {renderLookCard(look, paidLooks[look.id], {
+              saveKey: look.id,
+              onRegenerate: () => regeneratePaidLook(look),
+              onSwap: (item) => swapPaidItem(look.id, item),
+              saveName: `${look.label} - ${new Date().toLocaleDateString()}`,
+            })}
+          </div>
+        ))}
+
+        <div className={`app-section section-delay-4 ${isPaidPlan ? 'xl:col-start-2' : ''}`}>
+          <article
+            className="glass-surface card-glow-green flex h-full flex-col gap-4 p-5"
+            style={{ backdropFilter: 'blur(var(--blur-glass))', WebkitBackdropFilter: 'blur(var(--blur-glass))' }}
+          >
+            <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--accent)_12%,transparent)] bg-[linear-gradient(135deg,var(--accent-muted),var(--accent-3-muted))]">
+                <Sparkles className="h-4 w-4 text-[var(--accent)]" />
+              </div>
+              <h2 className="font-display text-[1.2rem] font-normal tracking-[-0.02em] text-[var(--text-1)]">AI Outfit</h2>
+            </div>
+            <div>
+              <p className="text-sm text-[var(--text-2)]">Generate a one-off look from your wardrobe for today.</p>
+            </div>
+            </div>
+
+            {aiGenerating || aiLoading ? (
+              <div className="flex min-h-[180px] items-center justify-center rounded-[var(--radius-md)] border border-dashed border-[var(--border-subtle)] text-sm text-[var(--text-2)]">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {todayAi ? 'Regenerating AI outfit...' : 'Loading AI state...'}
+              </div>
+            ) : !shouldShowAiForm && todayAi && aiOutfitItems.length > 0 ? (
+              <div className="space-y-4">
+                <OutfitGridLayout items={aiOutfitItems} showLabels previewVariant="bare" />
+                {todayAi.explanation && <p className="text-sm text-[var(--text-2)]">{todayAi.explanation}</p>}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <label className="space-y-1">
+                    <span className="text-[0.7rem] font-medium uppercase tracking-[0.04em] text-[var(--text-3)]">Occasion</span>
+                    <select
+                      value={eventType}
+                      onChange={(e) => setEventType(e.target.value)}
+                      className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm text-[var(--text-1)]"
                     >
-                      <Save className="h-4 w-4" />
-                      <span>Save</span>
-                    </button>
-                    <button
-                      className="glass-pill inline-flex h-8 items-center justify-center gap-1.5 px-3 text-xs font-medium disabled:opacity-50"
-                      disabled={generatingLookId === 'free' || !freeOutfit}
-                      onClick={regenerateFree}
-                      title="Regenerate this outfit"
-                      aria-label="Regenerate this outfit"
+                      {(aiOptions?.eventPresets || ['Work Day', 'Date Night', 'Social Event']).map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="space-y-1">
+                    <span className="text-[0.7rem] font-medium uppercase tracking-[0.04em] text-[var(--text-3)]">Style</span>
+                    <select
+                      value={stylePreset}
+                      onChange={(e) => setStylePreset(e.target.value)}
+                      className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm text-[var(--text-1)]"
                     >
-                      <RefreshCw className="h-4 w-4" />
-                      <span>Regenerate</span>
-                    </button>
-                  </div>
-                </div>
-                <div className="rounded-[var(--radius-md)] border border-[var(--item-img-border)] bg-[var(--item-img-bg)] p-2">
-                  {freeOutfit ? (
-                    <OutfitGridLayout
-                      items={Object.values(freeOutfit.items).filter(Boolean) as WardrobeItem[]}
-                      showLabels
-                      interactive
-                      onItemClick={swapFreeItem}
+                      {(aiOptions?.stylePresets || ['Smart Casual', 'Ivy', 'Minimal']).map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="space-y-1">
+                    <span className="text-[0.7rem] font-medium uppercase tracking-[0.04em] text-[var(--text-3)]">Formality</span>
+                    <select
+                      value={formality}
+                      onChange={(e) => setFormality(e.target.value as 'casual' | 'smart' | 'formal')}
+                      className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm text-[var(--text-1)]"
+                    >
+                      <option value="casual">Casual</option>
+                      <option value="smart">Smart</option>
+                      <option value="formal">Formal</option>
+                    </select>
+                  </label>
+                  <label className="space-y-1">
+                    <span className="text-[0.7rem] font-medium uppercase tracking-[0.04em] text-[var(--text-3)]">Optional style direction</span>
+                    <input
+                      value={styleCustom}
+                      onChange={(e) => setStyleCustom(e.target.value)}
+                      className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm text-[var(--text-1)] placeholder:text-[var(--text-3)]"
+                      placeholder="Add a detail like 'more polished' or 'keep it minimal'"
                     />
-                  ) : (
-                    <div className="flex h-40 items-center justify-center rounded-[var(--radius-md)] border border-dashed border-[var(--border-subtle)] text-sm text-muted-foreground">
-                      Generating look...
-                    </div>
-                  )}
+                  </label>
                 </div>
-                <div className="mt-auto grid grid-cols-2 items-center gap-2 md:hidden">
-                  <button
-                    className="glass-pill inline-flex h-9 w-full items-center justify-center gap-1.5 px-3 text-sm font-medium disabled:opacity-50"
-                    disabled={!freeOutfit || savingKey === 'free' || savedLookKeys.has('free')}
-                    onClick={() => freeOutfit && saveLook('free', freeOutfit, `Today's Outfit - ${new Date().toLocaleDateString()}`)}
-                    title="Save this outfit"
-                    aria-label="Save this outfit"
-                    style={{ display: savedLookKeys.has('free') ? 'none' : 'inline-flex' }}
-                  >
-                    <Save className="h-4 w-4" />
-                    <span>Save</span>
-                  </button>
-                  <button
-                    className={`glass-pill inline-flex h-9 w-full items-center justify-center gap-1.5 px-3 text-sm font-medium disabled:opacity-50 ${savedLookKeys.has('free') ? 'col-span-2' : ''}`}
-                    disabled={generatingLookId === 'free' || !freeOutfit}
-                    onClick={regenerateFree}
-                    title="Regenerate this outfit"
-                    aria-label="Regenerate this outfit"
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                    <span>Regenerate</span>
-                  </button>
-                </div>
-                {saveFeedbackByKey.free && (
-                  <p className="text-sm text-emerald-400">{saveFeedbackByKey.free}</p>
+                {!todayAi && (
+                  <p className="text-sm text-[var(--text-2)]">Fill out your preferences and generate an AI look for today.</p>
                 )}
-              </article>
+              </div>
+            )}
 
-              <article className="glass-surface card-glow-green flex flex-col gap-4 p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--accent)_12%,transparent)] bg-[linear-gradient(135deg,var(--accent-muted),var(--accent-3-muted))]">
-                      <Sparkles className="h-4 w-4 text-primary" />
-                    </div>
-                    <h2 className="font-display text-[1.2rem] font-normal tracking-[-0.02em] text-foreground">AI Outfit</h2>
-                  </div>
-                  {todayAi && !aiFormOpen && !aiGenerating && (
-                    <div className="hidden md:flex items-center gap-2">
-                      {!aiOutfitSaved && (
-                        <button
-                          className="glass-pill inline-flex h-8 items-center justify-center gap-1.5 px-3 text-xs font-medium disabled:opacity-50"
-                          disabled={aiSaving}
-                          onClick={saveAiOutfit}
-                          title="Save this AI outfit"
-                          aria-label="Save this AI outfit"
-                        >
-                          <Save className="h-4 w-4" />
-                          <span>{aiSaving ? 'Saving…' : 'Save'}</span>
-                        </button>
-                      )}
-                      <button
-                        className="glass-pill inline-flex h-8 items-center justify-center gap-1.5 px-3 text-xs font-medium"
-                        onClick={() => { setAiFormOpen(true); setAiOutfitSaved(false); }}
-                        title="Regenerate this AI outfit"
-                        aria-label="Regenerate this AI outfit"
-                      >
-                        <RefreshCw className="h-4 w-4" />
-                        <span>Regenerate</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
+            <div className="mt-auto flex flex-wrap items-center gap-2">
+            {!aiGenerating && !shouldShowAiForm && todayAi && !aiOutfitSaved && (
+              <button className={secondaryButtonClass} disabled={aiSaving} onClick={saveAiOutfit}>
+                <Save className="h-4 w-4" />
+                <span>{aiSaving ? 'Saving…' : 'Save'}</span>
+              </button>
+            )}
 
-                <div className="rounded-[var(--radius-md)] border border-[var(--item-img-border)] bg-[var(--item-img-bg)] p-2">
-                  {aiGenerating || aiLoading ? (
-                    <div className="flex h-40 items-center justify-center rounded-[var(--radius-md)] border border-dashed border-[var(--border-subtle)] text-sm text-muted-foreground">
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                      {todayAi ? 'Regenerating AI outfit...' : 'Loading AI state...'}
-                    </div>
-                  ) : !shouldShowAiForm && todayAi && aiOutfitItems.length > 0 ? (
-                    <OutfitGridLayout items={aiOutfitItems} showLabels />
-                  ) : (
-                    <div className="rounded-[var(--radius-md)] border border-dashed border-[var(--border-subtle)] p-4 text-sm text-muted-foreground">
-                      Fill out your preferences and generate an AI look for today.
-                    </div>
-                  )}
-                </div>
+            {!aiGenerating && !shouldShowAiForm && todayAi && (
+              <button
+                className={secondaryButtonClass}
+                onClick={() => { setAiFormOpen(true); setAiOutfitSaved(false); }}
+              >
+                <RefreshCw className="h-4 w-4" />
+                <span>Regenerate</span>
+              </button>
+            )}
 
-                {!aiGenerating && !shouldShowAiForm && todayAi?.explanation && (
-                  <p className="text-sm text-muted-foreground">{todayAi.explanation}</p>
-                )}
+            {(shouldShowAiForm || !todayAi) && (
+              <div className="flex w-full flex-col items-center gap-2">
+                <button
+                  className={`${primaryButtonClass} w-full`}
+                  disabled={aiGenerating || (!isPaidPlan && !canUseFreeTrial)}
+                  onClick={() => generateAiLook(todayAi ? 'PATCH' : 'POST')}
+                >
+                  {isPaidPlan || canUseFreeTrial ? (todayAi ? 'Regenerate' : 'Generate') : 'Upgrade for AI'}
+                </button>
+                <p className="text-center text-[0.72rem] text-[var(--text-3)]">
+                  {usageLabel}
+                </p>
+              </div>
+            )}
 
-                {!aiGenerating && !shouldShowAiForm && todayAi && (
-                  <div className="mt-auto grid grid-cols-2 items-center gap-2 md:hidden">
-                    <button
-                      className="glass-pill inline-flex h-9 w-full items-center justify-center gap-1.5 px-3 text-sm font-medium"
-                      onClick={() => setAiFormOpen(true)}
-                      title="Regenerate this AI outfit"
-                      aria-label="Regenerate this AI outfit"
-                    >
-                      <RefreshCw className="h-4 w-4" />
-                      <span>Regenerate</span>
-                    </button>
-                    <div className="inline-flex h-9 w-full items-center justify-center rounded-[var(--radius-pill)] border border-transparent px-2 text-xs text-muted-foreground">
-                      {`Free trial ${aiUsage?.trialUsed || 0}/${aiUsage?.trialLimit || 1}`}
-                    </div>
-                  </div>
-                )}
+            {!isPaidPlan && !canUseFreeTrial && (
+              <Link href="/settings/billing" className={secondaryButtonClass}>
+                View plans
+              </Link>
+            )}
 
-                {shouldShowAiForm && !aiGenerating && (
-                  <>
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                      <select
-                        value={eventType}
-                        onChange={(e) => setEventType(e.target.value)}
-                        className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm"
-                      >
-                        {(aiOptions?.eventPresets || ['Work Day', 'Date Night', 'Social Event']).map((option) => (
-                          <option key={option} value={option}>{option}</option>
-                        ))}
-                      </select>
-                      <select
-                        value={stylePreset}
-                        onChange={(e) => setStylePreset(e.target.value)}
-                        className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm"
-                      >
-                        {(aiOptions?.stylePresets || ['Smart Casual', 'Ivy', 'Minimal']).map((option) => (
-                          <option key={option} value={option}>{option}</option>
-                        ))}
-                      </select>
-                      <input
-                        value={styleCustom}
-                        onChange={(e) => setStyleCustom(e.target.value)}
-                        className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm"
-                        placeholder="Custom style note (optional)"
-                      />
-                      <select
-                        value={formality}
-                        onChange={(e) => setFormality(e.target.value as 'casual' | 'smart' | 'formal')}
-                        className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm"
-                      >
-                        <option value="casual">Casual</option>
-                        <option value="smart">Smart</option>
-                        <option value="formal">Formal</option>
-                      </select>
-                    </div>
-
-                    <div className="mt-auto flex flex-wrap gap-2">
-                      <button
-                        className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-accent)] disabled:opacity-50"
-                        disabled={aiGenerating || !canUseFreeTrial}
-                        onClick={() => generateAiLook(todayAi ? 'PATCH' : 'POST')}
-                      >
-                        {canUseFreeTrial ? (todayAi ? 'Regenerate with AI' : 'Generate with AI') : 'Upgrade for AI'}
-                      </button>
-                      {!canUseFreeTrial && (
-                        <Link href="/settings/billing" className="glass-pill inline-flex min-h-11 items-center justify-center px-4 py-2.5 text-sm font-medium">
-                          View plans
-                        </Link>
-                      )}
-                      {todayAi && (
-                        <button
-                          className="glass-pill inline-flex min-h-11 items-center justify-center px-4 py-2.5 text-sm font-medium"
-                          onClick={() => setAiFormOpen(false)}
-                          title="Cancel and return to the current AI outfit"
-                        >
-                          <span className="inline-flex items-center gap-1">
-                            <X className="h-4 w-4" />
-                            Cancel
-                          </span>
-                        </button>
-                      )}
-                      <span className="text-xs text-muted-foreground self-center">
-                        {`Free trial used ${aiUsage?.trialUsed || 0} of ${aiUsage?.trialLimit || 1}`}
-                      </span>
-                    </div>
-                  </>
-                )}
-              </article>
+            {todayAi && shouldShowAiForm && !aiGenerating && (
+              <button className={secondaryButtonClass} onClick={() => setAiFormOpen(false)}>
+                <X className="h-4 w-4" />
+                <span>Cancel</span>
+              </button>
+            )}
             </div>
-          )}
-
-          {!entitlementsLoading && isPaidPlan && (
-            <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-              {LOOK_CONFIGS.map((look) => {
-                const outfit = paidLooks[look.id];
-                const lookItems = outfit ? Object.values(outfit.items).filter(Boolean) as WardrobeItem[] : [];
-                return (
-                  <article key={look.id} className="glass-surface flex flex-col gap-4 p-6">
-                    <div className="flex items-center justify-between">
-                      <h2 className="font-display text-[1.3rem] font-normal tracking-[-0.02em] text-foreground">{look.label}</h2>
-                      <div className="hidden md:flex items-center gap-2">
-                        <button
-                          className="glass-pill inline-flex h-8 items-center justify-center gap-1.5 px-3 text-xs font-medium disabled:opacity-50"
-                          disabled={!outfit || savingKey === look.id || savedLookKeys.has(look.id)}
-                          onClick={() => outfit && saveLook(look.id, outfit, `${look.label} - ${new Date().toLocaleDateString()}`)}
-                          title="Save this outfit"
-                          aria-label="Save this outfit"
-                          style={{ visibility: savedLookKeys.has(look.id) ? 'hidden' : 'visible' }}
-                        >
-                          <Save className="h-4 w-4" />
-                          <span>Save</span>
-                        </button>
-                        <button
-                          className="glass-pill inline-flex h-8 items-center justify-center gap-1.5 px-3 text-xs font-medium disabled:opacity-50"
-                          disabled={generatingLookId === look.id}
-                          onClick={() => regeneratePaidLook(look)}
-                          title="Regenerate this outfit"
-                          aria-label="Regenerate this outfit"
-                        >
-                          <RefreshCw className="h-4 w-4" />
-                          <span>Regenerate</span>
-                        </button>
-                      </div>
-                    </div>
-                    <div className="rounded-[var(--radius-md)] border border-[var(--item-img-border)] bg-[var(--item-img-bg)] p-2">
-                      {outfit ? (
-                        <OutfitGridLayout
-                          items={lookItems}
-                          showLabels
-                          interactive
-                          onItemClick={(item) => swapPaidItem(look.id, item)}
-                        />
-                      ) : (
-                        <div className="flex h-40 items-center justify-center rounded-[var(--radius-md)] border border-dashed border-[var(--border-subtle)] text-sm text-muted-foreground">
-                          Generating look...
-                        </div>
-                      )}
-                    </div>
-                    <div className="mt-auto grid grid-cols-2 items-center gap-2 md:hidden">
-                      <button
-                        className="glass-pill inline-flex h-9 w-full items-center justify-center gap-1.5 px-3 text-sm font-medium disabled:opacity-50"
-                        disabled={!outfit || savingKey === look.id || savedLookKeys.has(look.id)}
-                        onClick={() => outfit && saveLook(look.id, outfit, `${look.label} - ${new Date().toLocaleDateString()}`)}
-                        title="Save this outfit"
-                        aria-label="Save this outfit"
-                        style={{ display: savedLookKeys.has(look.id) ? 'none' : 'inline-flex' }}
-                      >
-                        <Save className="h-4 w-4" />
-                        <span>Save</span>
-                      </button>
-                      <button
-                        className={`glass-pill inline-flex h-9 w-full items-center justify-center gap-1.5 px-3 text-sm font-medium disabled:opacity-50 ${savedLookKeys.has(look.id) ? 'col-span-2' : ''}`}
-                        disabled={generatingLookId === look.id}
-                        onClick={() => regeneratePaidLook(look)}
-                        title="Regenerate this outfit"
-                        aria-label="Regenerate this outfit"
-                      >
-                        <RefreshCw className="h-4 w-4" />
-                        <span>Regenerate</span>
-                      </button>
-                    </div>
-                    {saveFeedbackByKey[look.id] && (
-                      <p className="text-sm text-emerald-400 md:hidden">{saveFeedbackByKey[look.id]}</p>
-                    )}
-                  </article>
-                );
-              })}
-
-              <article className="glass-surface card-glow-green flex flex-col gap-4 p-6 xl:col-span-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--accent)_12%,transparent)] bg-[linear-gradient(135deg,var(--accent-muted),var(--accent-3-muted))]">
-                      <Sparkles className="h-4 w-4 text-primary" />
-                    </div>
-                    <h2 className="font-display text-[1.2rem] font-normal tracking-[-0.02em] text-foreground">AI Outfit</h2>
-                  </div>
-                  {todayAi && !aiFormOpen && !aiGenerating && (
-                    <div className="hidden md:flex items-center gap-2">
-                      {!aiOutfitSaved && (
-                        <button
-                          className="glass-pill inline-flex h-8 items-center justify-center gap-1.5 px-3 text-xs font-medium disabled:opacity-50"
-                          disabled={aiSaving}
-                          onClick={saveAiOutfit}
-                          title="Save this AI outfit"
-                          aria-label="Save this AI outfit"
-                        >
-                          <Save className="h-4 w-4" />
-                          <span>{aiSaving ? 'Saving…' : 'Save'}</span>
-                        </button>
-                      )}
-                      <button
-                        className="glass-pill inline-flex h-8 items-center justify-center gap-1.5 px-3 text-xs font-medium"
-                        onClick={() => { setAiFormOpen(true); setAiOutfitSaved(false); }}
-                        title="Regenerate this AI outfit"
-                        aria-label="Regenerate this AI outfit"
-                      >
-                        <RefreshCw className="h-4 w-4" />
-                        <span>Regenerate</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                <div className="rounded-[var(--radius-md)] border border-[var(--item-img-border)] bg-[var(--item-img-bg)] p-2">
-                  {aiGenerating || aiLoading ? (
-                    <div className="flex h-40 items-center justify-center rounded-[var(--radius-md)] border border-dashed border-[var(--border-subtle)] text-sm text-muted-foreground">
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                      {todayAi ? 'Regenerating AI outfit...' : 'Loading AI state...'}
-                    </div>
-                  ) : !shouldShowAiForm && todayAi && aiOutfitItems.length > 0 ? (
-                    <OutfitGridLayout items={aiOutfitItems} showLabels />
-                  ) : (
-                    <div className="rounded-[var(--radius-md)] border border-dashed border-[var(--border-subtle)] p-4 text-sm text-muted-foreground">
-                      Fill out your preferences and generate an AI look for today.
-                    </div>
-                  )}
-                </div>
-
-                {!aiGenerating && !shouldShowAiForm && todayAi?.explanation && (
-                  <p className="text-sm text-muted-foreground">{todayAi.explanation}</p>
-                )}
-
-                {!aiGenerating && !shouldShowAiForm && todayAi && (
-                  <div className="mt-auto grid grid-cols-2 items-center gap-2 md:hidden">
-                    <button
-                      className="glass-pill inline-flex h-9 w-full items-center justify-center gap-1.5 px-3 text-sm font-medium"
-                      onClick={() => setAiFormOpen(true)}
-                      title="Regenerate this AI outfit"
-                      aria-label="Regenerate this AI outfit"
-                    >
-                      <RefreshCw className="h-4 w-4" />
-                      <span>Regenerate</span>
-                    </button>
-                    <div className="inline-flex h-9 w-full items-center justify-center rounded-[var(--radius-pill)] border border-transparent px-2 text-xs text-muted-foreground">
-                      {`Monthly ${aiUsage?.monthlyUsed || 0}/${aiUsage?.monthlyLimit ?? '∞'}`}
-                    </div>
-                  </div>
-                )}
-
-                {shouldShowAiForm && !aiGenerating && (
-                  <>
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                      <select
-                        value={eventType}
-                        onChange={(e) => setEventType(e.target.value)}
-                        className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm"
-                      >
-                        {(aiOptions?.eventPresets || ['Work Day', 'Date Night', 'Social Event']).map((option) => (
-                          <option key={option} value={option}>{option}</option>
-                        ))}
-                      </select>
-                      <select
-                        value={stylePreset}
-                        onChange={(e) => setStylePreset(e.target.value)}
-                        className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm"
-                      >
-                        {(aiOptions?.stylePresets || ['Smart Casual', 'Ivy', 'Minimal']).map((option) => (
-                          <option key={option} value={option}>{option}</option>
-                        ))}
-                      </select>
-                      <input
-                        value={styleCustom}
-                        onChange={(e) => setStyleCustom(e.target.value)}
-                        className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm"
-                        placeholder="Custom style note (optional)"
-                      />
-                      <select
-                        value={formality}
-                        onChange={(e) => setFormality(e.target.value as 'casual' | 'smart' | 'formal')}
-                        className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-sm"
-                      >
-                        <option value="casual">Casual</option>
-                        <option value="smart">Smart</option>
-                        <option value="formal">Formal</option>
-                      </select>
-                    </div>
-
-                    <div className="mt-auto flex flex-wrap gap-2">
-                      <button
-                        className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-accent)] disabled:opacity-50"
-                        disabled={aiGenerating}
-                        onClick={() => generateAiLook(todayAi ? 'PATCH' : 'POST')}
-                      >
-                        {todayAi ? 'Regenerate with AI' : 'Generate with AI'}
-                      </button>
-                      {todayAi && (
-                        <button
-                          className="glass-pill inline-flex min-h-11 items-center justify-center px-4 py-2.5 text-sm font-medium"
-                          onClick={() => setAiFormOpen(false)}
-                          title="Cancel and return to the current AI outfit"
-                        >
-                          <span className="inline-flex items-center gap-1">
-                            <X className="h-4 w-4" />
-                            Cancel
-                          </span>
-                        </button>
-                      )}
-                      <span className="text-xs text-muted-foreground self-center">
-                        {`Monthly ${aiUsage?.monthlyUsed || 0}/${aiUsage?.monthlyLimit ?? '∞'}`}
-                      </span>
-                    </div>
-                  </>
-                )}
-              </article>
-            </div>
-          )}
-
+          </article>
         </div>
       </div>
     </div>

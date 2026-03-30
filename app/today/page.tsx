@@ -15,6 +15,26 @@ export const metadata: Metadata = {
   description: 'Get personalized outfit recommendations based on weather and your wardrobe',
 };
 
+function getDisplayName(user: {
+  email?: string | null;
+  user_metadata?: Record<string, unknown>;
+}) {
+  const metadata = user.user_metadata as Record<string, unknown> | undefined;
+  const candidates = [
+    metadata?.first_name,
+    metadata?.full_name,
+    metadata?.name,
+  ];
+
+  for (const candidate of candidates) {
+    if (typeof candidate === 'string' && candidate.trim().length > 0) {
+      return candidate.trim().split(/\s+/)[0] || candidate.trim();
+    }
+  }
+
+  return null;
+}
+
 export default async function TodayPage() {
   const supabase = await createClient();
   
@@ -57,7 +77,7 @@ export default async function TodayPage() {
   return (
     <div className="page-shell min-h-screen">
       <TopBarWrapper user={user} />
-      <TodayPageClient wardrobeItems={wardrobeItems || []} />
+      <TodayPageClient wardrobeItems={wardrobeItems || []} userName={getDisplayName(user)} />
     </div>
   );
 }
