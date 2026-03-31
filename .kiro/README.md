@@ -17,6 +17,7 @@ This directory contains Kiro-specific configuration, specifications, and steerin
 │   ├── product.md
 │   ├── tech.md
 │   ├── structure.md
+│   ├── theming.md
 │   ├── testing-best-practices.md
 │   ├── property-based-testing-patterns.md
 │   ├── test-failure-resolution.md
@@ -82,7 +83,12 @@ Steering documents are **mandatory guidelines** that must be followed:
    - Documentation standards
    - Code organization principles
 
-3. **[Testing Best Practices](./steering/testing-best-practices.md)**
+3. **[Theming](./steering/theming.md)**
+   - Liquid Glass shell and surface primitives
+   - Page width tiers for standard, wide, and full-width screens
+   - Shared control and layout guidance
+
+4. **[Testing Best Practices](./steering/testing-best-practices.md)**
    - Unit testing patterns
    - Property-based testing
    - Test failure resolution

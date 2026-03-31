@@ -36,7 +36,7 @@ export default async function CalendarTripsPage() {
     return (
       <div className="page-shell min-h-screen">
         <TopBarWrapper user={user} />
-        <div className="page-shell-content mx-auto max-w-[1240px] px-6 py-8">
+        <div className="page-shell-content page-shell-content--wide px-6 py-8">
           <h1 className="text-2xl font-bold text-foreground">Trip Planner</h1>
           <p className="text-destructive mt-4">Failed to load wardrobe data. Please try again.</p>
         </div>

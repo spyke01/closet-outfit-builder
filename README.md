@@ -15,6 +15,10 @@ The current UI uses an Apple Liquid Glass design language across both the public
   - consistent pill controls for buttons, filters, and badges
 - Existing project fonts are preserved. Do not swap typography families when extending the UI.
 - When updating UI, prefer the shared Liquid Glass primitives over older semantic utility combinations like `bg-card`, `bg-background`, and `bg-muted`.
+- Page layout uses shared shell width tiers from `app/globals.css`:
+  - `page-shell-content` for standard reading and form pages
+  - `page-shell-content--wide` for planner, dashboard, and multi-pane task views
+  - `page-shell-content--full` only for true canvas-style surfaces
 
 ## Features
 

@@ -22,6 +22,8 @@ Required shell primitives:
 - `ambient-background`
 - `page-shell`
 - `page-shell-content`
+- `page-shell-content--wide`
+- `page-shell-content--full`
 
 ## 3) Core tokens
 
@@ -130,8 +132,13 @@ Selection can be communicated directly through the highlighted tag state; do not
 
 ## 6) Layout guidance
 
-- Maximum content width: `1240px`
-- Prefer `page-shell-content`
+- Width tiers:
+  - Standard: `page-shell-content` with maximum content width `1240px`
+  - Wide: `page-shell-content page-shell-content--wide` with maximum content width `1600px`
+  - Full: `page-shell-content page-shell-content--full` for true canvas-style surfaces
+- Prefer `page-shell-content` for text-led pages, detail pages, settings, auth flows, and standard forms
+- Use `page-shell-content--wide` for planner, dashboard, calendar, and multi-pane workbench screens where extra horizontal room directly improves usability
+- Use `page-shell-content--full` sparingly for canvas-like interfaces; if a section becomes text-heavy, reintroduce a local max width inside it
 - Search + tag bars should not be wrapped in an extra card unless there is a clear grouping reason
 - Advanced filter sections should usually read as a lighter sub-section under the main toolbar, not an unrelated nested panel
 

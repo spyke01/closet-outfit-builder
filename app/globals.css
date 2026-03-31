@@ -286,6 +286,14 @@
     padding-bottom: var(--space-3xl);
   }
 
+  .page-shell-content--wide {
+    width: min(1600px, calc(100% - (clamp(var(--space-lg), 3vw, var(--space-2xl)) * 2)));
+  }
+
+  .page-shell-content--full {
+    width: calc(100% - (clamp(var(--space-md), 2vw, var(--space-2xl)) * 2));
+  }
+
   .glass-surface {
     background: var(--bg-surface);
     backdrop-filter: blur(var(--blur-glass));

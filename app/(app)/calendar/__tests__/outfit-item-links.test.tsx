@@ -159,6 +159,7 @@ describe('Calendar and trip outfit item links', () => {
   it('renders all calendar entry outfit items and links them to the outfit page', () => {
     const { container } = renderWithQuery(<CalendarPageClient wardrobeItems={outfitItems} />);
 
+    expect(container.querySelector('.page-shell-content--wide')).toBeInTheDocument();
     const links = container.querySelectorAll(`a[href^="/outfits/${outfitId}"]`);
     expect(links.length).toBe(outfitItems.length);
   });
@@ -167,6 +168,7 @@ describe('Calendar and trip outfit item links', () => {
     const { container } = renderWithQuery(<TripsPageClient wardrobeItems={outfitItems} />);
 
     await waitFor(() => {
+      expect(container.querySelector('.page-shell-content--wide')).toBeInTheDocument();
       const links = container.querySelectorAll(`a[href^="/outfits/${outfitId}"]`);
       expect(links.length).toBe(outfitItems.length);
     });

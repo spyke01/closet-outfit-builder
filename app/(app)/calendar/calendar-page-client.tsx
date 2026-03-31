@@ -2,8 +2,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useMemo, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, CloudSun, Loader2, Plus, Trash2, AlertTriangle, Pencil, X, Check } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight, CloudSun, Loader2, Plus, Trash2, AlertTriangle, Pencil, X, Check, Search } from 'lucide-react';
 import { useWeather } from '@/lib/hooks/use-weather';
 import { useOutfits, useCreateOutfit } from '@/lib/hooks/use-outfits';
 import {
@@ -23,6 +23,7 @@ type EntrySource = 'existing' | 'generated';
 type EntryStatus = 'planned' | 'worn';
 type ExistingPolicy = 'skip' | 'overwrite';
 type MixStrategy = 'saved-heavy' | 'balanced' | 'ai-heavy';
+type PanelMode = 'idle' | 'creating' | 'editing';
 type EntryFormSnapshot = {
   entrySource: EntrySource;
   entryStatus: EntryStatus;
@@ -266,6 +267,8 @@ function OutfitThumbs({
 export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
   const [month, setMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [panelMode, setPanelMode] = useState<PanelMode>('idle');
+  const [activeEntryId, setActiveEntryId] = useState<string | null>(null);
   const [entrySource, setEntrySource] = useState<EntrySource>('existing');
   const [entryStatus, setEntryStatus] = useState<EntryStatus>('planned');
   const [selectedOutfitId, setSelectedOutfitId] = useState('');
@@ -273,7 +276,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
   const [generatedItemIds, setGeneratedItemIds] = useState<string[]>([]);
   const [generatedSummary, setGeneratedSummary] = useState<string>('');
   const [repeatWarning, setRepeatWarning] = useState<string | null>(null);
-  const [editingEntryId, setEditingEntryId] = useState<string | null>(null);
+  const [entrySearchQuery, setEntrySearchQuery] = useState('');
   const [isGeneratingWeek, setIsGeneratingWeek] = useState(false);
   const [weekGenerationMessage, setWeekGenerationMessage] = useState<string | null>(null);
   const [weekGenerationProgress, setWeekGenerationProgress] = useState<{
@@ -287,7 +290,6 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
   const [lookbackDays, setLookbackDays] = useState(14);
   const [weekdaysOnly, setWeekdaysOnly] = useState(false);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
-  const [isEntryFormOpen, setIsEntryFormOpen] = useState(false);
   const [initialEntryFormSnapshot, setInitialEntryFormSnapshot] = useState<EntryFormSnapshot | null>(null);
 
   const notesInputRef = useRef<HTMLInputElement>(null);
@@ -308,6 +310,10 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
   const selectedDateEntries = useMemo(
     () => entries.filter((entry) => entry.entry_date === selectedDateKey),
     [entries, selectedDateKey]
+  );
+  const activeEntry = useMemo(
+    () => selectedDateEntries.find((entry) => entry.id === activeEntryId) ?? null,
+    [activeEntryId, selectedDateEntries]
   );
 
   const entriesByDate = useMemo(() => {
@@ -369,11 +375,33 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
   }, [outfits, selectedOutfitId]);
 
   const sourceOutfits = useMemo(() => {
-    return outfits.filter((outfit) => {
-      if (outfit.id === selectedOutfitId) return true;
-      return true;
-    });
-  }, [outfits, selectedOutfitId]);
+    const query = entrySearchQuery.trim().toLowerCase();
+
+    return [...outfits]
+      .filter((outfit) => {
+        if (!query) return true;
+        const name = (outfit.name || '').toLowerCase();
+        const itemNames = (outfit.items || []).map((item) => item.name.toLowerCase()).join(' ');
+        return name.includes(query) || itemNames.includes(query);
+      })
+      .sort((a, b) => {
+        if (a.id === selectedOutfitId) return -1;
+        if (b.id === selectedOutfitId) return 1;
+        if (Boolean(b.loved) !== Boolean(a.loved)) return Number(Boolean(b.loved)) - Number(Boolean(a.loved));
+        if (typeof b.score === 'number' && typeof a.score === 'number' && b.score !== a.score) {
+          return b.score - a.score;
+        }
+        return (b.updated_at || '').localeCompare(a.updated_at || '') || (a.name || '').localeCompare(b.name || '');
+      });
+  }, [entrySearchQuery, outfits, selectedOutfitId]);
+
+  useEffect(() => {
+    if (panelMode === 'editing' && (!activeEntryId || !activeEntry)) {
+      setPanelMode('idle');
+      setActiveEntryId(null);
+      setInitialEntryFormSnapshot(null);
+    }
+  }, [activeEntry, activeEntryId, panelMode]);
 
   const onGenerateWeekOutfits = async () => {
     if (!hasRequiredItems || isGeneratingWeek) return;
@@ -510,13 +538,14 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
     setGeneratedItemIds(itemIds);
     setGeneratedSummary(`${Math.round(generated.scores.overall.total * 100)}/100 score`);
     setEntrySource('generated');
-    setIsEntryFormOpen(true);
+    setPanelMode('creating');
+    setActiveEntryId(null);
 
     const warning = findRepeatWarning(entries, selectedDate, itemIds);
     setRepeatWarning(warning);
   };
 
-  const resetForm = () => {
+  const resetForm = (nextMode: PanelMode = 'idle') => {
     setEntrySource('existing');
     setEntryStatus('planned');
     setSelectedOutfitId('');
@@ -524,7 +553,9 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
     setGeneratedItemIds([]);
     setGeneratedSummary('');
     setRepeatWarning(null);
-    setEditingEntryId(null);
+    setActiveEntryId(null);
+    setPanelMode(nextMode);
+    setEntrySearchQuery('');
     setInitialEntryFormSnapshot({
       entrySource: 'existing',
       entryStatus: 'planned',
@@ -535,8 +566,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
   };
 
   const handleNewEntryClick = () => {
-    resetForm();
-    setIsEntryFormOpen(true);
+    resetForm('creating');
 
     requestAnimationFrame(() => {
       entryFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -545,11 +575,12 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
   };
 
   const onEditEntry = (entry: CalendarEntry) => {
-    setEditingEntryId(entry.id);
+    setPanelMode('editing');
+    setActiveEntryId(entry.id);
     setEntryStatus(entry.status);
     setNotes(entry.notes || '');
     setRepeatWarning(null);
-    setIsEntryFormOpen(true);
+    setEntrySearchQuery('');
 
     if (entry.outfit_id) {
       setEntrySource('existing');
@@ -585,9 +616,8 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
 
   const onDeleteEntry = async (entryId: string) => {
     await deleteEntryMutation.mutateAsync(entryId);
-    if (editingEntryId === entryId) {
+    if (activeEntryId === entryId) {
       resetForm();
-      setIsEntryFormOpen(false);
     }
   };
 
@@ -599,7 +629,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
       status: 'worn',
     });
 
-    if (editingEntryId === entry.id) {
+    if (activeEntryId === entry.id && panelMode === 'editing') {
       setEntryStatus('worn');
     }
   };
@@ -655,14 +685,18 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
       item_ids: itemIds,
     } as const;
 
-    if (editingEntryId) {
-      await updateEntryMutation.mutateAsync({ id: editingEntryId, ...payload });
+    if (panelMode === 'editing') {
+      const editableEntry = selectedDateEntries.find((entry) => entry.id === activeEntryId);
+      if (!editableEntry) {
+        throw new Error('The selected entry no longer matches this date.');
+      }
+
+      await updateEntryMutation.mutateAsync({ id: editableEntry.id, ...payload });
     } else {
       await createEntryMutation.mutateAsync(payload);
     }
 
     resetForm();
-    setIsEntryFormOpen(false);
   };
 
   const isSaving = createEntryMutation.isPending || updateEntryMutation.isPending || createOutfitMutation.isPending;
@@ -685,6 +719,20 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
   }, [entrySource, selectedOutfitId, generatedItemIds.length]);
 
   const canSaveEntry = hasFormChanges && hasValidEntrySelection && !isSaving;
+  const isEntryFormOpen = panelMode === 'creating' || panelMode === 'editing';
+
+  const handleDateSelection = (day: Date) => {
+    const nextDateKey = formatDateKey(day);
+    if (nextDateKey === selectedDateKey) return;
+
+    if (isEntryFormOpen && hasFormChanges) {
+      const shouldDiscard = window.confirm('Discard unsaved changes and switch dates?');
+      if (!shouldDiscard) return;
+    }
+
+    setSelectedDate(day);
+    resetForm();
+  };
 
   const commonButtonBase =
     'rounded-[var(--radius-pill)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2';
@@ -697,7 +745,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
     'inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-pill)] border border-transparent bg-transparent text-[var(--text-2)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-destructive/30 hover:bg-destructive/10 hover:text-destructive disabled:opacity-50';
 
   return (
-    <div className="page-shell-content mx-auto max-w-[1240px] space-y-5 px-6 py-8 sm:space-y-6">
+    <div className="page-shell-content page-shell-content--wide space-y-5 sm:space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="mb-3 inline-flex items-center rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)] p-1">
@@ -811,7 +859,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                   <button
                     key={dayKey}
                     type="button"
-                    onClick={() => setSelectedDate(day)}
+                    onClick={() => handleDateSelection(day)}
                     className={`relative min-h-20 sm:min-h-24 rounded-lg border p-1.5 sm:p-2 text-left transition-colors ${
                       isSelected ? 'border-primary bg-[var(--accent-muted)]' : 'border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]'
                     } ${inCurrentMonth ? 'text-foreground' : 'text-muted-foreground/50'}`}
@@ -845,286 +893,353 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
           )}
         </div>
 
-        <div className="space-y-3 sm:space-y-4">
-          <div className="glass-surface rounded-[var(--radius-xl)] p-4">
-            <h3 className="text-lg font-semibold text-foreground">
-              {selectedDate.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
-            </h3>
-            <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-              <CloudSun className="w-4 h-4" />
-              <span>
-                {weatherDisplay.conditionLabel}, {Math.round(weatherForSelectedDate.lowTemp)}F/{Math.round(weatherForSelectedDate.highTemp)}F
-              </span>
-              <span className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-0.5 text-xs text-[var(--tag-text)]">{weatherDisplay.sourceLabel}</span>
-            </div>
-          </div>
-
-          <div className="glass-surface rounded-[var(--radius-xl)] p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <h4 className="font-semibold text-foreground">Entries ({selectedDateEntries.length})</h4>
-              <button
-                type="button"
-                onClick={handleNewEntryClick}
-                className={secondaryButtonClass}
-              >
-                <Plus className="w-3 h-3 inline mr-1" />
-                New Entry
-              </button>
-            </div>
-
-            {selectedDateEntries.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No entries yet for this date.</p>
-            ) : (
-              <div className="space-y-2">
-                {selectedDateEntries.map((entry) => (
-                  <div key={entry.id} className="group rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] p-2 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span
-                        className={`text-xs uppercase tracking-wide rounded-full px-2 py-0.5 border ${
-                          entry.status === 'worn'
-                            ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
-                            : 'border-blue-500/40 bg-blue-500/15 text-blue-700 dark:text-blue-300'
-                        }`}
-                      >
-                        {entry.status}
-                      </span>
-                      <div
-                        className={`flex items-center gap-1 transition-opacity ${
-                          editingEntryId === entry.id
-                            ? 'opacity-100'
-                            : 'opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100'
-                        }`}
-                      >
-                        {entry.status === 'planned' && (
-                          <button
-                            type="button"
-                            onClick={() => onMarkEntryWorn(entry)}
-                            disabled={updateEntryMutation.isPending}
-                            className={`${secondaryButtonClass} h-9 px-2.5 text-xs border-success/40 bg-success-light text-success-dark dark:border-success/60 dark:bg-success-dark/20 dark:text-green-200`}
-                            aria-label="Mark as worn"
-                          >
-                            <Check className="w-3 h-3 inline mr-1" />
-                            Wore it
-                          </button>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => onEditEntry(entry)}
-                          disabled={updateEntryMutation.isPending}
-                          className={iconTertiaryClass}
-                          aria-label="Edit entry"
-                        >
-                          <Pencil className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => onDeleteEntry(entry.id)}
-                          disabled={deleteEntryMutation.isPending || updateEntryMutation.isPending}
-                          className={destructiveIconTertiaryClass}
-                          aria-label="Delete entry"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-
-                    <p className="text-sm font-medium text-foreground">{entry.outfit?.name || `${entry.items?.length || 0} item entry`}</p>
-                    <OutfitThumbs items={entry.items || []} outfitId={entry.outfit_id || undefined} />
-                    {entry.notes && <p className="text-xs text-muted-foreground">{entry.notes}</p>}
+        <div className="xl:sticky xl:top-24 xl:self-start">
+          <div className="glass-surface rounded-[var(--radius-xl)] p-4 space-y-4">
+            <div className="space-y-3 border-b border-[var(--border-subtle)] pb-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">
+                    {selectedDate.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
+                  </h3>
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                    <CloudSun className="w-4 h-4" />
+                    <span>
+                      {weatherDisplay.conditionLabel}, {Math.round(weatherForSelectedDate.lowTemp)}F/{Math.round(weatherForSelectedDate.highTemp)}F
+                    </span>
+                    <span className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-0.5 text-xs text-[var(--tag-text)]">{weatherDisplay.sourceLabel}</span>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {isEntryFormOpen && (
-            <div ref={entryFormRef} className="glass-surface rounded-[var(--radius-xl)] p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-foreground">{editingEntryId ? 'Edit Entry' : 'Create Entry'}</h4>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsEntryFormOpen(false);
-                    resetForm();
-                  }}
-                  className={tertiaryButtonClass}
-                >
-                  Close
-                </button>
-              </div>
-
-              <div className="inline-flex w-full rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)] p-1">
-                {(['planned', 'worn'] as EntryStatus[]).map((status) => (
-                  <button
-                    key={status}
-                    type="button"
-                    onClick={() => setEntryStatus(status)}
-                    className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors ${
-                      entryStatus === status ? 'rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-primary-foreground' : 'rounded-[var(--radius-pill)] text-muted-foreground hover:bg-[var(--bg-surface-hover)]'
-                    }`}
-                  >
-                    {status}
-                  </button>
-                ))}
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-foreground">Source</p>
-                <div className="inline-flex w-full rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)] p-1">
-                  <button
-                    type="button"
-                    onClick={() => setEntrySource('existing')}
-                    className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors ${
-                      entrySource === 'existing' ? 'rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-primary-foreground' : 'rounded-[var(--radius-pill)] text-muted-foreground hover:bg-[var(--bg-surface-hover)]'
-                    }`}
-                  >
-                    Existing Outfit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setEntrySource('generated')}
-                    className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors inline-flex items-center justify-center gap-1.5 ${
-                      entrySource === 'generated' ? 'rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-primary-foreground' : 'rounded-[var(--radius-pill)] text-muted-foreground hover:bg-[var(--bg-surface-hover)]'
-                    }`}
-                  >
-                    <AIIcon className="w-3.5 h-3.5" />
-                    Generate New
-                  </button>
+                </div>
+                <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_76%,transparent)] px-3 py-2 text-right">
+                  <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Entries</p>
+                  <p className="text-lg font-semibold text-foreground">{selectedDateEntries.length}</p>
                 </div>
               </div>
 
-              {entrySource === 'existing' ? (
-                <div className="space-y-3">
-                  <div className="max-h-52 overflow-auto space-y-2 pr-1">
-                    {sourceOutfits.map((outfit) => {
-                      const selected = selectedOutfitId === outfit.id;
-                      return (
-                        <button
-                          key={outfit.id}
-                          type="button"
-                          onClick={() => setSelectedOutfitId(outfit.id)}
-                          className={`w-full text-left p-2 rounded-lg border transition-colors ${
-                            selected ? 'border-primary bg-[var(--accent-muted)]' : 'border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex min-w-0 items-center gap-2">
-                              <p className="text-sm font-medium text-foreground truncate">
-                                {outfit.name || `Outfit ${outfit.id.slice(0, 6)}`}
-                              </p>
-                              {selected && (
-                                <span className="rounded-[var(--radius-pill)] border border-[color-mix(in_srgb,var(--accent)_16%,transparent)] bg-[var(--accent-muted)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--accent)]">
-                                  Selected
-                                </span>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {typeof outfit.score === 'number' && (
-                                <span className="text-xs text-muted-foreground">{outfit.score}/100</span>
-                              )}
-                            </div>
-                          </div>
-                          <OutfitThumbs items={outfit.items || []} size="sm" />
-                        </button>
-                      );
-                    })}
-                    {sourceOutfits.length === 0 && (
-                      <p className="text-sm text-muted-foreground px-1 py-2">
-                        No saved outfits available yet.
-                      </p>
-                    )}
-                  </div>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={handleNewEntryClick}
+                  className={`${secondaryButtonClass} w-full`}
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Add Entry
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowGenerateModal(true)}
+                  disabled={!hasRequiredItems || isGeneratingWeek}
+                  className={`${primaryButtonClass} w-full`}
+                >
+                  <AIIcon className="w-4 h-4" />
+                  Generate Outfits
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-3 border-b border-[var(--border-subtle)] pb-4">
+              <div className="flex items-center justify-between">
+                <h4 className="font-semibold text-foreground">Entries for selected date</h4>
+                <span className="text-xs text-muted-foreground">{selectedDateEntries.length} total</span>
+              </div>
+
+              {selectedDateEntries.length === 0 ? (
+                <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_68%,transparent)] px-4 py-5 text-sm text-muted-foreground">
+                  No entries yet for this date. Add an entry to plan or log what you wore.
                 </div>
               ) : (
                 <div className="space-y-2">
+                  {selectedDateEntries.map((entry) => {
+                    const isActive = panelMode === 'editing' && activeEntryId === entry.id;
+                    return (
+                      <div
+                        key={entry.id}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => onEditEntry(entry)}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            onEditEntry(entry);
+                          }
+                        }}
+                        className={`group w-full rounded-[var(--radius-lg)] border p-3 text-left transition-colors ${
+                          isActive
+                            ? 'border-primary bg-[var(--accent-muted)]'
+                            : 'border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span
+                                className={`text-[11px] uppercase tracking-wide rounded-full px-2 py-0.5 border ${
+                                  entry.status === 'worn'
+                                    ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                                    : 'border-blue-500/40 bg-blue-500/15 text-blue-700 dark:text-blue-300'
+                                }`}
+                              >
+                                {entry.status}
+                              </span>
+                              {isActive && (
+                                <span className="rounded-[var(--radius-pill)] border border-[color-mix(in_srgb,var(--accent)_16%,transparent)] bg-[var(--accent-muted)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--accent)]">
+                                  Editing
+                                </span>
+                              )}
+                            </div>
+                            <p className="mt-2 truncate text-sm font-medium text-foreground">
+                              {entry.outfit?.name || `${entry.items?.length || 0} item entry`}
+                            </p>
+                            {entry.notes && <p className="mt-1 truncate text-xs text-muted-foreground">{entry.notes}</p>}
+                          </div>
+
+                          <div className="flex items-center gap-1" onClick={(event) => event.stopPropagation()}>
+                            {entry.status === 'planned' && (
+                              <button
+                                type="button"
+                                onClick={() => onMarkEntryWorn(entry)}
+                                disabled={updateEntryMutation.isPending}
+                                className={`${secondaryButtonClass} h-9 px-2.5 text-xs border-success/40 bg-success-light text-success-dark dark:border-success/60 dark:bg-success-dark/20 dark:text-green-200`}
+                                aria-label="Mark as worn"
+                              >
+                                <Check className="w-3 h-3 inline mr-1" />
+                                Wore it
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => onDeleteEntry(entry.id)}
+                              disabled={deleteEntryMutation.isPending || updateEntryMutation.isPending}
+                              className={destructiveIconTertiaryClass}
+                              aria-label="Delete entry"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="mt-3">
+                          <OutfitThumbs items={entry.items || []} size="sm" outfitId={entry.outfit_id || undefined} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {isEntryFormOpen ? (
+              <div ref={entryFormRef} className="space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h4 className="font-semibold text-foreground">
+                      {panelMode === 'editing' ? 'Edit Entry' : `New Entry for ${selectedDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`}
+                    </h4>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {panelMode === 'editing'
+                        ? 'Update the selected entry for this date.'
+                        : 'Choose the purpose, source, and outfit details for this date.'}
+                    </p>
+                  </div>
                   <button
                     type="button"
-                    onClick={onGenerateOutfit}
-                    disabled={!hasRequiredItems}
-                    className={`${secondaryButtonClass} w-full inline-flex items-center justify-center gap-2`}
+                    onClick={() => resetForm()}
+                    className={tertiaryButtonClass}
                   >
-                    <AIIcon className="w-4 h-4" />
-                    {generatedItemIds.length > 0 ? 'Regenerate Outfit' : 'Generate Weather-Aware Outfit'}
+                    Close
                   </button>
-                  {!hasRequiredItems && (
-                    <p className="text-xs text-amber-600 dark:text-amber-400">
-                      Add at least Shirt, Pants, and Shoes to generate outfits.
-                    </p>
-                  )}
-                  {generatedPreviewItems.length > 0 && (
-                    <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_76%,transparent)] p-3 space-y-2">
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="text-sm font-medium text-foreground">Generated Preview</p>
-                        <span className="text-xs text-muted-foreground">
-                          {generatedPreviewItems.length} items ({generatedSummary})
-                        </span>
-                      </div>
-                      <OutfitThumbs items={generatedPreviewItems} size="sm" />
-                      <div className="flex flex-wrap gap-1.5">
-                        {generatedPreviewItems.map((item) => (
-                          <span
-                            key={item.id}
-                            className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] px-2 py-0.5 text-[11px] text-[var(--tag-text)]"
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-foreground">Entry purpose</p>
+                  <div className="inline-flex w-full rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)] p-1">
+                    {(['planned', 'worn'] as EntryStatus[]).map((status) => (
+                      <button
+                        key={status}
+                        type="button"
+                        onClick={() => setEntryStatus(status)}
+                        className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors ${
+                          entryStatus === status ? 'rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-primary-foreground' : 'rounded-[var(--radius-pill)] text-muted-foreground hover:bg-[var(--bg-surface-hover)]'
+                        }`}
+                      >
+                        {status === 'planned' ? 'Planned' : 'Worn'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-foreground">Outfit source</p>
+                  <div className="inline-flex w-full rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)] p-1">
+                    <button
+                      type="button"
+                      onClick={() => setEntrySource('existing')}
+                      className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors ${
+                        entrySource === 'existing' ? 'rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-primary-foreground' : 'rounded-[var(--radius-pill)] text-muted-foreground hover:bg-[var(--bg-surface-hover)]'
+                      }`}
+                    >
+                      Use Saved Outfit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEntrySource('generated')}
+                      className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors inline-flex items-center justify-center gap-1.5 ${
+                        entrySource === 'generated' ? 'rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-primary-foreground' : 'rounded-[var(--radius-pill)] text-muted-foreground hover:bg-[var(--bg-surface-hover)]'
+                      }`}
+                    >
+                      <AIIcon className="w-3.5 h-3.5" />
+                      Generate New
+                    </button>
+                  </div>
+                </div>
+
+                {entrySource === 'existing' ? (
+                  <div className="space-y-3">
+                    <div className="relative">
+                      <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <input
+                        type="text"
+                        value={entrySearchQuery}
+                        onChange={(event) => setEntrySearchQuery(event.target.value)}
+                        className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] py-2 pl-9 pr-3 text-sm text-foreground"
+                        placeholder="Search saved outfits"
+                        aria-label="Search saved outfits"
+                      />
+                    </div>
+
+                    <div className="max-h-72 overflow-auto space-y-2 pr-1 xl:max-h-[26rem]">
+                      {sourceOutfits.map((outfit) => {
+                        const selected = selectedOutfitId === outfit.id;
+                        return (
+                          <button
+                            key={outfit.id}
+                            type="button"
+                            onClick={() => setSelectedOutfitId(outfit.id)}
+                            className={`w-full rounded-lg border p-3 text-left transition-colors ${
+                              selected ? 'border-primary bg-[var(--accent-muted)]' : 'border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]'
+                            }`}
                           >
-                            {(item.category?.name || 'Item')}: {item.name}
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                  <p className="truncate text-sm font-medium text-foreground">
+                                    {outfit.name || `Outfit ${outfit.id.slice(0, 6)}`}
+                                  </p>
+                                  {selected && (
+                                    <span className="rounded-[var(--radius-pill)] border border-[color-mix(in_srgb,var(--accent)_16%,transparent)] bg-[var(--accent-muted)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--accent)]">
+                                      Selected
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="mt-2">
+                                  <OutfitThumbs items={outfit.items || []} size="sm" />
+                                </div>
+                              </div>
+                              {typeof outfit.score === 'number' && (
+                                <span className="shrink-0 text-xs text-muted-foreground">{outfit.score}/100</span>
+                              )}
+                            </div>
+                          </button>
+                        );
+                      })}
+                      {sourceOutfits.length === 0 && (
+                        <p className="px-1 py-2 text-sm text-muted-foreground">
+                          {entrySearchQuery.trim() ? 'No saved outfits match your search.' : 'No saved outfits available yet.'}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <button
+                      type="button"
+                      onClick={onGenerateOutfit}
+                      disabled={!hasRequiredItems}
+                      className={`${secondaryButtonClass} w-full inline-flex items-center justify-center gap-2`}
+                    >
+                      <AIIcon className="w-4 h-4" />
+                      {generatedItemIds.length > 0 ? 'Regenerate Outfit' : 'Generate Weather-Aware Outfit'}
+                    </button>
+                    {!hasRequiredItems && (
+                      <p className="text-xs text-amber-600 dark:text-amber-400">
+                        Add at least Shirt, Pants, and Shoes to generate outfits.
+                      </p>
+                    )}
+                    {generatedPreviewItems.length > 0 && (
+                      <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_76%,transparent)] p-3 space-y-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-sm font-medium text-foreground">Generated preview</p>
+                          <span className="text-xs text-muted-foreground">
+                            {generatedSummary}
                           </span>
-                        ))}
-                      </div>
-                      <div className="rounded-md border border-blue-500/30 bg-blue-500/10 px-2.5 py-2">
-                        <p className="text-xs leading-relaxed text-blue-800 dark:text-blue-200">
-                          This preview is not saved yet. The outfit is only created when you save this entry.
+                        </div>
+                        <OutfitThumbs items={generatedPreviewItems} size="sm" />
+                        <p className="text-xs leading-relaxed text-muted-foreground">
+                          This preview is only saved once you save the entry.
                         </p>
                       </div>
-                    </div>
-                  )}
-                </div>
-              )}
+                    )}
+                  </div>
+                )}
 
-              <div>
-                <label htmlFor="calendar-notes" className="text-sm font-medium text-foreground">Notes (letters and numbers only)</label>
-                <input
-                  ref={notesInputRef}
-                  id="calendar-notes"
-                  type="text"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value.replace(/[^A-Za-z0-9\s]/g, '').slice(0, 500))}
-                  className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-foreground"
-                  placeholder="Example Office meeting 2pm"
-                  autoComplete="off"
-                />
+                <div className="space-y-1.5">
+                  <label htmlFor="calendar-notes" className="text-sm font-medium text-foreground">Label / notes</label>
+                  <p className="text-xs text-muted-foreground">Letters and numbers only. Keep it short and easy to scan.</p>
+                  <input
+                    ref={notesInputRef}
+                    id="calendar-notes"
+                    type="text"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value.replace(/[^A-Za-z0-9\s]/g, '').slice(0, 500))}
+                    className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-foreground"
+                    placeholder="Example Office meeting 2pm"
+                    autoComplete="off"
+                  />
+                </div>
+
+                {repeatWarning && (
+                  <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-2 text-amber-700 dark:text-amber-300 text-sm">
+                    <AlertTriangle className="w-4 h-4 inline mr-1" />
+                    {repeatWarning}
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => resetForm()}
+                    className={`${secondaryButtonClass} flex-1`}
+                    disabled={isSaving}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onSaveEntry().catch((err: Error) => setRepeatWarning(err.message))}
+                    disabled={!canSaveEntry}
+                    className={`${primaryButtonClass} flex-1 inline-flex items-center justify-center gap-2`}
+                  >
+                    <Pencil className="w-4 h-4" />
+                    {isSaving ? 'Saving...' : panelMode === 'editing' ? 'Save Changes' : 'Save Entry'}
+                  </button>
+                </div>
               </div>
-
-              {repeatWarning && (
-                <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-2 text-amber-700 dark:text-amber-300 text-sm">
-                  <AlertTriangle className="w-4 h-4 inline mr-1" />
-                  {repeatWarning}
-                </div>
-              )}
-
-              <div className="flex items-center gap-2">
+            ) : (
+              <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_68%,transparent)] px-4 py-5">
+                <h4 className="font-semibold text-foreground">Entry editor</h4>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Pick an existing entry to edit it, or create a new entry for the selected date.
+                </p>
                 <button
                   type="button"
-                  onClick={() => {
-                    setIsEntryFormOpen(false);
-                    resetForm();
-                  }}
-                  className={`${secondaryButtonClass} flex-1`}
-                  disabled={isSaving}
+                  onClick={handleNewEntryClick}
+                  className={`${secondaryButtonClass} mt-4`}
                 >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onSaveEntry().catch((err: Error) => setRepeatWarning(err.message))}
-                  disabled={!canSaveEntry}
-                  className={`${primaryButtonClass} flex-1 inline-flex items-center justify-center gap-2`}
-                >
-                  <Pencil className="w-4 h-4" />
-                  {isSaving ? 'Saving...' : 'Save Changes'}
+                  <Plus className="w-3.5 h-3.5" />
+                  Add Entry
                 </button>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 

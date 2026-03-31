@@ -724,7 +724,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
   }, [wardrobeItems]);
 
   return (
-    <div className="page-shell-content mx-auto max-w-[1240px] space-y-5 px-6 py-8 sm:space-y-6">
+    <div className="page-shell-content page-shell-content--wide space-y-5 sm:space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="mb-3 inline-flex items-center rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)] p-1">

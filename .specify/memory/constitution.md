@@ -1,14 +1,15 @@
 <!--
   Sync Impact Report
   ==================
-  Version change: 1.0.0 → 1.1.0 (MINOR - new sections and expanded
-  principles from Kiro steering documents)
+  Version change: 1.1.0 → 1.2.0 (MINOR - expanded theming guidance
+  from Kiro steering documents)
   Modified principles:
     - II. Test-Driven Quality: expanded with lean testing philosophy,
       behavior-over-implementation mandate, 5-minute fix-or-remove rule,
       property test guardrails, and testing conventions
     - IV. Simplicity & YAGNI: expanded with codebase maintenance rules
       (no demo components, no enhanced duplicates, artifact cleanup)
+    - Theming Standard: expanded to cover shell width tiers
   Added sections:
     - Theming Standard
     - Component Architecture
@@ -180,6 +181,10 @@ treat them as historical rather than normative.
   - `ambient-background`
   - `page-shell`
   - `page-shell-content`
+- Width tiers MUST match the page intent:
+  - `page-shell-content` for standard reading and linear form pages
+  - `page-shell-content page-shell-content--wide` for planner, dashboard, calendar, and multi-pane task screens
+  - `page-shell-content page-shell-content--full` only for true canvas-style interfaces
 - Product surfaces should be built from the Liquid Glass tokens:
   - `--bg-surface`
   - `--bg-surface-hover`
@@ -220,6 +225,7 @@ treat them as historical rather than normative.
 - Page shell:
   - inherit `page-shell` / `page-shell-content`
   - do not paint a separate route background by default
+  - do not hardcode a one-size-fits-all max width when the shell width tier already expresses the intended layout density
 - Cards:
   - Liquid Glass surface with shared background, border, blur, and
     card shadow
