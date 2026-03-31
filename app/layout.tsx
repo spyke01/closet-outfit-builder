@@ -1,11 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { ThemeProvider } from "next-themes";
-import { QueryProvider } from "@/lib/providers/query-provider";
-import { MonitoringProvider } from "@/lib/providers/monitoring-provider";
-import { SWRProvider } from "@/lib/providers/swr-config";
-import { PreloadInitializer } from "@/components/preload-initializer";
-import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { ThemeDomSync } from "@/components/theme-dom-sync";
 import { getCanonicalSiteUrl } from "@/lib/seo/site-url";
@@ -75,26 +70,18 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
-        <MonitoringProvider>
-          <QueryProvider>
-            <SWRProvider>
-              <ThemeProvider
-                attribute="data-mode"
-                defaultTheme="system"
-                enableSystem
-                storageKey="theme-v2"
-              >
-                <ThemeDomSync />
-                <PreloadInitializer />
-                <ServiceWorkerRegistration />
-                <div className="ambient-background" aria-hidden="true" />
-                <div className="page-shell">
-                  {children}
-                </div>
-              </ThemeProvider>
-            </SWRProvider>
-          </QueryProvider>
-        </MonitoringProvider>
+        <ThemeProvider
+          attribute="data-mode"
+          defaultTheme="system"
+          enableSystem
+          storageKey="theme-v2"
+        >
+          <ThemeDomSync />
+          <div className="ambient-background" aria-hidden="true" />
+          <div className="page-shell">
+            {children}
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

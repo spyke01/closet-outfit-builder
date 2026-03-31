@@ -7,8 +7,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WardrobePageClient } from '@/app/wardrobe/wardrobe-page-client';
-import { OutfitsPageClient } from '@/app/outfits/outfits-page-client';
+import { WardrobePageClient } from '@/app/(app)/wardrobe/wardrobe-page-client';
+import { OutfitsPageClient } from '@/app/(app)/outfits/outfits-page-client';
 
 // Mock the hooks
 vi.mock('@/lib/hooks/use-categories', () => ({

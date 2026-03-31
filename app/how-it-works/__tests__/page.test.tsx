@@ -9,47 +9,39 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
 import HowItWorksPage from '../page';
 
-// Mock Next.js router
-const mockPush = vi.fn();
+const mockRedirect = vi.fn();
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: mockPush,
-  }),
+  redirect: mockRedirect,
 }));
 
 describe('HowItWorksPage - Redirect Tests', () => {
+  it('should redirect to the homepage anchor', () => {
+    HowItWorksPage();
+
+    expect(mockRedirect).toHaveBeenCalledWith('/#how-it-works');
+  });
+
+  it('should not render local page content', () => {
+    const result = HowItWorksPage();
+
+    expect(result).toBeUndefined();
+    expect(mockRedirect).toHaveBeenCalledTimes(1);
+  });
+
+  it('should continue using the homepage section as the canonical destination', () => {
+    HowItWorksPage();
+
+    expect(mockRedirect).not.toHaveBeenCalledWith('/how-it-works');
+    expect(mockRedirect).toHaveBeenCalledWith('/#how-it-works');
+  });
+
   describe('Redirect Behavior', () => {
-    it('should render redirect message', () => {
-      render(<HowItWorksPage />);
-      
-      expect(screen.getByText(/redirecting to how it works/i)).toBeInTheDocument();
-    });
+    it('should call redirect with correct hash anchor', () => {
+      HowItWorksPage();
 
-    it('should call router.push with correct hash anchor', () => {
-      render(<HowItWorksPage />);
-      
-      expect(mockPush).toHaveBeenCalledWith('/#how-it-works');
-    });
-
-    it('should have semantic background gradient classes', () => {
-      const { container } = render(<HowItWorksPage />);
-      
-      const gradientContainer = container.querySelector('.bg-gradient-to-br');
-      expect(gradientContainer).toBeInTheDocument();
-      expect(gradientContainer).toHaveClass('from-background');
-      expect(gradientContainer).toHaveClass('via-card');
-      expect(gradientContainer).toHaveClass('to-background');
-    });
-
-    it('should have proper text styling', () => {
-      render(<HowItWorksPage />);
-      
-      const text = screen.getByText(/redirecting to how it works/i);
-      expect(text.className).toContain('text-muted-foreground');
-      expect(text.className).toContain('text-muted-foreground');
+      expect(mockRedirect).toHaveBeenCalledWith('/#how-it-works');
     });
   });
 });

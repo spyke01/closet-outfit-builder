@@ -1,46 +1,25 @@
-'use client';
-
-import React from 'react';
-import Image from 'next/image';
-import { useTheme } from 'next-themes';
-
 interface LogoProps {
   className?: string;
   title?: string;
 }
 
-export const Logo: React.FC<LogoProps> = ({
+export function Logo({
   className = 'h-12 w-auto',
   title = 'My AI Outfit',
-}) => {
-  const { theme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
-
-  // Avoid hydration mismatch by only rendering after mount
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Use light-background logo in light mode and dark-background logo in dark mode
-  const effectiveTheme = theme === 'system' ? resolvedTheme : theme;
-
-  const logoSrc = effectiveTheme === 'light'
-    ? '/my-ai-outfit-logo-light-bg.png'
-    : '/my-ai-outfit-logo-dark-bg.png';
-
-  // Show a placeholder during SSR to avoid layout shift
-  if (!mounted) {
-    return <div className={className} aria-label={title} />;
-  }
-
+}: LogoProps) {
   return (
-    <Image
-      src={logoSrc}
-      alt={title}
-      width={200}
-      height={50}
-      className={className}
-      priority
-    />
+    <picture>
+      <source media="(prefers-color-scheme: light)" srcSet="/my-ai-outfit-logo-light-bg.png" />
+      <img
+        src="/my-ai-outfit-logo-dark-bg.png"
+        alt={title}
+        width={200}
+        height={50}
+        className={className}
+        loading="eager"
+        decoding="async"
+        fetchPriority="low"
+      />
+    </picture>
   );
-};
+}

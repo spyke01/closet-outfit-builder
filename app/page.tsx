@@ -11,7 +11,32 @@ import { FinalCTA } from "@/components/homepage/final-cta";
 import { StaticPageFooter } from "@/components/static-page-footer";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    code?: string;
+    next?: string;
+    error?: string;
+    error_description?: string;
+  }>;
+}) {
+  const params = await searchParams;
+
+  if (params.code) {
+    const callbackUrl = `/auth/callback?code=${params.code}${
+      params.next ? `&next=${encodeURIComponent(params.next)}` : ""
+    }`;
+    redirect(callbackUrl);
+  }
+
+  if (params.error) {
+    const errorUrl = `/auth/auth-code-error?error=${encodeURIComponent(
+      params.error_description || "Authentication failed",
+    )}`;
+    redirect(errorUrl);
+  }
+
   try {
     const supabase = await createClient();
     const { data } = await supabase.auth.getUser();

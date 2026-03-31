@@ -31,35 +31,35 @@ export const heroOutfit: OutfitCombo = {
   id: 'hero-outfit',
   name: 'Smart Casual Hero',
   jacket: {
-    src: '/images/wardrobe/sportcoat-tweed-grey.png',
+    src: '/images/landing-optimized/sportcoat-tweed-grey.webp',
     alt: 'Grey tweed sport coat',
     category: 'jacket',
     style: 'business-casual',
     color: 'grey'
   },
   shirt: {
-    src: '/images/wardrobe/ocbd-white.png',
+    src: '/images/landing-optimized/ocbd-white.webp',
     alt: 'White Oxford button-down shirt',
     category: 'shirt',
     style: 'business-casual',
     color: 'white'
   },
   pants: {
-    src: '/images/wardrobe/chino-navy.png',
+    src: '/images/landing-optimized/chino-navy.webp',
     alt: 'Navy chino pants',
     category: 'pants',
     style: 'business-casual',
     color: 'navy'
   },
   shoes: {
-    src: '/images/wardrobe/loafers-dark-brown.png',
+    src: '/images/landing-optimized/loafers-dark-brown.webp',
     alt: 'Dark brown leather loafers',
     category: 'shoes',
     style: 'business-casual',
     color: 'brown'
   },
   accessory: {
-    src: '/images/wardrobe/omega-seamaster-diver-300m.png',
+    src: '/images/landing-optimized/omega-seamaster-diver-300m.webp',
     alt: 'Silver Omega Seamaster Diver 300M watch',
     category: 'accessory',
     style: 'business-casual',
@@ -75,28 +75,28 @@ export const appDemoOutfit: OutfitCombo = {
   id: 'app-demo-outfit',
   name: 'Business Casual Demo',
   jacket: {
-    src: '/images/wardrobe/sportcoat-tweed-brown.png',
+    src: '/images/landing-optimized/sportcoat-tweed-brown.webp',
     alt: 'Brown tweed blazer',
     category: 'jacket',
     style: 'business-casual',
     color: 'brown'
   },
   shirt: {
-    src: '/images/wardrobe/ocbd-blue.png',
+    src: '/images/landing-optimized/ocbd-blue.webp',
     alt: 'Light blue Oxford shirt',
     category: 'shirt',
     style: 'business-casual',
     color: 'blue'
   },
   pants: {
-    src: '/images/wardrobe/chino-khaki.png',
+    src: '/images/landing-optimized/chino-khaki.webp',
     alt: 'Khaki chino pants',
     category: 'pants',
     style: 'casual',
     color: 'khaki'
   },
   shoes: {
-    src: '/images/wardrobe/loafers-light-tan.png',
+    src: '/images/landing-optimized/loafers-light-tan.webp',
     alt: 'Light tan suede loafers',
     category: 'shoes',
     style: 'casual',
@@ -110,21 +110,21 @@ export const appDemoOutfit: OutfitCombo = {
  */
 export const featureImages = {
   smartGenerator: {
-    src: '/images/wardrobe/ocbd-striped.png',
+    src: '/images/landing-optimized/ocbd-striped.webp',
     alt: 'Striped Oxford shirt demonstrating smart outfit generation',
     category: 'shirt' as const,
     style: 'business-casual' as const,
     color: 'striped'
   },
   weatherAware: {
-    src: '/images/wardrobe/mac-coat-navy.png',
+    src: '/images/landing-optimized/mac-coat-navy.webp',
     alt: 'Navy mac coat for weather-appropriate outfits',
     category: 'jacket' as const,
     style: 'casual' as const,
     color: 'navy'
   },
   capsuleWardrobe: {
-    src: '/images/wardrobe/quarterzip-navy.png',
+    src: '/images/landing-optimized/quarterzip-navy.webp',
     alt: 'Navy quarter-zip for capsule wardrobe building',
     category: 'jacket' as const,
     style: 'casual' as const,
@@ -138,21 +138,21 @@ export const featureImages = {
  */
 export const uploadStepItems: WardrobeImage[] = [
   {
-    src: '/images/wardrobe/ocbd-navy.png',
+    src: '/images/landing-optimized/ocbd-navy.webp',
     alt: 'Navy Oxford button-down shirt',
     category: 'shirt',
     style: 'business-casual',
     color: 'navy'
   },
   {
-    src: '/images/wardrobe/chinos-grey.png',
+    src: '/images/landing-optimized/chinos-grey.webp',
     alt: 'Grey chino pants',
     category: 'pants',
     style: 'casual',
     color: 'grey'
   },
   {
-    src: '/images/wardrobe/sneakers-white-leather.png',
+    src: '/images/landing-optimized/sneakers-white-leather.webp',
     alt: 'White leather sneakers',
     category: 'shoes',
     style: 'casual',
@@ -166,21 +166,21 @@ export const uploadStepItems: WardrobeImage[] = [
  */
 export const aiMatchingItems: WardrobeImage[] = [
   {
-    src: '/images/wardrobe/polo-navy.png',
+    src: '/images/landing-optimized/polo-navy.webp',
     alt: 'Navy polo shirt',
     category: 'shirt',
     style: 'casual',
     color: 'navy'
   },
   {
-    src: '/images/wardrobe/chinos-olive.png',
+    src: '/images/landing-optimized/chinos-olive.webp',
     alt: 'Olive chino pants',
     category: 'pants',
     style: 'casual',
     color: 'olive'
   },
   {
-    src: '/images/wardrobe/loafers-tan-suede.png',
+    src: '/images/landing-optimized/loafers-tan-suede.webp',
     alt: 'Tan suede loafers',
     category: 'shoes',
     style: 'casual',
@@ -194,28 +194,28 @@ export const aiMatchingItems: WardrobeImage[] = [
  */
 export const finalOutfitItems: WardrobeImage[] = [
   {
-    src: '/images/wardrobe/cardigan-grey.png',
+    src: '/images/landing-optimized/cardigan-grey.webp',
     alt: 'Grey cardigan sweater',
     category: 'jacket',
     style: 'casual',
     color: 'grey'
   },
   {
-    src: '/images/wardrobe/tee-white.png',
+    src: '/images/landing-optimized/tee-white.webp',
     alt: 'White t-shirt',
     category: 'shirt',
     style: 'casual',
     color: 'white'
   },
   {
-    src: '/images/wardrobe/jean-medium.png',
+    src: '/images/landing-optimized/jean-medium.webp',
     alt: 'Medium wash jeans',
     category: 'pants',
     style: 'casual',
     color: 'blue'
   },
   {
-    src: '/images/wardrobe/sneakers-killshots.png',
+    src: '/images/landing-optimized/sneakers-killshots.webp',
     alt: 'White Nike Killshot sneakers',
     category: 'shoes',
     style: 'casual',
