@@ -37,7 +37,7 @@ export default async function ExportPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="page-shell min-h-screen">
       <TopBarWrapper user={user} />
       <Suspense fallback={<PageContentSkeleton />}>
         <ExportShareClient tier={tier} outfits={outfits} />

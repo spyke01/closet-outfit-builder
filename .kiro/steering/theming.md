@@ -12,8 +12,9 @@ The active design system is Apple Liquid Glass.
 
 ## 2) Theme model
 
-- Dark mode is the default baseline
+- Theme preference defaults to system
 - Light mode is enabled with `html[data-theme="light"]`
+- Dark remains the baseline when light is not applied
 - Do not use class-based dark mode assumptions such as `.dark` or `darkMode: 'class'`
 - Avoid route-level background paints that fight the shared shell
 
@@ -67,6 +68,7 @@ Older semantic aliases like `bg-card`, `bg-background`, and `bg-muted` still exi
 ### App shell
 - Let the shared shell provide the page backdrop
 - Do not add per-route `bg-background` / `bg-muted` wrappers unless the screen is intentionally different
+- Authenticated route roots should normally start from `page-shell min-h-screen`, not `min-h-screen bg-background`
 
 ### Glass surfaces
 Use glass for:

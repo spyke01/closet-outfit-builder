@@ -162,48 +162,88 @@ features) over third-party libraries when functionality overlaps.
 
 ## Theming Standard
 
-This project uses a semantic token-first theming system. CSS
-variables are defined in `app/globals.css` and exposed via
-Tailwind `@theme inline`.
+This project uses the Apple Liquid Glass design system. Tokens
+and shared shell/surface primitives live in `app/globals.css`.
 
-**Required token usage for all app UI**:
+**Source of truth**:
 
-- Surfaces: `bg-background`, `bg-card`, `bg-muted`
-- Text: `text-foreground`, `text-muted-foreground`
-- Borders: `border-border`
-- Primary: `bg-primary`, `text-primary-foreground`
-- Secondary: `bg-secondary`, `text-secondary-foreground`
-- Focus: `ring-ring`
-- Destructive: `text-destructive`, `bg-destructive/10`
+- `app/globals.css`
+- `CLAUDE.md`
+- `.kiro/steering/theming.md`
+
+If older specs or migration notes conflict with those files,
+treat them as historical rather than normative.
+
+**Required implementation rules for app UI**:
+
+- Major pages MUST inherit the shared shell:
+  - `ambient-background`
+  - `page-shell`
+  - `page-shell-content`
+- Product surfaces should be built from the Liquid Glass tokens:
+  - `--bg-surface`
+  - `--bg-surface-hover`
+  - `--bg-surface-active`
+  - `--bg-input`
+  - `--border-subtle`
+  - `--border-default`
+  - `--border-strong`
+  - `--text-1`
+  - `--text-2`
+  - `--text-3`
+  - `--accent`
+  - `--accent-muted`
+  - `--radius-*`
+  - `--space-*`
+  - `--blur-*`
+- Theme behavior is system-default. Light mode is activated with
+  `html[data-theme="light"]`; dark is the baseline when light is
+  not applied.
 
 **Prohibited patterns**:
 
+- Route-level wrappers such as `min-h-screen bg-background` or
+  `bg-muted` that paint over the shared shell without a deliberate
+  product reason
+- Treating `bg-card`, `bg-background`, or `bg-muted` as the final
+  visual spec for a page
 - Neutral scale classes (`slate-*`, `stone-*`, `gray-*`) for
-  app UI theming
-- Hardcoded `bg-white`, `text-white`, `border-gray-*` for
-  primary surfaces
-- Conflicting dual surface classes on one element (`bg-white
-  bg-card`, `bg-muted bg-card`)
-- Redundant `dark:*` overrides when semantic tokens already
-  handle both themes
+  product theming
+- Hardcoded `bg-white`, `text-white`, `border-gray-*` for primary
+  product surfaces
+- Conflicting dual surface classes on one element
+- Redundant `dark:*` overrides when the shared theme tokens already
+  cover both modes
 
 **Component recipes**:
 
-- Page shell: `bg-background text-foreground`
-- Cards: `bg-card border border-border rounded-lg`
-- Inputs: `bg-background border border-border text-foreground
-  focus:ring-2 focus:ring-ring`
-- Primary button: `bg-primary text-primary-foreground
-  hover:opacity-90`
-- Nav bar: `bg-card border-b border-border`
-- Skeletons/fallbacks: `bg-muted` (prevents white flash during
-  route transitions)
+- Page shell:
+  - inherit `page-shell` / `page-shell-content`
+  - do not paint a separate route background by default
+- Cards:
+  - Liquid Glass surface with shared background, border, blur, and
+    card shadow
+- Inputs:
+  - shared input tokens and focus ring
+- Primary button:
+  - accent gradient fill
+- Secondary button:
+  - bordered glass surface
+- Tertiary button:
+  - transparent at rest, revealed on hover
+- Nav bar:
+  - full-width glass nav treatment
+- Skeletons/fallbacks:
+  - should visually match the final shell/surface rather than fall
+    back to obsolete palette recipes
 
 **Suspense rule**: Any Suspense fallback that replaces themed UI
-MUST use the same semantic token surfaces as the final component.
+MUST match the final shell/surface treatment closely enough that
+the route does not flash a different background system.
 
-**Test alignment**: UI tests MUST assert semantic class names
-(`bg-card`, `text-foreground`), never legacy palette classes.
+**Test alignment**: UI tests should assert shared shell
+primitives, selected states, and user-visible behavior rather than
+obsolete class recipes like `bg-card border border-border`.
 
 ## Component Architecture
 

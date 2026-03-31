@@ -81,10 +81,11 @@ For each new API route or server action, verify:
 The active UI direction is the Apple Liquid Glass system used across both marketing and authenticated pages.
 
 - Keep the existing project font choices. Do not introduce new typefaces.
-- Dark mode is the default baseline. Light mode is opt-in via `html[data-theme="light"]`.
+- Theme preference defaults to system. Light mode is activated via `html[data-theme="light"]`; dark remains the baseline when light is not applied.
 - Prefer shared Liquid Glass tokens from `app/globals.css` (`--bg-surface`, `--border-subtle`, `--accent`, `--radius-*`, `--space-*`, `--blur-*`, etc.) instead of page-local visual values.
 - Use glass selectively for navigation, toolbars, cards, popovers, and controls. Do not apply backdrop blur to dense text blocks, list rows inside cards, or general content containers.
 - Every major page should inherit the shared ambient shell (`ambient-background`, `page-shell`, `page-shell-content`) instead of painting its own route-level background color.
+- Do not use route-root wrappers like `min-h-screen bg-background` or `bg-muted` for authenticated pages unless the screen is intentionally opting out of the shared shell.
 - Reuse shared interaction patterns:
   - Primary CTA: gradient accent fill
   - Secondary button: bordered glass surface
