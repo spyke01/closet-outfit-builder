@@ -294,6 +294,11 @@
     width: calc(100% - (clamp(var(--space-md), 2vw, var(--space-2xl)) * 2));
   }
 
+  .page-shell-inner {
+    width: min(1240px, calc(100% - (var(--space-lg) * 2)));
+    margin-inline: auto;
+  }
+
   .glass-surface {
     background: var(--bg-surface);
     backdrop-filter: blur(var(--blur-glass));

@@ -237,15 +237,15 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   return (
     <div className="glass-nav sticky top-0 z-[100] w-full" style={navGlassStyle}>
-      <div className="mx-auto w-full max-w-[1240px] px-4 py-2 sm:px-6 lg:px-8">
+      <div className="page-shell-inner py-2">
         <div className="flex min-h-16 items-center justify-between gap-3">
           {/* Left: Logo + Mobile Menu Button + Desktop Navigation */}
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 flex-1 items-center gap-3">
             {/* Mobile menu button - traditional left position */}
             {validatedUser && (
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="icon-button glass-pill md:hidden h-10 w-10 justify-center p-0"
+                className="icon-button glass-pill h-10 w-10 shrink-0 justify-center p-0 lg:hidden"
                 aria-label="Toggle mobile menu"
                 aria-expanded={mobileMenuOpen}
               >
@@ -265,14 +265,14 @@ export const TopBar: React.FC<TopBarProps> = ({
                   handleTitleClick();
                 }
               }}
-              className="rounded-[var(--radius-md)] transition-opacity hover:opacity-80 focus-visible:outline-none"
+              className="shrink-0 rounded-[var(--radius-md)] transition-opacity hover:opacity-80 focus-visible:outline-none"
               aria-label="Navigate to home"
             >
-              <Logo className="h-12 w-auto" />
+              <Logo className="h-10 w-auto max-w-[84px] sm:h-11 sm:max-w-[96px] lg:h-12 lg:max-w-[120px]" />
             </button>
 
             {validatedUser && (
-              <nav className="ml-4 hidden items-center gap-2 md:flex">
+              <nav className="ml-2 hidden min-w-0 items-center gap-1 lg:ml-4 lg:gap-2 lg:flex">
                 <Link
                   href="/today"
                   className={desktopNavLinkClass(currentView === 'today')}
@@ -341,9 +341,9 @@ export const TopBar: React.FC<TopBarProps> = ({
           </div>
 
           {/* Right: Weather + User Menu or Auth Buttons */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             {/* Weather widget - always visible when enabled */}
-            <WeatherWidget className="text-sm" compact />
+            <WeatherWidget className="max-[359px]:hidden text-sm" compact />
 
             {validatedUser ? (
               /* User dropdown menu */
@@ -456,7 +456,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
       {impersonationSession && (
         <div className="border-t border-amber-500/20 bg-amber-500/10 backdrop-blur-[18px]">
-          <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-3 px-4 py-2 text-xs text-amber-200 sm:px-6 lg:px-8">
+          <div className="page-shell-inner flex flex-wrap items-center justify-between gap-3 py-2 text-xs text-amber-200">
             <p className="truncate">
               Read-only impersonation active | target <span className="font-mono">{impersonationSession.target_user_id}</span>
               {impersonationSession.ticket_id ? <> | ticket <span className="font-mono">{impersonationSession.ticket_id}</span></> : null}
@@ -470,8 +470,8 @@ export const TopBar: React.FC<TopBarProps> = ({
 
       {/* Mobile Navigation Menu */}
       {validatedUser && mobileMenuOpen && (
-        <div className="border-t border-[var(--nav-border)] bg-[color-mix(in_srgb,var(--nav-bg)_86%,transparent)] md:hidden">
-          <nav className="mx-auto flex max-w-[1240px] flex-col gap-2 px-4 py-3">
+        <div className="border-t border-[var(--nav-border)] bg-[color-mix(in_srgb,var(--nav-bg)_86%,transparent)] lg:hidden">
+          <nav className="page-shell-inner flex flex-col gap-2 py-3">
             <Link
               href="/today"
               onClick={() => setMobileMenuOpen(false)}

@@ -73,6 +73,17 @@ describe('TopBar', () => {
     expect(outfitsLink.className).toContain('cursor-pointer');
   });
 
+  it('keeps desktop navigation behind the large-screen breakpoint', () => {
+    const { container } = render(<TopBar user={user} />);
+
+    const menuButton = screen.getByRole('button', { name: 'Toggle mobile menu' });
+    expect(menuButton.className).toContain('lg:hidden');
+
+    const desktopNav = container.querySelector('nav.ml-2');
+    expect(desktopNav).not.toBeNull();
+    expect(desktopNav?.className).toContain('lg:flex');
+  });
+
   it('renders floating Sebastian launcher for entitled users', () => {
     render(<TopBar user={user} />);
     expect(screen.getByTestId('sebastian-launcher')).toHaveTextContent('floating');
