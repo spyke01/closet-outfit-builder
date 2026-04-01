@@ -25,10 +25,10 @@ describe('HeroSection - Accessibility', () => {
     render(<HeroSection />);
     
     const getStartedButton = screen.getByRole('link', { name: /get started free/i });
-    const howItWorksButton = screen.getByRole('button', { name: /see how it works/i });
+    const howItWorksLink = screen.getByRole('link', { name: /see how it works/i });
     
     expect(getStartedButton).toBeInTheDocument();
-    expect(howItWorksButton).toBeInTheDocument();
+    expect(howItWorksLink).toBeInTheDocument();
   });
 
   it('should have proper heading hierarchy', () => {
@@ -64,12 +64,11 @@ describe('HeroSection - Accessibility', () => {
     render(<HeroSection />);
     
     const getStartedLink = screen.getByRole('link', { name: /get started free/i });
-    const howItWorksButton = screen.getByRole('button', { name: /see how it works/i });
+    const howItWorksLink = screen.getByRole('link', { name: /see how it works/i });
     
     // Links should have href
     expect(getStartedLink).toHaveAttribute('href');
-    
-    // Buttons should be focusable (they are by default)
-    expect(howItWorksButton.tagName).toBe('BUTTON');
+    expect(howItWorksLink).toHaveAttribute('href', '#how-it-works');
+    expect(howItWorksLink.tagName).toBe('A');
   });
 });

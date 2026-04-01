@@ -61,8 +61,9 @@ describe('Performance Optimizations', () => {
       'utf-8'
     );
     
-    // Check for dark mode classes
-    expect(heroContent).toContain('bg-card');
+    // Image containers use semantic surface tokens in the current design system.
+    expect(heroContent).toContain('glass-surface');
+    expect(heroContent).toContain('bg-[var(--item-img-bg)]');
   });
 
   it('should have explicit width and height on all images', () => {

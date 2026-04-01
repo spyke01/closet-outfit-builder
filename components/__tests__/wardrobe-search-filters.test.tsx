@@ -157,9 +157,12 @@ describe('WardrobeSearchFilters', () => {
     const crossoverTag = screen.getByText('Crossover');
     const adventurerTag = screen.getByText('Adventurer');
     
-    expect(refinedTag).toHaveClass('bg-primary');
-    expect(crossoverTag).toHaveClass('bg-primary');
-    expect(adventurerTag).toHaveClass('bg-card');
+    expect(refinedTag).toHaveClass('active');
+    expect(crossoverTag).toHaveClass('active');
+    expect(refinedTag).toHaveAttribute('aria-pressed', 'true');
+    expect(crossoverTag).toHaveAttribute('aria-pressed', 'true');
+    expect(adventurerTag).not.toHaveClass('active');
+    expect(adventurerTag).toHaveAttribute('aria-pressed', 'false');
   });
 
   it('shows filtering indicator when search is active', () => {

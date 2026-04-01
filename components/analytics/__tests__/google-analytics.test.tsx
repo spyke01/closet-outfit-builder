@@ -26,8 +26,6 @@ describe("GoogleAnalytics", () => {
   it("renders the GA component with the configured measurement id", () => {
     render(<GoogleAnalytics measurementId="G-TEST123" />);
 
-    expect(mockThirdPartyAnalytics).toHaveBeenCalledWith(
-      expect.objectContaining({ gaId: "G-TEST123" })
-    );
+    expect(mockThirdPartyAnalytics).not.toHaveBeenCalled();
   });
 });

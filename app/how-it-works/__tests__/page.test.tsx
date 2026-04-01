@@ -8,15 +8,20 @@
  * How It Works section tests.
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import HowItWorksPage from '../page';
+import { beforeEach, describe, it, expect, vi } from 'vitest';
 
-const mockRedirect = vi.fn();
+const mockRedirect = vi.hoisted(() => vi.fn());
 vi.mock('next/navigation', () => ({
   redirect: mockRedirect,
 }));
 
+import HowItWorksPage from '../page';
+
 describe('HowItWorksPage - Redirect Tests', () => {
+  beforeEach(() => {
+    mockRedirect.mockClear();
+  });
+
   it('should redirect to the homepage anchor', () => {
     HowItWorksPage();
 

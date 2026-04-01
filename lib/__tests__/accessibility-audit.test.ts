@@ -226,11 +226,11 @@ describe('Landing Page Images - Accessibility Audit', () => {
       ];
 
       allImages.forEach((image) => {
-        // Path should start with /images/wardrobe/
-        expect(image.src).toMatch(/^\/images\/wardrobe\//);
+        // Path should point at the optimized landing-page image directory
+        expect(image.src).toMatch(/^\/images\/landing-optimized\//);
         
-        // Path should end with .png
-        expect(image.src).toMatch(/\.png$/);
+        // Landing page assets are served as optimized webp images
+        expect(image.src).toMatch(/\.webp$/);
         
         // Path should not have spaces
         expect(image.src).not.toMatch(/\s/);

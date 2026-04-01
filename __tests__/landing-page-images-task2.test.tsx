@@ -17,9 +17,9 @@ describe('Task 2: Feature Highlights and About Page Images', () => {
     });
 
     it('should have correct image paths', () => {
-      expect(featureImages.smartGenerator.src).toBe('/images/wardrobe/ocbd-striped.png');
-      expect(featureImages.weatherAware.src).toBe('/images/wardrobe/mac-coat-navy.png');
-      expect(featureImages.capsuleWardrobe.src).toBe('/images/wardrobe/quarterzip-navy.png');
+      expect(featureImages.smartGenerator.src).toBe('/images/landing-optimized/ocbd-striped.webp');
+      expect(featureImages.weatherAware.src).toBe('/images/landing-optimized/mac-coat-navy.webp');
+      expect(featureImages.capsuleWardrobe.src).toBe('/images/landing-optimized/quarterzip-navy.webp');
     });
 
     it('should have descriptive alt text for all images', () => {
@@ -85,7 +85,7 @@ describe('Task 2: Feature Highlights and About Page Images', () => {
       
       images.forEach(img => {
         // Check for opacity and transition classes
-        expect(img.className).toContain('opacity-80');
+        expect(img.className).toContain('opacity-85');
         expect(img.className).toContain('group-hover:opacity-100');
         expect(img.className).toContain('transition-opacity');
       });
@@ -126,11 +126,14 @@ describe('Task 2: Feature Highlights and About Page Images', () => {
 
   describe('Layout preservation', () => {
     it('should maintain icon tile styling', () => {
-      render(<FeatureHighlights />);
-      
-      // Check that icon tile styling is still present
-      const container = screen.getByText('Smart Outfit Generator').closest('div');
-      expect(container?.parentElement?.innerHTML).toContain('rounded-3xl');
+      const { container } = render(<FeatureHighlights />);
+
+      const featureCard = screen.getByText('Smart Outfit Generator').closest('.glass-surface');
+      expect(featureCard).toBeInTheDocument();
+      expect(featureCard).toHaveClass('glass-surface');
+
+      const iconTile = container.querySelector('.glass-surface [class*="rounded-\\[var\\(--radius-xl\\)\\]"]');
+      expect(iconTile).toBeInTheDocument();
     });
 
     it('should preserve section heading and description', () => {

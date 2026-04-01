@@ -38,30 +38,30 @@ describe('About Page Feature Card Images', () => {
   });
 
   it('should center images within their containers', () => {
-    render(<AboutPage />);
+    const { container } = render(<AboutPage />);
 
     const personalSecureHeading = screen.getByText('Personal & Secure');
-    const card = personalSecureHeading.closest('div[class*="bg-card"]');
+    const card = personalSecureHeading.closest('section');
     expect(card).toBeInTheDocument();
-    const iconContainer = card?.querySelector('div[class*="mx-auto"]');
-    expect(iconContainer).toBeTruthy();
+    const iconContainer = container.querySelector('section .mb-4.flex.h-16.w-16.items-center.justify-center');
+    expect(iconContainer).toBeInTheDocument();
   });
 
   it('should have proper spacing between image and heading', () => {
-    render(<AboutPage />);
+    const { container } = render(<AboutPage />);
 
     const personalSecureHeading = screen.getByText('Personal & Secure');
-    const card = personalSecureHeading.closest('div[class*="bg-card"]');
-    const iconContainer = card?.querySelector('div[class*="mb-4"]');
-    expect(iconContainer).toBeTruthy();
+    const card = personalSecureHeading.closest('section');
+    expect(card).toBeInTheDocument();
+    const iconContainer = container.querySelector('section .mb-4');
+    expect(iconContainer).toBeInTheDocument();
   });
 
   it('should maintain dark mode compatible styling', () => {
     render(<AboutPage />);
 
-    const personalSecureCard = screen.getByText('Personal & Secure').closest('div[class*="bg-card"]');
-    expect(personalSecureCard?.className).toContain('bg-card');
-    expect(personalSecureCard?.className).toContain('border-border');
+    const personalSecureCard = screen.getByText('Personal & Secure').closest('section');
+    expect(personalSecureCard).toHaveClass('glass-surface');
   });
 
   it('should preserve existing card layout and styling', () => {

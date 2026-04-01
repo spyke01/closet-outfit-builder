@@ -432,7 +432,7 @@ describe('MeasurementGuide', () => {
     it('should have proper card structure', () => {
       const { container } = render(<MeasurementGuide guide={mockGuide} />)
 
-      const card = container.querySelector('[class*="rounded-xl"]')
+      const card = container.querySelector('.glass-surface')
       expect(card).toBeInTheDocument()
     })
 
@@ -459,8 +459,8 @@ describe('MeasurementGuide', () => {
       const { container } = render(<MeasurementGuide guide={mockGuide} />)
 
       const card = container.firstChild
-      expect(card).toHaveClass('border-border')
-      expect(card).toHaveClass('bg-card')
+      expect(card).toHaveClass('glass-surface')
+      expect(card).toHaveClass('text-foreground')
     })
 
     it('should have dark mode classes on measurement field containers', () => {
