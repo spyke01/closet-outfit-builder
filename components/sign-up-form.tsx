@@ -113,10 +113,10 @@ export function SignUpForm({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <AuthHeader />
-      <Card>
+      <Card className="border-[var(--border-default)] bg-[color-mix(in_srgb,var(--bg-base)_42%,var(--bg-surface-hover))]">
         <CardHeader>
           <CardTitle className="text-2xl">Sign up</CardTitle>
-          <CardDescription>Create a new account</CardDescription>
+          <CardDescription className="text-[var(--text-2)]">Create a new account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp}>
@@ -185,7 +185,7 @@ export function SignUpForm({
                   <span className="w-full border-t border-[var(--border-subtle)]" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-[var(--bg-surface)] px-3 text-muted-foreground">
+                  <span className="bg-[color-mix(in_srgb,var(--bg-base)_42%,var(--bg-surface-hover))] px-3 text-[var(--text-2)]">
                     Or continue with
                   </span>
                 </div>
@@ -202,7 +202,7 @@ export function SignUpForm({
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}
-              <Link href="/auth/login" className="underline underline-offset-4">
+              <Link href="/auth/login" className="text-primary underline underline-offset-4">
                 Login
               </Link>
             </div>

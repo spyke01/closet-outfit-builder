@@ -97,10 +97,10 @@ export function LoginForm({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <AuthHeader />
-      <Card>
+      <Card className="border-[var(--border-default)] bg-[color-mix(in_srgb,var(--bg-base)_42%,var(--bg-surface-hover))]">
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>
+          <CardDescription className="text-[var(--text-2)]">
             Enter your email below to login to your account
           </CardDescription>
         </CardHeader>
@@ -129,7 +129,7 @@ export function LoginForm({
                   <Label htmlFor="password">Password</Label>
                   <Link
                     href="/auth/forgot-password"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                    className="ml-auto inline-block text-sm text-primary underline-offset-4 hover:underline"
                   >
                     Forgot your password?
                   </Link>
@@ -160,7 +160,7 @@ export function LoginForm({
                   <span className="w-full border-t border-[var(--border-subtle)]" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-[var(--bg-surface)] px-3 text-muted-foreground">
+                  <span className="bg-[color-mix(in_srgb,var(--bg-base)_42%,var(--bg-surface-hover))] px-3 text-[var(--text-2)]">
                     Or continue with
                   </span>
                 </div>
@@ -179,7 +179,7 @@ export function LoginForm({
               Don&apos;t have an account?{" "}
               <Link
                 href="/auth/sign-up"
-                className="underline underline-offset-4"
+                className="text-primary underline underline-offset-4"
               >
                 Sign up
               </Link>

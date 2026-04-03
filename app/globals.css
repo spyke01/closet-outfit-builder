@@ -190,7 +190,6 @@
     background-color: var(--bg-deep);
     color-scheme: dark;
     scroll-behavior: smooth;
-    transition: background-color 0.4s var(--ease-out);
   }
 
   body {
@@ -200,20 +199,6 @@
     min-height: 100vh;
     background:
       linear-gradient(180deg, color-mix(in srgb, var(--bg-base) 94%, transparent), var(--bg-deep));
-  }
-
-  *, *::before, *::after {
-    transition-property: color, background-color, border-color, box-shadow, opacity, transform;
-    transition-duration: 0.3s;
-    transition-timing-function: var(--ease-out);
-  }
-
-  button,
-  a,
-  input,
-  select,
-  textarea {
-    transition-duration: var(--duration-fast);
   }
 
   a {
@@ -306,18 +291,13 @@
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-card);
-    transition:
-      background-color var(--duration-normal) var(--ease-out),
-      border-color var(--duration-normal) var(--ease-out),
-      box-shadow var(--duration-normal) var(--ease-out),
-      transform var(--duration-normal) var(--ease-out);
+    transition: transform var(--duration-normal) var(--ease-out);
   }
 
   .glass-surface:hover {
     background: var(--bg-surface-hover);
     border-color: var(--border-default);
     box-shadow: var(--shadow-card-hover);
-    transform: translateY(-3px);
   }
 
   .glass-surface:active {
@@ -391,7 +371,10 @@
     font-weight: 500;
     color: var(--text-2);
     cursor: pointer;
-    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    transition:
+      color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .filter-tag:hover {
