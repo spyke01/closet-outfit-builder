@@ -992,11 +992,14 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                             {entry.notes && <p className="mt-1 truncate text-xs text-muted-foreground">{entry.notes}</p>}
                           </div>
 
-                          <div className="flex items-center gap-1" onClick={(event) => event.stopPropagation()}>
+                          <div className="flex items-center gap-1">
                             {entry.status === 'planned' && (
                               <button
                                 type="button"
-                                onClick={() => onMarkEntryWorn(entry)}
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  onMarkEntryWorn(entry);
+                                }}
                                 disabled={updateEntryMutation.isPending}
                                 className={`${secondaryButtonClass} h-9 px-2.5 text-xs border-success/40 bg-success-light text-success-dark dark:border-success/60 dark:bg-success-dark/20 dark:text-green-200`}
                                 aria-label="Mark as worn"
@@ -1007,7 +1010,10 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                             )}
                             <button
                               type="button"
-                              onClick={() => onDeleteEntry(entry.id)}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                onDeleteEntry(entry.id);
+                              }}
                               disabled={deleteEntryMutation.isPending || updateEntryMutation.isPending}
                               className={destructiveIconTertiaryClass}
                               aria-label="Delete entry"

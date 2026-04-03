@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useTheme } from 'next-themes';
 
 import { cn } from "@/lib/utils";
@@ -20,15 +21,14 @@ export function Logo({
     : '/my-ai-outfit-logo-dark-bg.png';
 
   return (
-    <img
+    <Image
       src={src}
       alt={title}
       width={200}
       height={50}
       className={cn(className, 'block h-auto w-auto')}
       loading="eager"
-      decoding="async"
-      fetchPriority="low"
+      priority={false}
     />
   );
 }

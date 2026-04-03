@@ -1,5 +1,5 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import { CalendarPageClient } from '../calendar-page-client';
 import { renderWithQuery } from '@/lib/test/query-utils';
 import type { CalendarEntry, Outfit, WardrobeItem } from '@/lib/types/database';

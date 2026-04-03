@@ -29,7 +29,7 @@ type CapsuleTagType = 'Refined' | 'Adventurer' | 'Crossover' | 'Shorts';
 
 interface ItemsGridState {
   searchTerm: string;
-  selectedTags: Set<string>;
+  selectedTags: string[];
   showAddForm: boolean;
   uploadError: string | null;
 }
@@ -62,14 +62,32 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
   // Immer-based state management
   const [state, updateState] = useImmerState<ItemsGridState>({
     searchTerm: '',
-    selectedTags: new Set(),
+    selectedTags: [],
     showAddForm: false,
     uploadError: null,
+  });
+  const getFilterTagStyle = (selected: boolean): React.CSSProperties => ({
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '7px 14px',
+    borderRadius: 'var(--radius-pill)',
+    border: selected ? '1px solid var(--accent)' : '1px solid var(--border-default)',
+    background: selected ? 'var(--accent-muted)' : 'var(--bg-surface)',
+    backdropFilter: 'blur(24px)',
+    WebkitBackdropFilter: 'blur(24px)',
+    fontSize: '0.76rem',
+    fontWeight: 500,
+    color: selected ? 'var(--accent)' : 'var(--text-2)',
+    cursor: 'pointer',
+    transition: 'all 0.18s cubic-bezier(0.16, 1, 0.3, 1)',
   });
 
   // Use deferred values for expensive filtering operations
   const deferredSearchTerm = useDeferredValue(state.searchTerm);
   const deferredSelectedTags = useDeferredValue(state.selectedTags);
+  const selectedTagsSet = useMemo(() => new Set(state.selectedTags), [state.selectedTags]);
+  const deferredSelectedTagsSet = useMemo(() => new Set(deferredSelectedTags), [deferredSelectedTags]);
 
   // Validate items with Zod (with better error handling)
   const validatedItems = useMemo(() => {
@@ -100,8 +118,8 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
     const result = validatedItems.filter(item => {
       const matchesSearch = item.name.toLowerCase().includes(deferredSearchTerm.toLowerCase()) ||
                            (item.brand && item.brand.toLowerCase().includes(deferredSearchTerm.toLowerCase()));
-      const matchesTags = deferredSelectedTags.size === 0 ||
-        item.capsule_tags?.some(tag => deferredSelectedTags.has(tag));
+      const matchesTags = deferredSelectedTagsSet.size === 0 ||
+        item.capsule_tags?.some(tag => deferredSelectedTagsSet.has(tag));
       return matchesSearch && matchesTags;
     });
     
@@ -109,7 +127,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
     console.debug('Search response time:', endTime - startTime, 'ms');
     
     return result;
-  }, [validatedItems, deferredSearchTerm, deferredSelectedTags]);
+  }, [validatedItems, deferredSearchTerm, deferredSelectedTagsSet]);
 
   // Check if filtering is in progress (deferred values are behind)
   const isFiltering = useMemo(() => {
@@ -135,10 +153,10 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
   const toggleTag = useCallback((tag: CapsuleTagType) => {
     startTransition(() => {
       updateState(draft => {
-        if (draft.selectedTags.has(tag)) {
-          draft.selectedTags.delete(tag);
+        if (draft.selectedTags.includes(tag)) {
+          draft.selectedTags = draft.selectedTags.filter(selectedTag => selectedTag !== tag);
         } else {
-          draft.selectedTags.add(tag);
+          draft.selectedTags.push(tag);
         }
       });
     });
@@ -261,7 +279,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
                 name="search"
                 autoComplete="off"
                 spellCheck={false}
-                placeholder="Search items..."
+                placeholder="Search items…"
                 value={state.searchTerm}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent min-h-[44px] bg-card text-foreground placeholder:text-muted-foreground dark:placeholder:text-muted-foreground transition-colors"
@@ -282,13 +300,10 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
                       toggleTag(tag);
                     }
                   }}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-[background-color,color,box-shadow] duration-200 min-h-[44px] flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                    state.selectedTags.has(tag)
-                      ? 'bg-card bg-muted text-white shadow-sm'
-                      : 'bg-card text-muted-foreground border border-border hover:bg-secondary/70 hover:border-foreground/25 hover:shadow-sm'
-                  } ${isFiltering ? 'opacity-75' : 'opacity-100'}`}
+                  className={`filter-tag min-h-[44px] flex-shrink-0 focus-visible:outline-none ${selectedTagsSet.has(tag) ? 'active' : ''} ${isFiltering ? 'opacity-75' : 'opacity-100'}`}
+                  style={getFilterTagStyle(selectedTagsSet.has(tag))}
                   aria-label={`Filter by ${tag}`}
-                  aria-pressed={state.selectedTags.has(tag)}
+                  aria-pressed={selectedTagsSet.has(tag)}
                 >
                   {tag}
                 </button>
@@ -300,7 +315,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
         {/* Results count */}
         <div className="mb-4 text-sm text-muted-foreground">
           {filteredItems.length} item{filteredItems.length !== 1 ? 's' : ''} found
-          {(state.searchTerm || state.selectedTags.size > 0) && (
+          {(state.searchTerm || state.selectedTags.length > 0) && (
             <span className="ml-2 text-xs">
               ({validatedItems.length} total)
             </span>
@@ -308,7 +323,7 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
         </div>
 
         {/* Responsive grid - 2 cols on mobile, 3 on small, 4 on medium and up */}
-        <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 transition-opacity duration-200 ${
+        <div className={`grid grid-cols-2 gap-3 transition-opacity duration-200 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 ${
           isFiltering ? 'opacity-75' : 'opacity-100'
         }`}
         style={contentVisibility.styles}>
@@ -325,32 +340,33 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
                   handleItemSelect(item);
                 }
               }}
-              className={`p-3 sm:p-4 rounded-xl border-2 transition-[border-color,background-color,box-shadow,transform] duration-200 cursor-pointer touch-manipulation w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+              className={`glass-surface group flex w-full flex-col items-stretch justify-start cursor-pointer overflow-hidden rounded-[var(--radius-md)] p-0 text-left touch-manipulation transition-[transform,background-color,border-color,box-shadow] duration-[var(--duration-normal)] ease-[var(--ease-out)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                 validatedSelectedItem?.id === item.id
-                  ? 'border-border bg-muted shadow-sm'
-                  : 'border-border bg-card hover:border-border hover:shadow-md'
+                  ? 'border-[var(--border-strong)] bg-[var(--bg-surface-hover)] shadow-[var(--shadow-card-hover)]'
+                  : 'hover:-translate-y-[1px]'
               }`}
               aria-label={`Select ${formatItemName(item)} for outfit building`}
               aria-pressed={validatedSelectedItem?.id === item.id}
             >
-              {/* Fixed height image container */}
-              <div className="h-40 sm:h-44 bg-card border border-border rounded-lg p-3 mb-3 flex items-center justify-center relative overflow-hidden">
+              <div className="relative h-40 w-full flex-none bg-[var(--item-img-bg)] sm:h-44">
                 {item.image_url ? (
-                  <Image
-                    src={item.image_url}
-                    alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''} - ${item.category?.name || 'wardrobe item'}`}
-                    fill
-                    className="object-contain"
-                    loading="lazy"
-                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
-                    quality={85}
-                  />
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={item.image_url}
+                      alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''} - ${item.category?.name || 'wardrobe item'}`}
+                      fill
+                      className="object-contain filter drop-shadow-sm"
+                      loading="lazy"
+                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+                      quality={85}
+                    />
+                  </div>
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center rounded-md bg-muted/30">
+                  <div className="flex h-full w-full items-center justify-center border-b border-[var(--item-img-border)] bg-[var(--item-img-bg)]">
                     {item.bg_removal_status === 'processing' ? (
                       <div className="flex flex-col items-center gap-2 text-muted-foreground">
                         <Loader2 className="h-5 w-5 animate-spin" />
-                        <span className="text-xs font-medium">Generating image...</span>
+                        <span className="text-xs font-medium">Generating image…</span>
                       </div>
                     ) : !item.bg_removal_status || item.bg_removal_status === 'pending' ? (
                       <div className="flex flex-col items-center gap-2 text-muted-foreground">
@@ -369,10 +385,12 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
                 <ProcessingIndicator status={item.bg_removal_status} />
               </div>
               
-              {/* Item details */}
-              <div className="space-y-2 min-w-0">
-                <div className="flex items-start gap-2 min-w-0">
-                  <h3 className="font-medium text-foreground leading-tight text-sm sm:text-base line-clamp-2 break-words">
+              <div className="min-w-0 border-t border-[var(--item-img-border)] px-[14px] py-3">
+                <p className="mb-1 text-[0.62rem] font-semibold uppercase tracking-[0.06em] text-[var(--text-3)]">
+                  {category}
+                </p>
+                <div className="flex min-w-0 items-start gap-2">
+                  <h3 className="mb-2 line-clamp-2 text-[0.82rem] font-medium leading-tight text-foreground break-words">
                     {formatItemName(item)}
                   </h3>
                 </div>
@@ -382,17 +400,13 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
                     {item.capsule_tags.slice(0, 3).map(tag => (
                       <span
                         key={tag}
-                        className={`px-2 py-1 text-xs rounded-md transition-colors truncate ${
-                          state.selectedTags.has(tag)
-                            ? 'bg-muted text-foreground'
-                            : 'bg-muted text-muted-foreground'
-                        }`}
+                        className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-1 text-[0.65rem] font-medium text-[var(--tag-text)] truncate"
                       >
                         {tag}
                       </span>
                     ))}
                     {item.capsule_tags.length > 3 && (
-                      <span className="px-2 py-1 text-xs rounded-md bg-muted text-muted-foreground">
+                      <span className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-1 text-[0.65rem] font-medium text-[var(--tag-text)]">
                         +{item.capsule_tags.length - 3}
                       </span>
                     )}
@@ -407,11 +421,11 @@ export const ItemsGrid: React.FC<ItemsGridProps> = ({
         {filteredItems.length === 0 && (
           <div className="text-center py-8 sm:py-12">
             <p className="text-muted-foreground text-sm sm:text-base">
-              {state.searchTerm || state.selectedTags.size > 0 
+              {state.searchTerm || state.selectedTags.length > 0 
                 ? 'No items found matching your criteria.' 
                 : 'No items available in this category.'}
             </p>
-            {(state.searchTerm || state.selectedTags.size > 0) && (
+            {(state.searchTerm || state.selectedTags.length > 0) && (
               <p className="text-xs text-muted-foreground mt-2">
                 Try adjusting your search or removing some filters.
               </p>

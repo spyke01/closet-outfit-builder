@@ -291,6 +291,21 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
   }, [outfit, isEditing, selection, scoreData]);
 
   const outfitItemCount = outfit?.items?.length || 0;
+  const categoryButtonClass = (isSelected: boolean) =>
+    [
+      'rounded-[var(--radius-pill)] border px-[14px] py-[9px] text-[0.76rem] font-medium transition-[transform,background-color,border-color,color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-out)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+      isSelected
+        ? 'border-transparent bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-[var(--text-on-accent)] shadow-[var(--shadow-accent)]'
+        : 'border-[var(--border-default)] bg-[var(--bg-surface)] text-[var(--text-2)] backdrop-blur-[var(--blur-glass)] [-webkit-backdrop-filter:blur(var(--blur-glass))] hover:-translate-y-px hover:border-[var(--border-strong)] hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-1)]',
+    ].join(' ');
+  const createdDateLabel = useMemo(() => {
+    if (!outfit?.created_at) return '';
+    return new Intl.DateTimeFormat(undefined, {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    }).format(new Date(outfit.created_at));
+  }, [outfit?.created_at]);
 
   if (outfitLoading || (isEditing && (categoriesLoading || itemsLoading))) {
     return (
@@ -299,7 +314,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border mx-auto mb-4"></div>
             <p className="text-muted-foreground">
-              {isEditing ? 'Loading wardrobe...' : 'Loading outfit...'}
+              {isEditing ? 'Loading wardrobe…' : 'Loading outfit…'}
             </p>
           </div>
         </div>
@@ -325,7 +340,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
   }
 
   return (
-    <div className="flex-1 w-full max-w-7xl mx-auto p-6">
+    <div className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 sm:px-6">
       <div className={`flex flex-col gap-6 ${isEditing ? 'pb-28' : ''}`}>
         {/* Navigation */}
         <NavigationButtons 
@@ -335,7 +350,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
         {/* Header */}
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-1">
-            <h1 className="text-3xl font-bold text-foreground">
+            <h1 className="font-display text-4xl font-normal tracking-[-0.03em] text-foreground">
               {isEditing ? 'Edit Outfit' : (outfit.name || 'Untitled Outfit')}
             </h1>
           </div>
@@ -426,7 +441,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
                     value={editForm.name || ''}
                     onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
                     className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
-                    placeholder="e.g., Business Casual"
+                    placeholder="e.g., Business Casual…"
                   />
                 </div>
 
@@ -469,7 +484,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
 
                 {/* Score Display in Edit Mode */}
                 {selectedItemIds.length > 0 && (
-                  <div className="p-3 bg-muted rounded-lg">
+                  <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_78%,transparent)] p-3">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-muted-foreground">
                         Current Score
@@ -491,7 +506,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <p className="text-foreground">
-                      {new Date(outfit.created_at).toLocaleDateString()}
+                      {createdDateLabel}
                     </p>
                   </div>
                 </div>
@@ -554,18 +569,13 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
                   <CardTitle className="text-lg">Select Category to Edit</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {categories.map((category) => (
                       <button
                         key={category.id}
+                        type="button"
                         onClick={() => handleCategorySelect(category.id)}
-                        className={`
-                          px-4 py-2 rounded-lg border transition-colors text-sm font-medium
-                          ${selectedCategory === category.id
-                            ? 'bg-primary text-primary-foreground border-primary'
-                            : 'bg-background border-border hover:bg-muted'
-                          }
-                        `}
+                        className={categoryButtonClass(selectedCategory === category.id)}
                       >
                         {category.name}
                       </button>
@@ -594,11 +604,13 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
               ) : (
                 <Card>
                   <CardContent className="p-8 text-center">
-                    <Shirt className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-medium text-foreground mb-2">
+                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_78%,transparent)]">
+                      <Shirt className="h-7 w-7 text-muted-foreground" />
+                    </div>
+                    <h3 className="font-display text-[1.25rem] font-normal tracking-[-0.02em] text-foreground mb-2">
                       Select a Category to Edit
                     </h3>
-                    <p className="text-muted-foreground">
+                    <p className="text-[var(--text-2)]">
                       Choose a category above to modify items in your outfit.
                     </p>
                   </CardContent>
@@ -680,7 +692,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
                 className="flex-1 sm:flex-none"
               >
                 <Save className="mr-2 h-4 w-4" />
-                {updateOutfitMutation.isPending ? 'Saving...' : 'Save'}
+                {updateOutfitMutation.isPending ? 'Saving…' : 'Save'}
               </Button>
           </StickyActionBar>
         )}

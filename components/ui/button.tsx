@@ -5,12 +5,12 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-pill)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-pill)] transition-[transform,background-color,border-color,color,box-shadow,opacity] duration-[var(--duration-fast)] ease-[var(--ease-out)] focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "border border-transparent bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-[var(--text-on-accent)] text-[0.82rem] font-semibold shadow-[var(--shadow-accent)] hover:-translate-y-px hover:shadow-[var(--shadow-accent-hover)] active:translate-y-0 active:opacity-90",
+          "border border-transparent bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-[var(--text-on-accent)] text-[0.82rem] font-semibold shadow-[var(--shadow-accent)] hover:-translate-y-px hover:opacity-95 hover:shadow-[var(--shadow-accent-hover)] active:translate-y-0 active:opacity-90",
         destructive:
           "border border-transparent bg-destructive text-[0.82rem] font-semibold text-destructive-foreground shadow-sm hover:opacity-90 active:opacity-90",
         outline:

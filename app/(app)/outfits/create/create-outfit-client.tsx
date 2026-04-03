@@ -221,6 +221,13 @@ export function CreateOutfitPageClient() {
 
   const isFormValid = hasMinimumOutfit;
   const currentScore = scoreData?.score || 0;
+  const categoryButtonClass = (isSelected: boolean) =>
+    [
+      'rounded-[var(--radius-pill)] border px-[14px] py-[9px] text-[0.76rem] font-medium transition-[transform,background-color,border-color,color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-out)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+      isSelected
+        ? 'border-transparent bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-[var(--text-on-accent)] shadow-[var(--shadow-accent)]'
+        : 'border-[var(--border-default)] bg-[var(--bg-surface)] text-[var(--text-2)] backdrop-blur-[var(--blur-glass)] [-webkit-backdrop-filter:blur(var(--blur-glass))] hover:-translate-y-px hover:border-[var(--border-strong)] hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-1)]',
+    ].join(' ');
 
   // Update selection with current score for real-time updates
   const selectionWithScore = useMemo(() => ({
@@ -234,7 +241,7 @@ export function CreateOutfitPageClient() {
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading wardrobe...</p>
+            <p className="text-muted-foreground">Loading wardrobe…</p>
           </div>
         </div>
       </div>
@@ -242,7 +249,7 @@ export function CreateOutfitPageClient() {
   }
 
   return (
-    <div className="flex-1 w-full max-w-7xl mx-auto p-6">
+    <div className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 sm:px-6">
       <form onSubmit={handleSubmit} className="flex flex-col gap-6 pb-28">
         {/* Navigation */}
         <NavigationButtons 
@@ -250,12 +257,12 @@ export function CreateOutfitPageClient() {
         />
 
         {/* Header */}
-        <div>
+        <div className="space-y-2">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">
+            <h1 className="font-display text-4xl font-normal tracking-[-0.03em] text-foreground">
               Create New Outfit
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="mt-1 text-[var(--text-2)]">
               Select items from your wardrobe to create an outfit
             </p>
           </div>
@@ -314,7 +321,7 @@ export function CreateOutfitPageClient() {
                       value={outfitName}
                       onChange={(e) => setOutfitName(e.target.value)}
                       className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
-                      placeholder="e.g., Business Casual"
+                      placeholder="e.g., Business Casual…"
                       aria-label="Enter outfit name"
                     />
                   </div>
@@ -359,7 +366,7 @@ export function CreateOutfitPageClient() {
 
                 {/* Score Display */}
                 {selectedItemIds.length > 0 && (
-                  <div className="p-3 bg-muted rounded-lg">
+                  <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_78%,transparent)] p-3">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-muted-foreground">
                         Outfit Score
@@ -397,19 +404,13 @@ export function CreateOutfitPageClient() {
                 <CardTitle className="text-lg">Select Category</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <div className="flex flex-wrap gap-2">
                   {categories.map((category) => (
                     <button
                       key={category.id}
                       type="button"
                       onClick={() => handleCategorySelect(category.id)}
-                      className={`
-                        px-4 py-2 rounded-lg border transition-colors text-sm font-medium
-                        ${selectedCategory === category.id
-                          ? 'bg-primary text-primary-foreground border-primary'
-                          : 'bg-background border-border hover:bg-muted'
-                        }
-                      `}
+                      className={categoryButtonClass(selectedCategory === category.id)}
                     >
                       {category.name}
                     </button>
@@ -438,11 +439,13 @@ export function CreateOutfitPageClient() {
             ) : (
               <Card>
                 <CardContent className="p-8 text-center">
-                  <Shirt className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium text-foreground mb-2">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_78%,transparent)]">
+                    <Shirt className="h-7 w-7 text-muted-foreground" />
+                  </div>
+                  <h3 className="font-display text-[1.25rem] font-normal tracking-[-0.02em] text-foreground mb-2">
                     Select a Category
                   </h3>
-                  <p className="text-muted-foreground">
+                  <p className="text-[var(--text-2)]">
                     Choose a category above to start building your outfit.
                   </p>
                 </CardContent>
@@ -454,10 +457,10 @@ export function CreateOutfitPageClient() {
         {/* Empty state */}
         {categories.length === 0 && (
           <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-foreground mb-2">
+            <h3 className="font-display text-[1.25rem] font-normal tracking-[-0.02em] text-foreground mb-2">
               No categories found
             </h3>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-[var(--text-2)] mb-4">
               Add items to your wardrobe first to create outfits.
             </p>
             <Link href="/wardrobe/items">
@@ -516,7 +519,7 @@ export function CreateOutfitPageClient() {
               className="flex-1 sm:flex-none"
             >
               <Save className="mr-2 h-4 w-4" />
-              {createOutfitMutation.isPending ? 'Creating...' : 'Create Outfit'}
+              {createOutfitMutation.isPending ? 'Creating…' : 'Create Outfit'}
             </Button>
         </StickyActionBar>
       </form>

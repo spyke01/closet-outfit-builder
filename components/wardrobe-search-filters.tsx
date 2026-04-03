@@ -80,16 +80,6 @@ export const WardrobeSearchFilters: React.FC<WardrobeSearchFiltersProps> = ({
     });
   }, [onTagToggle]);
 
-  const hasActiveFilters = Boolean(
-    searchTerm ||
-    selectedTags.size > 0 ||
-    selectedCategories.size > 0 ||
-    sortBy !== 'default'
-  );
-  const selectedCategoryNames = categories
-    .filter(category => selectedCategories.has(category.id))
-    .map(category => category.name);
-
   return (
     <div className="app-section section-delay-1 space-y-5">
       {/* Header with Add Item button */}

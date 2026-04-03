@@ -4,7 +4,7 @@
  * Requirements: 1.1, 2.1, 2.2, 4.1
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { HeroSection } from '../hero-section';
 import { heroOutfit } from '@/lib/data/landing-page-images';
