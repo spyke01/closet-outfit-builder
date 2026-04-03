@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { StickyActionBar } from '@/components/ui/sticky-action-bar';
 import { 
   Edit, 
   Trash2, 
@@ -612,24 +613,27 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
         </div>
 
         {isEditing && (
-          <div className="sticky bottom-0 z-30 -mx-6 border-t border-border bg-background/95 px-6 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 backdrop-blur">
-            {updateItemMutation.isSuccess && (
-              <Alert variant="success" className="lg:hidden mb-2">
-                <CheckCircle className="h-4 w-4" />
-                <AlertDescription>Item updated successfully!</AlertDescription>
-              </Alert>
-            )}
+          <StickyActionBar
+            topContent={
+              <>
+                {updateItemMutation.isSuccess && (
+                  <Alert variant="success" className="lg:hidden">
+                    <CheckCircle className="h-4 w-4" />
+                    <AlertDescription>Item updated successfully!</AlertDescription>
+                  </Alert>
+                )}
 
-            {updateItemMutation.isError && (
-              <Alert variant="destructive" className="lg:hidden mb-2">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  Failed to update item: {updateItemMutation.error?.message}
-                </AlertDescription>
-              </Alert>
-            )}
-
-            <div className="mx-auto flex w-full max-w-4xl gap-2">
+                {updateItemMutation.isError && (
+                  <Alert variant="destructive" className="lg:hidden">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      Failed to update item: {updateItemMutation.error?.message}
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </>
+            }
+          >
               <Button
                 variant="outline"
                 onClick={handleCancelEdit}
@@ -647,8 +651,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                 <Save className="mr-2 h-4 w-4" />
                 {updateItemMutation.isPending ? 'Saving...' : 'Save'}
               </Button>
-            </div>
-          </div>
+          </StickyActionBar>
         )}
 
         {/* Delete Confirmation Dialog */}

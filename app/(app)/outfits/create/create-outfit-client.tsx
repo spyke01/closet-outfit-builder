@@ -12,6 +12,7 @@ import { OutfitDisplayWithErrorBoundary as OutfitDisplay } from '@/components/dy
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { StickyActionBar } from '@/components/ui/sticky-action-bar';
 import { 
   Save, 
   X, 
@@ -467,35 +468,38 @@ export function CreateOutfitPageClient() {
           </div>
         )}
 
-        <div className="sticky bottom-0 z-30 -mx-6 border-t border-border bg-background/95 px-6 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 backdrop-blur">
-          {createOutfitMutation.isError && (
-            <Alert variant="destructive" className="lg:hidden mb-2">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                Failed to create outfit: {createOutfitMutation.error?.message}
-              </AlertDescription>
-            </Alert>
-          )}
+        <StickyActionBar
+          topContent={
+            <>
+              {createOutfitMutation.isError && (
+                <Alert variant="destructive" className="lg:hidden">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    Failed to create outfit: {createOutfitMutation.error?.message}
+                  </AlertDescription>
+                </Alert>
+              )}
 
-          {isDuplicate && !createOutfitMutation.isSuccess && (
-            <Alert variant="destructive" className="lg:hidden mb-2">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                This outfit combination already exists in your collection.
-              </AlertDescription>
-            </Alert>
-          )}
+              {isDuplicate && !createOutfitMutation.isSuccess && (
+                <Alert variant="destructive" className="lg:hidden">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    This outfit combination already exists in your collection.
+                  </AlertDescription>
+                </Alert>
+              )}
 
-          {duplicateCheckError && (
-            <Alert variant="warning" className="lg:hidden mb-2">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                Unable to check for duplicate outfits. You can still create this outfit.
-              </AlertDescription>
-            </Alert>
-          )}
-
-          <div className="mx-auto flex w-full max-w-7xl gap-2">
+              {duplicateCheckError && (
+                <Alert variant="warning" className="lg:hidden">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    Unable to check for duplicate outfits. You can still create this outfit.
+                  </AlertDescription>
+                </Alert>
+              )}
+            </>
+          }
+        >
             <Button
               type="button"
               variant="outline"
@@ -514,8 +518,7 @@ export function CreateOutfitPageClient() {
               <Save className="mr-2 h-4 w-4" />
               {createOutfitMutation.isPending ? 'Creating...' : 'Create Outfit'}
             </Button>
-          </div>
-        </div>
+        </StickyActionBar>
       </form>
     </div>
   );

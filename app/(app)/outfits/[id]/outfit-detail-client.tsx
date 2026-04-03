@@ -16,6 +16,7 @@ import { type ScoreBreakdownData } from '@/components/score-circle';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { StickyActionBar } from '@/components/ui/sticky-action-bar';
 import { 
   Edit, 
   Trash2, 
@@ -625,42 +626,45 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
         )}
 
         {isEditing && (
-          <div className="sticky bottom-0 z-30 -mx-6 border-t border-border bg-background/95 px-6 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 backdrop-blur">
-            {updateOutfitMutation.isSuccess && (
-              <Alert variant="success" className="lg:hidden mb-2">
-                <CheckCircle className="h-4 w-4" />
-                <AlertDescription>Outfit updated successfully!</AlertDescription>
-              </Alert>
-            )}
+          <StickyActionBar
+            topContent={
+              <>
+                {updateOutfitMutation.isSuccess && (
+                  <Alert variant="success" className="lg:hidden">
+                    <CheckCircle className="h-4 w-4" />
+                    <AlertDescription>Outfit updated successfully!</AlertDescription>
+                  </Alert>
+                )}
 
-            {updateOutfitMutation.isError && (
-              <Alert variant="destructive" className="lg:hidden mb-2">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  Failed to update outfit: {updateOutfitMutation.error?.message}
-                </AlertDescription>
-              </Alert>
-            )}
+                {updateOutfitMutation.isError && (
+                  <Alert variant="destructive" className="lg:hidden">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      Failed to update outfit: {updateOutfitMutation.error?.message}
+                    </AlertDescription>
+                  </Alert>
+                )}
 
-            {isDuplicate && (
-              <Alert variant="destructive" className="lg:hidden mb-2">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  This outfit combination already exists in your collection.
-                </AlertDescription>
-              </Alert>
-            )}
+                {isDuplicate && (
+                  <Alert variant="destructive" className="lg:hidden">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      This outfit combination already exists in your collection.
+                    </AlertDescription>
+                  </Alert>
+                )}
 
-            {!hasMinimumOutfit && (
-              <Alert variant="destructive" className="lg:hidden mb-2">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  An outfit must have at least a shirt (or undershirt) and pants.
-                </AlertDescription>
-              </Alert>
-            )}
-
-            <div className="mx-auto flex w-full max-w-7xl gap-2">
+                {!hasMinimumOutfit && (
+                  <Alert variant="destructive" className="lg:hidden">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      An outfit must have at least a shirt (or undershirt) and pants.
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </>
+            }
+          >
               <Button
                 variant="outline"
                 onClick={handleCancelEdit}
@@ -678,8 +682,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
                 <Save className="mr-2 h-4 w-4" />
                 {updateOutfitMutation.isPending ? 'Saving...' : 'Save'}
               </Button>
-            </div>
-          </div>
+          </StickyActionBar>
         )}
 
         {showScoreBreakdownModal && scoreBreakdown && (

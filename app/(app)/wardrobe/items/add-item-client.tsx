@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { StickyActionBar } from '@/components/ui/sticky-action-bar';
 import { 
   Save, 
   X, 
@@ -493,26 +494,27 @@ export function AddItemPageClient() {
           </Card>
         </div>
 
-        <div className="sticky bottom-0 z-30 -mx-6 border-t border-border bg-background/95 px-6 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 backdrop-blur">
-          <div className="mx-auto flex w-full max-w-4xl gap-2">
-            {createItemMutation.isSuccess && (
-              <Alert variant="success" className="lg:hidden mb-2 w-full">
-                <CheckCircle className="h-4 w-4" />
-                <AlertDescription>Item added successfully!</AlertDescription>
-              </Alert>
-            )}
+        <StickyActionBar
+          topContent={
+            <>
+              {createItemMutation.isSuccess && (
+                <Alert variant="success" className="lg:hidden">
+                  <CheckCircle className="h-4 w-4" />
+                  <AlertDescription>Item added successfully!</AlertDescription>
+                </Alert>
+              )}
 
-            {createItemMutation.isError && (
-              <Alert variant="destructive" className="lg:hidden mb-2 w-full">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  Failed to add item: {createItemMutation.error?.message}
-                </AlertDescription>
-              </Alert>
-            )}
-
-          </div>
-          <div className="mx-auto flex w-full max-w-4xl gap-2">
+              {createItemMutation.isError && (
+                <Alert variant="destructive" className="lg:hidden">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    Failed to add item: {createItemMutation.error?.message}
+                  </AlertDescription>
+                </Alert>
+              )}
+            </>
+          }
+        >
             <Button
               type="button"
               variant="outline"
@@ -531,8 +533,7 @@ export function AddItemPageClient() {
               <Save className="mr-2 h-4 w-4" />
               {createItemMutation.isPending ? 'Adding...' : 'Add Item'}
             </Button>
-          </div>
-        </div>
+        </StickyActionBar>
       </form>
     </div>
   );
