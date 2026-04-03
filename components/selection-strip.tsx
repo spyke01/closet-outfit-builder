@@ -18,6 +18,7 @@ import { type Outfit } from '@/lib/types/database';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CategoryDropdown } from './category-dropdown';
 import { OutfitList } from './outfit-list';
+import { hasCompleteOutfitSelection } from '@/lib/utils/outfit-coverage';
 
 interface SelectionStripState {
   selection: OutfitSelection;
@@ -109,7 +110,7 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
   }, [validatedSelection, updateState]);
 
   // Define the five main categories for dropdowns in layering hierarchy order
-  type ItemKey = 'jacket' | 'overshirt' | 'shirt' | 'undershirt' | 'pants' | 'shoes' | 'belt' | 'watch';
+  type ItemKey = 'jacket' | 'overshirt' | 'shirt' | 'undershirt' | 'pants' | 'dress' | 'shoes' | 'belt' | 'watch' | 'accessory';
 
   const categories = useMemo(() => [
     { category: 'Jacket/Overshirt', key: 'jacket' as ItemKey },
@@ -126,7 +127,7 @@ export const SelectionStrip: React.FC<SelectionStripProps> = ({
     
     let score = items.length * 20;
     
-    if (selection.shirt && selection.pants && selection.shoes) {
+    if (hasCompleteOutfitSelection(selection)) {
       score += 20;
     }
     

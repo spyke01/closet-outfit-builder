@@ -129,15 +129,19 @@ export const GeneratedOutfitSchema = z.object({
   items: z.object({
     jacket: EnrichedItemSchema.optional(),
     overshirt: EnrichedItemSchema.optional(),
-    shirt: EnrichedItemSchema, // Required
+    shirt: EnrichedItemSchema.optional(),
     undershirt: EnrichedItemSchema.optional(),
-    pants: EnrichedItemSchema, // Required
-    shoes: EnrichedItemSchema, // Required
+    pants: EnrichedItemSchema.optional(),
+    dress: EnrichedItemSchema.optional(),
+    shoes: EnrichedItemSchema,
     belt: EnrichedItemSchema.optional(),
     watch: EnrichedItemSchema.optional(),
+    accessory: EnrichedItemSchema.optional(),
   }),
+
+  baseTemplate: z.enum(['separates', 'fullBody']),
   
-  itemIds: z.array(z.string().uuid()).min(3, 'At least 3 items required (shirt, pants, shoes)'),
+  itemIds: z.array(z.string().uuid()).min(2, 'At least 2 items required'),
   
   scores: z.object({
     overall: CompatibilityScoreSchema,

@@ -26,6 +26,7 @@ import { createLogger } from '@/lib/utils/logger';
 import type { WardrobeItem } from '@/lib/types/database';
 import { isFreePlan } from '@/lib/services/billing/plan-labels';
 import { mapPublicAiError } from '@/lib/utils/public-ai-errors';
+import { hasCompleteOutfitItems } from '@/lib/utils/outfit-coverage';
 
 const log = createLogger({ component: 'api-today-ai-outfit' });
 export const dynamic = 'force-dynamic';
@@ -94,7 +95,7 @@ function getFormalityRangeMismatch(formality: TodayAiFormality, items: WardrobeR
   const { min, max } = getFormalityRange(formality);
   const core = items.filter((item) => {
     const category = item.category?.name;
-    return category === 'Shirt' || category === 'Pants' || category === 'Shoes';
+    return category === 'Shirt' || category === 'Pants' || category === 'Dress' || category === 'Shoes';
   });
   if (core.length === 0) return true;
   const scores = core.map((item) => item.formality_score ?? 5);
@@ -108,25 +109,34 @@ function getFormalityRangeMismatch(formality: TodayAiFormality, items: WardrobeR
   const shoesScore = scoreByCategory.get('Shoes') ?? 5;
   const shirtScore = scoreByCategory.get('Shirt') ?? 5;
   const pantsScore = scoreByCategory.get('Pants') ?? 5;
+  const dressScore = scoreByCategory.get('Dress') ?? 5;
+  const usesDress = scoreByCategory.has('Dress');
 
   if (formality === 'casual') {
-    // Casual should not drift into clearly formal tailoring/footwear.
-    if (shoesScore > 7 || shirtScore > 7 || pantsScore > 7) {
+    if (shoesScore > 7 || shirtScore > 7 || pantsScore > 7 || dressScore > 7) {
       return true;
     }
   }
 
   if (formality === 'smart') {
-    // Smart should avoid extremes on both ends.
-    if (shoesScore < 3 || shoesScore > 8 || shirtScore < 3 || pantsScore < 3) {
+    if (usesDress) {
+      if (shoesScore < 3 || shoesScore > 8 || dressScore < 3) {
+        return true;
+      }
+    } else if (shoesScore < 3 || shoesScore > 8 || shirtScore < 3 || pantsScore < 3) {
       return true;
     }
   }
 
   if (formality === 'formal') {
-    // Formal should include strongly refined core items.
-    const refinedCoreCount = [shirtScore, pantsScore, shoesScore].filter((score) => score >= 7).length;
-    if (refinedCoreCount < 2 || shoesScore < 7 || shirtScore < 6) {
+    const refinedCoreCount = usesDress
+      ? [dressScore, shoesScore].filter((score) => score >= 7).length
+      : [shirtScore, pantsScore, shoesScore].filter((score) => score >= 7).length;
+    if (usesDress) {
+      if (refinedCoreCount < 2 || shoesScore < 7 || dressScore < 6) {
+        return true;
+      }
+    } else if (refinedCoreCount < 2 || shoesScore < 7 || shirtScore < 6) {
       return true;
     }
   }
@@ -135,8 +145,7 @@ function getFormalityRangeMismatch(formality: TodayAiFormality, items: WardrobeR
 }
 
 function hasRequiredCoreCategories(items: WardrobeRow[]): boolean {
-  const categorySet = new Set(items.map((item) => item.category?.name).filter(Boolean));
-  return categorySet.has('Shirt') && categorySet.has('Pants') && categorySet.has('Shoes');
+  return hasCompleteOutfitItems(items as unknown as WardrobeItem[]);
 }
 
 function buildFinalExplanation(
@@ -153,6 +162,7 @@ function buildFinalExplanation(
 
   const shirt = byCategory.get('Shirt')?.name || 'shirt';
   const pants = byCategory.get('Pants')?.name || 'pants';
+  const dress = byCategory.get('Dress')?.name;
   const shoes = byCategory.get('Shoes')?.name || 'shoes';
   const layer = byCategory.get('Jacket')?.name || byCategory.get('Overshirt')?.name;
 
@@ -165,7 +175,9 @@ function buildFinalExplanation(
     : 'Keep layering light to maintain mobility and comfort.';
 
   return normalizeExplanation(
-    `${input.eventType} in ${input.stylePreset} at ${input.formality} formality: anchor with ${shirt}, pair with ${pants}, and finish with ${shoes}. ${layerNote} ${weatherNote}`
+    dress
+      ? `${input.eventType} in ${input.stylePreset} at ${input.formality} formality: anchor with ${dress}, finish with ${shoes}, and keep the silhouette cohesive. ${layerNote} ${weatherNote}`
+      : `${input.eventType} in ${input.stylePreset} at ${input.formality} formality: anchor with ${shirt}, pair with ${pants}, and finish with ${shoes}. ${layerNote} ${weatherNote}`
   );
 }
 
@@ -205,7 +217,7 @@ function buildTodayOutfitPrompt(input: z.infer<typeof TodayAiInputSchema>, wardr
     '',
     'Rules:',
     '- Use only IDs from the wardrobe list.',
-    '- Include Shirt, Pants, Shoes at minimum.',
+    '- Include either Shirt + Pants + Shoes or Dress + Shoes at minimum.',
     '- Prefer 5-8 items when wardrobe supports it (include layer/accessory where appropriate).',
     '- Consider weather and requested formality.',
     '- Keep explanation user-facing, concise, and practical.',
@@ -464,7 +476,7 @@ async function generateAiOutfit(
   const formalityMismatch = getFormalityRangeMismatch(input.formality, selectedRows);
 
   if (
-    selectedRows.length < 4 ||
+    selectedRows.length < 2 ||
     !hasRequiredCoreCategories(selectedRows) ||
     formalityMismatch ||
     signatureSet.has(signature)
@@ -485,7 +497,7 @@ async function generateAiOutfit(
       const candidateSignature = signatureFromItemIds(fallback.itemIds);
       const mismatch = getFormalityRangeMismatch(input.formality, candidateRows);
       if (
-        fallback.itemIds.length >= 4 &&
+        fallback.itemIds.length >= 2 &&
         hasRequiredCoreCategories(candidateRows) &&
         !mismatch &&
         !exhaustedSignatures.has(candidateSignature)

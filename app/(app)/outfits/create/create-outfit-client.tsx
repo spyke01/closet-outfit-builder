@@ -18,44 +18,18 @@ import {
   X, 
   AlertCircle,
   Shirt,
-  Star,
-  Heart
+  Heart,
+  RefreshCw
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { WardrobeItem } from '@/lib/types/database';
+import { OutfitSelection, WardrobeItem } from '@/lib/types/database';
 import { NavigationButtons } from '@/components/navigation-buttons';
 import Link from 'next/link';
-
-// Define a local OutfitSelection type that matches our component needs
-interface OutfitSelection {
-  jacket?: WardrobeItem;
-  overshirt?: WardrobeItem;
-  shirt?: WardrobeItem;
-  undershirt?: WardrobeItem;
-  pants?: WardrobeItem;
-  shoes?: WardrobeItem;
-  belt?: WardrobeItem;
-  watch?: WardrobeItem;
-  tuck_style: 'Tucked' | 'Untucked';
-  score?: number;
-}
-
-const OUTFIT_SLOT_BY_CATEGORY_NAME: Record<string, keyof OutfitSelection> = {
-  Jacket: 'jacket',
-  Overshirt: 'overshirt',
-  Jackets: 'jacket',
-  Overshirts: 'overshirt',
-  Shirt: 'shirt',
-  Shirts: 'shirt',
-  Undershirt: 'undershirt',
-  Undershirts: 'undershirt',
-  Pants: 'pants',
-  Shoes: 'shoes',
-  Belt: 'belt',
-  Belts: 'belt',
-  Watch: 'watch',
-  Watches: 'watch',
-};
+import {
+  getOutfitSlotForCategoryName,
+  getSelectableCategoryIdsWithItems,
+  hasCompleteOutfitSelection,
+} from '@/lib/utils/outfit-coverage';
 
 export function CreateOutfitPageClient() {
   const router = useRouter();
@@ -122,9 +96,7 @@ export function CreateOutfitPageClient() {
   }, [hasUnsavedChanges, createOutfitMutation.isSuccess, createOutfitMutation.isPending]);
 
   // Check if outfit meets minimum requirements (shirt + pants)
-  const hasMinimumOutfit = useMemo(() => {
-    return (selection.shirt || selection.undershirt) && selection.pants;
-  }, [selection.shirt, selection.undershirt, selection.pants]);
+  const hasMinimumOutfit = useMemo(() => hasCompleteOutfitSelection(selection), [selection]);
 
   const { data: scoreData } = useScoreOutfit(selectedItemIds);
   // Disable duplicate check while mutation is pending or successful
@@ -149,25 +121,117 @@ export function CreateOutfitPageClient() {
     return new Map(categories.map(cat => [cat.id, cat]));
   }, [categories]);
 
+  const selectableCategoryIds = useMemo(
+    () => new Set(getSelectableCategoryIdsWithItems(categories, items)),
+    [categories, items]
+  );
+
+  const selectableCategories = useMemo(
+    () => categories.filter((category) => selectableCategoryIds.has(category.id)),
+    [categories, selectableCategoryIds]
+  );
+
+  useEffect(() => {
+    if (selectedCategory && !selectableCategoryIds.has(selectedCategory)) {
+      setSelectedCategory('');
+    }
+  }, [selectedCategory, selectableCategoryIds]);
+
   // Get items for selected category
   const selectedCategoryItems = useMemo(() => {
     if (!selectedCategory) return [];
     return itemsByCategory.get(selectedCategory) || [];
   }, [itemsByCategory, selectedCategory]);
 
+  const slotItems = useMemo(() => {
+    const grouped: Partial<Record<Exclude<keyof OutfitSelection, 'tuck_style' | 'score' | 'loved'>, WardrobeItem[]>> = {};
+
+    for (const item of items) {
+      const category = categoryMap.get(item.category_id);
+      if (!category) continue;
+
+      const slot = getOutfitSlotForCategoryName(category.name);
+      if (!slot) continue;
+
+      grouped[slot] = [...(grouped[slot] ?? []), item];
+    }
+
+    return grouped;
+  }, [items, categoryMap]);
+
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId);
+  };
+
+  const pickRandomItem = (availableItems?: WardrobeItem[]) => {
+    if (!availableItems || availableItems.length === 0) {
+      return undefined;
+    }
+
+    return availableItems[Math.floor(Math.random() * availableItems.length)];
+  };
+
+  const handleRandomizeSelection = () => {
+    const tops = slotItems.shirt ?? [];
+    const bottoms = slotItems.pants ?? [];
+    const dresses = slotItems.dress ?? [];
+    const shoes = slotItems.shoes ?? [];
+
+    const canBuildSeparates = tops.length > 0 && bottoms.length > 0 && shoes.length > 0;
+    const canBuildDress = dresses.length > 0 && shoes.length > 0;
+
+    if (!canBuildSeparates && !canBuildDress) {
+      return;
+    }
+
+    const shouldUseDress =
+      canBuildDress && (!canBuildSeparates || Math.random() >= 0.5);
+
+    const nextSelection: OutfitSelection = {
+      tuck_style: tuckStyle,
+    };
+
+    if (shouldUseDress) {
+      nextSelection.dress = pickRandomItem(dresses);
+      nextSelection.shoes = pickRandomItem(shoes);
+    } else {
+      nextSelection.shirt = pickRandomItem(tops);
+      nextSelection.pants = pickRandomItem(bottoms);
+      nextSelection.shoes = pickRandomItem(shoes);
+    }
+
+    const optionalSlots: Array<keyof typeof slotItems> = ['jacket', 'overshirt', 'undershirt', 'belt', 'watch', 'accessory'];
+
+    for (const slot of optionalSlots) {
+      if (Math.random() >= 0.5) {
+        const randomItem = pickRandomItem(slotItems[slot]);
+        if (randomItem) {
+          nextSelection[slot] = randomItem;
+        }
+      }
+    }
+
+    setSelection(nextSelection);
+    setSelectedCategory('');
   };
 
   const handleItemSelect = (item: WardrobeItem | null) => {
     const category = categoryMap.get(selectedCategory);
     if (category) {
-      const propertyName = OUTFIT_SLOT_BY_CATEGORY_NAME[category.name];
+      const propertyName = getOutfitSlotForCategoryName(category.name) as keyof OutfitSelection | null;
       if (propertyName && propertyName !== 'tuck_style' && propertyName !== 'score') {
-        setSelection(prev => ({
-          ...prev,
-          [propertyName]: item // item can be null for deselection
-        }));
+        setSelection(prev => {
+          if (item) {
+            return {
+              ...prev,
+              [propertyName]: item,
+            };
+          }
+
+          const next = { ...prev };
+          delete next[propertyName];
+          return next;
+        });
 
         const isMobileViewport =
           typeof window !== 'undefined' &&
@@ -221,6 +285,17 @@ export function CreateOutfitPageClient() {
 
   const isFormValid = hasMinimumOutfit;
   const currentScore = scoreData?.score || 0;
+  const canRandomizeSelection = useMemo(() => {
+    const hasSeparates =
+      (slotItems.shirt?.length ?? 0) > 0 &&
+      (slotItems.pants?.length ?? 0) > 0 &&
+      (slotItems.shoes?.length ?? 0) > 0;
+    const hasDressLook =
+      (slotItems.dress?.length ?? 0) > 0 &&
+      (slotItems.shoes?.length ?? 0) > 0;
+
+    return hasSeparates || hasDressLook;
+  }, [slotItems]);
   const categoryButtonClass = (isSelected: boolean) =>
     [
       'rounded-[var(--radius-pill)] border px-[14px] py-[9px] text-[0.76rem] font-medium transition-[transform,background-color,border-color,color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-out)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
@@ -369,18 +444,13 @@ export function CreateOutfitPageClient() {
                   <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_78%,transparent)] p-3">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-muted-foreground">
-                        Outfit Score
+                        Current Score
                       </span>
-                      <div className="flex items-center gap-2">
-                        <Star className="h-4 w-4 text-yellow-500" />
-                        <span className="font-bold text-foreground">
-                          {currentScore}/100
-                        </span>
-                      </div>
+                      <span className="font-bold text-foreground">{currentScore}/100</span>
                     </div>
                     {!hasMinimumOutfit && (
                       <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
-                        Add a shirt and pants to enable saving
+                        Add shoes plus either a top and bottom or a dress to enable saving
                       </p>
                     )}
                   </div>
@@ -390,8 +460,24 @@ export function CreateOutfitPageClient() {
                 {/* Selected Items Display */}
                 <OutfitDisplay
                   selection={selectionWithScore}
-                  onRandomize={() => {}}
+                  onRandomize={handleRandomizeSelection}
+                  hideRandomizeButton={true}
+                  showCardScore={false}
+                  enableCardFlip={false}
+                  showCardTuckStyle={false}
+                  cardTitle="Selected Items"
                 />
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleRandomizeSelection}
+                  disabled={!canRandomizeSelection}
+                  className="w-full"
+                >
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Try Another Combination
+                </Button>
               </CardContent>
             </Card>
           </div>
@@ -405,7 +491,7 @@ export function CreateOutfitPageClient() {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  {categories.map((category) => (
+                  {selectableCategories.map((category) => (
                     <button
                       key={category.id}
                       type="button"
@@ -428,7 +514,7 @@ export function CreateOutfitPageClient() {
                   const category = categoryMap.get(selectedCategory);
                   if (!category) return undefined;
                   
-                  const propertyName = OUTFIT_SLOT_BY_CATEGORY_NAME[category.name];
+                  const propertyName = getOutfitSlotForCategoryName(category.name) as keyof OutfitSelection | null;
                   return propertyName && propertyName !== 'tuck_style' && propertyName !== 'score' 
                     ? selection[propertyName] as WardrobeItem | undefined
                     : undefined;
@@ -455,7 +541,7 @@ export function CreateOutfitPageClient() {
         </div>
 
         {/* Empty state */}
-        {categories.length === 0 && (
+        {selectableCategories.length === 0 && (
           <div className="text-center py-12">
             <h3 className="font-display text-[1.25rem] font-normal tracking-[-0.02em] text-foreground mb-2">
               No categories found

@@ -97,13 +97,17 @@ export interface GeneratedOutfit {
   items: {
     jacket?: EnrichedItem;
     overshirt?: EnrichedItem;
-    shirt: EnrichedItem;      // Required
+    shirt?: EnrichedItem;
     undershirt?: EnrichedItem;
-    pants: EnrichedItem;      // Required
-    shoes: EnrichedItem;      // Required
+    pants?: EnrichedItem;
+    dress?: EnrichedItem;
+    shoes: EnrichedItem;
     belt?: EnrichedItem;
     watch?: EnrichedItem;
+    accessory?: EnrichedItem;
   };
+
+  baseTemplate: 'separates' | 'fullBody';
   
   // Item IDs for saving to database
   itemIds: string[];
@@ -148,7 +152,7 @@ export interface GenerationOptions {
  */
 export interface SwapOptions {
   currentOutfit: GeneratedOutfit;
-  category: string; // Category to swap (e.g., 'shirt', 'pants')
+  category: string; // Category to swap (e.g., 'shirt', 'pants', 'dress')
   wardrobeItems: WardrobeItem[];
   weatherContext: WeatherContext;
 }

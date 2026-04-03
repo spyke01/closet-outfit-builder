@@ -7,7 +7,6 @@
  * All functions are pure (no side effects) and fully testable.
  */
 
-import { WardrobeItem } from '@/lib/types/database';
 import {
   GeneratedOutfit,
   GenerationOptions,
@@ -21,6 +20,7 @@ import {
 import { enrichItems } from '@/lib/utils/item-enrichment';
 import { calculateCompatibilityScore } from '@/lib/utils/compatibility-scoring';
 import { shirtSupportsUndershirt } from '@/lib/utils/undershirt-rules';
+import { getOutfitSlotForCategoryName, type OutfitBaseTemplate } from '@/lib/utils/outfit-coverage';
 
 /**
  * Category selection order for outfit generation
@@ -31,32 +31,15 @@ import { shirtSupportsUndershirt } from '@/lib/utils/undershirt-rules';
 const SELECTION_ORDER = [
   'pants',      // 1. Start with pants (foundation)
   'shirt',      // 2. Select shirt to match pants
+  'dress',      // 2. Alternative full-body base
   'shoes',      // 3. Select shoes to match pants and shirt
   'jacket',     // 4. Add outer layer if needed (jacket or overshirt)
   'overshirt',  // 4. (alternative to jacket)
   'undershirt', // 5. Add undershirt if needed
   'belt',       // 6. Add belt if needed
   'watch',      // 7. Add watch if available
+  'accessory',  // 8. Add a generic accessory if available
 ] as const;
-
-/**
- * Required categories that must be present in every outfit
- */
-const REQUIRED_CATEGORIES = ['Shirt', 'Pants', 'Shoes'] as const;
-
-/**
- * Category name mapping (database name -> slot name)
- */
-const CATEGORY_TO_SLOT: Record<string, string> = {
-  'Jacket': 'jacket',
-  'Overshirt': 'overshirt',
-  'Shirt': 'shirt',
-  'Undershirt': 'undershirt',
-  'Pants': 'pants',
-  'Shoes': 'shoes',
-  'Belt': 'belt',
-  'Watch': 'watch',
-};
 
 type AccessoryColorFamily = 'black' | 'brown' | 'other';
 
@@ -141,15 +124,16 @@ function hashToUnitInterval(input: string): number {
   return (hash >>> 0) / 4294967295;
 }
 
-/**
- * Check if wardrobe has all required categories
- * 
- * @param items - Array of wardrobe items
- * @returns True if all required categories are present
- */
-function hasRequiredCategories(items: WardrobeItem[]): boolean {
-  const categories = new Set(items.map(item => item.category?.name).filter(Boolean));
-  return REQUIRED_CATEGORIES.every(cat => categories.has(cat));
+function determineBaseTemplateFromSlots(availableSlots: Set<string>): OutfitBaseTemplate | null {
+  if (availableSlots.has('shirt') && availableSlots.has('pants') && availableSlots.has('shoes')) {
+    return 'separates';
+  }
+
+  if (availableSlots.has('dress') && availableSlots.has('shoes')) {
+    return 'fullBody';
+  }
+
+  return null;
 }
 
 /**
@@ -165,7 +149,7 @@ function groupItemsBySlot(items: EnrichedItem[]): Map<string, EnrichedItem[]> {
     const categoryName = item.category?.name;
     if (!categoryName) continue;
     
-    const slot = CATEGORY_TO_SLOT[categoryName];
+    const slot = getOutfitSlotForCategoryName(categoryName);
     if (!slot) continue;
     
     if (!grouped.has(slot)) {
@@ -181,7 +165,7 @@ function groupItemsBySlot(items: EnrichedItem[]): Map<string, EnrichedItem[]> {
  * Determine which categories should be included in the outfit
  * 
  * Based on weather context and available items:
- * - Always include: Shirt, Pants, Shoes
+ * - Always include one valid base outfit template plus shoes
  * - Conditional: Jacket/Overshirt (if targetWeight >= 2)
  * - Conditional: Undershirt (if not hot and the shirt supports layering)
  * - Conditional: Belt (if pants/shoes are formal)
@@ -195,13 +179,20 @@ function groupItemsBySlot(items: EnrichedItem[]): Map<string, EnrichedItem[]> {
 function determineIncludedCategories(
   weatherContext: WeatherContext,
   availableSlots: Set<string>,
-  selectedItems: Partial<Record<string, EnrichedItem>>
+  selectedItems: Partial<Record<string, EnrichedItem>>,
+  baseTemplate: OutfitBaseTemplate
 ): string[] {
   const included: string[] = [];
   
-  // Always include required categories (if available)
-  if (availableSlots.has('shirt')) included.push('shirt');
-  if (availableSlots.has('pants')) included.push('pants');
+  if (baseTemplate === 'separates') {
+    if (availableSlots.has('shirt')) included.push('shirt');
+    if (availableSlots.has('pants')) included.push('pants');
+  }
+
+  if (baseTemplate === 'fullBody' && availableSlots.has('dress')) {
+    included.push('dress');
+  }
+
   if (availableSlots.has('shoes')) included.push('shoes');
   
   // Include outer layer if weather is cold/mild (targetWeight >= 2)
@@ -216,6 +207,7 @@ function determineIncludedCategories(
   
   // Include undershirt unless it's hot
   if (
+    baseTemplate === 'separates' &&
     !weatherContext.isHot &&
     availableSlots.has('undershirt') &&
     shirtSupportsUndershirt(selectedItems.shirt)
@@ -224,7 +216,7 @@ function determineIncludedCategories(
   }
   
   // Include belt if pants or shoes are formal
-  if (availableSlots.has('belt')) {
+  if (baseTemplate === 'separates' && availableSlots.has('belt')) {
     const pants = selectedItems.pants;
     const shoes = selectedItems.shoes;
     
@@ -239,6 +231,10 @@ function determineIncludedCategories(
   // Include watch if available
   if (availableSlots.has('watch')) {
     included.push('watch');
+  }
+
+  if (availableSlots.has('accessory')) {
+    included.push('accessory');
   }
   
   return included;
@@ -545,7 +541,7 @@ function determineSwappable(
  * Generate a complete outfit from wardrobe items and weather context
  * 
  * This is the main entry point for outfit generation. It:
- * 1. Validates that required categories are present
+ * 1. Validates that at least one complete outfit base template is possible
  * 2. Enriches items with inferred metadata
  * 3. Groups items by category slot
  * 4. Determines which categories to include based on weather
@@ -557,7 +553,7 @@ function determineSwappable(
  * 
  * @param options - Generation options including wardrobe items and weather context
  * @returns A complete generated outfit with scores and metadata
- * @throws Error if required categories are missing
+ * @throws Error if no valid outfit base template is available
  * 
  * @example
  * const outfit = generateOutfit({
@@ -577,30 +573,30 @@ export function generateOutfit(options: GenerationOptions): GeneratedOutfit {
     explorationLevel = 0,
   } = options;
   
-  // Validate required categories
-  if (!hasRequiredCategories(wardrobeItems)) {
-    throw new Error(
-      'Missing required categories. Wardrobe must contain at least one item from each: Shirt, Pants, Shoes'
-    );
-  }
-  
   // Enrich items with inferred metadata
   const enrichedItems = enrichItems(wardrobeItems);
   
   // Group items by slot
   const itemsBySlot = groupItemsBySlot(enrichedItems);
+  const availableSlots = new Set(itemsBySlot.keys());
+  const baseTemplate = determineBaseTemplateFromSlots(availableSlots);
+
+  if (!baseTemplate) {
+    throw new Error(
+      'Missing required categories. Wardrobe must contain either top + bottom + shoes or dress + shoes'
+    );
+  }
   
   // Convert exclude list to Set for efficient lookup
   const excludeSet = new Set(excludeItems);
   
-  // Determine which categories to include (requires initial selection for belt logic)
-  // We'll do a two-pass approach: first select core items, then determine full inclusion
-  const availableSlots = new Set(itemsBySlot.keys());
-  
-  // First pass: select core items (pants, shirt, shoes)
+  // First pass: select items for the chosen base outfit template
   const coreItems: Partial<Record<string, EnrichedItem>> = {};
+  const baseSlots = baseTemplate === 'fullBody'
+    ? ['dress', 'shoes']
+    : ['pants', 'shirt', 'shoes'];
   
-  for (const slot of ['pants', 'shirt', 'shoes']) {
+  for (const slot of baseSlots) {
     if (!itemsBySlot.has(slot)) continue;
     
     const candidates = itemsBySlot.get(slot)!;
@@ -627,7 +623,8 @@ export function generateOutfit(options: GenerationOptions): GeneratedOutfit {
   const includedCategories = determineIncludedCategories(
     weatherContext,
     availableSlots,
-    coreItems
+    coreItems,
+    baseTemplate
   );
   
   // Second pass: select all items in proper order
@@ -646,14 +643,16 @@ export function generateOutfit(options: GenerationOptions): GeneratedOutfit {
   
   // Build items object with proper typing
   const items: GeneratedOutfit['items'] = {
-    shirt: selectedItemsMap.get('shirt')!,
-    pants: selectedItemsMap.get('pants')!,
+    shirt: selectedItemsMap.get('shirt'),
+    pants: selectedItemsMap.get('pants'),
+    dress: selectedItemsMap.get('dress'),
     shoes: selectedItemsMap.get('shoes')!,
     jacket: selectedItemsMap.get('jacket'),
     overshirt: selectedItemsMap.get('overshirt'),
     undershirt: selectedItemsMap.get('undershirt'),
     belt: selectedItemsMap.get('belt'),
     watch: selectedItemsMap.get('watch'),
+    accessory: selectedItemsMap.get('accessory'),
   };
   
   // Extract item IDs
@@ -668,6 +667,7 @@ export function generateOutfit(options: GenerationOptions): GeneratedOutfit {
   
   return {
     items,
+    baseTemplate,
     itemIds,
     scores: {
       overall,
@@ -771,14 +771,16 @@ export function swapItem(options: SwapOptions): GeneratedOutfit {
   
   // Build items object with proper typing
   const items: GeneratedOutfit['items'] = {
-    shirt: selectedItemsMap.get('shirt')!,
-    pants: selectedItemsMap.get('pants')!,
+    shirt: selectedItemsMap.get('shirt'),
+    pants: selectedItemsMap.get('pants'),
+    dress: selectedItemsMap.get('dress'),
     shoes: selectedItemsMap.get('shoes')!,
     jacket: selectedItemsMap.get('jacket'),
     overshirt: selectedItemsMap.get('overshirt'),
     undershirt: selectedItemsMap.get('undershirt'),
     belt: selectedItemsMap.get('belt'),
     watch: selectedItemsMap.get('watch'),
+    accessory: selectedItemsMap.get('accessory'),
   };
   
   // Extract item IDs
@@ -793,6 +795,7 @@ export function swapItem(options: SwapOptions): GeneratedOutfit {
   
   return {
     items,
+    baseTemplate: currentOutfit.baseTemplate,
     itemIds,
     scores: {
       overall,

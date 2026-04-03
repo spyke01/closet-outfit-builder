@@ -190,9 +190,11 @@ export const OutfitSelectionSchema = z.object({
   shirt: WardrobeItemSchema.optional(),
   undershirt: WardrobeItemSchema.optional(),
   pants: WardrobeItemSchema.optional(),
+  dress: WardrobeItemSchema.optional(),
   shoes: WardrobeItemSchema.optional(),
   belt: WardrobeItemSchema.optional(),
   watch: WardrobeItemSchema.optional(),
+  accessory: WardrobeItemSchema.optional(),
   tuck_style: z.enum(['Tucked', 'Untucked']).default('Untucked'),
   score: z.number().int().min(0).max(100).optional(),
 });

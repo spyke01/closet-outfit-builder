@@ -308,9 +308,11 @@ export interface OutfitSelection {
   shirt?: WardrobeItem;
   undershirt?: WardrobeItem;
   pants?: WardrobeItem;
+  dress?: WardrobeItem;
   shoes?: WardrobeItem;
   belt?: WardrobeItem;
   watch?: WardrobeItem;
+  accessory?: WardrobeItem;
   tuck_style?: 'Tucked' | 'Untucked';
   score?: number;
   [key: string]: WardrobeItem | 'Tucked' | 'Untucked' | number | null | undefined;

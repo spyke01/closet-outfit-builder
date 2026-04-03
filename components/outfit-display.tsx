@@ -21,6 +21,7 @@ import {
 import { type OutfitSelection, type Outfit } from '@/lib/types/database';
 import { OutfitCard } from './outfit-card';
 import { type ScoreBreakdownData } from './score-circle';
+import { getBaseTemplateFromSelection, hasCompleteOutfitSelection } from '@/lib/utils/outfit-coverage';
 
 interface OutfitDisplayState {
   isTransitioning: boolean;
@@ -46,7 +47,7 @@ const OutfitScoreCalculator = memo<{
     let score = items.length * 15; // Base score per item
     
     // Bonus for complete outfit
-    if (selection.shirt && selection.pants && selection.shoes) {
+    if (getBaseTemplateFromSelection(selection)) {
       score += 25;
     }
     
@@ -129,6 +130,10 @@ interface OutfitDisplayProps {
   generationError?: Error | null;
   // UI control props
   hideRandomizeButton?: boolean;
+  showCardScore?: boolean;
+  enableCardFlip?: boolean;
+  showCardTuckStyle?: boolean;
+  cardTitle?: string;
 }
 
 export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({ 
@@ -144,7 +149,11 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
   onSaveOutfit,
   isGenerating = false,
   generationError = null,
-  hideRandomizeButton = false
+  hideRandomizeButton = false,
+  showCardScore = true,
+  enableCardFlip = true,
+  showCardTuckStyle = true,
+  cardTitle,
 }) => {
   // Immer-based state management
   const [state, updateState] = useImmerState<OutfitDisplayState>({
@@ -189,8 +198,7 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
 
   // Check if outfit is complete
   const hasCompleteOutfit = useMemo(() => {
-    return Boolean((validatedSelection.shirt || validatedSelection.undershirt) && 
-                   validatedSelection.pants);
+    return hasCompleteOutfitSelection(validatedSelection);
   }, [validatedSelection]);
 
   // Check if any items are selected
@@ -319,7 +327,12 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
 
   // Create a unique key based on selection to reset error boundary when selection changes
   const selectionKey = useMemo(() => {
-    return `${validatedSelection.shirt?.id || 'none'}-${validatedSelection.pants?.id || 'none'}-${validatedSelection.shoes?.id || 'none'}`;
+    return [
+      validatedSelection.shirt?.id || 'none',
+      validatedSelection.pants?.id || 'none',
+      validatedSelection.dress?.id || 'none',
+      validatedSelection.shoes?.id || 'none',
+    ].join('-');
   }, [validatedSelection]);
 
   // Main content component
@@ -388,12 +401,14 @@ export const OutfitDisplay: React.FC<OutfitDisplayProps> = ({
             <OutfitCard
               outfit={cardSelection}
               variant="detailed"
-              showScore={hasAnyItems}
+              title={cardTitle}
+              showScore={showCardScore && hasAnyItems}
               score={outfitScore}
               scoreBreakdown={scoreBreakdown}
-              enableFlip={true}
+              enableFlip={enableCardFlip}
               defaultFlipped={state.isInMockupView}
               onFlipChange={handleMockupViewChange}
+              showTuckStyle={showCardTuckStyle}
             />
           </div>
 

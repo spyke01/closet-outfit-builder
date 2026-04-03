@@ -20,12 +20,14 @@ interface OutfitCardProps {
   outfit: OutfitSelection;
   variant?: 'compact' | 'detailed';
   layoutType?: 'visual' | 'grid';
+  title?: string;
   showScore?: boolean;
   score?: number;
   scoreBreakdown?: ScoreBreakdownData;
   enableFlip?: boolean;
   defaultFlipped?: boolean;
   onFlipChange?: (isFlipped: boolean) => void;
+  showTuckStyle?: boolean;
   onLove?: () => void;
   isLoved?: boolean;
   className?: string;
@@ -37,12 +39,14 @@ export const OutfitCard = React.memo<OutfitCardProps>(({
   outfit,
   variant = 'compact',
   layoutType = 'grid',
+  title,
   showScore = false,
   score = 0,
   scoreBreakdown,
   enableFlip = false,
   defaultFlipped = false,
   onFlipChange,
+  showTuckStyle = true,
   onLove,
   isLoved = false,
   className = '',
@@ -78,9 +82,11 @@ export const OutfitCard = React.memo<OutfitCardProps>(({
       { key: 'shirt', label: 'Shirt', item: validatedOutfit.shirt },
       { key: 'undershirt', label: 'Undershirt', item: validatedOutfit.undershirt },
       { key: 'pants', label: 'Pants', item: validatedOutfit.pants },
+      { key: 'dress', label: 'Dress', item: validatedOutfit.dress },
       { key: 'shoes', label: 'Shoes', item: validatedOutfit.shoes },
       { key: 'belt', label: 'Belt', item: validatedOutfit.belt },
       { key: 'watch', label: 'Watch', item: validatedOutfit.watch },
+      { key: 'accessory', label: 'Accessory', item: validatedOutfit.accessory },
     ].filter(({ item }) => item);
 
     if (items.length === 0) {
@@ -197,7 +203,7 @@ export const OutfitCard = React.memo<OutfitCardProps>(({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h3 className="font-medium text-foreground">
-              {variant === 'detailed' ? 'Current Outfit' : 'Outfit'}
+              {title ?? (variant === 'detailed' ? 'Current Outfit' : 'Outfit')}
             </h3>
             {showScore && (
               <ScoreCircle
@@ -237,7 +243,7 @@ export const OutfitCard = React.memo<OutfitCardProps>(({
           </div>
         </div>
         
-        {validatedOutfit.tuck_style && (
+        {showTuckStyle && validatedOutfit.tuck_style && (
           <p className="text-xs text-muted-foreground mt-1">
             Style: {validatedOutfit.tuck_style}
           </p>

@@ -32,27 +32,15 @@ import {
 import { useRouter } from 'next/navigation';
 import { Outfit, WardrobeItem, OutfitSelection } from '@/lib/types/database';
 import { NavigationButtons } from '@/components/navigation-buttons';
+import {
+  getOutfitSlotForCategoryName,
+  getSelectableCategoryIdsWithItems,
+  hasCompleteOutfitSelection,
+} from '@/lib/utils/outfit-coverage';
 
 interface OutfitDetailPageClientProps {
   outfitId: string;
 }
-
-const OUTFIT_SLOT_BY_CATEGORY_NAME: Record<string, keyof OutfitSelection> = {
-  Jacket: 'jacket',
-  Overshirt: 'overshirt',
-  Jackets: 'jacket',
-  Overshirts: 'overshirt',
-  Shirt: 'shirt',
-  Shirts: 'shirt',
-  Undershirt: 'undershirt',
-  Undershirts: 'undershirt',
-  Pants: 'pants',
-  Shoes: 'shoes',
-  Belt: 'belt',
-  Belts: 'belt',
-  Watch: 'watch',
-  Watches: 'watch',
-};
 
 export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps) {
   const router = useRouter();
@@ -94,9 +82,9 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
 
   // Check if outfit meets minimum requirements (shirt + pants)
   const hasMinimumOutfit = useMemo(() => {
-    if (!isEditing) return true; // Always valid when not editing
-    return (selection.shirt || selection.undershirt) && selection.pants;
-  }, [selection.shirt, selection.undershirt, selection.pants, isEditing]);
+    if (!isEditing) return true;
+    return hasCompleteOutfitSelection(selection);
+  }, [selection, isEditing]);
 
   // Score and duplicate checking for edit mode
   const { data: scoreData } = useScoreOutfit(scoreItemIds);
@@ -145,6 +133,16 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
     return itemsByCategory.get(selectedCategory) || [];
   }, [itemsByCategory, selectedCategory]);
 
+  const selectableCategoryIds = useMemo(
+    () => new Set(getSelectableCategoryIdsWithItems(categories, items)),
+    [categories, items]
+  );
+
+  const selectableCategories = useMemo(
+    () => categories.filter((category) => selectableCategoryIds.has(category.id)),
+    [categories, selectableCategoryIds]
+  );
+
   // Initialize edit form when outfit loads
   React.useEffect(() => {
     if (outfit && !isEditing) {
@@ -170,6 +168,12 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
       });
     }
   }, [outfit, isEditing]);
+
+  React.useEffect(() => {
+    if (selectedCategory && !selectableCategoryIds.has(selectedCategory)) {
+      setSelectedCategory('');
+    }
+  }, [selectedCategory, selectableCategoryIds]);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -222,12 +226,20 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
   const handleItemSelect = (item: WardrobeItem | null) => {
     const category = categoryMap.get(selectedCategory);
     if (category) {
-      const propertyName = OUTFIT_SLOT_BY_CATEGORY_NAME[category.name];
+      const propertyName = getOutfitSlotForCategoryName(category.name) as keyof OutfitSelection | null;
       if (propertyName && propertyName !== 'tuck_style' && propertyName !== 'score') {
-        setSelection(prev => ({
-          ...prev,
-          [propertyName]: item // item can be null for deselection
-        }));
+        setSelection(prev => {
+          if (item) {
+            return {
+              ...prev,
+              [propertyName]: item,
+            };
+          }
+
+          const next = { ...prev };
+          delete next[propertyName];
+          return next;
+        });
 
         const isMobileViewport =
           typeof window !== 'undefined' &&
@@ -416,7 +428,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
           <Alert variant="destructive" className="hidden lg:flex">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              An outfit must have at least a shirt (or undershirt) and pants.
+              An outfit must include shoes plus either a top and bottom or a dress.
             </AlertDescription>
           </Alert>
         )}
@@ -570,7 +582,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
-                    {categories.map((category) => (
+                    {selectableCategories.map((category) => (
                       <button
                         key={category.id}
                         type="button"
@@ -593,7 +605,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
                     const category = categoryMap.get(selectedCategory);
                     if (!category) return undefined;
                     
-                    const propertyName = OUTFIT_SLOT_BY_CATEGORY_NAME[category.name];
+                    const propertyName = getOutfitSlotForCategoryName(category.name) as keyof OutfitSelection | null;
                     return propertyName && propertyName !== 'tuck_style' && propertyName !== 'score' 
                       ? selection[propertyName] as WardrobeItem | undefined
                       : undefined;
@@ -670,7 +682,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
                   <Alert variant="destructive" className="lg:hidden">
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>
-                      An outfit must have at least a shirt (or undershirt) and pants.
+                      An outfit must include shoes plus either a top and bottom or a dress.
                     </AlertDescription>
                   </Alert>
                 )}

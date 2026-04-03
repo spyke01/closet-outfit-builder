@@ -11,7 +11,7 @@ interface TodayOutfitDisplayProps {
 }
 
 export default function TodayOutfitDisplay({ outfit, onSwap, generating }: TodayOutfitDisplayProps) {
-  const categories = ['jacket', 'overshirt', 'shirt', 'undershirt', 'pants', 'shoes', 'belt', 'watch'] as const;
+  const categories = ['jacket', 'overshirt', 'shirt', 'undershirt', 'pants', 'dress', 'shoes', 'belt', 'watch', 'accessory'] as const;
   
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

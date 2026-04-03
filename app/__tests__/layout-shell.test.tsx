@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -38,13 +38,13 @@ vi.mock('next-themes', () => ({
 
 describe('RootLayout shell', () => {
   it('renders the ambient background and page shell wrappers', () => {
-    const { container } = render(
+    const markup = renderToStaticMarkup(
       <RootLayout>
         <main>content</main>
       </RootLayout>,
     );
 
-    expect(container.querySelector('.ambient-background')).toBeInTheDocument();
-    expect(container.querySelector('.page-shell')).toBeInTheDocument();
+    expect(markup).toContain('class="ambient-background"');
+    expect(markup).toContain('class="page-shell"');
   });
 });

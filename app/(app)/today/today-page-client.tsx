@@ -17,6 +17,7 @@ import { createClient } from '@/lib/supabase/client';
 import { createLogger } from '@/lib/utils/logger';
 import { isFreePlan } from '@/lib/services/billing/plan-labels';
 import { getGreetingCopy, getTodayStylingTip } from '@/lib/services/today/presentation';
+import { hasCompleteOutfitItems } from '@/lib/utils/outfit-coverage';
 
 const logger = createLogger({ component: 'app-today-today-page-client' });
 
@@ -185,8 +186,7 @@ function toItemSetSignature(itemIds: string[]): string {
 }
 
 function hasRequiredCategories(items: WardrobeItem[]): boolean {
-  const categories = new Set(items.map((item) => item.category?.name).filter(Boolean));
-  return categories.has('Shirt') && categories.has('Pants') && categories.has('Shoes');
+  return hasCompleteOutfitItems(items);
 }
 
 export default function TodayPageClient({ wardrobeItems, userName }: TodayPageClientProps) {

@@ -46,6 +46,34 @@ describe('outfit-conversion', () => {
     items: [mockWardrobeItem],
   };
 
+  const mockPantsCategory: Category = {
+    ...mockCategory,
+    id: '550e8400-e29b-41d4-a716-446655440010',
+    name: 'Pants',
+  };
+
+  const mockShoesCategory: Category = {
+    ...mockCategory,
+    id: '550e8400-e29b-41d4-a716-446655440011',
+    name: 'Shoes',
+  };
+
+  const mockPantsItem: WardrobeItem = {
+    ...mockWardrobeItem,
+    id: '550e8400-e29b-41d4-a716-446655440012',
+    category_id: mockPantsCategory.id,
+    name: 'Grey Trousers',
+    category: mockPantsCategory,
+  };
+
+  const mockShoesItem: WardrobeItem = {
+    ...mockWardrobeItem,
+    id: '550e8400-e29b-41d4-a716-446655440013',
+    category_id: mockShoesCategory.id,
+    name: 'Black Loafers',
+    category: mockShoesCategory,
+  };
+
   describe('convertOutfitToSelection', () => {
     it('should convert outfit with items to selection format', () => {
       const result = convertOutfitToSelection(mockOutfit);
@@ -85,7 +113,11 @@ describe('outfit-conversion', () => {
 
   describe('canGenerateScoreBreakdown', () => {
     it('should return true for outfit with sufficient items', () => {
-      const result = canGenerateScoreBreakdown(mockOutfit);
+      const completeOutfit = {
+        ...mockOutfit,
+        items: [mockWardrobeItem, mockPantsItem, mockShoesItem],
+      };
+      const result = canGenerateScoreBreakdown(completeOutfit);
       expect(result).toBe(true);
     });
 
@@ -97,9 +129,8 @@ describe('outfit-conversion', () => {
 
     it('should return false for outfit with only one item', () => {
       const outfitWithOneItem = { ...mockOutfit, items: [mockWardrobeItem] };
-      // Override the category check by having only one item
       const result = canGenerateScoreBreakdown(outfitWithOneItem);
-      expect(result).toBe(true); // Actually should be true since it has shirt
+      expect(result).toBe(false);
     });
 
     it('should return false for outfit with undefined items', () => {

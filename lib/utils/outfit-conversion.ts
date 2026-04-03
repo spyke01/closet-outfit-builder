@@ -1,5 +1,6 @@
 import { type OutfitSelection } from '@/lib/types/database';
 import { type Outfit } from '@/lib/types/database';
+import { getOutfitSlotForCategoryName, hasCompleteOutfitItems } from '@/lib/utils/outfit-coverage';
 
 /**
  * Convert a database Outfit with items to an OutfitSelection format
@@ -18,56 +19,9 @@ export function convertOutfitToSelection(outfit: Outfit): OutfitSelection | null
   outfit.items.forEach((item) => {
     if (!item.category) return;
 
-    const categoryName = item.category.name.toLowerCase();
-    
-    // Use the full WardrobeItem object directly
-    const selectionItem = item;
-
-    // Map to the correct selection field based on category
-    switch (categoryName) {
-      case 'jacket/overshirt':
-        // Legacy category - could be either, default to jacket
-        selection.jacket = selectionItem;
-        break;
-      case 'jacket':
-        selection.jacket = selectionItem;
-        break;
-      case 'overshirt':
-        selection.overshirt = selectionItem;
-        break;
-      case 'shirt':
-        selection.shirt = selectionItem;
-        break;
-      case 'undershirt':
-        selection.undershirt = selectionItem;
-        break;
-      case 'pants':
-        selection.pants = selectionItem;
-        break;
-      case 'shoes':
-        selection.shoes = selectionItem;
-        break;
-      case 'belt':
-        selection.belt = selectionItem;
-        break;
-      case 'watch':
-        selection.watch = selectionItem;
-        break;
-      default:
-        // For unknown categories, try to map to the closest match
-        if (categoryName.includes('jacket')) {
-          selection.jacket = selectionItem;
-        } else if (categoryName.includes('overshirt')) {
-          selection.overshirt = selectionItem;
-        } else if (categoryName.includes('shirt')) {
-          selection.shirt = selectionItem;
-        } else if (categoryName.includes('pants') || categoryName.includes('trouser')) {
-          selection.pants = selectionItem;
-        } else if (categoryName.includes('shoe')) {
-          selection.shoes = selectionItem;
-        }
-        break;
-    }
+    const slot = getOutfitSlotForCategoryName(item.category.name);
+    if (!slot) return;
+    selection[slot] = item;
   });
 
   return selection;
@@ -81,24 +35,5 @@ export function canGenerateScoreBreakdown(outfit: Outfit): boolean {
     return false;
   }
 
-  // Check if we have at least one core item that can be scored
-  const categoryNames = outfit.items
-    .map(item => item.category?.name.toLowerCase())
-    .filter(Boolean);
-
-  const hasShirt = categoryNames.some(name => 
-    name?.includes('shirt') || name?.includes('top')
-  );
-  const hasPants = categoryNames.some(name => 
-    name?.includes('pants') || name?.includes('trouser') || name?.includes('bottom')
-  );
-  const hasShoes = categoryNames.some(name => 
-    name?.includes('shoe') || name?.includes('footwear')
-  );
-  const hasJacket = categoryNames.some(name => 
-    name?.includes('jacket') || name?.includes('overshirt')
-  );
-
-  // Allow breakdown if we have any core clothing item
-  return hasShirt || hasPants || hasShoes || hasJacket;
+  return hasCompleteOutfitItems(outfit.items);
 }

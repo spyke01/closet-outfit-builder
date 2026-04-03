@@ -36,6 +36,15 @@ const mockCategories = {
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
   },
+  dress: {
+    id: 'cat-dress',
+    user_id: 'user-1',
+    name: 'Dress',
+    is_anchor_item: false,
+    display_order: 4,
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
+  },
   jacket: {
     id: 'cat-jacket',
     user_id: 'user-1',
@@ -211,6 +220,36 @@ describe('generateOutfit', () => {
           weatherContext: mildWeather,
         });
       }).toThrow('Missing required categories');
+    });
+
+    it('should generate a complete dress-based outfit when dress and shoes are available', () => {
+      const dressWardrobe = [
+        createMockItem({
+          id: 'dress-1',
+          name: 'Green Midi Dress',
+          category_id: 'cat-dress',
+          category: mockCategories.dress,
+          formality_score: 6,
+        }),
+        createMockItem({
+          id: 'shoes-1',
+          name: 'Black Heels',
+          category_id: 'cat-shoes',
+          category: mockCategories.shoes,
+          formality_score: 7,
+        }),
+      ];
+
+      const outfit = generateOutfit({
+        wardrobeItems: dressWardrobe,
+        weatherContext: mildWeather,
+      });
+
+      expect(outfit.baseTemplate).toBe('fullBody');
+      expect(outfit.items.dress).toBeDefined();
+      expect(outfit.items.shoes).toBeDefined();
+      expect(outfit.items.shirt).toBeUndefined();
+      expect(outfit.items.pants).toBeUndefined();
     });
   });
 

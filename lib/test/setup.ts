@@ -127,13 +127,17 @@ vi.mock('next/image', () => ({
     decoding?: 'async' | 'auto' | 'sync';
     fetchPriority?: 'high' | 'low' | 'auto';
     [key: string]: unknown;
-  }) =>
-    createElement('img', {
-      ...props,
+  }) => {
+    const imageProps = { ...props };
+    delete imageProps.fill;
+
+    return createElement('img', {
+      ...imageProps,
       loading: priority ? 'eager' : (loading ?? 'lazy'),
-      decoding: props.decoding ?? 'async',
-      fetchPriority: priority ? 'high' : props.fetchPriority,
-    }),
+      decoding: imageProps.decoding ?? 'async',
+      fetchPriority: priority ? 'high' : imageProps.fetchPriority,
+    });
+  },
 }));
 
 // Mock geolocation API
