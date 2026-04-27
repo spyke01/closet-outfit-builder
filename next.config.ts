@@ -3,7 +3,7 @@ import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 
 const baselineCsp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https: *.supabase.co",
   "font-src 'self' data:",

@@ -354,6 +354,23 @@ serve(async (req: Request): Promise<Response> => {
     const uploadType: UploadType = uploadTypeParam === 'avatar' ? 'avatar' : 'wardrobe';
     const removeBackground = uploadType === 'avatar' ? false : removeBackgroundParam !== 'false';
 
+    if (itemId) {
+      const { data: ownedItem, error: ownershipError } = await supabase
+        .from('wardrobe_items')
+        .select('id')
+        .eq('id', itemId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (ownershipError || !ownedItem) {
+        return createCorsResponse(
+          JSON.stringify({ success: false, error: 'Wardrobe item not found for user' }),
+          { status: 404, headers: { 'Content-Type': 'application/json' } },
+          origin
+        );
+      }
+    }
+
     if (!imageFile) {
       return createCorsResponse(
         JSON.stringify({ success: false, error: 'No image file provided' }),
@@ -445,7 +462,7 @@ serve(async (req: Request): Promise<Response> => {
           bg_removal_status: 'completed',
           bg_removal_completed_at: new Date().toISOString(),
           image_url: publicUrl,
-        }).eq('id', itemId);
+        }).eq('id', itemId).eq('user_id', user.id);
       }
 
       const result: ImageProcessingResult = {
@@ -471,7 +488,7 @@ serve(async (req: Request): Promise<Response> => {
       await supabase.from('wardrobe_items').update({
         bg_removal_status: 'processing',
         bg_removal_started_at: new Date().toISOString(),
-      }).eq('id', itemId);
+      }).eq('id', itemId).eq('user_id', user.id);
     }
 
     if (removeBackground) {
@@ -502,14 +519,19 @@ serve(async (req: Request): Promise<Response> => {
         await supabase.storage.from(STORAGE_BUCKET).remove([originalData.path]);
 
         if (itemId) {
-          const { data: existingItem } = await supabase.from('wardrobe_items').select('id').eq('id', itemId).single();
+          const { data: existingItem } = await supabase
+            .from('wardrobe_items')
+            .select('id')
+            .eq('id', itemId)
+            .eq('user_id', user.id)
+            .single();
 
           if (existingItem) {
             await supabase.from('wardrobe_items').update({
               bg_removal_status: 'completed',
               bg_removal_completed_at: new Date().toISOString(),
               image_url: finalPublicUrl,
-            }).eq('id', itemId);
+            }).eq('id', itemId).eq('user_id', user.id);
           } else {
             debugLog('Item deleted during processing, cleaning up processed image');
             await supabase.storage.from(STORAGE_BUCKET).remove([finalData.path]);
@@ -533,13 +555,18 @@ serve(async (req: Request): Promise<Response> => {
           : 'Unknown background removal error';
 
         if (itemId) {
-          const { data: existingItem } = await supabase.from('wardrobe_items').select('id').eq('id', itemId).single();
+          const { data: existingItem } = await supabase
+            .from('wardrobe_items')
+            .select('id')
+            .eq('id', itemId)
+            .eq('user_id', user.id)
+            .single();
           if (existingItem) {
             await supabase.from('wardrobe_items').update({
               bg_removal_status: 'failed',
               bg_removal_completed_at: new Date().toISOString(),
               image_url: originalPublicUrl,
-            }).eq('id', itemId);
+            }).eq('id', itemId).eq('user_id', user.id);
           }
         }
 

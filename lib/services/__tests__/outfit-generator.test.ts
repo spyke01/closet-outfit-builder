@@ -3,6 +3,14 @@ import { generateOutfit, regenerateOutfit, swapItem } from '../outfit-generator'
 import { WardrobeItem } from '@/lib/types/database';
 import { WeatherContext } from '@/lib/types/generation';
 
+function expectDefined<T>(value: T | undefined, label: string): T {
+  expect(value, label).toBeDefined();
+  if (value === undefined) {
+    throw new Error(`${label} should be defined`);
+  }
+  return value;
+}
+
 /**
  * Test fixtures for outfit generation
  */
@@ -562,8 +570,10 @@ describe('generateOutfit', () => {
         preferredFormalityRange: { min: 7, max: 10 },
       });
 
-      expect((outfit.items.shirt.formality_score || 0)).toBeGreaterThanOrEqual(7);
-      expect((outfit.items.pants.formality_score || 0)).toBeGreaterThanOrEqual(7);
+      const shirt = expectDefined(outfit.items.shirt, 'shirt');
+      const pants = expectDefined(outfit.items.pants, 'pants');
+      expect((shirt.formality_score || 0)).toBeGreaterThanOrEqual(7);
+      expect((pants.formality_score || 0)).toBeGreaterThanOrEqual(7);
       expect((outfit.items.shoes.formality_score || 0)).toBeGreaterThanOrEqual(7);
     });
   });
@@ -598,7 +608,8 @@ describe('generateOutfit', () => {
         weatherContext: hotWeather,
       });
 
-      expect(outfit.items.pants.name).toContain('Shorts');
+      const pants = expectDefined(outfit.items.pants, 'pants');
+      expect(pants.name).toContain('Shorts');
     });
 
     it('should apply exclusion penalty to recently used items', () => {
@@ -635,11 +646,13 @@ describe('generateOutfit', () => {
       const outfit2 = generateOutfit({
         wardrobeItems: wardrobeWithMultipleShirts,
         weatherContext: mildWeather,
-        excludeItems: [outfit1.items.shirt.id],
+        excludeItems: [expectDefined(outfit1.items.shirt, 'first shirt').id],
       });
 
       // Should select different shirt
-      expect(outfit2.items.shirt.id).not.toBe(outfit1.items.shirt.id);
+      expect(expectDefined(outfit2.items.shirt, 'second shirt').id).not.toBe(
+        expectDefined(outfit1.items.shirt, 'first shirt').id
+      );
     });
 
     it('should remain deterministic without variation seed', () => {
@@ -679,8 +692,12 @@ describe('generateOutfit', () => {
         weatherContext: mildWeather,
       });
 
-      expect(first.items.shirt.id).toBe(second.items.shirt.id);
-      expect(first.items.pants.id).toBe(second.items.pants.id);
+      expect(expectDefined(first.items.shirt, 'first shirt').id).toBe(
+        expectDefined(second.items.shirt, 'second shirt').id
+      );
+      expect(expectDefined(first.items.pants, 'first pants').id).toBe(
+        expectDefined(second.items.pants, 'second pants').id
+      );
       expect(first.items.shoes.id).toBe(second.items.shoes.id);
     });
 
@@ -732,7 +749,7 @@ describe('generateOutfit', () => {
           variationSeed: `variant-${i}`,
           explorationLevel: 1,
         });
-        selectedShirts.add(outfit.items.shirt.id);
+        selectedShirts.add(expectDefined(outfit.items.shirt, 'shirt').id);
       }
 
       expect(selectedShirts.size).toBeGreaterThan(1);
@@ -821,8 +838,8 @@ describe('generateOutfit', () => {
 
       expect(outfit.itemIds).toBeDefined();
       expect(outfit.itemIds.length).toBeGreaterThanOrEqual(3);
-      expect(outfit.itemIds).toContain(outfit.items.shirt.id);
-      expect(outfit.itemIds).toContain(outfit.items.pants.id);
+      expect(outfit.itemIds).toContain(expectDefined(outfit.items.shirt, 'shirt').id);
+      expect(outfit.itemIds).toContain(expectDefined(outfit.items.pants, 'pants').id);
       expect(outfit.itemIds).toContain(outfit.items.shoes.id);
     });
 
@@ -853,9 +870,9 @@ describe('regenerateOutfit', () => {
       weatherContext: mildWeather,
     });
 
-    expect(outfit.items.shirt).toBeDefined();
-    expect(outfit.items.pants).toBeDefined();
-    expect(outfit.items.shoes).toBeDefined();
+      expectDefined(outfit.items.shirt, 'shirt');
+      expectDefined(outfit.items.pants, 'pants');
+      expect(outfit.items.shoes).toBeDefined();
   });
 
   it('should respect exclusion list for variety', () => {
@@ -888,10 +905,12 @@ describe('regenerateOutfit', () => {
     const outfit2 = regenerateOutfit({
       wardrobeItems: wardrobeWithMultipleItems,
       weatherContext: mildWeather,
-      excludeItems: [outfit1.items.shirt.id],
+      excludeItems: [expectDefined(outfit1.items.shirt, 'first shirt').id],
     });
 
-    expect(outfit2.items.shirt.id).not.toBe(outfit1.items.shirt.id);
+    expect(expectDefined(outfit2.items.shirt, 'second shirt').id).not.toBe(
+      expectDefined(outfit1.items.shirt, 'first shirt').id
+    );
   });
 });
 
@@ -933,10 +952,14 @@ describe('swapItem', () => {
     });
 
     // Shirt should be different
-    expect(swappedOutfit.items.shirt.id).not.toBe(originalOutfit.items.shirt.id);
+    expect(expectDefined(swappedOutfit.items.shirt, 'swapped shirt').id).not.toBe(
+      expectDefined(originalOutfit.items.shirt, 'original shirt').id
+    );
 
     // Other items should be the same
-    expect(swappedOutfit.items.pants.id).toBe(originalOutfit.items.pants.id);
+    expect(expectDefined(swappedOutfit.items.pants, 'swapped pants').id).toBe(
+      expectDefined(originalOutfit.items.pants, 'original pants').id
+    );
     expect(swappedOutfit.items.shoes.id).toBe(originalOutfit.items.shoes.id);
   });
 
@@ -1057,7 +1080,7 @@ describe('swapItem', () => {
       weatherContext: mildWeather,
     });
 
-    const originalShirtId = outfit.items.shirt.id;
+    const originalShirtId = expectDefined(outfit.items.shirt, 'original shirt').id;
 
     const swappedOutfit = swapItem({
       currentOutfit: outfit,
@@ -1067,7 +1090,7 @@ describe('swapItem', () => {
     });
 
     // Should select the other shirt
-    expect(swappedOutfit.items.shirt.id).not.toBe(originalShirtId);
+    expect(expectDefined(swappedOutfit.items.shirt, 'swapped shirt').id).not.toBe(originalShirtId);
   });
 
   it('should remove undershirt when swapping into a non-layerable shirt', () => {
@@ -1117,7 +1140,7 @@ describe('swapItem', () => {
       weatherContext: mildWeather,
     });
 
-    expect(swappedOutfit.items.shirt.id).toBe('shirt-polo');
+    expect(expectDefined(swappedOutfit.items.shirt, 'swapped shirt').id).toBe('shirt-polo');
     expect(swappedOutfit.items.undershirt).toBeUndefined();
   });
 
