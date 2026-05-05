@@ -208,6 +208,10 @@ function isCalendarGeneratedOutfit(outfit: Outfit): boolean {
   return name.startsWith('AI Week Plan ') || name.startsWith('Calendar ');
 }
 
+function getOutfitDisplayName(outfit: Outfit): string {
+  return outfit.name?.trim() || 'Untitled Outfit';
+}
+
 function OutfitThumbs({
   items,
   size = 'md',
@@ -294,6 +298,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
 
   const notesInputRef = useRef<HTMLInputElement>(null);
   const entryFormRef = useRef<HTMLDivElement>(null);
+  const savedOutfitsListRef = useRef<HTMLDivElement>(null);
 
   const { current, forecast } = useWeather(true);
   const { data: outfits = [] } = useOutfits();
@@ -380,7 +385,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
     return [...outfits]
       .filter((outfit) => {
         if (!query) return true;
-        const name = (outfit.name || '').toLowerCase();
+        const name = getOutfitDisplayName(outfit).toLowerCase();
         const itemNames = (outfit.items || []).map((item) => item.name.toLowerCase()).join(' ');
         return name.includes(query) || itemNames.includes(query);
       })
@@ -402,6 +407,13 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
       setInitialEntryFormSnapshot(null);
     }
   }, [activeEntry, activeEntryId, panelMode]);
+
+  const onSelectSavedOutfit = (outfitId: string) => {
+    setSelectedOutfitId(outfitId);
+    requestAnimationFrame(() => {
+      savedOutfitsListRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  };
 
   const onGenerateWeekOutfits = async () => {
     if (!hasRequiredItems || isGeneratingWeek) return;
@@ -1112,14 +1124,18 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                       />
                     </div>
 
-                    <div className="max-h-72 overflow-auto space-y-2 pr-1 xl:max-h-[26rem]">
+                    <div
+                      ref={savedOutfitsListRef}
+                      data-calendar-saved-outfits
+                      className="max-h-72 overflow-auto space-y-2 pr-1 xl:max-h-[26rem]"
+                    >
                       {sourceOutfits.map((outfit) => {
                         const selected = selectedOutfitId === outfit.id;
                         return (
                           <button
                             key={outfit.id}
                             type="button"
-                            onClick={() => setSelectedOutfitId(outfit.id)}
+                            onClick={() => onSelectSavedOutfit(outfit.id)}
                             className={`w-full rounded-lg border p-3 text-left transition-colors ${
                               selected ? 'border-primary bg-[var(--accent-muted)]' : 'border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]'
                             }`}
@@ -1128,7 +1144,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                               <div className="min-w-0 flex-1">
                                 <div className="flex items-center gap-2">
                                   <p className="truncate text-sm font-medium text-foreground">
-                                    {outfit.name || `Outfit ${outfit.id.slice(0, 6)}`}
+                                    {getOutfitDisplayName(outfit)}
                                   </p>
                                   {selected && (
                                     <span className="rounded-[var(--radius-pill)] border border-[color-mix(in_srgb,var(--accent)_16%,transparent)] bg-[var(--accent-muted)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--accent)]">

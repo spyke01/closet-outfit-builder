@@ -58,6 +58,18 @@ const outfits: Outfit[] = [
     score: 81,
     items: wardrobeItems.slice(0, 3),
   },
+  {
+    id: 'outfit-3',
+    user_id: 'user-1',
+    name: null,
+    weight: 1,
+    loved: false,
+    source: 'curated',
+    created_at: '2026-03-12',
+    updated_at: '2026-03-12',
+    score: 70,
+    items: wardrobeItems.slice(0, 3),
+  },
 ];
 
 const entries: CalendarEntry[] = [
@@ -80,6 +92,7 @@ const mutateAsync = vi.fn();
 const updateMutateAsync = vi.fn();
 const deleteMutateAsync = vi.fn();
 const createOutfitMutateAsync = vi.fn();
+const scrollToMock = vi.fn();
 
 vi.mock('@/lib/hooks/use-weather', () => ({
   useWeather: () => ({
@@ -125,6 +138,15 @@ describe('CalendarPageClient entry flow', () => {
     updateMutateAsync.mockReset();
     deleteMutateAsync.mockReset();
     createOutfitMutateAsync.mockReset();
+    scrollToMock.mockReset();
+    Object.defineProperty(HTMLDivElement.prototype, 'scrollTo', {
+      configurable: true,
+      value: scrollToMock,
+    });
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+      callback(0);
+      return 1;
+    });
     vi.spyOn(window, 'confirm').mockReturnValue(true);
   });
 
@@ -179,6 +201,28 @@ describe('CalendarPageClient entry flow', () => {
 
     expect(screen.getByText('Weekend Grey')).toBeInTheDocument();
     expect(within(editor ?? document.body).queryByText('Boardroom Blue')).not.toBeInTheDocument();
+  });
+
+  it('shows and searches untitled saved outfits', () => {
+    renderWithQuery(<CalendarPageClient wardrobeItems={wardrobeItems} />);
+
+    clickPrimaryAddEntry();
+
+    const editor = screen.getByText(/new entry for mar 15/i).closest('div');
+    const search = screen.getByRole('textbox', { name: /search saved outfits/i });
+    fireEvent.change(search, { target: { value: 'Untitled' } });
+
+    expect(screen.getByRole('button', { name: /untitled outfit/i })).toBeInTheDocument();
+    expect(within(editor ?? document.body).queryByText('Boardroom Blue')).not.toBeInTheDocument();
+  });
+
+  it('scrolls the saved outfit list to the selected outfit after reordering', () => {
+    renderWithQuery(<CalendarPageClient wardrobeItems={wardrobeItems} />);
+
+    clickPrimaryAddEntry();
+    fireEvent.click(screen.getByRole('button', { name: /untitled outfit/i }));
+
+    expect(scrollToMock).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' });
   });
 
   it('prompts on dirty date switch and clears stale edit state after confirming', () => {

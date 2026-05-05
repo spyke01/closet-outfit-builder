@@ -911,29 +911,35 @@ export default function TodayPageClient({ wardrobeItems, userName }: TodayPageCl
             style={{ backdropFilter: 'blur(var(--blur-glass))', WebkitBackdropFilter: 'blur(var(--blur-glass))' }}
           >
             <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--accent)_12%,transparent)] bg-[linear-gradient(135deg,var(--accent-muted),var(--accent-3-muted))]">
-                <Sparkles className="h-4 w-4 text-[var(--accent)]" />
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--accent)_12%,transparent)] bg-[linear-gradient(135deg,var(--accent-muted),var(--accent-3-muted))]">
+                  <Sparkles className="h-4 w-4 text-[var(--accent)]" />
+                </div>
+                <h2 className="font-display text-[1.2rem] font-normal tracking-[-0.02em] text-[var(--text-1)]">AI Outfit</h2>
               </div>
-              <h2 className="font-display text-[1.2rem] font-normal tracking-[-0.02em] text-[var(--text-1)]">AI Outfit</h2>
-            </div>
-            <div>
-              <p className="text-sm text-[var(--text-2)]">Generate a one-off look from your wardrobe for today.</p>
-            </div>
+              <div>
+                <p className="text-sm text-[var(--text-2)]">Generate a one-off look from your wardrobe for today.</p>
+              </div>
             </div>
 
             {aiGenerating || aiLoading ? (
-              <div className="flex min-h-[180px] items-center justify-center rounded-[var(--radius-md)] border border-dashed border-[var(--border-subtle)] text-sm text-[var(--text-2)]">
+              <div className="flex min-h-[240px] flex-1 items-center justify-center rounded-[var(--radius-md)] border border-dashed border-[var(--border-subtle)] text-sm text-[var(--text-2)]">
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 {todayAi ? 'Regenerating AI outfit...' : 'Loading AI state...'}
               </div>
             ) : !shouldShowAiForm && todayAi && aiOutfitItems.length > 0 ? (
-              <div className="space-y-4">
-                <OutfitGridLayout items={aiOutfitItems} showLabels previewVariant="bare" />
-                {todayAi.explanation && <p className="text-sm text-[var(--text-2)]">{todayAi.explanation}</p>}
+              <div className="flex min-h-0 flex-1 flex-col gap-4">
+                <div className="min-h-[240px] flex-1">
+                  <OutfitGridLayout items={aiOutfitItems} showLabels previewVariant="bare" />
+                </div>
+                {todayAi.explanation && (
+                  <p className="line-clamp-3 text-sm leading-5 text-[var(--text-2)]">
+                    {todayAi.explanation}
+                  </p>
+                )}
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="flex-1 space-y-3">
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <label className="space-y-1">
                     <span className="text-[0.7rem] font-medium uppercase tracking-[0.04em] text-[var(--text-3)]">Occasion</span>
@@ -987,51 +993,51 @@ export default function TodayPageClient({ wardrobeItems, userName }: TodayPageCl
               </div>
             )}
 
-            <div className="mt-auto flex flex-wrap items-center gap-2">
-            {!aiGenerating && !shouldShowAiForm && todayAi && !aiOutfitSaved && (
-              <button className={secondaryButtonClass} disabled={aiSaving} onClick={saveAiOutfit}>
-                <Save className="h-4 w-4" />
-                <span>{aiSaving ? 'Saving…' : 'Save'}</span>
-              </button>
-            )}
-
-            {!aiGenerating && !shouldShowAiForm && todayAi && (
-              <button
-                className={secondaryButtonClass}
-                onClick={() => { setAiFormOpen(true); setAiOutfitSaved(false); }}
-              >
-                <RefreshCw className="h-4 w-4" />
-                <span>Regenerate</span>
-              </button>
-            )}
-
-            {(shouldShowAiForm || !todayAi) && (
-              <div className="flex w-full flex-col items-center gap-2">
-                <button
-                  className={`${primaryButtonClass} w-full`}
-                  disabled={aiGenerating || (!isPaidPlan && !canUseFreeTrial)}
-                  onClick={() => generateAiLook(todayAi ? 'PATCH' : 'POST')}
-                >
-                  {isPaidPlan || canUseFreeTrial ? (todayAi ? 'Regenerate' : 'Generate') : 'Upgrade for AI'}
+            <div className="mt-auto flex flex-wrap items-center gap-2 pt-1">
+              {!aiGenerating && !shouldShowAiForm && todayAi && !aiOutfitSaved && (
+                <button className={secondaryButtonClass} disabled={aiSaving} onClick={saveAiOutfit}>
+                  <Save className="h-4 w-4" />
+                  <span>{aiSaving ? 'Saving…' : 'Save'}</span>
                 </button>
-                <p className="text-center text-[0.72rem] text-[var(--text-3)]">
-                  {usageLabel}
-                </p>
-              </div>
-            )}
+              )}
 
-            {!isPaidPlan && !canUseFreeTrial && (
-              <Link href="/settings/billing" className={secondaryButtonClass}>
-                View plans
-              </Link>
-            )}
+              {!aiGenerating && !shouldShowAiForm && todayAi && (
+                <button
+                  className={secondaryButtonClass}
+                  onClick={() => { setAiFormOpen(true); setAiOutfitSaved(false); }}
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  <span>Regenerate</span>
+                </button>
+              )}
 
-            {todayAi && shouldShowAiForm && !aiGenerating && (
-              <button className={secondaryButtonClass} onClick={() => setAiFormOpen(false)}>
-                <X className="h-4 w-4" />
-                <span>Cancel</span>
-              </button>
-            )}
+              {(shouldShowAiForm || !todayAi) && (
+                <div className="flex w-full flex-col items-center gap-2">
+                  <button
+                    className={`${primaryButtonClass} w-full`}
+                    disabled={aiGenerating || (!isPaidPlan && !canUseFreeTrial)}
+                    onClick={() => generateAiLook(todayAi ? 'PATCH' : 'POST')}
+                  >
+                    {isPaidPlan || canUseFreeTrial ? (todayAi ? 'Regenerate' : 'Generate') : 'Upgrade for AI'}
+                  </button>
+                  <p className="text-center text-[0.72rem] text-[var(--text-3)]">
+                    {usageLabel}
+                  </p>
+                </div>
+              )}
+
+              {!isPaidPlan && !canUseFreeTrial && (
+                <Link href="/settings/billing" className={secondaryButtonClass}>
+                  View plans
+                </Link>
+              )}
+
+              {todayAi && shouldShowAiForm && !aiGenerating && (
+                <button className={secondaryButtonClass} onClick={() => setAiFormOpen(false)}>
+                  <X className="h-4 w-4" />
+                  <span>Cancel</span>
+                </button>
+              )}
             </div>
           </article>
         </div>
