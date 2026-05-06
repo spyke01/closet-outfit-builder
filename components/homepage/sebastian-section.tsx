@@ -28,7 +28,7 @@ export function SebastianSection() {
 
               <div className="relative mx-auto w-full max-w-xs sm:max-w-sm mb-6 lg:hidden">
                 <div className="absolute inset-0 rounded-[2rem] bg-[radial-gradient(circle,color-mix(in_srgb,var(--accent)_10%,transparent)_0%,transparent_72%)] blur-2xl" />
-                <div className="relative flex items-end overflow-hidden rounded-[2rem] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_88%,transparent)] px-4 pt-4 pb-0 shadow-[var(--shadow-card)]">
+                <div className="relative flex items-end overflow-hidden rounded-[2rem] border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 pt-4 pb-0 shadow-[var(--shadow-card)]">
                   <Image
                     src="/images/sebastian/sebastian-half.png"
                     alt="Sebastian, your personal AI fashion assistant"
@@ -76,7 +76,7 @@ export function SebastianSection() {
 
             <div className="relative mx-auto w-full max-w-md hidden lg:block">
               <div className="absolute inset-0 rounded-[2rem] bg-[radial-gradient(circle,color-mix(in_srgb,var(--accent)_10%,transparent)_0%,transparent_72%)] blur-2xl" />
-              <div className="relative flex items-end overflow-hidden rounded-[2rem] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_88%,transparent)] px-4 pt-4 pb-0 shadow-[var(--shadow-card)]">
+              <div className="relative flex items-end overflow-hidden rounded-[2rem] border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 pt-4 pb-0 shadow-[var(--shadow-card)]">
                 <Image
                   src="/images/sebastian/sebastian-half.png"
                   alt="Sebastian, your personal AI fashion assistant"

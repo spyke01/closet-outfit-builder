@@ -22,7 +22,7 @@ export function AppDemo() {
         <div className="relative mx-auto max-w-4xl">
           {/* Main app mockup */}
           <div className="glass-surface card-glow-blue relative rounded-[var(--radius-xl)] p-6 lg:p-8">
-            <div className="space-y-6 rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)] p-5 lg:p-6">
+            <div className="space-y-6 rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 lg:p-6">
               {/* Header */}
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -99,7 +99,7 @@ export function AppDemo() {
               </div>
 
               {/* Score breakdown */}
-              <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] p-4 space-y-3">
+              <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-4 space-y-3">
                 <h4 className="font-semibold text-foreground">Compatibility Breakdown</h4>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">

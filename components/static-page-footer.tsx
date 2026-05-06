@@ -5,7 +5,7 @@ export function StaticPageFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative z-[1] border-t border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] backdrop-blur-[18px]">
+    <footer className="relative z-[1] border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] backdrop-blur-[18px]">
       <div className="mx-auto max-w-[1240px] px-6 py-12">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div className="space-y-4">

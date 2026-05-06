@@ -97,7 +97,7 @@ export function LoginForm({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <AuthHeader />
-      <Card className="border-[var(--border-default)] bg-[color-mix(in_srgb,var(--bg-base)_42%,var(--bg-surface-hover))]">
+      <Card className="border-[var(--border-default)] bg-[var(--bg-base)]">
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription className="text-[var(--text-2)]">
@@ -160,7 +160,7 @@ export function LoginForm({
                   <span className="w-full border-t border-[var(--border-subtle)]" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-[color-mix(in_srgb,var(--bg-base)_42%,var(--bg-surface-hover))] px-3 text-[var(--text-2)]">
+                  <span className="bg-[var(--bg-base)] px-3 text-[var(--text-1)]">
                     Or continue with
                   </span>
                 </div>

@@ -272,7 +272,6 @@
     position: absolute;
     inset: 0;
     background: var(--orb-1), var(--orb-2), var(--orb-3);
-    animation: ambient-drift 22s ease-in-out infinite alternate;
   }
 
   .page-shell {
@@ -330,7 +329,6 @@
     -webkit-backdrop-filter: blur(32px) saturate(1.4);
     border-bottom: 1px solid var(--nav-border);
     box-shadow: var(--shadow-nav);
-    animation: navIn 0.7s var(--ease-out) both;
   }
 
   .glass-nav::before {
