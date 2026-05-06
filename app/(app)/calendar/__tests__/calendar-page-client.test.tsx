@@ -61,7 +61,6 @@ const outfits: Outfit[] = [
   {
     id: 'outfit-3',
     user_id: 'user-1',
-    name: null,
     weight: 1,
     loved: false,
     source: 'curated',

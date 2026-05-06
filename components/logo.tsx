@@ -25,8 +25,8 @@ export function Logo({
       src={src}
       alt={title}
       width={200}
-      height={50}
-      className={cn(className, 'block h-auto w-auto')}
+      height={210}
+      className={cn('block object-contain', className)}
       loading="eager"
       priority={false}
     />

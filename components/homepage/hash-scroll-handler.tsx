@@ -20,8 +20,39 @@ function scrollToHashTarget() {
   target.scrollIntoView({ behavior: "auto", block: "start" });
 }
 
+function redirectAuthQueryParams() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
+  const error = params.get("error");
+
+  if (code) {
+    const callbackUrl = new URL("/auth/callback", window.location.origin);
+    callbackUrl.searchParams.set("code", code);
+
+    const next = params.get("next");
+    if (next) {
+      callbackUrl.searchParams.set("next", next);
+    }
+
+    window.location.replace(callbackUrl.toString());
+    return;
+  }
+
+  if (error) {
+    const errorUrl = new URL("/auth/auth-code-error", window.location.origin);
+    errorUrl.searchParams.set("error", params.get("error_description") || "Authentication failed");
+    window.location.replace(errorUrl.toString());
+  }
+}
+
 export function HashScrollHandler() {
   useEffect(() => {
+    redirectAuthQueryParams();
+
     const runScroll = () => {
       window.requestAnimationFrame(() => {
         scrollToHashTarget();

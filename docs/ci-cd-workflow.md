@@ -136,14 +136,16 @@ npx lighthouse-ci
 ```
 
 **Failure Conditions**:
+- Performance score < 97%
+- Best Practices score < 97%
 - Accessibility score < 95%
 - Keyboard navigation failures
 - Core Web Vitals below thresholds
 
 **Lighthouse Thresholds**:
-- Performance: ≥ 85%
+- Performance: ≥ 97%
 - Accessibility: ≥ 95%
-- Best Practices: ≥ 90%
+- Best Practices: ≥ 97%
 - SEO: ≥ 90%
 - FCP: ≤ 2000ms
 - LCP: ≤ 2500ms

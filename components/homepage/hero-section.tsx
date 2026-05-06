@@ -18,17 +18,19 @@ export function HeroSection() {
       <div className="relative mx-auto max-w-[1240px] px-6 py-16 lg:py-24">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           {/* Left side - Content */}
-          <div className="app-section section-delay-1 text-center lg:text-left">
+          <div className="text-center lg:text-left">
             <div className="mb-6 inline-flex items-center gap-2 rounded-[var(--radius-pill)] border border-[color-mix(in_srgb,var(--accent)_16%,transparent)] bg-[var(--accent-muted)] px-4 py-2 text-sm font-medium text-[var(--accent)]">
               <Sparkles className="w-4 h-4" />
               Start your free trial
             </div>
             
-            <h1 className="font-display mb-6 text-5xl font-normal leading-tight text-foreground lg:text-7xl">
-              Never wonder{' '}
-              <span className="text-primary">what to wear</span>{' '}
-              again.
-            </h1>
+            <div className="mb-6 text-5xl font-semibold leading-tight text-foreground lg:text-7xl">
+              <h1 className="contents text-foreground">
+                <span>Never wonder </span>
+                <span className="text-primary">what to wear</span>
+                <span> again.</span>
+              </h1>
+            </div>
             
             <p className="text-balance mb-8 max-w-2xl text-xl leading-relaxed text-muted-foreground lg:text-2xl">
               Your personal AI stylist builds polished outfits from the clothes you already own.
@@ -61,7 +63,7 @@ export function HeroSection() {
           </div>
           
           {/* Right side - Hero mockup */}
-          <div className="app-section section-delay-2 relative">
+          <div className="relative">
             <div className="glass-surface relative rounded-[var(--radius-xl)] p-8">
               {/* Mock app interface */}
               <div className="space-y-6">
