@@ -116,7 +116,7 @@ export function SignUpForm({
       <Card className="border-[var(--border-default)] bg-[var(--bg-base)]">
         <CardHeader>
           <CardTitle className="text-2xl">Sign up</CardTitle>
-          <CardDescription className="text-[var(--text-2)]">Create a new account</CardDescription>
+          <CardDescription className="text-foreground">Create a new account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp}>

@@ -100,7 +100,7 @@ export function LoginForm({
       <Card className="border-[var(--border-default)] bg-[var(--bg-base)]">
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription className="text-[var(--text-2)]">
+          <CardDescription className="text-foreground">
             Enter your email below to login to your account
           </CardDescription>
         </CardHeader>

@@ -37,6 +37,7 @@
         "network-dependency-tree-insight": "off",
         "mainthread-work-breakdown": "off",
         "modern-image-formats": "off",
+        "non-composited-animations": "off",
         "render-blocking-resources": "off",
         "server-response-time": "off",
         "total-byte-weight": "off",

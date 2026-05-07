@@ -13,7 +13,7 @@ export function AuthHeader({ className = "" }: AuthHeaderProps) {
       <Link href="/" className="flex items-center space-x-2 transition-opacity duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:opacity-90">
         <Logo className="h-12 w-auto" />
       </Link>
-      <p className="max-w-xs text-sm text-[var(--text-2)]">
+      <p className="max-w-xs text-sm text-foreground">
         Intelligent outfit composition for the modern wardrobe
       </p>
     </div>
