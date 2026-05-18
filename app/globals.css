@@ -68,6 +68,7 @@
     --text-2: rgba(255, 255, 255, 0.6);
     --text-3: rgba(255, 255, 255, 0.38);
     --text-on-accent: #0b1120;
+    --auth-link: #8bbcff;
 
     --accent: #5b9cf5;
     --accent-muted: rgba(91, 156, 245, 0.14);
@@ -153,7 +154,8 @@
     --text-1: rgba(0, 0, 0, 0.88);
     --text-2: rgba(0, 0, 0, 0.52);
     --text-3: rgba(0, 0, 0, 0.32);
-    --text-on-accent: #ffffff;
+    --text-on-accent: #0b1120;
+    --auth-link: #1d4ed8;
     --accent: #2a7af5;
     --accent-muted: rgba(42, 122, 245, 0.1);
     --accent-2: #e08030;

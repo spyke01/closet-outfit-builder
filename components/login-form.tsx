@@ -129,7 +129,7 @@ export function LoginForm({
                   <Label htmlFor="password">Password</Label>
                   <Link
                     href="/auth/forgot-password"
-                    className="ml-auto inline-block text-sm text-primary underline-offset-4 hover:underline"
+                    className="ml-auto inline-block text-sm text-[var(--auth-link)] underline-offset-4 hover:underline"
                   >
                     Forgot your password?
                   </Link>
@@ -168,7 +168,7 @@ export function LoginForm({
               <Button
                 type="button"
                 variant="outline"
-                className="w-full"
+                className="w-full text-foreground"
                 onClick={handleGoogleLogin}
                 disabled={isLoading}
               >
@@ -179,7 +179,7 @@ export function LoginForm({
               Don&apos;t have an account?{" "}
               <Link
                 href="/auth/sign-up"
-                className="text-primary underline underline-offset-4"
+                className="text-[var(--auth-link)] underline underline-offset-4"
               >
                 Sign up
               </Link>

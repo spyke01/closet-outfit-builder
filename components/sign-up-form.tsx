@@ -193,7 +193,7 @@ export function SignUpForm({
               <Button
                 type="button"
                 variant="outline"
-                className="w-full"
+                className="w-full text-foreground"
                 onClick={handleGoogleSignUp}
                 disabled={isLoading}
               >
@@ -202,7 +202,7 @@ export function SignUpForm({
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}
-              <Link href="/auth/login" className="text-primary underline underline-offset-4">
+              <Link href="/auth/login" className="text-[var(--auth-link)] underline underline-offset-4">
                 Login
               </Link>
             </div>
