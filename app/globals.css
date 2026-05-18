@@ -66,7 +66,7 @@
 
     --text-1: rgba(255, 255, 255, 0.95);
     --text-2: rgba(255, 255, 255, 0.6);
-    --text-3: rgba(255, 255, 255, 0.38);
+    --text-3: rgba(255, 255, 255, 0.5);
     --text-on-accent: #0b1120;
     --auth-link: #8bbcff;
 
@@ -152,8 +152,8 @@
     --border-strong: rgba(0, 0, 0, 0.15);
     --border-focus: #2a7af5;
     --text-1: rgba(0, 0, 0, 0.88);
-    --text-2: rgba(0, 0, 0, 0.52);
-    --text-3: rgba(0, 0, 0, 0.32);
+    --text-2: rgba(0, 0, 0, 0.64);
+    --text-3: rgba(0, 0, 0, 0.56);
     --text-on-accent: #0b1120;
     --auth-link: #1d4ed8;
     --accent: #2a7af5;
