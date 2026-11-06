@@ -1,20 +1,29 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo, useCallback, startTransition, useEffect, useRef } from 'react';
-import Image from 'next/image';
-import { useCategories } from '@/lib/hooks/use-categories';
-import { useWardrobeItems } from '@/lib/hooks/use-wardrobe-items';
-import { useGenerateWardrobeItemImage } from '@/lib/hooks/use-wardrobe-item-image-generation';
-import { useWardrobeRealtime } from '@/lib/hooks/use-realtime-wardrobe';
-import { WardrobeSearchFiltersWithErrorBoundary as WardrobeSearchFilters } from '@/components/dynamic/wardrobe-search-filters-dynamic';
-import { Button } from '@/components/ui/button';
-import { CircleDashed, Loader2, Shirt } from 'lucide-react';
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  startTransition,
+  useEffect,
+  useRef,
+} from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { AskSebastian } from "@/components/ask-sebastian";
+import { useCategories } from "@/lib/hooks/use-categories";
+import { useWardrobeItems } from "@/lib/hooks/use-wardrobe-items";
+import { useGenerateWardrobeItemImage } from "@/lib/hooks/use-wardrobe-item-image-generation";
+import { useWardrobeRealtime } from "@/lib/hooks/use-realtime-wardrobe";
+import { WardrobeSearchFiltersWithErrorBoundary as WardrobeSearchFilters } from "@/components/dynamic/wardrobe-search-filters-dynamic";
+import { Button } from "@/components/ui/button";
+import { CircleDashed, Loader2, Shirt } from "lucide-react";
 
-import { WardrobeItem } from '@/lib/types/database';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useWalkthrough } from '@/lib/hooks/use-walkthrough';
-import { WalkthroughCoach } from '@/components/walkthrough/walkthrough-coach';
-import { WALKTHROUGH_STEPS } from '@/components/walkthrough/walkthrough-steps';
+import { WardrobeItem } from "@/lib/types/database";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useWalkthrough } from "@/lib/hooks/use-walkthrough";
+import { WalkthroughCoach } from "@/components/walkthrough/walkthrough-coach";
+import { WALKTHROUGH_STEPS } from "@/components/walkthrough/walkthrough-steps";
 
 interface WardrobePageClientProps {
   initialWalkthroughCompleted?: boolean;
@@ -28,7 +37,9 @@ function setsEqual(a: Set<string>, b: Set<string>) {
   return true;
 }
 
-export function WardrobePageClient({ initialWalkthroughCompleted = true }: WardrobePageClientProps) {
+export function WardrobePageClient({
+  initialWalkthroughCompleted = true,
+}: WardrobePageClientProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -39,112 +50,107 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
     totalSteps: WALKTHROUGH_STEPS.length,
   });
 
-  const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [groupByCategory, setGroupByCategory] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState<Set<string>>(
+    new Set(),
+  );
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
-  const [sortBy, setSortBy] = useState<'default' | 'name-asc' | 'name-desc'>('default');
+  const [sortBy, setSortBy] = useState<"default" | "name-asc" | "name-desc">(
+    "default",
+  );
   const activeAutogenId = useRef<string | null>(null);
-  const staleKickoffRunning = useRef(false);
-  const staleKickoffAttempted = useRef<Set<string>>(new Set());
 
   // Fetch data using hooks
-  const { data: categories = [], isLoading: categoriesLoading, error: categoriesError } = useCategories();
-  const { data: items = [], isLoading: itemsLoading, error: itemsError } = useWardrobeItems();
+  const {
+    data: categories = [],
+    isLoading: categoriesLoading,
+    error: categoriesError,
+  } = useCategories();
+  const {
+    data: items = [],
+    isLoading: itemsLoading,
+    error: itemsError,
+  } = useWardrobeItems();
   const { generateAsync } = useGenerateWardrobeItemImage();
 
   // Enable real-time updates for background removal status and image_url changes
   useWardrobeRealtime();
 
-  const updateQueryParams = useCallback((updates: Record<string, string | null>) => {
-    const params = new URLSearchParams(searchParamsKey);
-    Object.entries(updates).forEach(([key, value]) => {
-      if (!value) {
-        params.delete(key);
-      } else {
-        params.set(key, value);
-      }
-    });
-    const query = params.toString();
-    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
-  }, [pathname, router, searchParamsKey]);
+  const updateQueryParams = useCallback(
+    (updates: Record<string, string | null>) => {
+      const params = new URLSearchParams(searchParamsKey);
+      Object.entries(updates).forEach(([key, value]) => {
+        if (!value) {
+          params.delete(key);
+        } else {
+          params.set(key, value);
+        }
+      });
+      const query = params.toString();
+      router.replace(query ? `${pathname}?${query}` : pathname, {
+        scroll: false,
+      });
+    },
+    [pathname, router, searchParamsKey],
+  );
 
   useEffect(() => {
     const params = new URLSearchParams(searchParamsKey);
-    const q = params.get('q') ?? '';
-    const tagsParam = params.get('tags') ?? '';
-    const categoriesParam = params.get('categories') ?? '';
-    const sortParam = params.get('sort');
+    const q = params.get("q") ?? "";
+    const tagsParam = params.get("tags") ?? "";
+    const categoriesParam = params.get("categories") ?? "";
+    const sortParam = params.get("sort");
 
-    const tags = tagsParam ? tagsParam.split(',').filter(Boolean) : [];
-    const categoryIds = categoriesParam ? categoriesParam.split(',').filter(Boolean) : [];
+    const tags = tagsParam ? tagsParam.split(",").filter(Boolean) : [];
+    const categoryIds = categoriesParam
+      ? categoriesParam.split(",").filter(Boolean)
+      : [];
     const nextTagSet = new Set(tags);
     const nextCategorySet = new Set(categoryIds);
 
-    setSearchTerm(prev => (prev === q ? prev : q));
-    setSelectedTags(prev => (setsEqual(prev, nextTagSet) ? prev : nextTagSet));
-    setSelectedCategories(prev => (setsEqual(prev, nextCategorySet) ? prev : nextCategorySet));
-    setSortBy(sortParam === 'name-asc' || sortParam === 'name-desc' ? sortParam : 'default');
+    setSearchTerm((prev) => (prev === q ? prev : q));
+    setSelectedTags((prev) =>
+      setsEqual(prev, nextTagSet) ? prev : nextTagSet,
+    );
+    setSelectedCategories((prev) =>
+      setsEqual(prev, nextCategorySet) ? prev : nextCategorySet,
+    );
+    setSortBy(
+      sortParam === "name-asc" || sortParam === "name-desc"
+        ? sortParam
+        : "default",
+    );
   }, [searchParamsKey]);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParamsKey);
-    const autogenId = params.get('autogen');
+    const autogenId = params.get("autogen");
     if (!autogenId) return;
     if (activeAutogenId.current === autogenId) return;
+    const requestId = sessionStorage.getItem(`wardrobe-generate:${autogenId}`);
+    if (!requestId) {
+      updateQueryParams({ autogen: null });
+      return;
+    }
 
     activeAutogenId.current = autogenId;
-    void generateAsync({ wardrobe_item_id: autogenId })
+    void generateAsync({ wardrobe_item_id: autogenId, request_id: requestId })
       .catch(() => {
         // Keep UX stable; item card state will reflect failures via realtime/query refresh.
       })
       .finally(() => {
         updateQueryParams({ autogen: null });
         activeAutogenId.current = null;
+        sessionStorage.removeItem(`wardrobe-generate:${autogenId}`);
       });
   }, [searchParamsKey, generateAsync, updateQueryParams]);
-
-  useEffect(() => {
-    if (staleKickoffRunning.current || items.length === 0) return;
-
-    const now = Date.now();
-    const STALE_PENDING_MS = 60_000;
-    const MAX_KICKOFFS_PER_PASS = 2;
-
-    const stalePendingItems = items
-      .filter((item) => {
-        if (staleKickoffAttempted.current.has(item.id)) return false;
-        if (item.image_url) return false;
-        if (item.bg_removal_status !== 'pending') return false;
-        if (item.bg_removal_started_at) return false;
-        if (!item.color) return false;
-        const createdAtTs = new Date(item.created_at).getTime();
-        if (!Number.isFinite(createdAtTs)) return false;
-        return now - createdAtTs >= STALE_PENDING_MS;
-      })
-      .slice(0, MAX_KICKOFFS_PER_PASS);
-
-    if (stalePendingItems.length === 0) return;
-
-    staleKickoffRunning.current = true;
-    void (async () => {
-      for (const item of stalePendingItems) {
-        staleKickoffAttempted.current.add(item.id);
-        try {
-          await generateAsync({ wardrobe_item_id: item.id });
-        } catch {
-          // Leave status/UI handling to generation action + realtime/query updates.
-        }
-      }
-    })().finally(() => {
-      staleKickoffRunning.current = false;
-    });
-  }, [items, generateAsync]);
 
   // Debounce URL sync for search to keep typing responsive.
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
       const params = new URLSearchParams(searchParamsKey);
-      const currentQuery = params.get('q') ?? '';
+      const currentQuery = params.get("q") ?? "";
       if (currentQuery !== searchTerm) {
         updateQueryParams({ q: searchTerm || null });
       }
@@ -156,8 +162,8 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
       const params = new URLSearchParams(searchParamsKey);
-      const currentTags = params.get('tags') ?? '';
-      const nextTags = Array.from(selectedTags).sort().join(',');
+      const currentTags = params.get("tags") ?? "";
+      const nextTags = Array.from(selectedTags).sort().join(",");
       if (currentTags !== nextTags) {
         updateQueryParams({ tags: nextTags || null });
       }
@@ -169,8 +175,8 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
       const params = new URLSearchParams(searchParamsKey);
-      const currentCategories = params.get('categories') ?? '';
-      const nextCategories = Array.from(selectedCategories).sort().join(',');
+      const currentCategories = params.get("categories") ?? "";
+      const nextCategories = Array.from(selectedCategories).sort().join(",");
       if (currentCategories !== nextCategories) {
         updateQueryParams({ categories: nextCategories || null });
       }
@@ -185,27 +191,31 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
 
     // Filter by search term
     if (searchTerm) {
-      filtered = filtered.filter(item => 
-        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (item.brand && item.brand.toLowerCase().includes(searchTerm.toLowerCase()))
+      filtered = filtered.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (item.brand &&
+            item.brand.toLowerCase().includes(searchTerm.toLowerCase())),
       );
     }
 
     // Filter by tags
     if (selectedTags.size > 0) {
-      filtered = filtered.filter(item =>
-        item.capsule_tags?.some((tag: string) => selectedTags.has(tag))
+      filtered = filtered.filter((item) =>
+        item.capsule_tags?.some((tag: string) => selectedTags.has(tag)),
       );
     }
 
     // Filter by categories (if any are selected)
     if (selectedCategories.size > 0) {
-      filtered = filtered.filter(item => selectedCategories.has(item.category_id));
+      filtered = filtered.filter((item) =>
+        selectedCategories.has(item.category_id),
+      );
     }
 
-    if (sortBy === 'name-asc') {
+    if (sortBy === "name-asc") {
       filtered.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortBy === 'name-desc') {
+    } else if (sortBy === "name-desc") {
       filtered.sort((a, b) => b.name.localeCompare(a.name));
     }
 
@@ -215,30 +225,32 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
   // Group items by category for display
   const itemsByCategory = useMemo(() => {
     const grouped = new Map<string, WardrobeItem[]>();
-    
-    categories.forEach(category => {
-      const categoryItems = filteredItems.filter(item => item.category_id === category.id);
+
+    categories.forEach((category) => {
+      const categoryItems = filteredItems.filter(
+        (item) => item.category_id === category.id,
+      );
       grouped.set(category.id, categoryItems);
     });
-    
+
     return grouped;
   }, [filteredItems, categories]);
 
-  const firstItemId = useMemo(() => filteredItems[0]?.id ?? null, [filteredItems]);
+  const firstItemId = useMemo(
+    () => filteredItems[0]?.id ?? null,
+    [filteredItems],
+  );
 
   // Auto-start walkthrough once items are loaded and walkthrough is pending
   React.useEffect(() => {
-    if (!walkthrough.isActive && walkthrough.currentStep === 0 && filteredItems.length > 0) {
+    if (
+      !walkthrough.isActive &&
+      walkthrough.currentStep === 0 &&
+      filteredItems.length > 0
+    ) {
       walkthrough.start();
     }
   }, [filteredItems.length, walkthrough]);
-
-  const handleItemSelect = useCallback((item: WardrobeItem) => {
-    // Navigate to item detail page
-    window.location.href = `/wardrobe/items/${item.id}`;
-  }, []);
-
-
 
   // Search and filter handlers
   const handleSearchChange = useCallback((value: string) => {
@@ -247,7 +259,7 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
 
   const handleTagToggle = useCallback((tag: string) => {
     startTransition(() => {
-      setSelectedTags(prev => {
+      setSelectedTags((prev) => {
         const newTags = new Set(prev);
         if (newTags.has(tag)) {
           newTags.delete(tag);
@@ -261,7 +273,7 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
 
   const handleCategoryToggle = useCallback((categoryId: string) => {
     startTransition(() => {
-      setSelectedCategories(prev => {
+      setSelectedCategories((prev) => {
         const newCategories = new Set(prev);
         if (newCategories.has(categoryId)) {
           newCategories.delete(categoryId);
@@ -274,73 +286,83 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
   }, []);
 
   const clearAllFilters = useCallback(() => {
-    setSearchTerm('');
+    setSearchTerm("");
     setSelectedTags(new Set());
     setSelectedCategories(new Set());
-    setSortBy('default');
+    setSortBy("default");
     updateQueryParams({ q: null, tags: null, categories: null, sort: null });
   }, [updateQueryParams]);
 
-  const handleSortChange = useCallback((value: 'default' | 'name-asc' | 'name-desc') => {
-    setSortBy(value);
-    updateQueryParams({ sort: value === 'default' ? null : value });
-  }, [updateQueryParams]);
+  const handleSortChange = useCallback(
+    (value: "default" | "name-asc" | "name-desc") => {
+      setSortBy(value);
+      updateQueryParams({ sort: value === "default" ? null : value });
+    },
+    [updateQueryParams],
+  );
 
-  const renderImageSection = useCallback((item: WardrobeItem, alt: string, sizes: string) => {
-    if (item.image_url) {
+  const renderImageSection = useCallback(
+    (item: WardrobeItem, alt: string, sizes: string) => {
+      if (item.image_url) {
+        return (
+          <div className="relative h-48 w-full bg-[var(--item-img-bg)]">
+            <Image
+              src={item.image_url}
+              alt={alt}
+              fill
+              className="object-contain p-4"
+              loading="lazy"
+              sizes={sizes}
+              quality={85}
+            />
+          </div>
+        );
+      }
+
+      const status = item.bg_removal_status;
+      const isPending = !status || status === "pending";
+      const isProcessing = status === "processing";
+
       return (
-        <div className="relative h-48 w-full bg-[var(--item-img-bg)]">
-          <Image
-            src={item.image_url}
-            alt={alt}
-            fill
-            className="object-contain p-4"
-            loading="lazy"
-            sizes={sizes}
-            quality={85}
-          />
+        <div className="relative flex h-48 w-full items-center justify-center border-b border-[var(--item-img-border)] bg-[var(--item-img-bg)]">
+          {isProcessing ? (
+            <div className="flex flex-col items-center gap-2 text-muted-foreground">
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <span className="text-xs font-medium">Generating image...</span>
+            </div>
+          ) : isPending ? (
+            <div className="flex flex-col items-center gap-2 text-muted-foreground">
+              <CircleDashed className="h-5 w-5" />
+              <span className="text-xs font-medium">
+                Pending image generation
+              </span>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2 text-muted-foreground">
+              <Shirt className="h-5 w-5" />
+              <span className="text-xs font-medium">No image</span>
+            </div>
+          )}
         </div>
       );
-    }
-
-    const status = item.bg_removal_status;
-    const isPending = !status || status === 'pending';
-    const isProcessing = status === 'processing';
-
-    return (
-      <div className="relative flex h-48 w-full items-center justify-center border-b border-[var(--item-img-border)] bg-[var(--item-img-bg)]">
-        {isProcessing ? (
-          <div className="flex flex-col items-center gap-2 text-muted-foreground">
-            <Loader2 className="h-5 w-5 animate-spin" />
-            <span className="text-xs font-medium">Generating image...</span>
-          </div>
-        ) : isPending ? (
-          <div className="flex flex-col items-center gap-2 text-muted-foreground">
-            <CircleDashed className="h-5 w-5" />
-            <span className="text-xs font-medium">Pending image generation</span>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center gap-2 text-muted-foreground">
-            <Shirt className="h-5 w-5" />
-            <span className="text-xs font-medium">No image</span>
-          </div>
-        )}
-      </div>
-    );
-  }, []);
+    },
+    [],
+  );
 
   if (categoriesError || itemsError) {
     return (
       <div className="page-shell-content">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <h3 className="text-lg font-medium text-red-600 mb-2">Error Loading Wardrobe</h3>
+            <h3 className="text-lg font-medium text-red-600 mb-2">
+              Error Loading Wardrobe
+            </h3>
             <p className="text-muted-foreground mb-4">
-              {categoriesError?.message || itemsError?.message || 'Unknown error occurred'}
+              {categoriesError?.message ||
+                itemsError?.message ||
+                "Unknown error occurred"}
             </p>
-            <Button onClick={() => window.location.reload()}>
-              Retry
-            </Button>
+            <Button onClick={() => window.location.reload()}>Retry</Button>
           </div>
         </div>
       </div>
@@ -379,219 +401,86 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
           totalCount={items.length}
         />
 
-        {/* Content */}
-        {selectedCategories.size === 0 ? (
-            // Show all categories with their items
-            <div className="space-y-8">
-              {categories.map(category => {
-                const categoryItems = itemsByCategory.get(category.id) || [];
-                
-                if (categoryItems.length === 0) return null;
-                
-                return (
-                  <div key={category.id} className="space-y-4">
-                    <div className="flex items-baseline justify-between border-b border-[var(--border-subtle)] pb-[10px]">
-                      <h2 className="font-display text-[1.35rem] font-normal tracking-[-0.02em] text-foreground">
-                        {category.name}
-                      </h2>
-                      <span className="text-[0.76rem] text-[var(--text-3)]">
-                        {categoryItems.length} item{categoryItems.length !== 1 ? 's' : ''}
-                      </span>
-                    </div>
-                    
-                    {/* Grid without search/filters since they're now at the top */}
-                    <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3">
-                      {categoryItems.map(item => (
-                        <div
-                          key={item.id}
-                          onClick={() => handleItemSelect(item)}
-                          className="glass-surface cursor-pointer overflow-hidden rounded-[var(--radius-md)]"
-                          role="button"
-                          tabIndex={0}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault();
-                              handleItemSelect(item);
-                            }
-                          }}
-                          aria-label={`Select ${item.brand ? `${item.brand} ${item.name}` : item.name} for outfit building`}
-                          {...(item.id === firstItemId ? { 'data-walkthrough-id': 'wardrobe-item-first' } : {})}
-                        >
-                          {/* Image section */}
-                          {renderImageSection(
-                            item,
-                            `${item.brand ? `${item.brand} ${item.name}` : item.name} - ${category.name}`,
-                            "(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
-                          )}
-                          
-                          {/* Item info */}
-                          <div className="border-t border-[var(--item-img-border)] px-[14px] py-3">
-                            <p className="mb-1 text-[0.62rem] font-semibold uppercase tracking-[0.06em] text-[var(--text-3)]">{category.name}</p>
-                            <p className="mb-2 line-clamp-2 text-[0.82rem] font-medium text-foreground">
-                              {item.brand ? `${item.brand} ${item.name}` : item.name}
-                            </p>
-                            
-                            {item.capsule_tags && item.capsule_tags.length > 0 && (
-                              <div className="flex flex-wrap gap-1">
-                                {item.capsule_tags.slice(0, 3).map(tag => (
-                                  <span
-                                    key={tag}
-                                    className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-1 text-[0.65rem] font-medium text-[var(--tag-text)] truncate"
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
-                                {item.capsule_tags.length > 3 && (
-                                  <span className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-1 text-[0.65rem] font-medium text-[var(--tag-text)]">
-                                    +{item.capsule_tags.length - 3}
-                                  </span>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+        <nav
+          aria-label="Wardrobe tools"
+          className="flex flex-wrap items-center gap-5 border-b border-border pb-4 text-sm"
+        >
+          <span className="text-primary">Clothing</span>
+          <Link href="/sizes" className="text-muted-foreground">
+            My sizes
+          </Link>
+          <Link href="/onboarding" className="text-muted-foreground">
+            Add from the quick setup
+          </Link>
+          <div className="ml-auto">
+            <AskSebastian prompt="Help me make better use of the pieces in my wardrobe." />
+          </div>
+        </nav>
+        <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+          <p>Open a piece to edit it or build an outfit around it.</p>
+          <label className="flex shrink-0 items-center gap-2">
+            <input
+              type="checkbox"
+              checked={groupByCategory}
+              onChange={(event) => setGroupByCategory(event.target.checked)}
+            />
+            Group by category
+          </label>
+        </div>
+        {(groupByCategory
+          ? categories
+              .map((category) => ({
+                id: category.id,
+                name: category.name,
+                items: itemsByCategory.get(category.id) || [],
+              }))
+              .filter((group) => group.items.length)
+          : [{ id: "all", name: "", items: filteredItems }]
+        ).map((group) => (
+          <section key={group.id} className="space-y-4">
+            {group.name && (
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <h2 className="font-display text-2xl">{group.name}</h2>
+                <span className="text-xs text-muted-foreground">
+                  {group.items.length} pieces
+                </span>
+              </div>
+            )}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))]">
+              {group.items.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/wardrobe/items/${item.id}`}
+                  className="wardrobe-piece-card overflow-hidden rounded-xl border border-border bg-[var(--bg-surface)] transition-colors hover:border-primary"
+                  aria-label={`Open ${item.name}`}
+                  {...(item.id === firstItemId
+                    ? { "data-walkthrough-id": "wardrobe-item-first" }
+                    : {})}
+                >
+                  {renderImageSection(
+                    item,
+                    item.name,
+                    "(max-width: 640px) 45vw, 220px",
+                  )}
+                  <div className="border-t border-border px-3 py-3">
+                    <p className="mb-1 text-[10px] uppercase tracking-wide text-muted-foreground">
+                      {item.category?.name ||
+                        categories.find(
+                          (category) => category.id === item.category_id,
+                        )?.name}
+                    </p>
+                    <h3 className="line-clamp-2 text-sm font-medium">
+                      {item.name}
+                    </h3>
+                    <p className="mt-1 truncate text-xs text-muted-foreground">
+                      {[item.brand, item.color].filter(Boolean).join(" · ")}
+                    </p>
                   </div>
-                );
-              })}
+                </Link>
+              ))}
             </div>
-          ) : (
-            // Show selected categories in grid - group by category if multiple selected
-            selectedCategories.size === 1 ? (
-              // Single category selected - show as flat grid
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3">
-                {filteredItems.map(item => {
-                  const category = categories.find(c => c.id === item.category_id);
-                  return (
-                    <div
-                      key={item.id}
-                      onClick={() => handleItemSelect(item)}
-                      className="glass-surface cursor-pointer overflow-hidden rounded-[var(--radius-md)]"
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          handleItemSelect(item);
-                        }
-                      }}
-                      aria-label={`Select ${item.brand ? `${item.brand} ${item.name}` : item.name} for outfit building`}
-                    >
-                      {/* Image section */}
-                      {renderImageSection(
-                        item,
-                        item.name,
-                        "(max-width: 640px) 100vw, 50vw"
-                      )}
-                      
-                      {/* Item info */}
-                      <div className="border-t border-[var(--item-img-border)] px-[14px] py-3">
-                        <p className="mb-1 text-[0.62rem] font-semibold uppercase tracking-[0.06em] text-[var(--text-3)]">{category?.name || 'Item'}</p>
-                        <p className="mb-2 line-clamp-2 text-[0.82rem] font-medium text-foreground">
-                          {item.brand ? `${item.brand} ${item.name}` : item.name}
-                        </p>
-                        
-                        {item.capsule_tags && item.capsule_tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1">
-                            {item.capsule_tags.slice(0, 3).map((tag: string) => (
-                              <span
-                                key={tag}
-                                className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-1 text-[0.65rem] font-medium text-[var(--tag-text)]"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                            {item.capsule_tags.length > 3 && (
-                              <span className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-1 text-[0.65rem] font-medium text-[var(--tag-text)]">
-                                +{item.capsule_tags.length - 3}
-                              </span>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              // Multiple categories selected - show grouped by category
-              <div className="space-y-8">
-                {categories
-                  .filter(category => selectedCategories.has(category.id))
-                  .map(category => {
-                    const categoryItems = itemsByCategory.get(category.id) || [];
-                    
-                    if (categoryItems.length === 0) return null;
-                    
-                    return (
-                      <div key={category.id} className="space-y-4">
-                        <div className="flex items-baseline justify-between border-b border-[var(--border-subtle)] pb-[10px]">
-                          <h2 className="font-display text-[1.35rem] font-normal tracking-[-0.02em] text-foreground">
-                            {category.name}
-                          </h2>
-                          <span className="text-[0.76rem] text-[var(--text-3)]">
-                            {categoryItems.length} item{categoryItems.length !== 1 ? 's' : ''}
-                          </span>
-                        </div>
-                        
-                        <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3">
-                          {categoryItems.map(item => (
-                            <div
-                              key={item.id}
-                              onClick={() => handleItemSelect(item)}
-                              className="glass-surface cursor-pointer overflow-hidden rounded-[var(--radius-md)]"
-                              role="button"
-                              tabIndex={0}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                  e.preventDefault();
-                                  handleItemSelect(item);
-                                }
-                              }}
-                              aria-label={`Select ${item.brand ? `${item.brand} ${item.name}` : item.name} for outfit building`}
-                            >
-                              {/* Image section */}
-                              {renderImageSection(
-                                item,
-                                item.name,
-                                "(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
-                              )}
-                              
-                              {/* Item info */}
-                              <div className="border-t border-[var(--item-img-border)] px-[14px] py-3">
-                                <p className="mb-1 text-[0.62rem] font-semibold uppercase tracking-[0.06em] text-[var(--text-3)]">{category.name}</p>
-                                <p className="mb-2 line-clamp-2 text-[0.82rem] font-medium text-foreground">
-                                  {item.brand ? `${item.brand} ${item.name}` : item.name}
-                                </p>
-                                
-                                {item.capsule_tags && item.capsule_tags.length > 0 && (
-                                  <div className="flex flex-wrap gap-1">
-                                    {item.capsule_tags.slice(0, 3).map(tag => (
-                                      <span
-                                        key={tag}
-                                        className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-1 text-[0.65rem] font-medium text-[var(--tag-text)]"
-                                      >
-                                        {tag}
-                                      </span>
-                                    ))}
-                                    {item.capsule_tags.length > 3 && (
-                                      <span className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-1 text-[0.65rem] font-medium text-[var(--tag-text)]">
-                                        +{item.capsule_tags.length - 3}
-                                      </span>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-            )
-        )}
+          </section>
+        ))}
 
         {/* Empty states */}
         {categories.length === 0 && (
@@ -600,7 +489,8 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
               No categories found
             </h3>
             <p className="text-muted-foreground mb-4">
-              Categories will be automatically created when you add your first items.
+              Categories will be automatically created when you add your first
+              items.
             </p>
           </div>
         )}
@@ -611,9 +501,11 @@ export function WardrobePageClient({ initialWalkthroughCompleted = true }: Wardr
               No items found
             </h3>
             <p className="text-muted-foreground mb-4">
-              {searchTerm || selectedTags.size > 0 || selectedCategories.size > 0
-                ? 'Try adjusting your search criteria or filters.'
-                : 'Start building your wardrobe by adding your first items.'}
+              {searchTerm ||
+              selectedTags.size > 0 ||
+              selectedCategories.size > 0
+                ? "Try adjusting your search criteria or filters."
+                : "Start building your wardrobe by adding your first items."}
             </p>
           </div>
         )}

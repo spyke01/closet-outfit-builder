@@ -1,583 +1,450 @@
-'use client';
+"use client";
 
-import { FormEvent, useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import Link from 'next/link';
-import { Image as ImageIcon, MessageCircle, Paperclip, Send, Sparkles, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { SebastianAvatar } from '@/components/sebastian-avatar';
-import { cn } from '@/lib/utils';
-import {
-  SEBASTIAN_GREETING,
-} from '@/lib/services/assistant/persona';
+import { type FormEvent, useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { MessageCircle, Paperclip, Send, Sparkles, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { AppDialog } from "@/components/ui/app-dialog";
+import { SebastianAvatar } from "@/components/sebastian-avatar";
+import { SEBASTIAN_OPEN_EVENT } from "@/lib/utils/sebastian-events";
+import { SEBASTIAN_GREETING } from "@/lib/services/assistant/persona";
+import { resizeImageFileForUpload } from "@/lib/utils/image-resize";
+import type { AssistantChatRequest } from "@/lib/services/assistant/types";
+import { cn } from "@/lib/utils";
 
-type ChatRole = 'assistant' | 'user';
-
-interface ChatMessage {
-  id: string;
-  role: ChatRole;
-  text: string;
-}
-
-interface ChatApiPayload {
-  threadId: string | null;
-  assistantMessage: string;
+type ChatMessage = { id: string; role: "assistant" | "user"; text: string };
+type ChatPayload = {
+  threadId?: string;
+  assistantMessage?: string;
   pending?: boolean;
-}
-
-interface SebastianChatLauncherProps {
+  error?: string;
+};
+interface Props {
   className?: string;
-  variant?: 'inline' | 'floating';
+  variant?: "inline" | "floating" | "sidebar" | "headless";
   floatingOffsetClassName?: string;
   requiresUpgrade?: boolean;
-}
-
-interface WeatherHintPayload {
-  source?: string;
-  condition?: string;
-  temperatureF?: number;
-  highTempF?: number;
-  lowTempF?: number;
-  precipChance?: number;
-  windSpeedMph?: number;
-  humidityPct?: number;
-}
-
-async function getCurrentPositionWithTimeout(timeoutMs: number): Promise<GeolocationPosition> {
-  return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      reject(new Error('Geolocation unavailable'));
-      return;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      reject(new Error('Geolocation timeout'));
-    }, timeoutMs);
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        clearTimeout(timeoutId);
-        resolve(position);
-      },
-      (error) => {
-        clearTimeout(timeoutId);
-        reject(error);
-      },
-      {
-        timeout: timeoutMs,
-        enableHighAccuracy: false,
-        maximumAge: 10 * 60 * 1000,
-      }
-    );
-  });
-}
-
-function toFiniteNumber(value: unknown): number | undefined {
-  if (typeof value === 'number' && Number.isFinite(value)) return value;
-  return undefined;
-}
-
-async function getLiveWeatherHint(): Promise<WeatherHintPayload | null> {
-  try {
-    const position = await getCurrentPositionWithTimeout(4000);
-    const lat = position.coords.latitude;
-    const lon = position.coords.longitude;
-
-    const controller = new AbortController();
-    const timeoutId = window.setTimeout(() => controller.abort(), 5000);
-
-    const response = await fetch(`/.netlify/functions/weather?lat=${lat}&lon=${lon}`, {
-      headers: { Accept: 'application/json' },
-      signal: controller.signal,
-    }).finally(() => clearTimeout(timeoutId));
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const payload = await response.json() as {
-      current?: {
-        condition?: string;
-        temperature?: number;
-        windSpeed?: number;
-        humidity?: number;
-      };
-      forecast?: Array<{
-        temperature?: { high?: number; low?: number };
-        precipitationProbability?: number;
-      }>;
-    };
-
-    const firstForecast = payload.forecast?.[0];
-
-    return {
-      source: 'live-weather',
-      condition: payload.current?.condition,
-      temperatureF: toFiniteNumber(payload.current?.temperature),
-      highTempF: toFiniteNumber(firstForecast?.temperature?.high),
-      lowTempF: toFiniteNumber(firstForecast?.temperature?.low),
-      precipChance: toFiniteNumber(firstForecast?.precipitationProbability),
-      windSpeedMph: toFiniteNumber(payload.current?.windSpeed),
-      humidityPct: toFiniteNumber(payload.current?.humidity),
-    };
-  } catch {
-    return null;
-  }
+  userId?: string;
 }
 
 export function SebastianChatLauncher({
   className,
-  variant = 'inline',
+  variant = "inline",
   floatingOffsetClassName,
   requiresUpgrade = false,
-}: SebastianChatLauncherProps) {
+  userId,
+}: Props) {
   const [open, setOpen] = useState(false);
-  const [input, setInput] = useState('');
-  const [isResponding, setIsResponding] = useState(false);
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const [attachedImageUrl, setAttachedImageUrl] = useState<string | null>(null);
-  const [attachedImageName, setAttachedImageName] = useState<string | null>(null);
-  const [threadId, setThreadId] = useState<string | null>(null);
+  const [input, setInput] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+  const [image, setImage] = useState<{ url: string; name: string } | null>(
+    null,
+  );
+  const [threadId, setThreadId] = useState<string>();
+  const [hints, setHints] = useState<AssistantChatRequest["contextHints"]>();
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: 'welcome', role: 'assistant', text: SEBASTIAN_GREETING },
+    { id: "welcome", role: "assistant", text: SEBASTIAN_GREETING },
   ]);
-  const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [retry, setRetry] = useState<AssistantChatRequest | null>(null);
+  const lock = useRef(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scrollTarget = useRef<HTMLDivElement>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
+  const mounted = useRef(true);
+  const storageKey = userId ? `sebastian-thread:${userId}` : null;
 
-  useEffect(() => {
-    return () => {
-      if (pollTimerRef.current) {
-        clearTimeout(pollTimerRef.current);
-        pollTimerRef.current = null;
-      }
-    };
-  }, []);
-
-  const pollPendingResponse = (currentThreadId: string, placeholderMessageId: string, attempts = 0) => {
-    if (attempts >= 45) {
-      setMessages((prev) => prev.map((message) => (
-        message.id === placeholderMessageId
-          ? { ...message, text: 'This image review is taking longer than expected. Please try again shortly.' }
-          : message
-      )));
+  const complete = () => {
+    lock.current = false;
+    setBusy(false);
+  };
+  const poll = (id: string, placeholderId: string, attempt = 0) => {
+    if (attempt >= 70) {
+      setError(
+        "Your request is taking longer than expected. Reopen this conversation later to check the result.",
+      );
+      complete();
       return;
     }
-
-    pollTimerRef.current = setTimeout(() => {
-      fetch('/api/assistant/chat/status', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ threadId: currentThreadId }),
-      })
-        .then(async (response) => {
-          const payload = await response.json() as ChatApiPayload;
-          if (!response.ok) {
-            throw new Error(payload?.assistantMessage || payload?.threadId || 'Unable to fetch assistant status.');
-          }
-
-          if (payload.pending) {
-            pollPendingResponse(currentThreadId, placeholderMessageId, attempts + 1);
+    timer.current = setTimeout(async () => {
+      try {
+        const response = await fetch("/api/assistant/chat/status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ threadId: id }),
+        });
+        const payload = (await response.json()) as ChatPayload;
+        if (!mounted.current) return;
+        if (!response.ok) {
+          if (response.status === 401 || response.status === 404) {
+            setError(payload.error || "This conversation is unavailable.");
+            complete();
             return;
           }
-
-          setMessages((prev) => prev.map((message) => (
-            message.id === placeholderMessageId
-              ? { ...message, text: payload.assistantMessage || 'Review complete.' }
-              : message
-          )));
-        })
-        .catch(() => {
-          pollPendingResponse(currentThreadId, placeholderMessageId, attempts + 1);
-        });
+          poll(id, placeholderId, attempt + 1);
+          return;
+        }
+        if (payload.pending) {
+          poll(id, placeholderId, attempt + 1);
+          return;
+        }
+        setMessages((prev) =>
+          prev.map((message) =>
+            message.id === placeholderId
+              ? {
+                  ...message,
+                  text: payload.assistantMessage || "Your request is complete.",
+                }
+              : message,
+          ),
+        );
+        complete();
+      } catch {
+        if (mounted.current) poll(id, placeholderId, attempt + 1);
+      }
     }, 2200);
   };
+  useEffect(() => {
+    mounted.current = true;
+    const listener = (event: Event) => {
+      const detail = (
+        event as CustomEvent<{
+          prompt?: string;
+          contextHints?: AssistantChatRequest["contextHints"];
+        }>
+      ).detail;
+      if (detail?.prompt) setInput(detail.prompt);
+      setHints(detail?.contextHints);
+      setOpen(true);
+    };
+    window.addEventListener(SEBASTIAN_OPEN_EVENT, listener);
+    return () => {
+      mounted.current = false;
+      window.removeEventListener(SEBASTIAN_OPEN_EVENT, listener);
+      if (timer.current) clearTimeout(timer.current);
+    };
+  }, []);
+  useEffect(() => {
+    if (!storageKey) return;
+    const saved = sessionStorage.getItem(storageKey);
+    if (!saved || !/^[a-f0-9-]{36}$/i.test(saved)) return;
+    let canceled = false;
+    void fetch(`/api/assistant/threads/${saved}`, { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) {
+          sessionStorage.removeItem(storageKey);
+          return;
+        }
+        const payload = (await response.json()) as {
+          messages?: Array<{
+            id: string;
+            role: "user" | "assistant";
+            content: string;
+            pending?: boolean;
+          }>;
+        };
+        if (canceled) return;
+        setThreadId(saved);
+        if (payload.messages?.length) {
+          setMessages(
+            payload.messages.map((message) => ({
+              id: message.id,
+              role: message.role,
+              text: message.content,
+            })),
+          );
+          const pending = payload.messages.findLast(
+            (message) => message.pending,
+          );
+          if (pending) {
+            lock.current = true;
+            setBusy(true);
+            poll(saved, pending.id);
+          }
+        }
+      })
+      .catch(() => undefined);
+    return () => {
+      canceled = true;
+    };
+    // Thread hydration runs once for the signed-in account.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storageKey]);
+  useEffect(() => {
+    if (open) scrollTarget.current?.scrollIntoView({ block: "nearest" });
+  }, [messages, open, busy]);
 
-  const uploadAssistantImage = async (file: File) => {
-    setUploadError(null);
-    setIsUploadingImage(true);
-
+  const send = async (
+    request: AssistantChatRequest,
+    addUserMessage: boolean,
+  ) => {
+    if (lock.current || requiresUpgrade) return;
+    lock.current = true;
+    setBusy(true);
+    setError("");
+    setRetry(null);
+    if (addUserMessage)
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `user-${request.requestId}`,
+          role: "user",
+          text: request.message,
+        },
+      ]);
     try {
-      const formData = new FormData();
-      formData.append('image', file);
-      formData.append('removeBackground', 'false');
-      formData.append('quality', '0.9');
-
-      const response = await fetch('/api/upload-image', {
-        method: 'POST',
-        body: formData,
-        credentials: 'include',
+      const response = await fetch("/api/assistant/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(request),
       });
-
+      const payload = (await response.json()) as ChatPayload;
+      if (!response.ok)
+        throw new Error(
+          payload.error || "Unable to reach Sebastian. Please try again.",
+        );
+      if (!mounted.current) return;
+      if (payload.threadId) {
+        setThreadId(payload.threadId);
+        if (storageKey) sessionStorage.setItem(storageKey, payload.threadId);
+      }
+      const id = `assistant-${request.requestId}`;
+      setMessages((prev) => [
+        ...prev.filter((message) => message.id !== id),
+        {
+          id,
+          role: "assistant",
+          text: payload.assistantMessage || "I’m working on your request.",
+        },
+      ]);
+      if (payload.pending && payload.threadId) {
+        poll(payload.threadId, id);
+        return;
+      }
+    } catch (cause) {
+      if (mounted.current) {
+        setError(
+          cause instanceof Error ? cause.message : "Unable to reach Sebastian.",
+        );
+        setRetry(request);
+      }
+    }
+    if (mounted.current) complete();
+  };
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    if ((!input.trim() && !image) || uploading || lock.current) return;
+    const request: AssistantChatRequest = {
+      requestId: crypto.randomUUID(),
+      threadId,
+      message:
+        input.trim() ||
+        "Please review this outfit image and share practical improvements.",
+      imageUrl: image?.url,
+      contextHints: hints,
+    };
+    setInput("");
+    setImage(null);
+    setHints(undefined);
+    void send(request, true);
+  };
+  const upload = async (file: File) => {
+    setUploading(true);
+    setError("");
+    try {
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type))
+        throw new Error("Choose a JPEG, PNG, or WebP photo.");
+      const prepared = await resizeImageFileForUpload(file, {
+        maxDimension: 1600,
+      });
+      const form = new FormData();
+      form.append("image", prepared);
+      form.append("removeBackground", "false");
+      form.append("requestId", crypto.randomUUID());
+      const response = await fetch("/api/upload-image", {
+        method: "POST",
+        body: form,
+      });
       const payload = await response.json();
-
-      if (!response.ok) {
-        throw new Error(payload?.error || 'Unable to upload image.');
-      }
-
-      const imageUrl = (payload?.imageUrl as string | undefined) || (payload?.fallbackUrl as string | undefined);
-      if (!imageUrl) {
-        throw new Error('Upload completed but no image URL was returned.');
-      }
-
-      setAttachedImageUrl(imageUrl);
-      setAttachedImageName(file.name || 'Uploaded image');
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unable to upload image.';
-      setUploadError(message);
+      if (!response.ok || !payload.imageUrl)
+        throw new Error(payload.error || "Unable to upload this photo.");
+      setImage({ url: payload.imageUrl, name: file.name });
+    } catch (cause) {
+      setError(
+        cause instanceof Error ? cause.message : "Unable to upload this photo.",
+      );
     } finally {
-      setIsUploadingImage(false);
+      setUploading(false);
     }
   };
-
-  const handleFilePick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    uploadAssistantImage(file);
-    event.target.value = '';
-  };
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (requiresUpgrade) return;
-    const trimmed = input.trim();
-    if ((!trimmed && !attachedImageUrl) || isResponding || isUploadingImage) return;
-
-    const userMessage: ChatMessage = {
-      id: `user-${Date.now()}`,
-      role: 'user',
-      text: trimmed || 'Please review this outfit image.',
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setInput('');
-    setIsResponding(true);
-    const imageUrlForRequest = attachedImageUrl;
-    setAttachedImageUrl(null);
-    setAttachedImageName(null);
-    const weatherHint = await getLiveWeatherHint();
-
-    fetch('/api/assistant/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        threadId: threadId || undefined,
-        message: trimmed || 'Please review this outfit image and share practical improvements.',
-        imageUrl: imageUrlForRequest || undefined,
-        contextHints: weatherHint ? { weather: weatherHint } : undefined,
-      }),
-    })
-      .then(async (response) => {
-        const payload = await response.json();
-
-        if (!response.ok) {
-          const code = payload?.code as string | undefined;
-          if (code === 'PLAN_REQUIRED') {
-            return {
-              threadId: threadId,
-              assistantMessage: 'Sebastian is available on Plus and Pro. Upgrade to unlock personalized guidance.',
-            };
-          }
-          if (code === 'UPSTREAM_RATE_LIMIT' || code === 'UPSTREAM_UNAVAILABLE') {
-            return {
-              threadId: threadId,
-              assistantMessage: 'I am seeing high demand right now. Please try again in a minute.',
-            };
-          }
-          if (code === 'UPSTREAM_TIMEOUT') {
-            return {
-              threadId: threadId,
-              assistantMessage: 'That request is taking longer than expected. Please try again with a shorter prompt or without an image.',
-            };
-          }
-          if (code === 'UPSTREAM_INVALID_REQUEST') {
-            return {
-              threadId: threadId,
-              assistantMessage: 'I could not process that request format right now. Please try again in a moment.',
-            };
-          }
-          throw new Error(payload?.error || 'Unable to reach Sebastian right now.');
-        }
-
-        return payload as ChatApiPayload;
-      })
-      .then((payload) => {
-        if (payload.threadId) {
-          setThreadId(payload.threadId);
-        }
-        const assistantId = `assistant-${Date.now()}`;
-        const assistantMessage: ChatMessage = {
-          id: assistantId,
-          role: 'assistant',
-          text: payload.assistantMessage,
-        };
-        setMessages((prev) => [...prev, assistantMessage]);
-
-        if (payload.pending && payload.threadId) {
-          pollPendingResponse(payload.threadId, assistantId);
-        }
-      })
-      .catch((error: unknown) => {
-        const fallback = error instanceof Error ? error.message : 'Unable to reach Sebastian right now.';
-        const assistantMessage: ChatMessage = {
-          id: `assistant-${Date.now()}`,
-          role: 'assistant',
-          text: fallback,
-        };
-        setMessages((prev) => [...prev, assistantMessage]);
-      })
-      .finally(() => {
-        setIsResponding(false);
-      });
-  };
-
-  const launcherContent = (
+  return (
     <>
-      {variant === 'floating' ? (
+      {variant === "headless" ? null : variant === "sidebar" ? (
         <button
-          type="button"
+          className={cn(
+            "flex min-h-12 w-full items-center gap-3 text-left",
+            className,
+          )}
           onClick={() => setOpen(true)}
           aria-label="Ask Sebastian"
           data-walkthrough-id="sebastian-button"
+        >
+          <SebastianAvatar className="h-9 w-9" />
+          <span className="flex-1 text-sm font-medium">
+            Sebastian
+            <small className="mt-1 block text-[10px] text-muted-foreground">
+              Your style assistant
+            </small>
+          </span>
+          <Sparkles size={16} className="text-primary" />
+        </button>
+      ) : variant === "floating" ? (
+        <button
           className={cn(
-            "fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] right-4 z-40 inline-flex h-[3.5rem] w-[3.5rem] items-center justify-center rounded-full border border-border bg-foreground text-background shadow-lg transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:border-border dark:bg-[#111A20] dark:text-white",
+            "fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg",
             floatingOffsetClassName,
             className,
           )}
+          aria-label="Ask Sebastian"
+          onClick={() => setOpen(true)}
         >
-          <MessageCircle className="h-7 w-7" />
-          <Sparkles className="pointer-events-none absolute right-5 top-4 h-3 w-3" aria-hidden="true" />
+          <MessageCircle />
         </button>
       ) : (
         <Button
-          type="button"
-          variant="outline"
           className={className}
+          variant="outline"
           onClick={() => setOpen(true)}
           aria-label="Ask Sebastian"
         >
-          <SebastianAvatar className="mr-2 h-6 w-6 border-primary/40" />
-          <span className="hidden sm:inline">Ask Sebastian</span>
-          <span className="sm:hidden">Ask</span>
+          <SebastianAvatar className="h-6 w-6" />
+          Ask Sebastian
         </Button>
       )}
-
-      {open && (
-        <>
-          <div
-            className="fixed inset-0 z-40 bg-black/40 md:bg-black/20"
-            onClick={() => setOpen(false)}
-            aria-hidden="true"
-          />
-          <section
-            role="dialog"
-            aria-modal="true"
-            aria-label="Sebastian chat"
-            className="fixed bottom-4 right-4 z-50 flex h-[540px] w-[min(420px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border shadow-2xl"
-            style={{
-              background: 'var(--bg-surface-active)',
-              borderColor: 'var(--border-default)',
-              backdropFilter: 'blur(var(--blur-glass))',
-              WebkitBackdropFilter: 'blur(var(--blur-glass))',
-              boxShadow: 'var(--shadow-card-hover)',
-              isolation: 'isolate',
-            }}
-          >
-            <header
-              className="flex items-center justify-between border-b px-4 py-3"
-              style={{
-                borderColor: 'var(--border-subtle)',
-                background: 'var(--card-header-bg, rgba(255, 255, 255, 0.03))',
-              }}
+      <AppDialog
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Ask Sebastian"
+        className="app-chat-dialog"
+      >
+        {requiresUpgrade ? (
+          <div className="py-8 text-center">
+            <SebastianAvatar className="mx-auto mb-4 h-16 w-16" />
+            <h3 className="text-xl">Style advice, wherever you are</h3>
+            <p className="my-4 text-sm text-muted-foreground">
+              Talk through your wardrobe, outfits, and plans with Sebastian on
+              Plus and Pro.
+            </p>
+            <Button asChild>
+              <Link href="/settings/billing" onClick={() => setOpen(false)}>
+                Explore membership
+              </Link>
+            </Button>
+          </div>
+        ) : (
+          <>
+            <div
+              className="app-chat-messages"
+              role="log"
+              aria-label="Conversation"
+              aria-live="polite"
             >
-              <div className="flex items-center gap-2">
-                <SebastianAvatar className="h-9 w-9 border-primary/50" />
-                <div>
-                  <h2 className="text-sm font-semibold text-[var(--text-1)]">Sebastian</h2>
-                  <p className="text-xs text-[var(--text-2)]">Personal Style Assistant</p>
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`app-chat-message ${message.role === "user" ? "app-chat-user" : ""}`}
+                >
+                  <span className="sr-only">
+                    {message.role === "user" ? "You: " : "Sebastian: "}
+                  </span>
+                  {message.text}
                 </div>
+              ))}
+              {busy && (
+                <p className="text-xs text-muted-foreground">
+                  Sebastian is working on your request…
+                </p>
+              )}
+              <div ref={scrollTarget} />
+            </div>
+            {error && (
+              <div role="alert" className="my-3 text-sm text-destructive">
+                {error}
+                {retry && (
+                  <button
+                    type="button"
+                    className="ml-2 underline"
+                    disabled={busy}
+                    onClick={() => void send(retry, false)}
+                  >
+                    Retry request
+                  </button>
+                )}
               </div>
+            )}
+            {image && (
+              <div className="my-3 flex items-center justify-between gap-2 rounded-lg border border-border p-2 text-xs">
+                <span className="truncate">{image.name}</span>
+                <button
+                  aria-label="Remove attached photo"
+                  onClick={() => setImage(null)}
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            )}
+            <form onSubmit={submit} className="mt-4 flex items-center gap-2">
+              <Input
+                aria-label="Message Sebastian"
+                placeholder="Ask about your wardrobe or plans…"
+                value={input}
+                onChange={(event) => setInput(event.target.value)}
+                maxLength={2000}
+                disabled={busy}
+              />
+              <Button
+                size="icon"
+                aria-label="Send message"
+                disabled={busy || uploading || (!input.trim() && !image)}
+              >
+                <Send size={17} />
+              </Button>
+            </form>
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+              <input
+                ref={fileInput}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="sr-only"
+                tabIndex={-1}
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) void upload(file);
+                  event.target.value = "";
+                }}
+              />
               <button
                 type="button"
-                onClick={() => setOpen(false)}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                style={{ color: 'var(--text-2)' }}
-                aria-label="Close chat"
+                className="flex min-h-9 items-center gap-2 text-xs text-muted-foreground"
+                disabled={uploading || busy}
+                onClick={() => fileInput.current?.click()}
               >
-                <X className="h-4 w-4" />
+                <Paperclip size={15} />
+                {uploading ? "Uploading photo…" : "Attach a photo"}
               </button>
-            </header>
-
-            <div className="relative flex min-h-0 flex-1 flex-col">
-              <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`max-w-[88%] rounded-2xl px-3 py-2 text-sm whitespace-pre-line ${
-                      message.role === 'assistant'
-                        ? ''
-                        : 'ml-auto'
-                    }`}
-                    style={
-                      message.role === 'assistant'
-                        ? {
-                            background: 'rgba(255, 255, 255, 0.06)',
-                            border: '1px solid var(--border-subtle)',
-                            color: 'var(--text-1)',
-                          }
-                        : {
-                            background: 'linear-gradient(135deg, var(--accent), #7eb8ff)',
-                            color: 'var(--text-on-accent)',
-                          }
-                    }
-                  >
-                    {message.text}
-                  </div>
-                ))}
-                {isResponding && (
-                  <div
-                    className="inline-flex items-center gap-2 rounded-2xl px-3 py-2 text-xs"
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.06)',
-                      border: '1px solid var(--border-subtle)',
-                      color: 'var(--text-2)',
-                    }}
-                  >
-                    <MessageCircle className="h-3.5 w-3.5" />
-                    Sebastian is thinking...
-                  </div>
-                )}
-              </div>
-
-              <div
-                className="border-t px-4 py-3"
-                style={{
-                  borderColor: 'var(--border-subtle)',
-                  background: 'rgba(255, 255, 255, 0.02)',
-                }}
-              >
-                {attachedImageUrl && (
-                  <div
-                    className="mb-2 flex items-center justify-between rounded-lg px-3 py-2 text-xs"
-                    style={{
-                      border: '1px solid var(--border-subtle)',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                    }}
-                  >
-                    <div className="flex items-center gap-2 text-[var(--text-2)]">
-                      <ImageIcon className="h-3.5 w-3.5" />
-                      <span className="truncate max-w-[220px]">{attachedImageName || 'Image attached'}</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setAttachedImageUrl(null);
-                        setAttachedImageName(null);
-                      }}
-                      className="text-xs font-medium text-primary hover:underline"
-                      disabled={isResponding || isUploadingImage || requiresUpgrade}
-                    >
-                      Remove
-                    </button>
-                  </div>
-                )}
-
-                {uploadError && (
-                  <p className="mb-2 text-xs" style={{ color: 'var(--danger, #f55b5b)' }}>{uploadError}</p>
-                )}
-
-                <form onSubmit={handleSubmit} className="flex items-center gap-2">
-                  <Input
-                    value={input}
-                    onChange={(event) => setInput(event.target.value)}
-                    placeholder="Ask about styling, outfits, or trips..."
-                    aria-label="Message Sebastian"
-                    maxLength={2000}
-                    disabled={requiresUpgrade}
-                  />
-                  <Button
-                    type="submit"
-                    size="icon"
-                    disabled={requiresUpgrade || (!input.trim() && !attachedImageUrl) || isResponding || isUploadingImage}
-                    aria-label="Send message"
-                  >
-                    <Send className="h-4 w-4" />
-                  </Button>
-                </form>
-                <div className="mt-2 flex items-center gap-2">
-                  <label className="inline-flex">
-                    <input
-                      type="file"
-                      accept="image/jpeg,image/png,image/webp"
-                      className="hidden"
-                      onChange={handleFilePick}
-                      disabled={requiresUpgrade || isResponding || isUploadingImage}
-                    />
-                    <span
-                      className="inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-[11px]"
-                      style={{
-                        border: '1px solid var(--border-subtle)',
-                        color: 'var(--text-2)',
-                        background: 'rgba(255, 255, 255, 0.04)',
-                      }}
-                    >
-                      <Paperclip className="h-3.5 w-3.5" />
-                      Attach
-                    </span>
-                  </label>
-                  {isUploadingImage && (
-                    <span className="text-[11px] text-[var(--text-2)]">Uploading...</span>
-                  )}
-                </div>
-                <div className="mt-2 flex items-center justify-between gap-2">
-                  <p className="text-[11px] text-[var(--text-2)]">
-                    Ask styling, wardrobe, trip, or outfit-photo questions.
-                  </p>
-                  <Link
-                    href="/sebastian"
-                    className="text-[11px] font-medium underline-offset-2 hover:underline"
-                    style={{ color: 'var(--accent)' }}
-                  >
-                    Who is Sebastian?
-                  </Link>
-                </div>
-              </div>
-
-              {requiresUpgrade && (
-                <div className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center backdrop-blur-[12px]" style={{ background: 'rgba(6, 10, 16, 0.7)' }}>
-                  <div
-                    className="max-w-[280px] rounded-xl p-4 shadow-lg"
-                    style={{
-                      border: '1px solid var(--border-default)',
-                      background: 'var(--bg-surface-active)',
-                      backdropFilter: 'blur(var(--blur-glass))',
-                      WebkitBackdropFilter: 'blur(var(--blur-glass))',
-                    }}
-                  >
-                    <h3 className="text-sm font-semibold text-[var(--text-1)]">Unlock Sebastian</h3>
-                    <p className="mt-2 text-xs text-[var(--text-2)]">
-                      Free plans do not include Sebastian. Upgrade to Plus or Pro for full AI stylist access.
-                    </p>
-                    <Button asChild className="mt-3 w-full" size="sm">
-                      <Link href="/settings/billing">View Plus/Pro plans</Link>
-                    </Button>
-                  </div>
-                </div>
-              )}
+              <Link href="/sebastian" className="text-xs text-primary">
+                Meet Sebastian ↗
+              </Link>
             </div>
-            
-            <div className="sr-only" aria-live="polite">
-              {requiresUpgrade ? 'Sebastian is locked for free plans.' : ''}
-            </div>
-          </section>
-        </>
-      )}
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              Suggestions stay in this conversation. You choose what to save or
+              apply.
+            </p>
+          </>
+        )}
+      </AppDialog>
     </>
   );
-
-  if (variant === 'floating' && typeof document !== 'undefined') {
-    return createPortal(launcherContent, document.body);
-  }
-
-  return launcherContent;
 }

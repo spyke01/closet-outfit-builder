@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useWeatherPreference } from './use-weather-preference';
-import { useWeather } from './use-weather';
-import { isFeatureEnabled } from '@/lib/utils/feature-flags';
+import { useUserPreferences } from "./use-user-preferences";
+import { useWeather } from "./use-weather";
+import { isFeatureEnabled } from "@/lib/utils/feature-flags";
 
 // Type definitions for weather functionality
 export type WeatherData = {
@@ -30,28 +30,35 @@ export type WeatherError = {
   details?: string;
 };
 
-interface UseConditionalWeatherReturn {
-  forecast: WeatherData[];
-  current: WeatherResponse['current'] | null;
-  loading: boolean;
-  error: WeatherError | null;
-  retry: () => void;
-  usingFallback: boolean;
-  weatherEnabled: boolean;
-}
+type WeatherResult = ReturnType<typeof useWeather>;
+type UseConditionalWeatherReturn = Pick<
+  WeatherResult,
+  "forecast" | "current" | "loading" | "error" | "retry" | "usingFallback"
+> &
+  Partial<
+    Pick<
+      WeatherResult,
+      "hourly" | "alerts" | "coordinates" | "locationLabel" | "timezone"
+    >
+  > & { weatherEnabled: boolean; preferenceLoading?: boolean };
 
 /**
  * Conditionally use weather functionality based on feature flags and user preferences
- * 
+ *
  * ✅ FIXED: No longer uses dynamic imports for hooks (violates Rules of Hooks)
  * Instead, always imports useWeather statically and passes enabled flag
  */
-export function useConditionalWeather(isAuthenticated: boolean): UseConditionalWeatherReturn {
-  const weatherPreferenceEnabled = useWeatherPreference();
-  
+export function useConditionalWeather(
+  isAuthenticated: boolean,
+): UseConditionalWeatherReturn {
+  const { data: preferences, isLoading: preferenceLoading } =
+    useUserPreferences();
+  const weatherPreferenceEnabled = preferences?.weather_enabled === true;
+
   // Determine if weather should be enabled
-  const featureEnabled = isFeatureEnabled('weather');
-  const weatherEnabled = isAuthenticated && weatherPreferenceEnabled && featureEnabled;
+  const featureEnabled = isFeatureEnabled("weather");
+  const weatherEnabled =
+    isAuthenticated && weatherPreferenceEnabled && featureEnabled;
 
   // ✅ CRITICAL: Always call useWeather hook (Rules of Hooks)
   // Pass weatherEnabled so the hook can handle its own conditional logic
@@ -61,6 +68,7 @@ export function useConditionalWeather(isAuthenticated: boolean): UseConditionalW
   return {
     ...weatherResult,
     weatherEnabled,
+    preferenceLoading,
   };
 }
 

@@ -1,7 +1,7 @@
 // Database types based on Supabase schema
 
 // Background removal processing status
-export type BgRemovalStatus = 'pending' | 'processing' | 'completed' | 'failed';
+export type BgRemovalStatus = "pending" | "processing" | "completed" | "failed";
 
 export interface Category {
   id: string;
@@ -25,6 +25,12 @@ export interface WardrobeItem {
   capsule_tags?: string[];
   season?: string[];
   image_url?: string;
+  original_image_url?: string | null;
+  prepared_image_url?: string | null;
+  image_processing_job_id?: string | null;
+  purchase_price?: number | null;
+  purchase_currency?: string;
+
   active: boolean;
   external_id?: string; // Original ID from seed data for duplicate detection
   bg_removal_status: BgRemovalStatus;
@@ -41,10 +47,10 @@ export interface Outfit {
   user_id: string;
   name?: string;
   score?: number;
-  tuck_style?: 'Tucked' | 'Untucked';
+  tuck_style?: "Tucked" | "Untucked";
   weight: number;
   loved: boolean;
-  source: 'curated' | 'generated';
+  source: "curated" | "generated";
   external_id?: string; // Original ID from seed data for duplicate detection
   created_at: string;
   updated_at: string;
@@ -64,7 +70,7 @@ export interface CalendarEntry {
   id: string;
   user_id: string;
   entry_date: string; // YYYY-MM-DD
-  status: 'planned' | 'worn';
+  status: "planned" | "worn";
   outfit_id?: string | null;
   notes?: string | null;
   weather_context?: Record<string, unknown> | null;
@@ -126,7 +132,7 @@ export interface TripPackItem {
   wardrobe_item_id?: string | null;
   label: string;
   packed: boolean;
-  source: 'from_outfit' | 'manual';
+  source: "from_outfit" | "manual";
   created_at: string;
   updated_at: string;
   // Joined fields
@@ -136,19 +142,24 @@ export interface TripPackItem {
 export interface UserPreferences {
   id: string;
   user_id: string;
-  theme: 'light' | 'dark' | 'system';
+  theme: "light" | "dark" | "system";
   show_brands: boolean;
   weather_enabled: boolean;
-  default_tuck_style: 'Tucked' | 'Untucked';
+  default_tuck_style: "Tucked" | "Untucked";
   account_tier: AccountTier;
   created_at: string;
   updated_at: string;
 }
 
 // Outfit image generation types
-export type GenerationStatus = 'pending' | 'generating' | 'completed' | 'failed' | 'cancelled';
-export type GenerationLogStatus = 'success' | 'failed' | 'cancelled';
-export type AccountTier = 'starter' | 'plus' | 'pro';
+export type GenerationStatus =
+  | "pending"
+  | "generating"
+  | "completed"
+  | "failed"
+  | "cancelled";
+export type GenerationLogStatus = "success" | "failed" | "cancelled";
+export type AccountTier = "starter" | "plus" | "pro";
 
 export interface GeneratedOutfitImage {
   id: string;
@@ -200,7 +211,10 @@ export interface ImageGenerationLimits {
   hourly_limit: number;
 }
 
-export const IMAGE_GENERATION_LIMITS: Record<AccountTier, ImageGenerationLimits> = {
+export const IMAGE_GENERATION_LIMITS: Record<
+  AccountTier,
+  ImageGenerationLimits
+> = {
   starter: { monthly_limit: 0, hourly_limit: 5 },
   plus: { monthly_limit: 30, hourly_limit: 5 },
   pro: { monthly_limit: 100, hourly_limit: 5 },
@@ -217,21 +231,28 @@ export interface CreateWardrobeItemInput {
   capsule_tags?: string[];
   season?: string[];
   image_url?: string;
+  original_image_url?: string | null;
+  prepared_image_url?: string | null;
+  image_processing_job_id?: string | null;
+  purchase_price?: number | null;
+  purchase_currency?: string;
+
   active?: boolean;
   bg_removal_status?: BgRemovalStatus;
 }
 
-export interface UpdateWardrobeItemInput extends Partial<CreateWardrobeItemInput> {
+export interface UpdateWardrobeItemInput
+  extends Partial<CreateWardrobeItemInput> {
   id: string;
   active?: boolean;
 }
 
 export interface CreateOutfitInput {
   name?: string;
-  tuck_style?: 'Tucked' | 'Untucked';
+  tuck_style?: "Tucked" | "Untucked";
   weight?: number;
   loved?: boolean;
-  source?: 'curated' | 'generated';
+  source?: "curated" | "generated";
   items: string[]; // Array of wardrobe item IDs
 }
 
@@ -240,15 +261,17 @@ export interface UpdateOutfitInput extends Partial<CreateOutfitInput> {
 }
 
 export interface CreateCalendarEntryInput {
+  request_id?: string;
   entry_date: string; // YYYY-MM-DD
-  status: 'planned' | 'worn';
-  outfit_id?: string;
+  status: "planned" | "worn";
+  outfit_id?: string | null;
   notes?: string;
   weather_context?: Record<string, unknown>;
   item_ids?: string[];
 }
 
-export interface UpdateCalendarEntryInput extends Partial<CreateCalendarEntryInput> {
+export interface UpdateCalendarEntryInput
+  extends Partial<CreateCalendarEntryInput> {
   id: string;
 }
 
@@ -271,7 +294,7 @@ export interface CreateTripDayInput {
   slot_number?: number;
   slot_label?: string;
   weather_context?: Record<string, unknown>;
-  outfit_id?: string;
+  outfit_id?: string | null;
   item_ids?: string[];
 }
 
@@ -283,11 +306,12 @@ export interface CreateTripPackItemInput {
   trip_id: string;
   wardrobe_item_id?: string;
   label: string;
-  source: 'from_outfit' | 'manual';
+  source: "from_outfit" | "manual";
   packed?: boolean;
 }
 
-export interface UpdateTripPackItemInput extends Partial<CreateTripPackItemInput> {
+export interface UpdateTripPackItemInput
+  extends Partial<CreateTripPackItemInput> {
   id: string;
 }
 
@@ -313,9 +337,15 @@ export interface OutfitSelection {
   belt?: WardrobeItem;
   watch?: WardrobeItem;
   accessory?: WardrobeItem;
-  tuck_style?: 'Tucked' | 'Untucked';
+  tuck_style?: "Tucked" | "Untucked";
   score?: number;
-  [key: string]: WardrobeItem | 'Tucked' | 'Untucked' | number | null | undefined;
+  [key: string]:
+    | WardrobeItem
+    | "Tucked"
+    | "Untucked"
+    | number
+    | null
+    | undefined;
 }
 
 // API response types

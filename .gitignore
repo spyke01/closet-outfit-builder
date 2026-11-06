@@ -63,3 +63,6 @@ tsconfig.tsbuildinfo
 .bundle-trends/
 .typescript-trends/
 .lighthouseci/
+
+# Generated real-component fixture bundles (rebuild with the fixture script).
+/docs/experience-implementation/browser/build/

@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Lock, Sparkles, RefreshCw, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useRef, useState } from "react";
+import { Lock, Sparkles, RefreshCw, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   useGenerateWardrobeItemImage,
   useImageGenerationQuota,
-} from '@/lib/hooks/use-wardrobe-item-image-generation';
+} from "@/lib/hooks/use-wardrobe-item-image-generation";
 
 interface WardrobeItem {
   id: string;
@@ -31,10 +31,17 @@ export function WardrobeItemImageGenerator({
   onGenerated,
 }: WardrobeItemImageGeneratorProps) {
   const { generate, isGenerating, error } = useGenerateWardrobeItemImage();
-  const { limits, isLoading: quotaLoading, canGenerate, isFreeTier } = useImageGenerationQuota();
+  const {
+    limits,
+    isLoading: quotaLoading,
+    canGenerate,
+    isFreeTier,
+  } = useImageGenerationQuota();
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [showReplaceConfirm, setShowReplaceConfirm] = useState(false);
 
+  const currentItem = useRef(item);
+  currentItem.current = item;
   const itemHasData = hasRequiredData(item);
   const itemHasImage = Boolean(item.image_url);
 
@@ -51,18 +58,27 @@ export function WardrobeItemImageGenerator({
   }
 
   function triggerGeneration() {
+    const imageAtStart = item.image_url;
     setShowReplaceConfirm(false);
-    generate({ wardrobe_item_id: item.id }, {
-      onSuccess: (imageUrl) => {
-        if (onGenerated) onGenerated(imageUrl);
+    generate(
+      { wardrobe_item_id: item.id },
+      {
+        onSuccess: (imageUrl) => {
+          if (
+            onGenerated &&
+            currentItem.current.id === item.id &&
+            currentItem.current.image_url === imageAtStart
+          )
+            onGenerated(imageUrl);
+        },
       },
-    });
+    );
   }
 
   // Parse error_code from error message
   const errorCode = error
-    ? ((error as Error & { error_code?: string }).error_code ?? '')
-    : '';
+    ? ((error as Error & { error_code?: string }).error_code ?? "")
+    : "";
 
   return (
     <div className="space-y-3">
@@ -71,7 +87,9 @@ export function WardrobeItemImageGenerator({
         <Alert variant="info">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            Add a{!item.color ? ' color' : ''}{!item.color && !item.category ? ' and' : ''}{!item.category ? ' category' : ''} to generate an AI image.
+            Add a{!item.color ? " color" : ""}
+            {!item.color && !item.category ? " and" : ""}
+            {!item.category ? " category" : ""} to generate an AI image.
           </AlertDescription>
         </Alert>
       )}
@@ -93,10 +111,10 @@ export function WardrobeItemImageGenerator({
           {showUpgradePrompt && (
             <Alert variant="info">
               <AlertDescription>
-                AI image generation is available on Plus and Pro plans.{' '}
+                AI image generation is available on Plus and Pro plans.{" "}
                 <a href="/pricing" className="underline font-medium">
                   Upgrade your plan
-                </a>{' '}
+                </a>{" "}
                 to unlock this feature.
               </AlertDescription>
             </Alert>
@@ -110,14 +128,23 @@ export function WardrobeItemImageGenerator({
           type="button"
           variant="outline"
           className="w-full"
-          disabled={isGenerating || !itemHasData || !canGenerate || quotaLoading}
+          disabled={
+            isGenerating || !itemHasData || !canGenerate || quotaLoading
+          }
           onClick={handleGenerateClick}
-          aria-label={isGenerating ? 'Generating image...' : 'Generate image with AI'}
+          aria-label={
+            isGenerating ? "Generating image..." : "Generate image with AI"
+          }
         >
           {isGenerating ? (
             <>
-              <RefreshCw className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-              <span aria-live="polite" role="status">Generating...</span>
+              <RefreshCw
+                className="mr-2 h-4 w-4 animate-spin"
+                aria-hidden="true"
+              />
+              <span aria-live="polite" role="status">
+                Generating...
+              </span>
             </>
           ) : (
             <>
@@ -131,7 +158,8 @@ export function WardrobeItemImageGenerator({
       {/* Quota display */}
       {!isFreeTier && !quotaLoading && (
         <p className="text-xs text-muted-foreground text-center">
-          {limits.monthly_remaining} of {limits.monthly_limit} image generations remaining this month
+          {limits.monthly_remaining} of {limits.monthly_limit} image generations
+          remaining this month
         </p>
       )}
 
@@ -140,13 +168,12 @@ export function WardrobeItemImageGenerator({
         <Alert variant="info">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription className="space-y-2">
-            <p>This will replace the existing image for &quot;{item.name}&quot;. Continue?</p>
+            <p>
+              This will replace the existing image for &quot;{item.name}&quot;.
+              Continue?
+            </p>
             <div className="flex gap-2">
-              <Button
-                type="button"
-                size="sm"
-                onClick={triggerGeneration}
-              >
+              <Button type="button" size="sm" onClick={triggerGeneration}>
                 Generate
               </Button>
               <Button
@@ -167,24 +194,29 @@ export function WardrobeItemImageGenerator({
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription aria-live="polite">
-            {errorCode === 'USAGE_LIMIT_EXCEEDED' && (
+            {errorCode === "USAGE_LIMIT_EXCEEDED" && (
               <>
-                Monthly limit reached. Upgrade your plan or wait until{' '}
+                Monthly limit reached. Upgrade your plan or wait until{" "}
                 {limits.monthly_reset_at
                   ? new Date(limits.monthly_reset_at).toLocaleDateString()
-                  : 'next period'}
+                  : "next period"}
                 .
               </>
             )}
-            {errorCode === 'BURST_LIMIT_EXCEEDED' && (
+            {errorCode === "BURST_LIMIT_EXCEEDED" && (
               <>Hourly limit reached. Try again in an hour.</>
             )}
-            {errorCode === 'MISSING_ITEM_DATA' && (
-              <>Add a color and category to this item before generating an image.</>
+            {errorCode === "MISSING_ITEM_DATA" && (
+              <>
+                Add a color and category to this item before generating an
+                image.
+              </>
             )}
-            {!['USAGE_LIMIT_EXCEEDED', 'BURST_LIMIT_EXCEEDED', 'MISSING_ITEM_DATA'].includes(
-              errorCode,
-            ) && <>{error.message}</>}
+            {![
+              "USAGE_LIMIT_EXCEEDED",
+              "BURST_LIMIT_EXCEEDED",
+              "MISSING_ITEM_DATA",
+            ].includes(errorCode) && <>{error.message}</>}
           </AlertDescription>
         </Alert>
       )}

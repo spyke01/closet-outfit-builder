@@ -1,29 +1,49 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, CloudSun, Loader2, Plus, Trash2, AlertTriangle, Pencil, X, Check, Search } from 'lucide-react';
-import { useWeather } from '@/lib/hooks/use-weather';
-import { useOutfits, useCreateOutfit } from '@/lib/hooks/use-outfits';
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { PlannerTabs } from "@/components/planner-tabs";
+import { AskSebastian } from "@/components/ask-sebastian";
+import { AppDialog } from "@/components/ui/app-dialog";
+import { OutfitThumbnails } from "@/components/outfit-composition";
+import { OutfitPieceList } from "@/components/outfit-piece-list";
+import { hasCompleteOutfitItems } from "@/lib/utils/outfit-coverage";
+import { localDateKey } from "@/lib/utils/local-date";
+import Link from "next/link";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  CloudSun,
+  Loader2,
+  Plus,
+  Trash2,
+  AlertTriangle,
+  Pencil,
+  X,
+  Check,
+  Search,
+} from "lucide-react";
+import { useAppWeather } from "@/lib/contexts/app-weather";
+import { useOutfits } from "@/lib/hooks/use-outfits";
 import {
   useCalendarEntriesByMonth,
   useCreateCalendarEntry,
   useDeleteCalendarEntry,
   useUpdateCalendarEntry,
-} from '@/lib/hooks/use-calendar-entries';
-import { resolveCalendarWeather } from '@/lib/utils/calendar-weather';
-import { generateOutfit } from '@/lib/services/outfit-generator';
-import { enrichItems } from '@/lib/utils/item-enrichment';
-import { calculateWeatherFit } from '@/lib/utils/compatibility-scoring';
-import type { CalendarEntry, Outfit, WardrobeItem } from '@/lib/types/database';
-import { AIIcon } from '@/components/ai-icon';
+} from "@/lib/hooks/use-calendar-entries";
+import { resolveCalendarWeather } from "@/lib/utils/calendar-weather";
+import { generateOutfit } from "@/lib/services/outfit-generator";
+import { enrichItems } from "@/lib/utils/item-enrichment";
+import { calculateWeatherFit } from "@/lib/utils/compatibility-scoring";
+import type { CalendarEntry, Outfit, WardrobeItem } from "@/lib/types/database";
+import { AIIcon } from "@/components/ai-icon";
 
-type EntrySource = 'existing' | 'generated';
-type EntryStatus = 'planned' | 'worn';
-type ExistingPolicy = 'skip' | 'overwrite';
-type MixStrategy = 'saved-heavy' | 'balanced' | 'ai-heavy';
-type PanelMode = 'idle' | 'creating' | 'editing';
+type EntrySource = "existing" | "generated";
+type EntryStatus = "planned" | "worn";
+type ExistingPolicy = "skip" | "overwrite";
+type MixStrategy = "saved-heavy" | "balanced" | "ai-heavy";
+type PanelMode = "idle" | "creating" | "editing";
 type EntryFormSnapshot = {
   entrySource: EntrySource;
   entryStatus: EntryStatus;
@@ -37,11 +57,11 @@ interface CalendarPageClientProps {
 }
 
 function formatDateKey(date: Date): string {
-  return date.toISOString().split('T')[0];
+  return localDateKey(date);
 }
 
 function formatMonthTitle(date: Date): string {
-  return date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+  return date.toLocaleDateString(undefined, { month: "long", year: "numeric" });
 }
 
 function startOfMonth(date: Date): Date {
@@ -60,7 +80,9 @@ function buildMonthGrid(month: Date): Date[] {
   const days: Date[] = [];
 
   for (let i = 0; i < startDay; i++) {
-    days.push(new Date(first.getFullYear(), first.getMonth(), i - startDay + 1));
+    days.push(
+      new Date(first.getFullYear(), first.getMonth(), i - startDay + 1),
+    );
   }
 
   for (let day = 1; day <= daysInMonth; day++) {
@@ -76,10 +98,14 @@ function buildMonthGrid(month: Date): Date[] {
 }
 
 function toItemSetSignature(itemIds: string[]): string {
-  return [...new Set(itemIds)].sort().join(',');
+  return [...new Set(itemIds)].sort().join(",");
 }
 
-function getUpcomingDates(baseDate: Date, count: number, weekdaysOnly: boolean): Date[] {
+function getUpcomingDates(
+  baseDate: Date,
+  count: number,
+  weekdaysOnly: boolean,
+): Date[] {
   const dates: Date[] = [];
   const cursor = new Date(baseDate);
 
@@ -99,7 +125,7 @@ function getRecentEntrySignatures(
   entries: CalendarEntry[],
   lookbackDays: number,
   fromDate: Date,
-  statuses: Array<'planned' | 'worn'>
+  statuses: Array<"planned" | "worn">,
 ): Set<string> {
   const signatures = new Set<string>();
   const cutoff = new Date(fromDate);
@@ -112,14 +138,20 @@ function getRecentEntrySignatures(
     const entryTime = new Date(`${entry.entry_date}T12:00:00`).getTime();
     if (entryTime < cutoffMs || entryTime > fromMs) continue;
 
-    const signature = toItemSetSignature((entry.items || []).map((item) => item.id));
+    const signature = toItemSetSignature(
+      (entry.items || []).map((item) => item.id),
+    );
     if (signature) signatures.add(signature);
   }
 
   return signatures;
 }
 
-function getRecentWornItemIds(entries: CalendarEntry[], lookbackDays: number, fromDate: Date): Set<string> {
+function getRecentWornItemIds(
+  entries: CalendarEntry[],
+  lookbackDays: number,
+  fromDate: Date,
+): Set<string> {
   const ids = new Set<string>();
   const cutoff = new Date(fromDate);
   cutoff.setDate(cutoff.getDate() - lookbackDays);
@@ -127,7 +159,7 @@ function getRecentWornItemIds(entries: CalendarEntry[], lookbackDays: number, fr
   const fromMs = fromDate.getTime();
 
   for (const entry of entries) {
-    if (entry.status !== 'worn') continue;
+    if (entry.status !== "worn") continue;
     const entryTime = new Date(`${entry.entry_date}T12:00:00`).getTime();
     if (entryTime < cutoffMs || entryTime > fromMs) continue;
     for (const item of entry.items || []) {
@@ -141,8 +173,8 @@ function getRecentWornItemIds(entries: CalendarEntry[], lookbackDays: number, fr
 function chooseSavedOutfitForWeather(
   outfits: Outfit[],
   targetWeight: number,
-  weatherContext: ReturnType<typeof resolveCalendarWeather>['weatherContext'],
-  excludedSignatures: Set<string>
+  weatherContext: ReturnType<typeof resolveCalendarWeather>["weatherContext"],
+  excludedSignatures: Set<string>,
 ): Outfit | null {
   const ranked = outfits
     .filter((outfit) => (outfit.items || []).length > 0)
@@ -158,8 +190,14 @@ function chooseSavedOutfitForWeather(
         return null;
       }
 
-      const averageWeatherFit = enriched.reduce((sum, item) => sum + calculateWeatherFit(item, weatherContext), 0) / enriched.length;
-      const averageWeight = enriched.reduce((sum, item) => sum + item.weatherWeight, 0) / enriched.length;
+      const averageWeatherFit =
+        enriched.reduce(
+          (sum, item) => sum + calculateWeatherFit(item, weatherContext),
+          0,
+        ) / enriched.length;
+      const averageWeight =
+        enriched.reduce((sum, item) => sum + item.weatherWeight, 0) /
+        enriched.length;
       const weightPenalty = Math.abs(averageWeight - targetWeight) * 0.1;
 
       return {
@@ -173,13 +211,20 @@ function chooseSavedOutfitForWeather(
   return ranked.length > 0 && ranked[0] ? ranked[0].outfit : null;
 }
 
-function shouldPreferSavedOutfit(index: number, strategy: MixStrategy): boolean {
-  if (strategy === 'saved-heavy') return true;
-  if (strategy === 'ai-heavy') return index % 3 === 0;
+function shouldPreferSavedOutfit(
+  index: number,
+  strategy: MixStrategy,
+): boolean {
+  if (strategy === "saved-heavy") return true;
+  if (strategy === "ai-heavy") return index % 3 === 0;
   return index % 2 === 0;
 }
 
-function findRepeatWarning(entries: CalendarEntry[], selectedDate: Date, itemIds: string[]): string | null {
+function findRepeatWarning(
+  entries: CalendarEntry[],
+  selectedDate: Date,
+  itemIds: string[],
+): string | null {
   if (itemIds.length === 0) return null;
 
   const selectedDateMs = selectedDate.getTime();
@@ -189,12 +234,14 @@ function findRepeatWarning(entries: CalendarEntry[], selectedDate: Date, itemIds
   const targetSignature = toItemSetSignature(itemIds);
 
   for (const entry of entries) {
-    if (entry.status !== 'worn') continue;
+    if (entry.status !== "worn") continue;
 
     const entryTime = new Date(`${entry.entry_date}T12:00:00`).getTime();
     if (entryTime < lookbackStartMs || entryTime >= selectedDateMs) continue;
 
-    const entrySignature = toItemSetSignature((entry.items || []).map((item) => item.id));
+    const entrySignature = toItemSetSignature(
+      (entry.items || []).map((item) => item.id),
+    );
     if (entrySignature && entrySignature === targetSignature) {
       return `Similar outfit was worn on ${entry.entry_date} (within 7 days).`;
     }
@@ -204,38 +251,41 @@ function findRepeatWarning(entries: CalendarEntry[], selectedDate: Date, itemIds
 }
 
 function isCalendarGeneratedOutfit(outfit: Outfit): boolean {
-  const name = (outfit.name || '').trim();
-  return name.startsWith('AI Week Plan ') || name.startsWith('Calendar ');
+  const name = (outfit.name || "").trim();
+  return name.startsWith("AI Week Plan ") || name.startsWith("Calendar ");
 }
 
 function getOutfitDisplayName(outfit: Outfit): string {
-  return outfit.name?.trim() || 'Untitled Outfit';
+  return outfit.name?.trim() || "Untitled Outfit";
 }
 
 function OutfitThumbs({
   items,
-  size = 'md',
+  size = "md",
   outfitId,
 }: {
   items: WardrobeItem[];
-  size?: 'sm' | 'md';
+  size?: "sm" | "md";
   outfitId?: string;
 }) {
   if (items.length === 0) {
     return <div className="text-xs text-muted-foreground">No preview</div>;
   }
 
-  const thumbSizeClass = size === 'sm' ? 'w-14 h-14' : 'w-16 h-16';
-  const thumbSizePx = size === 'sm' ? 56 : 64;
+  const thumbSizeClass = size === "sm" ? "w-14 h-14" : "w-16 h-16";
+  const thumbSizePx = size === "sm" ? 56 : 64;
 
   return (
-    <div className="flex items-center gap-2 overflow-x-auto">
+    <div className="flex flex-wrap items-center gap-2">
       {items.map((item) => {
         const thumb = (
-          <div className={`${thumbSizeClass} rounded-md bg-card overflow-hidden flex-shrink-0`}>
+          <div
+            className={`${thumbSizeClass} rounded-md bg-card overflow-hidden flex-shrink-0`}
+          >
             {item.image_url ? (
               <Image
                 src={item.image_url}
+                unoptimized={item.image_url.startsWith("/api/clothing-images/")}
                 alt={item.name}
                 width={thumbSizePx}
                 height={thumbSizePx}
@@ -269,56 +319,81 @@ function OutfitThumbs({
 }
 
 export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
-  const [month, setMonth] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [panelMode, setPanelMode] = useState<PanelMode>('idle');
+  const searchParams = useSearchParams();
+  const initialKey = searchParams?.get("date");
+  const initialDate =
+    initialKey &&
+    /^\d{4}-\d{2}-\d{2}$/.test(initialKey) &&
+    !Number.isNaN(new Date(initialKey).getTime())
+      ? new Date(`${initialKey}T12:00:00`)
+      : new Date(`${new Date().toISOString().slice(0, 10)}T12:00:00`);
+  const [month, setMonth] = useState(initialDate);
+  const [selectedDate, setSelectedDate] = useState(initialDate);
+  useEffect(() => {
+    if (!initialKey) {
+      const localNow = new Date();
+      setMonth(localNow);
+      setSelectedDate(localNow);
+    }
+  }, [initialKey]);
+  const [panelMode, setPanelMode] = useState<PanelMode>("idle");
   const [activeEntryId, setActiveEntryId] = useState<string | null>(null);
-  const [entrySource, setEntrySource] = useState<EntrySource>('existing');
-  const [entryStatus, setEntryStatus] = useState<EntryStatus>('planned');
-  const [selectedOutfitId, setSelectedOutfitId] = useState('');
-  const [notes, setNotes] = useState('');
+  const [entrySource, setEntrySource] = useState<EntrySource>("existing");
+  const [entryStatus, setEntryStatus] = useState<EntryStatus>("planned");
+  const [selectedOutfitId, setSelectedOutfitId] = useState("");
+  const [notes, setNotes] = useState("");
   const [generatedItemIds, setGeneratedItemIds] = useState<string[]>([]);
-  const [generatedSummary, setGeneratedSummary] = useState<string>('');
+  const [generatedSummary, setGeneratedSummary] = useState<string>("");
   const [repeatWarning, setRepeatWarning] = useState<string | null>(null);
-  const [entrySearchQuery, setEntrySearchQuery] = useState('');
+  const [entrySearchQuery, setEntrySearchQuery] = useState("");
   const [isGeneratingWeek, setIsGeneratingWeek] = useState(false);
-  const [weekGenerationMessage, setWeekGenerationMessage] = useState<string | null>(null);
+  const [weekGenerationMessage, setWeekGenerationMessage] = useState<
+    string | null
+  >(null);
   const [weekGenerationProgress, setWeekGenerationProgress] = useState<{
     completed: number;
     total: number;
     currentDate: string | null;
   } | null>(null);
   const [generationCount, setGenerationCount] = useState(7);
-  const [existingPolicy, setExistingPolicy] = useState<ExistingPolicy>('skip');
-  const [mixStrategy, setMixStrategy] = useState<MixStrategy>('balanced');
+  const [existingPolicy, setExistingPolicy] = useState<ExistingPolicy>("skip");
+  const [mixStrategy, setMixStrategy] = useState<MixStrategy>("balanced");
   const [lookbackDays, setLookbackDays] = useState(14);
   const [weekdaysOnly, setWeekdaysOnly] = useState(false);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
-  const [initialEntryFormSnapshot, setInitialEntryFormSnapshot] = useState<EntryFormSnapshot | null>(null);
+  const [initialEntryFormSnapshot, setInitialEntryFormSnapshot] =
+    useState<EntryFormSnapshot | null>(null);
 
   const notesInputRef = useRef<HTMLInputElement>(null);
   const entryFormRef = useRef<HTMLDivElement>(null);
   const savedOutfitsListRef = useRef<HTMLDivElement>(null);
 
-  const { current, forecast } = useWeather(true);
+  const { current, forecast } = useAppWeather();
   const { data: outfits = [] } = useOutfits();
-  const { data: calendarMonthData, isLoading, error } = useCalendarEntriesByMonth({ month, lookbackDays: 30 });
+  const {
+    data: calendarMonthData,
+    isLoading,
+    error,
+  } = useCalendarEntriesByMonth({ month, lookbackDays: 30 });
 
   const createEntryMutation = useCreateCalendarEntry();
   const updateEntryMutation = useUpdateCalendarEntry();
   const deleteEntryMutation = useDeleteCalendarEntry();
-  const createOutfitMutation = useCreateOutfit();
 
   const monthDays = useMemo(() => buildMonthGrid(month), [month]);
   const selectedDateKey = formatDateKey(selectedDate);
-  const entries = useMemo(() => calendarMonthData?.entries ?? [], [calendarMonthData?.entries]);
+  const entries = useMemo(
+    () => calendarMonthData?.entries ?? [],
+    [calendarMonthData?.entries],
+  );
   const selectedDateEntries = useMemo(
     () => entries.filter((entry) => entry.entry_date === selectedDateKey),
-    [entries, selectedDateKey]
+    [entries, selectedDateKey],
   );
   const activeEntry = useMemo(
-    () => selectedDateEntries.find((entry) => entry.id === activeEntryId) ?? null,
-    [activeEntryId, selectedDateEntries]
+    () =>
+      selectedDateEntries.find((entry) => entry.id === activeEntryId) ?? null,
+    [activeEntryId, selectedDateEntries],
   );
 
   const entriesByDate = useMemo(() => {
@@ -333,27 +408,27 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
 
   const weatherForSelectedDate = useMemo(
     () => resolveCalendarWeather(selectedDate, current, forecast),
-    [selectedDate, current, forecast]
+    [selectedDate, current, forecast],
   );
 
   const weatherDisplay = useMemo(() => {
-    if (weatherForSelectedDate.source === 'seasonal-fallback') {
+    if (weatherForSelectedDate.source === "seasonal-fallback") {
       return {
-        conditionLabel: 'Seasonal estimate for your location',
-        sourceLabel: 'estimated',
+        conditionLabel: "Seasonal estimate for your location",
+        sourceLabel: "estimated",
       };
     }
 
-    if (weatherForSelectedDate.source === 'neutral') {
+    if (weatherForSelectedDate.source === "neutral") {
       return {
-        conditionLabel: 'Weather unavailable',
-        sourceLabel: 'fallback',
+        conditionLabel: "Weather unavailable",
+        sourceLabel: "fallback",
       };
     }
 
     return {
       conditionLabel: weatherForSelectedDate.condition,
-      sourceLabel: 'forecast',
+      sourceLabel: "forecast",
     };
   }, [weatherForSelectedDate.condition, weatherForSelectedDate.source]);
 
@@ -366,8 +441,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
   }, [generatedItemIds, wardrobeItems]);
 
   const hasRequiredItems = useMemo(() => {
-    const names = new Set(wardrobeItems.map((item) => item.category?.name));
-    return names.has('Shirt') && names.has('Pants') && names.has('Shoes');
+    return hasCompleteOutfitItems(wardrobeItems);
   }, [wardrobeItems]);
 
   const weatherReadyOutfits = useMemo(() => {
@@ -386,23 +460,33 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
       .filter((outfit) => {
         if (!query) return true;
         const name = getOutfitDisplayName(outfit).toLowerCase();
-        const itemNames = (outfit.items || []).map((item) => item.name.toLowerCase()).join(' ');
+        const itemNames = (outfit.items || [])
+          .map((item) => item.name.toLowerCase())
+          .join(" ");
         return name.includes(query) || itemNames.includes(query);
       })
       .sort((a, b) => {
         if (a.id === selectedOutfitId) return -1;
         if (b.id === selectedOutfitId) return 1;
-        if (Boolean(b.loved) !== Boolean(a.loved)) return Number(Boolean(b.loved)) - Number(Boolean(a.loved));
-        if (typeof b.score === 'number' && typeof a.score === 'number' && b.score !== a.score) {
+        if (Boolean(b.loved) !== Boolean(a.loved))
+          return Number(Boolean(b.loved)) - Number(Boolean(a.loved));
+        if (
+          typeof b.score === "number" &&
+          typeof a.score === "number" &&
+          b.score !== a.score
+        ) {
           return b.score - a.score;
         }
-        return (b.updated_at || '').localeCompare(a.updated_at || '') || (a.name || '').localeCompare(b.name || '');
+        return (
+          (b.updated_at || "").localeCompare(a.updated_at || "") ||
+          (a.name || "").localeCompare(b.name || "")
+        );
       });
   }, [entrySearchQuery, outfits, selectedOutfitId]);
 
   useEffect(() => {
-    if (panelMode === 'editing' && (!activeEntryId || !activeEntry)) {
-      setPanelMode('idle');
+    if (panelMode === "editing" && (!activeEntryId || !activeEntry)) {
+      setPanelMode("idle");
       setActiveEntryId(null);
       setInitialEntryFormSnapshot(null);
     }
@@ -411,7 +495,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
   const onSelectSavedOutfit = (outfitId: string) => {
     setSelectedOutfitId(outfitId);
     requestAnimationFrame(() => {
-      savedOutfitsListRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+      savedOutfitsListRef.current?.scrollTo({ top: 0, behavior: "smooth" });
     });
   };
 
@@ -424,10 +508,27 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
 
     try {
       const baseDate = new Date(selectedDate);
-      const targetDates = getUpcomingDates(baseDate, generationCount, weekdaysOnly);
-      setWeekGenerationProgress({ completed: 0, total: targetDates.length, currentDate: null });
-      const recentSignatures = getRecentEntrySignatures(entries, lookbackDays, baseDate, ['worn', 'planned']);
-      const excludedItemIds = getRecentWornItemIds(entries, lookbackDays, baseDate);
+      const targetDates = getUpcomingDates(
+        baseDate,
+        generationCount,
+        weekdaysOnly,
+      );
+      setWeekGenerationProgress({
+        completed: 0,
+        total: targetDates.length,
+        currentDate: null,
+      });
+      const recentSignatures = getRecentEntrySignatures(
+        entries,
+        lookbackDays,
+        baseDate,
+        ["worn", "planned"],
+      );
+      const excludedItemIds = getRecentWornItemIds(
+        entries,
+        lookbackDays,
+        baseDate,
+      );
       let usedSavedCount = 0;
       let usedGeneratedCount = 0;
       let skippedCount = 0;
@@ -436,20 +537,23 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
       for (let i = 0; i < targetDates.length; i++) {
         const date = targetDates[i];
         const dateKey = formatDateKey(date);
-        setWeekGenerationProgress({ completed: i, total: targetDates.length, currentDate: dateKey });
-        const existingPlannedEntries = (entriesByDate.get(dateKey) || []).filter((entry) => entry.status === 'planned');
+        setWeekGenerationProgress({
+          completed: i,
+          total: targetDates.length,
+          currentDate: dateKey,
+        });
+        const existingPlannedEntries = (
+          entriesByDate.get(dateKey) || []
+        ).filter((entry) => entry.status === "planned");
 
-        if (existingPlannedEntries.length > 0 && existingPolicy === 'skip') {
+        if (existingPlannedEntries.length > 0 && existingPolicy === "skip") {
           skippedCount += 1;
-          setWeekGenerationProgress({ completed: i + 1, total: targetDates.length, currentDate: dateKey });
+          setWeekGenerationProgress({
+            completed: i + 1,
+            total: targetDates.length,
+            currentDate: dateKey,
+          });
           continue;
-        }
-
-        if (existingPlannedEntries.length > 0 && existingPolicy === 'overwrite') {
-          for (const existingEntry of existingPlannedEntries) {
-            await deleteEntryMutation.mutateAsync(existingEntry.id);
-          }
-          overwrittenCount += existingPlannedEntries.length;
         }
 
         const weather = resolveCalendarWeather(date, current, forecast);
@@ -461,13 +565,13 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
             weatherReadyOutfits,
             weather.weatherContext.targetWeight,
             weather.weatherContext,
-            recentSignatures
+            recentSignatures,
           );
         }
 
-        let outfitId: string | undefined;
+        let outfitId: string | null = null;
         let itemIds: string[] = [];
-        let generationType: 'saved' | 'ai-custom' = 'saved';
+        let generationType: "saved" | "ai-custom" = "saved";
 
         if (chosenOutfit) {
           outfitId = chosenOutfit.id;
@@ -481,18 +585,9 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
           });
 
           itemIds = generated.itemIds;
-          generationType = 'ai-custom';
+          generationType = "ai-custom";
           for (const itemId of itemIds) excludedItemIds.add(itemId);
 
-          const createdOutfit = await createOutfitMutation.mutateAsync({
-            items: itemIds,
-            source: 'generated',
-            name: `AI Week Plan ${dateKey}`,
-            weight: 1,
-            loved: false,
-          });
-
-          outfitId = createdOutfit.id;
           usedGeneratedCount += 1;
         }
 
@@ -501,9 +596,12 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
 
         await createEntryMutation.mutateAsync({
           entry_date: dateKey,
-          status: 'planned',
+          status: "planned",
           outfit_id: outfitId,
-          notes: generationType === 'ai-custom' ? 'AI generated plan' : 'AI saved outfit plan',
+          notes:
+            generationType === "ai-custom"
+              ? "New combination"
+              : "Saved outfit plan",
           weather_context: {
             source: weather.source,
             condition: weather.condition,
@@ -515,21 +613,35 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
           },
           item_ids: itemIds,
         });
-        setWeekGenerationProgress({ completed: i + 1, total: targetDates.length, currentDate: dateKey });
+        if (existingPolicy === "overwrite") {
+          for (const previous of existingPlannedEntries)
+            await deleteEntryMutation.mutateAsync(previous.id);
+          overwrittenCount += existingPlannedEntries.length;
+        }
+        setWeekGenerationProgress({
+          completed: i + 1,
+          total: targetDates.length,
+          currentDate: dateKey,
+        });
       }
 
       const generatedCount = usedSavedCount + usedGeneratedCount;
       setWeekGenerationMessage(
         [
-          `Generated ${generatedCount} planned entries (${usedSavedCount} saved, ${usedGeneratedCount} AI custom).`,
-          skippedCount > 0 ? `${skippedCount} skipped due to existing plans.` : '',
-          overwrittenCount > 0 ? `${overwrittenCount} existing planned entries overwritten.` : '',
+          `Generated ${generatedCount} planned entries (${usedSavedCount} saved, ${usedGeneratedCount} new combinations).`,
+          skippedCount > 0
+            ? `${skippedCount} skipped due to existing plans.`
+            : "",
+          overwrittenCount > 0
+            ? `${overwrittenCount} existing planned entries overwritten.`
+            : "",
         ]
           .filter(Boolean)
-          .join(' ')
+          .join(" "),
       );
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to generate outfits.';
+      const message =
+        err instanceof Error ? err.message : "Failed to generate outfits.";
       setWeekGenerationMessage(message);
     } finally {
       setIsGeneratingWeek(false);
@@ -548,84 +660,94 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
 
     const itemIds = generated.itemIds;
     setGeneratedItemIds(itemIds);
-    setGeneratedSummary(`${Math.round(generated.scores.overall.total * 100)}/100 score`);
-    setEntrySource('generated');
-    setPanelMode('creating');
+    setGeneratedSummary(
+      `${Math.round(generated.scores.overall.total * 100)}/100 score`,
+    );
+    setEntrySource("generated");
+    setPanelMode("creating");
     setActiveEntryId(null);
 
     const warning = findRepeatWarning(entries, selectedDate, itemIds);
     setRepeatWarning(warning);
   };
 
-  const resetForm = (nextMode: PanelMode = 'idle') => {
-    setEntrySource('existing');
-    setEntryStatus('planned');
-    setSelectedOutfitId('');
-    setNotes('');
+  const resetForm = (nextMode: PanelMode = "idle") => {
+    setEntrySource("existing");
+    setEntryStatus("planned");
+    setSelectedOutfitId("");
+    setNotes("");
     setGeneratedItemIds([]);
-    setGeneratedSummary('');
+    setGeneratedSummary("");
     setRepeatWarning(null);
     setActiveEntryId(null);
     setPanelMode(nextMode);
-    setEntrySearchQuery('');
+    setEntrySearchQuery("");
     setInitialEntryFormSnapshot({
-      entrySource: 'existing',
-      entryStatus: 'planned',
-      selectedOutfitId: '',
-      notes: '',
-      generatedItemIdsKey: '',
+      entrySource: "existing",
+      entryStatus: "planned",
+      selectedOutfitId: "",
+      notes: "",
+      generatedItemIdsKey: "",
     });
   };
 
   const handleNewEntryClick = () => {
-    resetForm('creating');
+    resetForm("creating");
 
     requestAnimationFrame(() => {
-      entryFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      entryFormRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
       notesInputRef.current?.focus();
     });
   };
 
   const onEditEntry = (entry: CalendarEntry) => {
-    setPanelMode('editing');
+    setPanelMode("editing");
     setActiveEntryId(entry.id);
     setEntryStatus(entry.status);
-    setNotes(entry.notes || '');
+    setNotes(entry.notes || "");
     setRepeatWarning(null);
-    setEntrySearchQuery('');
+    setEntrySearchQuery("");
 
     if (entry.outfit_id) {
-      setEntrySource('existing');
+      setEntrySource("existing");
       setSelectedOutfitId(entry.outfit_id);
       setGeneratedItemIds([]);
-      setGeneratedSummary('');
+      setGeneratedSummary("");
       setInitialEntryFormSnapshot({
-        entrySource: 'existing',
+        entrySource: "existing",
         entryStatus: entry.status,
         selectedOutfitId: entry.outfit_id,
-        notes: entry.notes || '',
-        generatedItemIdsKey: '',
+        notes: entry.notes || "",
+        generatedItemIdsKey: "",
       });
     } else {
-      setEntrySource('generated');
+      setEntrySource("generated");
       const itemIds = (entry.items || []).map((item) => item.id);
       setGeneratedItemIds(itemIds);
-      setSelectedOutfitId('');
-      setGeneratedSummary(itemIds.length ? `${itemIds.length} items` : '');
+      setSelectedOutfitId("");
+      setGeneratedSummary(itemIds.length ? `${itemIds.length} items` : "");
       setInitialEntryFormSnapshot({
-        entrySource: 'generated',
+        entrySource: "generated",
         entryStatus: entry.status,
-        selectedOutfitId: '',
-        notes: entry.notes || '',
+        selectedOutfitId: "",
+        notes: entry.notes || "",
         generatedItemIdsKey: toItemSetSignature(itemIds),
       });
     }
 
     requestAnimationFrame(() => {
-      entryFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      entryFormRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     });
   };
 
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState("");
   const onDeleteEntry = async (entryId: string) => {
     await deleteEntryMutation.mutateAsync(entryId);
     if (activeEntryId === entryId) {
@@ -634,48 +756,45 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
   };
 
   const onMarkEntryWorn = async (entry: CalendarEntry) => {
-    if (entry.status === 'worn') return;
+    if (entry.status === "worn") return;
 
     await updateEntryMutation.mutateAsync({
       id: entry.id,
-      status: 'worn',
+      status: "worn",
     });
 
-    if (activeEntryId === entry.id && panelMode === 'editing') {
-      setEntryStatus('worn');
+    if (activeEntryId === entry.id && panelMode === "editing") {
+      setEntryStatus("worn");
     }
   };
 
   const onSaveEntry = async () => {
-    let outfitId: string | undefined;
+    let outfitId: string | null = null;
     let itemIds: string[] = [];
 
-    if (entrySource === 'existing') {
+    if (entrySource === "existing") {
       if (!selectedOutfitId) {
-        throw new Error('Select an outfit first.');
+        throw new Error("Select an outfit first.");
       }
 
-      const picked = sourceOutfits.find((outfit) => outfit.id === selectedOutfitId);
+      const picked = sourceOutfits.find(
+        (outfit) => outfit.id === selectedOutfitId,
+      );
       if (!picked) {
-        throw new Error('Selected outfit not found.');
+        throw new Error("Selected outfit not found.");
       }
 
       outfitId = picked.id;
-      itemIds = (picked.items || []).map((item) => item.id);
+      itemIds = (
+        activeEntry?.outfit_id === picked.id
+          ? activeEntry.items || []
+          : picked.items || []
+      ).map((item) => item.id);
     } else {
       if (generatedItemIds.length === 0) {
-        throw new Error('Generate an outfit first.');
+        throw new Error("Generate an outfit first.");
       }
 
-      const createdOutfit = await createOutfitMutation.mutateAsync({
-        items: generatedItemIds,
-        source: 'generated',
-        name: `Calendar ${selectedDateKey}`,
-        weight: 1,
-        loved: false,
-      });
-
-      outfitId = createdOutfit.id;
       itemIds = generatedItemIds;
     }
 
@@ -697,13 +816,18 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
       item_ids: itemIds,
     } as const;
 
-    if (panelMode === 'editing') {
-      const editableEntry = selectedDateEntries.find((entry) => entry.id === activeEntryId);
+    if (panelMode === "editing") {
+      const editableEntry = selectedDateEntries.find(
+        (entry) => entry.id === activeEntryId,
+      );
       if (!editableEntry) {
-        throw new Error('The selected entry no longer matches this date.');
+        throw new Error("The selected entry no longer matches this date.");
       }
 
-      await updateEntryMutation.mutateAsync({ id: editableEntry.id, ...payload });
+      await updateEntryMutation.mutateAsync({
+        id: editableEntry.id,
+        ...payload,
+      });
     } else {
       await createEntryMutation.mutateAsync(payload);
     }
@@ -711,34 +835,50 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
     resetForm();
   };
 
-  const isSaving = createEntryMutation.isPending || updateEntryMutation.isPending || createOutfitMutation.isPending;
-  const formSnapshot: EntryFormSnapshot = useMemo(() => ({
-    entrySource,
-    entryStatus,
-    selectedOutfitId,
-    notes: notes.trim(),
-    generatedItemIdsKey: toItemSetSignature(generatedItemIds),
-  }), [entrySource, entryStatus, selectedOutfitId, notes, generatedItemIds]);
+  const isSaving =
+    createEntryMutation.isPending || updateEntryMutation.isPending;
+  const formSnapshot: EntryFormSnapshot = useMemo(
+    () => ({
+      entrySource,
+      entryStatus,
+      selectedOutfitId,
+      notes: notes.trim(),
+      generatedItemIdsKey: toItemSetSignature(generatedItemIds),
+    }),
+    [entrySource, entryStatus, selectedOutfitId, notes, generatedItemIds],
+  );
 
   const hasFormChanges = useMemo(() => {
     if (!initialEntryFormSnapshot) return false;
-    return JSON.stringify(formSnapshot) !== JSON.stringify(initialEntryFormSnapshot);
+    return (
+      JSON.stringify(formSnapshot) !== JSON.stringify(initialEntryFormSnapshot)
+    );
   }, [formSnapshot, initialEntryFormSnapshot]);
 
   const hasValidEntrySelection = useMemo(() => {
-    if (entrySource === 'existing') return Boolean(selectedOutfitId);
+    if (entrySource === "existing") return Boolean(selectedOutfitId);
     return generatedItemIds.length > 0;
   }, [entrySource, selectedOutfitId, generatedItemIds.length]);
 
+  const editorItemIds =
+    entrySource === "generated"
+      ? generatedItemIds
+      : (activeEntry?.outfit_id === selectedOutfitId
+          ? activeEntry.items || []
+          : outfits.find((outfit) => outfit.id === selectedOutfitId)?.items ||
+            []
+        ).map((item) => item.id);
   const canSaveEntry = hasFormChanges && hasValidEntrySelection && !isSaving;
-  const isEntryFormOpen = panelMode === 'creating' || panelMode === 'editing';
+  const isEntryFormOpen = panelMode === "creating" || panelMode === "editing";
 
   const handleDateSelection = (day: Date) => {
     const nextDateKey = formatDateKey(day);
     if (nextDateKey === selectedDateKey) return;
 
     if (isEntryFormOpen && hasFormChanges) {
-      const shouldDiscard = window.confirm('Discard unsaved changes and switch dates?');
+      const shouldDiscard = window.confirm(
+        "Discard unsaved changes and switch dates?",
+      );
       if (!shouldDiscard) return;
     }
 
@@ -747,34 +887,34 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
   };
 
   const commonButtonBase =
-    'rounded-[var(--radius-pill)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2';
+    "rounded-[var(--radius-pill)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
   const primaryButtonClass = `${commonButtonBase} inline-flex items-center justify-center gap-2 px-[22px] py-[11px] text-[0.82rem] font-semibold bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-[var(--text-on-accent)] shadow-[var(--shadow-accent)] hover:-translate-y-px hover:shadow-[var(--shadow-accent-hover)] active:translate-y-0 active:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed`;
   const secondaryButtonClass = `${commonButtonBase} inline-flex items-center justify-center gap-2 border border-[var(--border-default)] bg-[var(--bg-surface)] px-[16px] py-[9px] text-[0.79rem] font-medium text-[var(--text-2)] backdrop-blur-[var(--blur-glass)] [-webkit-backdrop-filter:blur(var(--blur-glass))] hover:border-[var(--border-strong)] hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-1)] active:bg-[var(--bg-surface-active)] disabled:opacity-50 disabled:cursor-not-allowed`;
   const tertiaryButtonClass = `${commonButtonBase} inline-flex items-center justify-center gap-1.5 border border-transparent bg-transparent px-[12px] py-[6px] text-[0.72rem] font-medium text-[var(--text-2)] hover:border-[var(--border-subtle)] hover:bg-[var(--button-tertiary-hover)] hover:text-[var(--text-1)] active:bg-[var(--button-tertiary-active)] disabled:opacity-50 disabled:cursor-not-allowed`;
   const iconTertiaryClass =
-    'inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-pill)] border border-transparent bg-transparent text-[var(--text-2)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-[var(--border-subtle)] hover:bg-[var(--button-tertiary-hover)] hover:text-[var(--text-1)] active:bg-[var(--button-tertiary-active)] disabled:opacity-50';
+    "inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-pill)] border border-transparent bg-transparent text-[var(--text-2)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-[var(--border-subtle)] hover:bg-[var(--button-tertiary-hover)] hover:text-[var(--text-1)] active:bg-[var(--button-tertiary-active)] disabled:opacity-50";
   const destructiveIconTertiaryClass =
-    'inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-pill)] border border-transparent bg-transparent text-[var(--text-2)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-destructive/30 hover:bg-destructive/10 hover:text-destructive disabled:opacity-50';
+    "inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-pill)] border border-transparent bg-transparent text-[var(--text-2)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-destructive/30 hover:bg-destructive/10 hover:text-destructive disabled:opacity-50";
 
   return (
     <div className="page-shell-content page-shell-content--wide space-y-5 sm:space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <div className="mb-3 inline-flex items-center rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)] p-1">
-            <span className="rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] px-3 py-1.5 text-sm text-primary-foreground">Calendar</span>
-            <Link href="/calendar/trips" className="rounded-[var(--radius-pill)] px-3 py-1.5 text-sm text-muted-foreground hover:bg-[var(--bg-surface-hover)] hover:text-foreground">
-              Trips
-            </Link>
-          </div>
-          <h1 className="text-3xl font-bold text-foreground">Outfit Calendar</h1>
+          <h1 className="font-display text-4xl font-normal text-foreground">
+            See the whole month
+          </h1>
           <p className="text-muted-foreground mt-1">
-            Plan or log multiple outfits per day with weather-aware guidance.
+            Keep a plan for each day, and a record of what you actually wore.
           </p>
         </div>
         <div className="grid grid-cols-2 gap-2 sm:block sm:text-right sm:space-y-2">
           <div className="glass-surface col-span-1 px-3 py-2 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none">
-            <p className="text-sm text-muted-foreground">Worn Entries This Month</p>
-            <p className="text-2xl font-semibold text-foreground">{calendarMonthData?.wornEntriesThisMonth || 0}</p>
+            <p className="text-sm text-muted-foreground">
+              Worn Entries This Month
+            </p>
+            <p className="text-2xl font-semibold text-foreground">
+              {calendarMonthData?.wornEntriesThisMonth || 0}
+            </p>
           </div>
           <button
             type="button"
@@ -783,10 +923,12 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
             className={`col-span-1 w-full sm:col-span-2 ${primaryButtonClass}`}
           >
             <AIIcon className="w-4 h-4" />
-            {isGeneratingWeek ? 'Generating...' : 'Generate Outfits'}
+            {isGeneratingWeek ? "Planning…" : "Plan the next few days"}
           </button>
         </div>
       </div>
+
+      <PlannerTabs active="calendar" />
 
       {isGeneratingWeek && weekGenerationProgress && (
         <div className="glass-surface space-y-2 border-[color-mix(in_srgb,var(--accent)_22%,transparent)] bg-[var(--accent-muted)] px-4 py-3">
@@ -803,9 +945,13 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
             <div
               className="h-full bg-primary transition-all duration-300"
               style={{
-                width: `${weekGenerationProgress.total > 0
-                  ? (weekGenerationProgress.completed / weekGenerationProgress.total) * 100
-                  : 0}%`,
+                width: `${
+                  weekGenerationProgress.total > 0
+                    ? (weekGenerationProgress.completed /
+                        weekGenerationProgress.total) *
+                      100
+                    : 0
+                }%`,
               }}
             />
           </div>
@@ -823,20 +969,26 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
         </div>
       )}
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
-        <div className="glass-surface xl:col-span-2 rounded-[var(--radius-xl)] p-4">
+      <div className="calendar-main-layout">
+        <div className="calendar-month-panel rounded-xl border border-border bg-[var(--bg-surface)] p-3 sm:p-5">
           <div className="flex items-center justify-between mb-4">
             <button
               className="glass-pill p-2"
-              onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}
+              onClick={() =>
+                setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))
+              }
               aria-label="Previous month"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
-            <h2 className="text-xl font-semibold text-foreground">{formatMonthTitle(month)}</h2>
+            <h2 className="text-xl font-semibold text-foreground">
+              {formatMonthTitle(month)}
+            </h2>
             <button
               className="glass-pill p-2"
-              onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}
+              onClick={() =>
+                setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))
+              }
               aria-label="Next month"
             >
               <ChevronRight className="h-5 w-5" />
@@ -844,8 +996,10 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
           </div>
 
           <div className="grid grid-cols-7 text-[11px] sm:text-xs text-muted-foreground mb-2 px-0.5 sm:px-1">
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-              <div key={day} className="text-center py-2">{day}</div>
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+              <div key={day} className="text-center py-2">
+                {day}
+              </div>
             ))}
           </div>
 
@@ -855,7 +1009,9 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
               Loading calendar...
             </div>
           ) : error ? (
-            <div className="h-60 flex items-center justify-center text-destructive">{error.message}</div>
+            <div className="h-60 flex items-center justify-center text-destructive">
+              {error.message}
+            </div>
           ) : (
             <div className="grid grid-cols-7 gap-1">
               {monthDays.map((day) => {
@@ -863,18 +1019,28 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                 const inCurrentMonth = day.getMonth() === month.getMonth();
                 const isSelected = dayKey === selectedDateKey;
                 const dayEntries = entriesByDate.get(dayKey) || [];
-                const plannedCount = dayEntries.filter((entry) => entry.status === 'planned').length;
-                const wornCount = dayEntries.filter((entry) => entry.status === 'worn').length;
-                const forecastDay = forecast.find((item) => item.date === dayKey);
+                const plannedCount = dayEntries.filter(
+                  (entry) => entry.status === "planned",
+                ).length;
+                const wornCount = dayEntries.filter(
+                  (entry) => entry.status === "worn",
+                ).length;
+                const forecastDay = forecast.find(
+                  (item) => item.date === dayKey,
+                );
 
                 return (
                   <button
                     key={dayKey}
                     type="button"
                     onClick={() => handleDateSelection(day)}
-                    className={`relative min-h-20 sm:min-h-24 rounded-lg border p-1.5 sm:p-2 text-left transition-colors ${
-                      isSelected ? 'border-primary bg-[var(--accent-muted)]' : 'border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]'
-                    } ${inCurrentMonth ? 'text-foreground' : 'text-muted-foreground/50'}`}
+                    aria-pressed={isSelected}
+                    aria-label={`${day.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}, ${plannedCount} planned, ${wornCount} worn, ${dayEntries[0]?.items?.length || 0} pieces in the first outfit`}
+                    className={`calendar-day relative min-h-24 sm:min-h-32 rounded-lg border p-1.5 sm:p-2 text-left transition-colors ${
+                      isSelected
+                        ? "border-primary bg-[var(--accent-muted)]"
+                        : "border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]"
+                    } ${inCurrentMonth ? "text-foreground" : "text-muted-foreground/50"}`}
                   >
                     <span className="absolute top-1.5 left-1.5 text-sm font-medium">
                       {day.getDate()}
@@ -885,16 +1051,39 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                       </span>
                     )}
                     <div className="mt-6 sm:mt-7 space-y-1">
+                      {dayEntries[0] && (
+                        <div className="calendar-day-preview">
+                          <OutfitThumbnails items={dayEntries[0].items || []} />
+                          <p className="truncate text-[9px]">
+                            {dayEntries[0].outfit?.name || "Your outfit"}
+                          </p>
+                          {dayEntries.length > 1 && (
+                            <span className="text-[9px] text-primary">
+                              +{dayEntries.length - 1} more{" "}
+                              {dayEntries.length === 2 ? "outfit" : "outfits"}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      {!dayEntries.length && (
+                        <span className="calendar-empty-day" aria-hidden="true">
+                          +
+                        </span>
+                      )}
                       {plannedCount > 0 && (
                         <div className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-700 dark:text-blue-300">
                           <span className="sm:hidden">{plannedCount}P</span>
-                          <span className="hidden sm:inline">{plannedCount} planned</span>
+                          <span className="hidden sm:inline">
+                            {plannedCount} planned
+                          </span>
                         </div>
                       )}
                       {wornCount > 0 && (
                         <div className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
                           <span className="sm:hidden">{wornCount}W</span>
-                          <span className="hidden sm:inline">{wornCount} worn</span>
+                          <span className="hidden sm:inline">
+                            {wornCount} worn
+                          </span>
                         </div>
                       )}
                     </div>
@@ -905,25 +1094,42 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
           )}
         </div>
 
-        <div className="xl:sticky xl:top-24 xl:self-start">
+        <div className="calendar-detail-panel">
           <div className="glass-surface rounded-[var(--radius-xl)] p-4 space-y-4">
+            <AskSebastian
+              contextHints={{ eventDate: selectedDateKey }}
+              prompt={`Help me choose an outfit for ${selectedDateKey}.`}
+              className="w-full"
+            />
             <div className="space-y-3 border-b border-[var(--border-subtle)] pb-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h3 className="text-lg font-semibold text-foreground">
-                    {selectedDate.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
+                    {selectedDate.toLocaleDateString(undefined, {
+                      weekday: "long",
+                      month: "long",
+                      day: "numeric",
+                    })}
                   </h3>
                   <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                     <CloudSun className="w-4 h-4" />
                     <span>
-                      {weatherDisplay.conditionLabel}, {Math.round(weatherForSelectedDate.lowTemp)}F/{Math.round(weatherForSelectedDate.highTemp)}F
+                      {weatherDisplay.conditionLabel},{" "}
+                      {Math.round(weatherForSelectedDate.lowTemp)}F/
+                      {Math.round(weatherForSelectedDate.highTemp)}F
                     </span>
-                    <span className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-0.5 text-xs text-[var(--tag-text)]">{weatherDisplay.sourceLabel}</span>
+                    <span className="rounded-[var(--radius-pill)] border border-[var(--tag-border)] bg-[var(--tag-bg)] px-2 py-0.5 text-xs text-[var(--tag-text)]">
+                      {weatherDisplay.sourceLabel}
+                    </span>
                   </div>
                 </div>
                 <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_76%,transparent)] px-3 py-2 text-right">
-                  <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Entries</p>
-                  <p className="text-lg font-semibold text-foreground">{selectedDateEntries.length}</p>
+                  <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                    Entries
+                  </p>
+                  <p className="text-lg font-semibold text-foreground">
+                    {selectedDateEntries.length}
+                  </p>
                 </div>
               </div>
 
@@ -943,41 +1149,38 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                   className={`${primaryButtonClass} w-full`}
                 >
                   <AIIcon className="w-4 h-4" />
-                  Generate Outfits
+                  Plan outfits
                 </button>
               </div>
             </div>
 
             <div className="space-y-3 border-b border-[var(--border-subtle)] pb-4">
               <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-foreground">Entries for selected date</h4>
-                <span className="text-xs text-muted-foreground">{selectedDateEntries.length} total</span>
+                <h4 className="font-semibold text-foreground">
+                  Entries for selected date
+                </h4>
+                <span className="text-xs text-muted-foreground">
+                  {selectedDateEntries.length} total
+                </span>
               </div>
 
               {selectedDateEntries.length === 0 ? (
                 <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_68%,transparent)] px-4 py-5 text-sm text-muted-foreground">
-                  No entries yet for this date. Add an entry to plan or log what you wore.
+                  No entries yet for this date. Add an entry to plan or log what
+                  you wore.
                 </div>
               ) : (
                 <div className="space-y-2">
                   {selectedDateEntries.map((entry) => {
-                    const isActive = panelMode === 'editing' && activeEntryId === entry.id;
+                    const isActive =
+                      panelMode === "editing" && activeEntryId === entry.id;
                     return (
                       <div
                         key={entry.id}
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => onEditEntry(entry)}
-                        onKeyDown={(event) => {
-                          if (event.key === 'Enter' || event.key === ' ') {
-                            event.preventDefault();
-                            onEditEntry(entry);
-                          }
-                        }}
                         className={`group w-full rounded-[var(--radius-lg)] border p-3 text-left transition-colors ${
                           isActive
-                            ? 'border-primary bg-[var(--accent-muted)]'
-                            : 'border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]'
+                            ? "border-primary bg-[var(--accent-muted)]"
+                            : "border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]"
                         }`}
                       >
                         <div className="flex items-start justify-between gap-3">
@@ -985,9 +1188,9 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                             <div className="flex flex-wrap items-center gap-2">
                               <span
                                 className={`text-[11px] uppercase tracking-wide rounded-full px-2 py-0.5 border ${
-                                  entry.status === 'worn'
-                                    ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
-                                    : 'border-blue-500/40 bg-blue-500/15 text-blue-700 dark:text-blue-300'
+                                  entry.status === "worn"
+                                    ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                                    : "border-blue-500/40 bg-blue-500/15 text-blue-700 dark:text-blue-300"
                                 }`}
                               >
                                 {entry.status}
@@ -999,13 +1202,27 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                               )}
                             </div>
                             <p className="mt-2 truncate text-sm font-medium text-foreground">
-                              {entry.outfit?.name || `${entry.items?.length || 0} item entry`}
+                              {entry.outfit?.name ||
+                                `${entry.items?.length || 0} item entry`}
                             </p>
-                            {entry.notes && <p className="mt-1 truncate text-xs text-muted-foreground">{entry.notes}</p>}
+                            {entry.notes && (
+                              <p className="mt-1 truncate text-xs text-muted-foreground">
+                                {entry.notes}
+                              </p>
+                            )}
                           </div>
 
-                          <div className="flex items-center gap-1">
-                            {entry.status === 'planned' && (
+                          <div className="flex flex-wrap items-center gap-1">
+                            <button
+                              type="button"
+                              className={secondaryButtonClass}
+                              aria-label={`Edit outfit ${entry.outfit?.name || entry.id}`}
+                              onClick={() => onEditEntry(entry)}
+                            >
+                              <Pencil size={13} />
+                              Edit
+                            </button>
+                            {entry.status === "planned" && (
                               <button
                                 type="button"
                                 onClick={(event) => {
@@ -1024,9 +1241,12 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                               type="button"
                               onClick={(event) => {
                                 event.stopPropagation();
-                                onDeleteEntry(entry.id);
+                                setPendingDeleteId(entry.id);
                               }}
-                              disabled={deleteEntryMutation.isPending || updateEntryMutation.isPending}
+                              disabled={
+                                deleteEntryMutation.isPending ||
+                                updateEntryMutation.isPending
+                              }
                               className={destructiveIconTertiaryClass}
                               aria-label="Delete entry"
                             >
@@ -1036,7 +1256,16 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                         </div>
 
                         <div className="mt-3">
-                          <OutfitThumbs items={entry.items || []} size="sm" outfitId={entry.outfit_id || undefined} />
+                          <OutfitThumbnails items={entry.items || []} />
+                          {entry.outfit_id && (
+                            <Link
+                              href={`/outfits/${entry.outfit_id}/`}
+                              className="mt-2 inline-block text-xs text-primary"
+                            >
+                              Open saved outfit ↗
+                            </Link>
+                          )}
+                          <OutfitPieceList items={entry.items || []} />
                         </div>
                       </div>
                     );
@@ -1050,12 +1279,14 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <h4 className="font-semibold text-foreground">
-                      {panelMode === 'editing' ? 'Edit Entry' : `New Entry for ${selectedDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`}
+                      {panelMode === "editing"
+                        ? "Edit Entry"
+                        : `New Entry for ${selectedDate.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`}
                     </h4>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {panelMode === 'editing'
-                        ? 'Update the selected entry for this date.'
-                        : 'Choose the purpose, source, and outfit details for this date.'}
+                      {panelMode === "editing"
+                        ? "Update the selected entry for this date."
+                        : "Choose the purpose, source, and outfit details for this date."}
                     </p>
                   </div>
                   <button
@@ -1068,56 +1299,68 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-foreground">Entry purpose</p>
+                  <p className="text-sm font-medium text-foreground">
+                    Entry purpose
+                  </p>
                   <div className="inline-flex w-full rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)] p-1">
-                    {(['planned', 'worn'] as EntryStatus[]).map((status) => (
+                    {(["planned", "worn"] as EntryStatus[]).map((status) => (
                       <button
                         key={status}
                         type="button"
                         onClick={() => setEntryStatus(status)}
                         className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors ${
-                          entryStatus === status ? 'rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-primary-foreground' : 'rounded-[var(--radius-pill)] text-muted-foreground hover:bg-[var(--bg-surface-hover)]'
+                          entryStatus === status
+                            ? "rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-primary-foreground"
+                            : "rounded-[var(--radius-pill)] text-muted-foreground hover:bg-[var(--bg-surface-hover)]"
                         }`}
                       >
-                        {status === 'planned' ? 'Planned' : 'Worn'}
+                        {status === "planned" ? "Planned" : "Worn"}
                       </button>
                     ))}
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-foreground">Outfit source</p>
+                  <p className="text-sm font-medium text-foreground">
+                    Outfit source
+                  </p>
                   <div className="inline-flex w-full rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)] p-1">
                     <button
                       type="button"
-                      onClick={() => setEntrySource('existing')}
+                      onClick={() => setEntrySource("existing")}
                       className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors ${
-                        entrySource === 'existing' ? 'rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-primary-foreground' : 'rounded-[var(--radius-pill)] text-muted-foreground hover:bg-[var(--bg-surface-hover)]'
+                        entrySource === "existing"
+                          ? "rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-primary-foreground"
+                          : "rounded-[var(--radius-pill)] text-muted-foreground hover:bg-[var(--bg-surface-hover)]"
                       }`}
                     >
                       Use Saved Outfit
                     </button>
                     <button
                       type="button"
-                      onClick={() => setEntrySource('generated')}
+                      onClick={() => setEntrySource("generated")}
                       className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors inline-flex items-center justify-center gap-1.5 ${
-                        entrySource === 'generated' ? 'rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-primary-foreground' : 'rounded-[var(--radius-pill)] text-muted-foreground hover:bg-[var(--bg-surface-hover)]'
+                        entrySource === "generated"
+                          ? "rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] text-primary-foreground"
+                          : "rounded-[var(--radius-pill)] text-muted-foreground hover:bg-[var(--bg-surface-hover)]"
                       }`}
                     >
                       <AIIcon className="w-3.5 h-3.5" />
-                      Generate New
+                      Make a new look
                     </button>
                   </div>
                 </div>
 
-                {entrySource === 'existing' ? (
+                {entrySource === "existing" ? (
                   <div className="space-y-3">
                     <div className="relative">
                       <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                       <input
                         type="text"
                         value={entrySearchQuery}
-                        onChange={(event) => setEntrySearchQuery(event.target.value)}
+                        onChange={(event) =>
+                          setEntrySearchQuery(event.target.value)
+                        }
                         className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] py-2 pl-9 pr-3 text-sm text-foreground"
                         placeholder="Search saved outfits"
                         aria-label="Search saved outfits"
@@ -1137,7 +1380,9 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                             type="button"
                             onClick={() => onSelectSavedOutfit(outfit.id)}
                             className={`w-full rounded-lg border p-3 text-left transition-colors ${
-                              selected ? 'border-primary bg-[var(--accent-muted)]' : 'border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]'
+                              selected
+                                ? "border-primary bg-[var(--accent-muted)]"
+                                : "border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]"
                             }`}
                           >
                             <div className="flex items-center justify-between gap-3">
@@ -1153,11 +1398,16 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                                   )}
                                 </div>
                                 <div className="mt-2">
-                                  <OutfitThumbs items={outfit.items || []} size="sm" />
+                                  <OutfitThumbs
+                                    items={outfit.items || []}
+                                    size="sm"
+                                  />
                                 </div>
                               </div>
-                              {typeof outfit.score === 'number' && (
-                                <span className="shrink-0 text-xs text-muted-foreground">{outfit.score}/100</span>
+                              {typeof outfit.score === "number" && (
+                                <span className="shrink-0 text-xs text-muted-foreground">
+                                  {outfit.score}/100
+                                </span>
                               )}
                             </div>
                           </button>
@@ -1165,7 +1415,9 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                       })}
                       {sourceOutfits.length === 0 && (
                         <p className="px-1 py-2 text-sm text-muted-foreground">
-                          {entrySearchQuery.trim() ? 'No saved outfits match your search.' : 'No saved outfits available yet.'}
+                          {entrySearchQuery.trim()
+                            ? "No saved outfits match your search."
+                            : "No saved outfits available yet."}
                         </p>
                       )}
                     </div>
@@ -1179,17 +1431,22 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                       className={`${secondaryButtonClass} w-full inline-flex items-center justify-center gap-2`}
                     >
                       <AIIcon className="w-4 h-4" />
-                      {generatedItemIds.length > 0 ? 'Regenerate Outfit' : 'Generate Weather-Aware Outfit'}
+                      {generatedItemIds.length > 0
+                        ? "Regenerate Outfit"
+                        : "Generate Weather-Aware Outfit"}
                     </button>
                     {!hasRequiredItems && (
                       <p className="text-xs text-amber-600 dark:text-amber-400">
-                        Add at least Shirt, Pants, and Shoes to generate outfits.
+                        Add a top, bottoms, and shoes—or a dress and shoes—to
+                        generate an outfit.
                       </p>
                     )}
                     {generatedPreviewItems.length > 0 && (
                       <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_76%,transparent)] p-3 space-y-2">
                         <div className="flex items-center justify-between gap-2">
-                          <p className="text-sm font-medium text-foreground">Generated preview</p>
+                          <p className="text-sm font-medium text-foreground">
+                            Generated preview
+                          </p>
                           <span className="text-xs text-muted-foreground">
                             {generatedSummary}
                           </span>
@@ -1203,15 +1460,76 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                   </div>
                 )}
 
+                <details className="rounded-lg border border-border p-3">
+                  <summary className="cursor-pointer text-sm">
+                    Choose every piece · {editorItemIds.length} selected
+                  </summary>
+                  <p className="my-3 text-xs text-muted-foreground">
+                    Add or remove layers, base pieces, and accessories for this
+                    date. Your saved outfit stays available separately.
+                  </p>
+                  <div className="max-h-72 space-y-2 overflow-y-auto">
+                    {wardrobeItems.map((item) => (
+                      <label
+                        key={item.id}
+                        className="flex cursor-pointer items-center gap-2 rounded-lg border border-border p-2 text-xs"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={editorItemIds.includes(item.id)}
+                          onChange={(event) => {
+                            setGeneratedItemIds(
+                              event.target.checked
+                                ? [...editorItemIds, item.id]
+                                : editorItemIds.filter((id) => id !== item.id),
+                            );
+                            setEntrySource("generated");
+                            setSelectedOutfitId("");
+                            setGeneratedSummary("Your custom selection");
+                          }}
+                        />
+                        {item.image_url && (
+                          <Image
+                            src={item.image_url}
+                            alt=""
+                            width={32}
+                            height={32}
+                            className="h-8 w-8 object-contain"
+                          />
+                        )}
+                        <span>
+                          {item.name}
+                          <small className="ml-2 text-muted-foreground">
+                            {item.category?.name}
+                          </small>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </details>
+
                 <div className="space-y-1.5">
-                  <label htmlFor="calendar-notes" className="text-sm font-medium text-foreground">Label / notes</label>
-                  <p className="text-xs text-muted-foreground">Letters and numbers only. Keep it short and easy to scan.</p>
+                  <label
+                    htmlFor="calendar-notes"
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Label / notes
+                  </label>
+                  <p className="text-xs text-muted-foreground">
+                    Letters and numbers only. Keep it short and easy to scan.
+                  </p>
                   <input
                     ref={notesInputRef}
                     id="calendar-notes"
                     type="text"
                     value={notes}
-                    onChange={(e) => setNotes(e.target.value.replace(/[^A-Za-z0-9\s]/g, '').slice(0, 500))}
+                    onChange={(e) =>
+                      setNotes(
+                        e.target.value
+                          .replace(/[^A-Za-z0-9\s]/g, "")
+                          .slice(0, 500),
+                      )
+                    }
                     className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-foreground"
                     placeholder="Example Office meeting 2pm"
                     autoComplete="off"
@@ -1236,12 +1554,20 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                   </button>
                   <button
                     type="button"
-                    onClick={() => onSaveEntry().catch((err: Error) => setRepeatWarning(err.message))}
+                    onClick={() =>
+                      onSaveEntry().catch((err: Error) =>
+                        setRepeatWarning(err.message),
+                      )
+                    }
                     disabled={!canSaveEntry}
                     className={`${primaryButtonClass} flex-1 inline-flex items-center justify-center gap-2`}
                   >
                     <Pencil className="w-4 h-4" />
-                    {isSaving ? 'Saving...' : panelMode === 'editing' ? 'Save Changes' : 'Save Entry'}
+                    {isSaving
+                      ? "Saving..."
+                      : panelMode === "editing"
+                        ? "Save Changes"
+                        : "Save Entry"}
                   </button>
                 </div>
               </div>
@@ -1249,7 +1575,8 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
               <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_68%,transparent)] px-4 py-5">
                 <h4 className="font-semibold text-foreground">Entry editor</h4>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Pick an existing entry to edit it, or create a new entry for the selected date.
+                  Pick an existing entry to edit it, or create a new entry for
+                  the selected date.
                 </p>
                 <button
                   type="button"
@@ -1270,41 +1597,60 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
           <div className="glass-surface w-full max-w-2xl rounded-[var(--radius-xl)]">
             <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-4 py-3">
               <div>
-                <h3 className="text-lg font-semibold text-foreground">Generate Outfits</h3>
+                <h3 className="text-lg font-semibold text-foreground">
+                  Plan outfits
+                </h3>
                 <p className="text-sm text-muted-foreground">
-                  Configure AI planning options, then generate planned entries from {selectedDate.toLocaleDateString()} onward.
+                  Configure AI planning options, then generate planned entries
+                  from {selectedDate.toLocaleDateString()} onward.
                 </p>
               </div>
-                <button
-                  type="button"
-                  onClick={() => setShowGenerateModal(false)}
-                  className={iconTertiaryClass}
-                  aria-label="Close generate modal"
-                >
+              <button
+                type="button"
+                onClick={() => setShowGenerateModal(false)}
+                className={iconTertiaryClass}
+                aria-label="Close generate modal"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label htmlFor="generate-count" className="text-xs text-muted-foreground">How many</label>
+                <label
+                  htmlFor="generate-count"
+                  className="text-xs text-muted-foreground"
+                >
+                  How many
+                </label>
                 <input
                   id="generate-count"
                   type="number"
                   min={1}
                   max={14}
                   value={generationCount}
-                  onChange={(e) => setGenerationCount(Math.max(1, Math.min(14, Number(e.target.value) || 1)))}
+                  onChange={(e) =>
+                    setGenerationCount(
+                      Math.max(1, Math.min(14, Number(e.target.value) || 1)),
+                    )
+                  }
                   className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-2 py-1.5 text-foreground"
                 />
               </div>
 
               <div>
-                <label htmlFor="existing-policy" className="text-xs text-muted-foreground">Existing planned entries</label>
+                <label
+                  htmlFor="existing-policy"
+                  className="text-xs text-muted-foreground"
+                >
+                  Existing planned entries
+                </label>
                 <select
                   id="existing-policy"
                   value={existingPolicy}
-                  onChange={(e) => setExistingPolicy(e.target.value as ExistingPolicy)}
+                  onChange={(e) =>
+                    setExistingPolicy(e.target.value as ExistingPolicy)
+                  }
                   className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-2 py-1.5 text-foreground"
                 >
                   <option value="skip">Skip existing</option>
@@ -1313,11 +1659,18 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
               </div>
 
               <div>
-                <label htmlFor="mix-strategy" className="text-xs text-muted-foreground">AI mix strategy</label>
+                <label
+                  htmlFor="mix-strategy"
+                  className="text-xs text-muted-foreground"
+                >
+                  AI mix strategy
+                </label>
                 <select
                   id="mix-strategy"
                   value={mixStrategy}
-                  onChange={(e) => setMixStrategy(e.target.value as MixStrategy)}
+                  onChange={(e) =>
+                    setMixStrategy(e.target.value as MixStrategy)
+                  }
                   className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-2 py-1.5 text-foreground"
                 >
                   <option value="saved-heavy">Saved heavy</option>
@@ -1327,7 +1680,12 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
               </div>
 
               <div>
-                <label htmlFor="lookback-days" className="text-xs text-muted-foreground">Repeat window</label>
+                <label
+                  htmlFor="lookback-days"
+                  className="text-xs text-muted-foreground"
+                >
+                  Repeat window
+                </label>
                 <select
                   id="lookback-days"
                   value={lookbackDays}
@@ -1367,12 +1725,59 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
                 disabled={isGeneratingWeek || !hasRequiredItems}
                 className={primaryButtonClass}
               >
-                {isGeneratingWeek ? 'Generating...' : 'Generate Outfits'}
+                {isGeneratingWeek ? "Planning…" : "Plan the next few days"}
               </button>
             </div>
           </div>
         </div>
       )}
+      <AppDialog
+        open={!!pendingDeleteId}
+        title="Remove this calendar entry?"
+        onClose={() => {
+          setPendingDeleteId(null);
+          setDeleteError("");
+        }}
+      >
+        <p className="text-sm text-muted-foreground">
+          This removes this plan or wear record. Your saved outfit and clothing
+          stay in your wardrobe.
+        </p>
+        {deleteError && (
+          <p role="alert" className="mt-3 text-sm text-destructive">
+            {deleteError}
+          </p>
+        )}
+        <div className="mt-5 flex justify-end gap-3">
+          <button
+            type="button"
+            className={secondaryButtonClass}
+            disabled={deleteEntryMutation.isPending}
+            onClick={() => setPendingDeleteId(null)}
+          >
+            Keep entry
+          </button>
+          <button
+            type="button"
+            className={primaryButtonClass}
+            disabled={deleteEntryMutation.isPending}
+            onClick={async () => {
+              if (!pendingDeleteId) return;
+              try {
+                await onDeleteEntry(pendingDeleteId);
+                setPendingDeleteId(null);
+                setDeleteError("");
+              } catch {
+                setDeleteError(
+                  "Could not remove this entry. Please try again.",
+                );
+              }
+            }}
+          >
+            {deleteEntryMutation.isPending ? "Removing…" : "Remove entry"}
+          </button>
+        </div>
+      </AppDialog>
     </div>
   );
 }

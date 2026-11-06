@@ -1,15 +1,19 @@
-import { useRef, useCallback } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { generateWardrobeItemImage, getImageGenerationQuota } from '@/lib/actions/wardrobe-item-images';
-import { queryKeys } from '@/lib/query-client';
-import type { PlanCode } from '@/lib/services/billing/plans';
-import { isFreePlan } from '@/lib/services/billing/plan-labels';
+import { useRef, useCallback } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  generateWardrobeItemImage,
+  getImageGenerationQuota,
+} from "@/lib/actions/wardrobe-item-images";
+import { queryKeys } from "@/lib/query-client";
+import type { PlanCode } from "@/lib/services/billing/plans";
+import { isFreePlan } from "@/lib/services/billing/plan-labels";
 
 const DEBOUNCE_MS = 3000;
 
 interface GenerateParams {
   wardrobe_item_id: string;
   is_retry?: boolean;
+  request_id?: string;
 }
 
 interface GenerateOptions {
@@ -28,18 +32,49 @@ export function useGenerateWardrobeItemImage(): UseGenerateWardrobeItemImageRetu
   const lastCallRef = useRef<number>(0);
 
   const mutation = useMutation({
+    retry: false,
     mutationFn: async (params: GenerateParams) => {
       const result = await generateWardrobeItemImage({
         wardrobe_item_id: params.wardrobe_item_id,
         is_retry: params.is_retry ?? false,
+        request_id: params.request_id || crypto.randomUUID(),
       });
 
       if (!result.success) {
-        throw new Error(
-          `${result.error}|${result.error_code}`,
-        );
+        throw new Error(`${result.error}|${result.error_code}`);
       }
 
+      if (result.pending && result.job_id) {
+        const until = Date.now() + 180_000;
+        while (Date.now() < until) {
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+          const response = await fetch(
+            "/api/ai/jobs/" + encodeURIComponent(result.job_id),
+            { cache: "no-store" },
+          );
+          if (!response.ok)
+            throw new Error(
+              "Image status is temporarily unavailable. Check the clothing item shortly.|STATUS_UNAVAILABLE",
+            );
+          const job = await response.json();
+          if (job.status === "failed")
+            throw new Error(
+              "Image generation could not finish. Your previous image is kept.|GENERATION_FAILED",
+            );
+          if (
+            job.status === "succeeded" &&
+            typeof job.result?.image_url === "string"
+          )
+            return {
+              ...result,
+              pending: false,
+              image_url: job.result.image_url,
+            };
+        }
+        throw new Error(
+          "The image is still preparing. Check the clothing item shortly.|STILL_PROCESSING",
+        );
+      }
       return result;
     },
     onSuccess: (_data, params) => {
@@ -49,7 +84,7 @@ export function useGenerateWardrobeItemImage(): UseGenerateWardrobeItemImageRetu
         queryKey: queryKeys.wardrobe.item(params.wardrobe_item_id),
       });
       // Also invalidate quota so it reflects the updated count
-      queryClient.invalidateQueries({ queryKey: ['image-generation-quota'] });
+      queryClient.invalidateQueries({ queryKey: ["image-generation-quota"] });
     },
   });
 
@@ -82,8 +117,11 @@ export function useGenerateWardrobeItemImage(): UseGenerateWardrobeItemImageRetu
   // Parse error message into Error with error_code attached
   let parsedError: Error | null = null;
   if (mutation.error) {
-    const raw = mutation.error instanceof Error ? mutation.error.message : String(mutation.error);
-    const [message, code] = raw.split('|');
+    const raw =
+      mutation.error instanceof Error
+        ? mutation.error.message
+        : String(mutation.error);
+    const [message, code] = raw.split("|");
     const err = new Error(message);
     (err as Error & { error_code?: string }).error_code = code;
     parsedError = err;
@@ -114,14 +152,14 @@ export interface UseImageGenerationQuotaReturn {
 const defaultLimits = {
   monthly_limit: 0,
   monthly_remaining: 0,
-  monthly_reset_at: '',
+  monthly_reset_at: "",
   hourly_limit: 5,
   hourly_remaining: 0,
 };
 
 export function useImageGenerationQuota(): UseImageGenerationQuotaReturn {
   const { data, isLoading } = useQuery({
-    queryKey: ['image-generation-quota'],
+    queryKey: ["image-generation-quota"],
     queryFn: async () => {
       const result = await getImageGenerationQuota();
       if (!result.success) throw new Error(result.error);
@@ -130,10 +168,11 @@ export function useImageGenerationQuota(): UseImageGenerationQuotaReturn {
     staleTime: 60 * 1000, // 1 minute
   });
 
-  const tier = (data?.tier ?? 'free') as PlanCode;
+  const tier = (data?.tier ?? "free") as PlanCode;
   const limits = data?.limits ?? defaultLimits;
   const isFreeTier = isFreePlan(tier);
-  const canGenerate = !isFreeTier && limits.monthly_remaining > 0 && limits.hourly_remaining > 0;
+  const canGenerate =
+    !isFreeTier && limits.monthly_remaining > 0 && limits.hourly_remaining > 0;
 
   return {
     tier,

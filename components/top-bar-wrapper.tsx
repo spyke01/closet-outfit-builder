@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import { TopBar } from './top-bar';
+import React from "react";
+import { useRouter } from "next/navigation";
+import { TopBar } from "./top-bar";
+import { useAppShell } from "@/lib/contexts/app-shell";
 
 interface TopBarWrapperProps {
   user?: {
@@ -15,18 +16,21 @@ interface TopBarWrapperProps {
 
 export const TopBarWrapper: React.FC<TopBarWrapperProps> = ({ user }) => {
   const router = useRouter();
+  const inAppShell = useAppShell();
 
   const handleTitleClick = () => {
     if (user) {
-      router.push('/today');
+      router.push("/today");
     } else {
-      router.push('/');
+      router.push("/");
     }
   };
 
   const handleSettingsClick = () => {
-    router.push('/settings');
+    router.push("/settings");
   };
+
+  if (inAppShell) return null;
 
   return (
     <TopBar

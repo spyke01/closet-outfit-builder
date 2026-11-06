@@ -1,19 +1,17 @@
-import { createLogger } from '@/lib/utils/logger';
+import { createLogger } from "@/lib/utils/logger";
 
-const logger = createLogger({ component: 'lib-services-onboarding-persister' });
-
+const logger = createLogger({ component: "lib-services-onboarding-persister" });
 
 /**
  * Onboarding persister service
- * 
+ *
  * Persists generated wardrobe items to database with error handling.
  * Handles batch insertion and provides detailed success/failure statistics.
  */
 
-import { createClient } from '@/lib/supabase/client';
-import type { CategoryKey } from '@/lib/data/onboarding-categories';
-import type { GeneratedWardrobeItem } from '@/lib/types/onboarding';
-import type { CreateWardrobeItemInput } from '@/lib/types/database';
+import type { OnboardingCategoryMap } from "@/lib/services/onboarding-category-manager";
+import type { GeneratedWardrobeItem } from "@/lib/types/onboarding";
+import type { CreateWardrobeItemInput } from "@/lib/types/database";
 
 /**
  * Result of persisting wardrobe items
@@ -24,12 +22,6 @@ export interface PersistResult {
   errors: string[];
 }
 
-/**
- * Batch size for database inserts
- * Inserting in chunks improves performance and reduces timeout risk
- */
-const BATCH_SIZE = 50;
-
 type OnboardingWardrobeInsert = CreateWardrobeItemInput & {
   user_id: string;
   active: boolean;
@@ -37,10 +29,10 @@ type OnboardingWardrobeInsert = CreateWardrobeItemInput & {
 
 /**
  * Persist generated wardrobe items to database
- * 
+ *
  * Maps GeneratedWardrobeItem to CreateWardrobeItemInput and batch inserts.
  * Handles errors gracefully and returns success/failure statistics.
- * 
+ *
  * @param userId - User ID
  * @param items - Generated wardrobe items to persist
  * @param categoryMap - Map of CategoryKey to database category ID
@@ -49,9 +41,8 @@ type OnboardingWardrobeInsert = CreateWardrobeItemInput & {
 export async function persistWardrobeItems(
   userId: string,
   items: GeneratedWardrobeItem[],
-  categoryMap: Map<CategoryKey, string>
+  categoryMap: OnboardingCategoryMap,
 ): Promise<PersistResult> {
-  const supabase = createClient();
   const result: PersistResult = {
     success: 0,
     failed: 0,
@@ -64,56 +55,60 @@ export async function persistWardrobeItems(
 
   try {
     // Map generated items to database input format
-    const itemsToInsert = items.map(item => 
-      mapGeneratedItemToInput(item, userId, categoryMap)
-    ).filter(item => item !== null) as OnboardingWardrobeInsert[];
+    const itemsToInsert = items
+      .map((item) => mapGeneratedItemToInput(item, userId, categoryMap))
+      .filter((item) => item !== null) as OnboardingWardrobeInsert[];
 
     // Track items that failed mapping
     const mappingFailures = items.length - itemsToInsert.length;
     if (mappingFailures > 0) {
-      result.failed += mappingFailures;
-      result.errors.push(`${mappingFailures} items failed category mapping`);
+      throw new Error(
+        "Some categories could not be found. No pieces were added.",
+      );
     }
 
-    // Insert items in batches
-    const batches = chunkArray(itemsToInsert, BATCH_SIZE);
-
-    for (let i = 0; i < batches.length; i++) {
-      const batch = batches[i];
-      
-      try {
-        const { data, error } = await supabase
-          .from('wardrobe_items')
-          .insert(batch)
-          .select('id');
-
-        if (error) {
-          result.failed += batch.length;
-          result.errors.push(`Batch ${i + 1} failed: ${error.message}`);
-          logger.error(`Failed to insert batch ${i + 1}:`, error);
-        } else {
-          result.success += data?.length || 0;
-        }
-      } catch (error) {
-        result.failed += batch.length;
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        result.errors.push(`Batch ${i + 1} exception: ${errorMessage}`);
-        logger.error(`Exception inserting batch ${i + 1}:`, error);
-      }
+    // Retain the same key after a lost response. The database writes the entire
+    // batch once or rolls it back; a retry cannot duplicate a partial wardrobe.
+    const snapshot = JSON.stringify(itemsToInsert);
+    const bytes = await crypto.subtle.digest(
+      "SHA-256",
+      new TextEncoder().encode(snapshot),
+    );
+    const hash = Array.from(new Uint8Array(bytes))
+      .map((value) => value.toString(16).padStart(2, "0"))
+      .join("");
+    const storageKey = `onboarding-save:${userId}:${hash}`;
+    let requestKey = sessionStorage.getItem(storageKey);
+    if (!requestKey) {
+      requestKey = crypto.randomUUID();
+      sessionStorage.setItem(storageKey, requestKey);
     }
+    const response = await fetch("/api/onboarding/wardrobe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ requestKey, items: itemsToInsert }),
+    });
+    const payload = await response.json();
+    if (!response.ok)
+      throw new Error(payload.error || "Could not save this wardrobe.");
+    result.success = Number(payload.success || 0);
+    // Leave the key available through navigation/reload; an explicit new setup
+    // changes the selection snapshot or starts a new browser session.
 
     return result;
   } catch (error) {
-    logger.error('Error persisting wardrobe items:', error);
+    logger.error("Error persisting wardrobe items:", error);
     result.failed = items.length;
-    result.errors.push(error instanceof Error ? error.message : 'Unknown error');
+    result.errors.push(
+      error instanceof Error ? error.message : "Unknown error",
+    );
     return result;
   }
 }
 
 /**
  * Map GeneratedWardrobeItem to CreateWardrobeItemInput
- * 
+ *
  * @param item - Generated wardrobe item
  * @param userId - User ID
  * @param categoryMap - Map of CategoryKey to database category ID
@@ -122,9 +117,12 @@ export async function persistWardrobeItems(
 function mapGeneratedItemToInput(
   item: GeneratedWardrobeItem,
   userId: string,
-  categoryMap: Map<CategoryKey, string>
+  categoryMap: OnboardingCategoryMap,
 ): OnboardingWardrobeInsert | null {
-  const categoryId = categoryMap.get(item.category);
+  const categoryId =
+    (item.category === "Accessories"
+      ? categoryMap.byName?.get(item.subcategory)
+      : undefined) || categoryMap.get(item.category);
 
   if (!categoryId) {
     logger.error(`No category ID found for category: ${item.category}`);
@@ -141,23 +139,6 @@ function mapGeneratedItemToInput(
     image_url: item.image_url || undefined,
     active: true,
     // Set source to 'onboarding' to track item origin
-    capsule_tags: ['onboarding'],
+    capsule_tags: ["onboarding"],
   };
-}
-
-/**
- * Split array into chunks of specified size
- * 
- * @param array - Array to chunk
- * @param size - Chunk size
- * @returns Array of chunks
- */
-function chunkArray<T>(array: T[], size: number): T[][] {
-  const chunks: T[][] = [];
-  
-  for (let i = 0; i < array.length; i += size) {
-    chunks.push(array.slice(i, i + size));
-  }
-  
-  return chunks;
 }

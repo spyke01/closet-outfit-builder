@@ -1,194 +1,154 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { createClient } from '@/lib/supabase/server';
-import { incrementUsageCounter, resolveUserEntitlements } from '@/lib/services/billing/entitlements';
-import { getAssistantPredictionStatus } from '@/lib/services/assistant/providers/replicate';
-import { moderateOutput } from '@/lib/services/assistant/moderation';
-import { SEBASTIAN_REFUSAL_TEMPLATES } from '@/lib/services/assistant/persona';
-import { requireSameOriginWithOptions } from '@/lib/utils/request-security';
-import { mapPublicAiError } from '@/lib/utils/public-ai-errors';
+import { boundedJson, RequestBodyError } from "@/lib/utils/bounded-request";
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { ownedAiJob, AiJobError } from "@/lib/services/ai/jobs";
+import {
+  assistantJobOutput,
+  refreshAssistantJob,
+} from "@/lib/services/ai/assistant-job";
+import { moderateOutput } from "@/lib/services/assistant/moderation";
+import { SEBASTIAN_REFUSAL_TEMPLATES } from "@/lib/services/assistant/persona";
+import { requireSameOriginWithOptions } from "@/lib/utils/request-security";
 
-export const dynamic = 'force-dynamic';
-
-const StatusRequestSchema = z.object({
-  threadId: z.string().uuid(),
-});
-
+export const dynamic = "force-dynamic";
+const Schema = z.object({ threadId: z.string().uuid() });
 export async function POST(request: NextRequest) {
-  const sameOriginError = requireSameOriginWithOptions(request, {
-    mode: (process.env.SECURITY_CSRF_MODE as 'off' | 'report' | 'enforce' | undefined) || 'enforce',
-    protectMethods: ['POST'],
-    reasonTag: 'assistant_status',
+  const originError = requireSameOriginWithOptions(request, {
+    mode: "enforce",
+    reasonTag: "assistant-status",
   });
-  if (sameOriginError) {
-    return sameOriginError;
-  }
-
+  if (originError) return originError;
   try {
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user?.id) {
-      return NextResponse.json({ error: 'Authentication required', code: 'AUTH_REQUIRED' }, { status: 401 });
-    }
-
-    const parsed = StatusRequestSchema.safeParse(await request.json());
-    if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid request payload', code: 'VALIDATION_ERROR' }, { status: 400 });
-    }
-
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !user)
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 },
+      );
+    const parsed = Schema.safeParse(await boundedJson(request));
+    if (!parsed.success)
+      return NextResponse.json(
+        { error: "Invalid request payload" },
+        { status: 400 },
+      );
+    const threadId = parsed.data.threadId;
     const { data: thread } = await supabase
-      .from('assistant_threads')
-      .select('id')
-      .eq('id', parsed.data.threadId)
-      .eq('user_id', user.id)
+      .from("assistant_threads")
+      .select("id")
+      .eq("id", threadId)
+      .eq("user_id", user.id)
       .maybeSingle();
-
-    if (!thread) {
-      return NextResponse.json({ error: 'Thread not found', code: 'THREAD_NOT_FOUND' }, { status: 404 });
-    }
-
-    const { data: pendingMessage } = await supabase
-      .from('assistant_messages')
-      .select('id, content, metadata_json')
-      .eq('thread_id', parsed.data.threadId)
-      .eq('user_id', user.id)
-      .eq('role', 'assistant')
-      .contains('metadata_json', { pending: true })
-      .order('created_at', { ascending: false })
+    if (!thread)
+      return NextResponse.json({ error: "Thread not found" }, { status: 404 });
+    const { data: message, error } = await supabase
+      .from("assistant_messages")
+      .select("id,content,metadata_json")
+      .eq("thread_id", threadId)
+      .eq("user_id", user.id)
+      .eq("role", "assistant")
+      .contains("metadata_json", { pending: true })
+      .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
-
-    if (!pendingMessage) {
-      const { data: latestAssistant } = await supabase
-        .from('assistant_messages')
-        .select('content')
-        .eq('thread_id', parsed.data.threadId)
-        .eq('user_id', user.id)
-        .eq('role', 'assistant')
-        .order('created_at', { ascending: false })
+    if (error) throw new Error("Unable to load conversation");
+    if (!message) {
+      const { data: latest } = await supabase
+        .from("assistant_messages")
+        .select("content")
+        .eq("thread_id", threadId)
+        .eq("user_id", user.id)
+        .eq("role", "assistant")
+        .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
-
       return NextResponse.json({
-        threadId: parsed.data.threadId,
+        threadId,
         pending: false,
-        assistantMessage: latestAssistant?.content || null,
+        assistantMessage: latest?.content,
       });
     }
-
-    const metadata = (pendingMessage.metadata_json || {}) as {
-      pending_prediction_id?: string;
-      metric_key?: 'ai_stylist_messages' | 'ai_stylist_vision_messages';
-      hour_key?: string;
-      model?: string;
-      reserved_usage?: boolean;
-    };
-
-    if (!metadata.pending_prediction_id) {
+    const metadata = message.metadata_json || {};
+    // Pre-migration metadata was client-writable. Never use an old raw provider
+    // handle as authorization to read an inference result.
+    if (typeof metadata.job_id !== "string")
       return NextResponse.json({
-        threadId: parsed.data.threadId,
+        threadId,
         pending: false,
-        assistantMessage: pendingMessage.content,
+        assistantMessage: "Please send that request again to continue.",
       });
-    }
-
-    const predictionStatus = await getAssistantPredictionStatus(metadata.pending_prediction_id);
-    if (predictionStatus.status === 'pending') {
-      return NextResponse.json({
-        threadId: parsed.data.threadId,
-        pending: true,
-        assistantMessage: pendingMessage.content,
-      });
-    }
-
-    if (predictionStatus.status === 'failed') {
-      const failReply = 'I could not complete that image review right now. Please try again.';
-      await supabase
-        .from('assistant_messages')
-        .update({
-          content: failReply,
-          metadata_json: {
-            ...metadata,
-            pending: false,
-            failed: true,
-          },
-        })
-        .eq('id', pendingMessage.id);
-
-      await supabase.from('assistant_inference_events').insert({
-        user_id: user.id,
-        thread_id: parsed.data.threadId,
-        provider: 'replicate',
-        model: metadata.model || predictionStatus.model || 'unknown',
-        status: 'failed',
-        error_code: 'UPSTREAM_ERROR',
-        safety_flags_json: {},
-      });
-
-      return NextResponse.json({
-        threadId: parsed.data.threadId,
-        pending: false,
-        assistantMessage: failReply,
-      });
-    }
-
-    const outputSafety = moderateOutput(predictionStatus.text || '');
-    const finalReply = outputSafety.blocked
-      ? (outputSafety.safeReply || SEBASTIAN_REFUSAL_TEMPLATES.outOfScope)
-      : (predictionStatus.text || SEBASTIAN_REFUSAL_TEMPLATES.outOfScope);
-
-    await supabase
-      .from('assistant_messages')
+    const owned = await ownedAiJob(user.id, metadata.job_id);
+    if (
+      !owned ||
+      owned.scope_key !== threadId ||
+      !["assistant_text", "assistant_vision"].includes(owned.task)
+    )
+      return NextResponse.json({ error: "Request not found" }, { status: 404 });
+    const job = await refreshAssistantJob(owned);
+    const output = assistantJobOutput(job);
+    if (!output && job.status !== "failed")
+      return NextResponse.json({ threadId, pending: true });
+    const safety = output ? moderateOutput(output.text) : null;
+    const reply = output
+      ? safety?.blocked
+        ? safety.safeReply || SEBASTIAN_REFUSAL_TEMPLATES.outOfScope
+        : output.text
+      : "I couldn’t complete that request. Please try again later.";
+    const { error: writeError } = await createAdminClient()
+      .from("assistant_messages")
       .update({
-        content: finalReply,
+        content: reply,
         metadata_json: {
           ...metadata,
           pending: false,
-          blocked: outputSafety.blocked,
-          safety_flags: outputSafety.flags,
-          model: predictionStatus.model || metadata.model || 'unknown',
+          blocked: safety?.blocked || false,
         },
       })
-      .eq('id', pendingMessage.id);
-
-    if (!metadata.reserved_usage) {
-      const entitlements = await resolveUserEntitlements(supabase, user.id);
-      await incrementUsageCounter(
-        supabase,
-        user.id,
-        metadata.metric_key || 'ai_stylist_vision_messages',
-        entitlements.period,
-        1
-      );
+      .eq("id", message.id)
+      .eq("user_id", user.id);
+    if (writeError) throw new Error("Unable to save conversation");
+    if (output) {
+      const { error: auditError } = await createAdminClient()
+        .from("assistant_inference_events")
+        .upsert(
+          {
+            job_id: job.id,
+            user_id: user.id,
+            thread_id: threadId,
+            provider: job.provider,
+            model: output.model,
+            status: safety?.blocked ? "blocked" : "succeeded",
+            input_tokens: output.inputTokens,
+            output_tokens: output.outputTokens,
+          },
+          { onConflict: "job_id" },
+        );
+      if (auditError) throw new Error("Unable to save inference event");
     }
-
-    await supabase.from('assistant_inference_events').insert({
-      user_id: user.id,
-      thread_id: parsed.data.threadId,
-      provider: 'replicate',
-      model: predictionStatus.model || metadata.model || 'unknown',
-      status: outputSafety.blocked ? 'blocked' : 'succeeded',
-      input_tokens: predictionStatus.inputTokens ?? null,
-      output_tokens: predictionStatus.outputTokens ?? null,
-      error_code: outputSafety.blocked ? 'SAFETY_BLOCKED' : null,
-      safety_flags_json: {
-        output: outputSafety.flags,
-      },
-    });
-
     return NextResponse.json({
-      threadId: parsed.data.threadId,
+      threadId,
       pending: false,
-      assistantMessage: finalReply,
+      assistantMessage: reply,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to poll assistant status';
-    const mapped = mapPublicAiError(message, {
-      timeout: 'Sebastian took too long to respond. Please try again.',
-      unavailable: 'Sebastian is temporarily unavailable. Please try again shortly.',
-      rateLimit: 'Sebastian is handling high demand right now. Please retry in a moment.',
-      generic: 'Failed to poll assistant status',
-    });
-    return NextResponse.json({ error: mapped.error, code: mapped.code }, { status: mapped.status });
+    if (error instanceof RequestBodyError)
+      return NextResponse.json(
+        { error: error.message, code: "VALIDATION_ERROR" },
+        { status: 400 },
+      );
+    if (error instanceof AiJobError)
+      return NextResponse.json(
+        { error: error.message, code: error.code },
+        { status: error.status },
+      );
+    return NextResponse.json(
+      { error: "This request is temporarily unavailable." },
+      { status: 503 },
+    );
   }
 }

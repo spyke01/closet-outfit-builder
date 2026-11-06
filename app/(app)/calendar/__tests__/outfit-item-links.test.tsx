@@ -1,78 +1,78 @@
-import { describe, expect, it, vi } from 'vitest';
-import { waitFor } from '@testing-library/react';
-import { CalendarPageClient } from '../calendar-page-client';
-import { TripsPageClient } from '../trips/trips-page-client';
-import { renderWithQuery } from '@/lib/test/query-utils';
-import type { Outfit, Trip, TripDay, WardrobeItem } from '@/lib/types/database';
+import { describe, expect, it, vi } from "vitest";
+import { waitFor } from "@testing-library/react";
+import { CalendarPageClient } from "../calendar-page-client";
+import { TripsPageClient } from "../trips/trips-page-client";
+import { renderWithQuery } from "@/lib/test/query-utils";
+import type { Outfit, Trip, TripDay, WardrobeItem } from "@/lib/types/database";
 
-const todayKey = new Date().toISOString().split('T')[0];
+const todayKey = new Date().toISOString().split("T")[0];
 
 function makeItem(index: number): WardrobeItem {
   return {
     id: `item-${index}`,
-    user_id: 'user-1',
+    user_id: "user-1",
     category_id: `category-${index}`,
     name: `Item ${index}`,
     active: true,
-    bg_removal_status: 'completed',
-    created_at: '2026-01-01',
-    updated_at: '2026-01-01',
+    bg_removal_status: "completed",
+    created_at: "2026-01-01",
+    updated_at: "2026-01-01",
     image_url: `https://example.com/item-${index}.png`,
     category: {
       id: `category-${index}`,
-      user_id: 'user-1',
+      user_id: "user-1",
       name: `Category ${index}`,
       is_anchor_item: false,
       display_order: index,
-      created_at: '2026-01-01',
-      updated_at: '2026-01-01',
+      created_at: "2026-01-01",
+      updated_at: "2026-01-01",
     },
   };
 }
 
 const outfitItems = [1, 2, 3, 4, 5].map(makeItem);
-const outfitId = 'outfit-123';
+const outfitId = "outfit-123";
 
 const mockOutfit: Outfit = {
   id: outfitId,
-  user_id: 'user-1',
-  name: 'Test Outfit',
+  user_id: "user-1",
+  name: "Test Outfit",
   weight: 3,
   loved: false,
-  source: 'curated',
-  created_at: '2026-01-01',
-  updated_at: '2026-01-01',
+  source: "curated",
+  created_at: "2026-01-01",
+  updated_at: "2026-01-01",
   items: outfitItems,
 };
 
 const mockTrip: Trip = {
-  id: 'trip-1',
-  user_id: 'user-1',
-  name: 'NYC',
-  destination_text: 'New York',
+  id: "trip-1",
+  user_id: "user-1",
+  name: "NYC",
+  destination_text: "New York",
   destination_lat: null,
   destination_lon: null,
   start_date: todayKey,
   end_date: todayKey,
-  created_at: '2026-01-01',
-  updated_at: '2026-01-01',
+  created_at: "2026-01-01",
+  updated_at: "2026-01-01",
 };
 
 const mockTripDay: TripDay = {
-  id: 'trip-day-1',
-  trip_id: 'trip-1',
+  id: "trip-day-1",
+  trip_id: "trip-1",
   day_date: todayKey,
   slot_number: 1,
   slot_label: null,
   weather_context: null,
   outfit_id: outfitId,
-  created_at: '2026-01-01',
-  updated_at: '2026-01-01',
+  created_at: "2026-01-01",
+  updated_at: "2026-01-01",
   outfit: mockOutfit,
   items: outfitItems,
 };
 
-vi.mock('@/lib/hooks/use-weather', () => ({
+vi.mock("@/lib/hooks/use-weather", () => ({
   useWeather: () => ({
     forecast: [],
     current: null,
@@ -83,7 +83,7 @@ vi.mock('@/lib/hooks/use-weather', () => ({
   }),
 }));
 
-vi.mock('@/lib/hooks/use-outfits', () => ({
+vi.mock("@/lib/hooks/use-outfits", () => ({
   useOutfits: () => ({ data: [mockOutfit] }),
   useCreateOutfit: () => ({
     mutateAsync: vi.fn(),
@@ -91,20 +91,20 @@ vi.mock('@/lib/hooks/use-outfits', () => ({
   }),
 }));
 
-vi.mock('@/lib/hooks/use-calendar-entries', () => ({
+vi.mock("@/lib/hooks/use-calendar-entries", () => ({
   useCalendarEntriesByMonth: () => ({
     data: {
       entries: [
         {
-          id: 'entry-1',
-          user_id: 'user-1',
+          id: "entry-1",
+          user_id: "user-1",
           entry_date: todayKey,
-          status: 'planned',
+          status: "planned",
           outfit_id: outfitId,
           notes: null,
           weather_context: null,
-          created_at: '2026-01-01',
-          updated_at: '2026-01-01',
+          created_at: "2026-01-01",
+          updated_at: "2026-01-01",
           outfit: mockOutfit,
           items: outfitItems,
         },
@@ -118,7 +118,7 @@ vi.mock('@/lib/hooks/use-calendar-entries', () => ({
   useDeleteCalendarEntry: () => ({ mutateAsync: vi.fn(), isPending: false }),
 }));
 
-vi.mock('@/lib/hooks/use-trips', () => ({
+vi.mock("@/lib/hooks/use-trips", () => ({
   useTrips: () => ({ data: [mockTrip], isLoading: false }),
   useTripDetail: () => ({
     data: {
@@ -141,7 +141,7 @@ vi.mock('@/lib/hooks/use-trips', () => ({
   useUpdateTripPackItem: () => ({ mutateAsync: vi.fn(), isPending: false }),
 }));
 
-vi.mock('@/lib/supabase/client', () => ({
+vi.mock("@/lib/supabase/client", () => ({
   createClient: () => ({
     from: vi.fn(() => ({
       select: vi.fn(() => ({
@@ -155,21 +155,35 @@ vi.mock('@/lib/supabase/client', () => ({
   }),
 }));
 
-describe('Calendar and trip outfit item links', () => {
-  it('renders all calendar entry outfit items and links them to the outfit page', () => {
-    const { container } = renderWithQuery(<CalendarPageClient wardrobeItems={outfitItems} />);
+describe("Calendar and trip outfit item links", () => {
+  it("retains the saved outfit link and exposes a link to every individual piece", () => {
+    const { container } = renderWithQuery(
+      <CalendarPageClient wardrobeItems={outfitItems} />,
+    );
 
-    expect(container.querySelector('.page-shell-content--wide')).toBeInTheDocument();
+    expect(
+      container.querySelector(".page-shell-content--wide"),
+    ).toBeInTheDocument();
     const links = container.querySelectorAll(`a[href^="/outfits/${outfitId}"]`);
-    expect(links.length).toBe(outfitItems.length);
+    expect(links.length).toBe(1);
+    for (const item of outfitItems)
+      expect(
+        container.querySelector(`a[href='/wardrobe/items/${item.id}']`),
+      ).toBeInTheDocument();
   });
 
-  it('renders all trip slot outfit items and links them to the outfit page', async () => {
-    const { container } = renderWithQuery(<TripsPageClient wardrobeItems={outfitItems} />);
+  it("renders all trip slot outfit items and links them to the outfit page", async () => {
+    const { container } = renderWithQuery(
+      <TripsPageClient wardrobeItems={outfitItems} />,
+    );
 
     await waitFor(() => {
-      expect(container.querySelector('.page-shell-content--wide')).toBeInTheDocument();
-      const links = container.querySelectorAll(`a[href^="/outfits/${outfitId}"]`);
+      expect(
+        container.querySelector(".page-shell-content--wide"),
+      ).toBeInTheDocument();
+      const links = container.querySelectorAll(
+        `a[href^="/outfits/${outfitId}"]`,
+      );
       expect(links.length).toBe(outfitItems.length);
     });
   });

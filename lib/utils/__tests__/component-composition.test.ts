@@ -1,24 +1,30 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { 
-  fetchInParallel, 
-  runNonBlocking, 
-  logAsync, 
-  trackEventAsync 
-} from '../component-composition';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import {
+  fetchInParallel,
+  runNonBlocking,
+  logAsync,
+  trackEventAsync,
+} from "../component-composition";
 
-describe('Component Composition Utilities', () => {
+describe("Component Composition Utilities", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('fetchInParallel', () => {
-    it('should fetch all promises in parallel', async () => {
+  describe("fetchInParallel", () => {
+    it("should fetch all promises in parallel", async () => {
       const startTime = Date.now();
-      
+
       const promises = {
-        user: new Promise(resolve => setTimeout(() => resolve({ id: '1', name: 'John' }), 50)),
-        posts: new Promise(resolve => setTimeout(() => resolve([{ id: '1' }]), 50)),
-        comments: new Promise(resolve => setTimeout(() => resolve([{ id: '1' }]), 50)),
+        user: new Promise((resolve) =>
+          setTimeout(() => resolve({ id: "1", name: "John" }), 50),
+        ),
+        posts: new Promise((resolve) =>
+          setTimeout(() => resolve([{ id: "1" }]), 50),
+        ),
+        comments: new Promise((resolve) =>
+          setTimeout(() => resolve([{ id: "1" }]), 50),
+        ),
       };
 
       const result = await fetchInParallel(promises);
@@ -26,52 +32,54 @@ describe('Component Composition Utilities', () => {
 
       // Should complete in ~50ms (parallel) not ~150ms (sequential)
       expect(duration).toBeLessThan(100);
-      expect(result.user).toEqual({ id: '1', name: 'John' });
-      expect(result.posts).toEqual([{ id: '1' }]);
-      expect(result.comments).toEqual([{ id: '1' }]);
+      expect(result.user).toEqual({ id: "1", name: "John" });
+      expect(result.posts).toEqual([{ id: "1" }]);
+      expect(result.comments).toEqual([{ id: "1" }]);
     });
 
-    it('should handle empty promises object', async () => {
+    it("should handle empty promises object", async () => {
       const result = await fetchInParallel({});
       expect(result).toEqual({});
     });
 
-    it('should handle single promise', async () => {
+    it("should handle single promise", async () => {
       const result = await fetchInParallel({
-        user: Promise.resolve({ id: '1', name: 'John' }),
+        user: Promise.resolve({ id: "1", name: "John" }),
       });
 
-      expect(result.user).toEqual({ id: '1', name: 'John' });
+      expect(result.user).toEqual({ id: "1", name: "John" });
     });
 
-    it('should propagate errors', async () => {
+    it("should propagate errors", async () => {
       const promises = {
-        user: Promise.resolve({ id: '1' }),
-        error: Promise.reject(new Error('Failed to fetch')),
+        user: Promise.resolve({ id: "1" }),
+        error: Promise.reject(new Error("Failed to fetch")),
       };
 
-      await expect(fetchInParallel(promises)).rejects.toThrow('Failed to fetch');
+      await expect(fetchInParallel(promises)).rejects.toThrow(
+        "Failed to fetch",
+      );
     });
 
-    it('should maintain type safety', async () => {
+    it("should maintain type safety", async () => {
       const result = await fetchInParallel({
-        user: Promise.resolve({ id: '1', name: 'John' }),
+        user: Promise.resolve({ id: "1", name: "John" }),
         count: Promise.resolve(42),
         active: Promise.resolve(true),
       });
 
       // TypeScript should infer correct types
-      expect(typeof result.user.id).toBe('string');
-      expect(typeof result.count).toBe('number');
-      expect(typeof result.active).toBe('boolean');
+      expect(typeof result.user.id).toBe("string");
+      expect(typeof result.count).toBe("number");
+      expect(typeof result.active).toBe("boolean");
     });
   });
 
-  describe('runNonBlocking', () => {
-    it('should execute operation without blocking', async () => {
+  describe("runNonBlocking", () => {
+    it("should execute operation without blocking", async () => {
       let executed = false;
       const operation = async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
         executed = true;
       };
 
@@ -80,51 +88,89 @@ describe('Component Composition Utilities', () => {
       expect(executed).toBe(false);
 
       // Wait for operation to complete
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await new Promise((resolve) => setTimeout(resolve, 20));
       expect(executed).toBe(true);
     });
 
-    it('should handle errors gracefully', async () => {
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      
+    it("should handle errors gracefully", async () => {
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
       const operation = async () => {
-        throw new Error('Operation failed');
+        throw new Error("Operation failed");
       };
 
       runNonBlocking(operation);
 
       // Wait for error to be logged
-      await new Promise(resolve => setTimeout(resolve, 10));
-      
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Non-blocking operation failed:')
+        expect.stringContaining("Non-blocking operation failed:"),
       );
 
       consoleErrorSpy.mockRestore();
     });
   });
 
-  describe('logAsync', () => {
-    it('should log message asynchronously', async () => {
-      const consoleInfoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+  describe("logAsync", () => {
+    it("should log message asynchronously", async () => {
+      const consoleInfoSpy = vi
+        .spyOn(console, "info")
+        .mockImplementation(() => {});
 
-      logAsync('Test message', { key: 'value' });
+      logAsync("Test message", { key: "value" });
 
       // Wait for async operation
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Test message')
+        expect.stringContaining("Test message"),
       );
 
       consoleInfoSpy.mockRestore();
     });
 
-    it('should not block execution', () => {
-      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    it("schedules through the non-blocking lifecycle without waiting for logging", async () => {
+      const after = vi.fn();
+      vi.stubGlobal("after", after);
+      try {
+        expect(logAsync("Test message")).toBeUndefined();
+        expect(after).toHaveBeenCalledOnce();
+        expect(after.mock.calls[0][0]).toBeTypeOf("function");
+        await expect(after.mock.calls[0][0]()).resolves.toBeUndefined();
+      } finally {
+        vi.unstubAllGlobals();
+      }
+    });
+  });
+
+  describe("trackEventAsync", () => {
+    it("should track event asynchronously", async () => {
+      const consoleInfoSpy = vi
+        .spyOn(console, "info")
+        .mockImplementation(() => {});
+
+      trackEventAsync("user_signup", { userId: "123", plan: "premium" });
+
+      // Wait for async operation
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      expect(consoleInfoSpy).toHaveBeenCalledWith(
+        expect.stringContaining("Analytics event"),
+      );
+
+      consoleInfoSpy.mockRestore();
+    });
+
+    it("should not block execution", () => {
+      const consoleLogSpy = vi
+        .spyOn(console, "log")
+        .mockImplementation(() => {});
 
       const startTime = Date.now();
-      logAsync('Test message');
+      trackEventAsync("page_view");
       const duration = Date.now() - startTime;
 
       // Should return immediately
@@ -134,39 +180,10 @@ describe('Component Composition Utilities', () => {
     });
   });
 
-  describe('trackEventAsync', () => {
-    it('should track event asynchronously', async () => {
-      const consoleInfoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
-
-      trackEventAsync('user_signup', { userId: '123', plan: 'premium' });
-
-      // Wait for async operation
-      await new Promise(resolve => setTimeout(resolve, 10));
-
-      expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Analytics event')
-      );
-
-      consoleInfoSpy.mockRestore();
-    });
-
-    it('should not block execution', () => {
-      const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-
-      const startTime = Date.now();
-      trackEventAsync('page_view');
-      const duration = Date.now() - startTime;
-
-      // Should return immediately
-      expect(duration).toBeLessThan(5);
-
-      consoleLogSpy.mockRestore();
-    });
-  });
-
-  describe('Performance patterns', () => {
-    it('should demonstrate parallel vs sequential performance', async () => {
-      const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  describe("Performance patterns", () => {
+    it("should demonstrate parallel vs sequential performance", async () => {
+      const delay = (ms: number) =>
+        new Promise((resolve) => setTimeout(resolve, ms));
 
       // Sequential execution
       const sequentialStart = Date.now();
@@ -188,14 +205,16 @@ describe('Component Composition Utilities', () => {
       expect(parallelDuration).toBeLessThan(sequentialDuration / 2);
     });
 
-    it('should handle mixed fast and slow operations', async () => {
+    it("should handle mixed fast and slow operations", async () => {
       const result = await fetchInParallel({
-        fast: Promise.resolve('immediate'),
-        slow: new Promise(resolve => setTimeout(() => resolve('delayed'), 50)),
+        fast: Promise.resolve("immediate"),
+        slow: new Promise((resolve) =>
+          setTimeout(() => resolve("delayed"), 50),
+        ),
       });
 
-      expect(result.fast).toBe('immediate');
-      expect(result.slow).toBe('delayed');
+      expect(result.fast).toBe("immediate");
+      expect(result.slow).toBe("delayed");
     });
   });
 });

@@ -1,0 +1,73 @@
+{
+  "checkedAt": "2026-11-06T16:41:29.452Z",
+  "branch": "codex/signed-in-experience-and-ai-protections",
+  "deployment": "Local source only; no hosted migrations or application/function deployment",
+  "paidInferenceCalls": 0,
+  "checks": [
+    {
+      "command": "npm run verify:env",
+      "passed": true,
+      "detail": "Required configuration present; credential values not printed"
+    },
+    {
+      "command": "npm run typecheck",
+      "passed": true
+    },
+    {
+      "command": "npm run lint:strict",
+      "passed": true,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "command": "npm run test:run",
+      "passed": true,
+      "testFilesPassed": 214,
+      "testFilesSkipped": 1,
+      "testsPassed": 2360,
+      "testsSkipped": 4,
+      "detail": "Existing integration skips retained"
+    },
+    {
+      "command": "npm run build",
+      "passed": true,
+      "detail": "Next.js production build; baseline static-cache/Browserslist/Edge-rendering notices remain"
+    },
+    {
+      "command": "deno check --no-lock (three modified Edge entry points)",
+      "passed": true,
+      "entryPoints": 3
+    },
+    {
+      "command": "node scripts/test-ai-database.mjs",
+      "passed": true,
+      "checks": 21,
+      "detail": "Real PostgreSQL 16 with minimal synthetic prerequisite schema; not a full hosted-schema migration rehearsal"
+    },
+    {
+      "command": "node scripts/check-experience-browser.mjs",
+      "passed": true,
+      "checks": 31,
+      "detail": "Real components, synthetic I/O; desktop and ten 390px screens, keyboard dialogs, saved-state reloads, real PNG export with pixel check"
+    },
+    {
+      "command": "node scripts/check-client-secrets.mjs",
+      "checkedAt": "2026-11-06T16:40:44.128Z",
+      "scope": "Exact private local values in built browser assets; not a production or historical exposure audit",
+      "credentialsCompared": 9,
+      "browserAssetsChecked": 131,
+      "matchingFiles": [],
+      "passed": true
+    },
+    {
+      "command": "git diff --check",
+      "passed": true
+    }
+  ],
+  "limits": [
+    "No real-account login or native-phone camera acceptance test",
+    "No paid model quality, latency, or invoice benchmark",
+    "No production function/policy inspection or provider-account settings changes",
+    "Existing public clothing image URLs have not been migrated to private storage"
+  ]
+}

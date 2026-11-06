@@ -1,41 +1,52 @@
-'use client';
+"use client";
 
-import { createLogger } from '@/lib/utils/logger';
+import { createLogger } from "@/lib/utils/logger";
 
-const logger = createLogger({ component: 'app-wardrobe-items-[id]-item-detail-client' });
-import React, { useState, useMemo } from 'react';
-import Image from 'next/image';
-import { useWardrobeItem, useUpdateWardrobeItem, useDeleteWardrobeItem } from '@/lib/hooks/use-wardrobe-items';
-import { useCategories } from '@/lib/hooks/use-categories';
-import { ImageUploadWithErrorBoundary as ImageUpload } from '@/components/dynamic/image-upload-dynamic';
-import { WardrobeItemImageGenerator } from '@/components/wardrobe-item-image-generator';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { StickyActionBar } from '@/components/ui/sticky-action-bar';
-import { 
-  Edit, 
-  Trash2, 
-  Save, 
-  X, 
+const logger = createLogger({
+  component: "app-wardrobe-items-[id]-item-detail-client",
+});
+import React, { useState, useMemo } from "react";
+import Image from "next/image";
+import { WardrobePieceTools } from "@/components/wardrobe-piece-tools";
+import {
+  useWardrobeItem,
+  useUpdateWardrobeItem,
+  useDeleteWardrobeItem,
+} from "@/lib/hooks/use-wardrobe-items";
+import { useCategories } from "@/lib/hooks/use-categories";
+import { ImageUploadWithErrorBoundary as ImageUpload } from "@/components/dynamic/image-upload-dynamic";
+import { WardrobeItemImageGenerator } from "@/components/wardrobe-item-image-generator";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { StickyActionBar } from "@/components/ui/sticky-action-bar";
+import {
+  Edit,
+  Trash2,
+  Save,
+  X,
   AlertCircle,
   CheckCircle,
   Tag,
   Palette,
-  Shirt
-} from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { WardrobeItem } from '@/lib/types/database';
-import { NavigationButtons } from '@/components/navigation-buttons';
-import { COLOR_OPTIONS, normalizeColor, isValidColor } from '@/lib/data/color-options';
+  Shirt,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { WardrobeItem } from "@/lib/types/database";
+import { NavigationButtons } from "@/components/navigation-buttons";
+import {
+  COLOR_OPTIONS,
+  normalizeColor,
+  isValidColor,
+} from "@/lib/data/color-options";
 
 function getFormalityGuidance(score: number): string {
-  if (score <= 2) return 'Very casual: gym tee, sweats, lounge pieces';
-  if (score <= 4) return 'Casual: denim, polos, everyday knitwear';
-  if (score <= 6) return 'Smart casual: chinos, OCBD, casual blazer';
-  if (score <= 8) return 'Business: dress shirt, trousers, tailoring';
-  return 'Formal: suiting, tuxedo, eventwear';
+  if (score <= 2) return "Very casual: gym tee, sweats, lounge pieces";
+  if (score <= 4) return "Casual: denim, polos, everyday knitwear";
+  if (score <= 6) return "Smart casual: chinos, OCBD, casual blazer";
+  if (score <= 8) return "Business: dress shirt, trousers, tailoring";
+  return "Formal: suiting, tuxedo, eventwear";
 }
 
 interface ItemDetailPageClientProps {
@@ -49,13 +60,17 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Fetch data
-  const { data: item, isLoading: itemLoading, error: itemError } = useWardrobeItem(itemId);
+  const {
+    data: item,
+    isLoading: itemLoading,
+    error: itemError,
+  } = useWardrobeItem(itemId);
   const { data: categories = [] } = useCategories();
-  
+
   // Create category lookup map for O(1) performance
   const categoryMap = useMemo(() => {
-    const map = new Map<string, typeof categories[0]>();
-    categories.forEach(category => {
+    const map = new Map<string, (typeof categories)[0]>();
+    categories.forEach((category) => {
       map.set(category.id, category);
     });
     return map;
@@ -72,13 +87,13 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
     if (item && !isEditing) {
       setEditForm({
         name: item.name,
-        brand: item.brand || '',
+        brand: item.brand || "",
         color: normalizeColor(item.color),
-        material: item.material || '',
+        material: item.material || "",
         formality_score: item.formality_score || 5,
         capsule_tags: item.capsule_tags || [],
-        season: item.season || ['All'],
-        image_url: item.image_url || '',
+        season: item.season || ["All"],
+        image_url: item.image_url || "",
         category_id: item.category_id,
       });
     }
@@ -93,13 +108,13 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
     if (item) {
       setEditForm({
         name: item.name,
-        brand: item.brand || '',
+        brand: item.brand || "",
         color: normalizeColor(item.color),
-        material: item.material || '',
+        material: item.material || "",
         formality_score: item.formality_score || 5,
         capsule_tags: item.capsule_tags || [],
-        season: item.season || ['All'],
-        image_url: item.image_url || '',
+        season: item.season || ["All"],
+        image_url: item.image_url || "",
         category_id: item.category_id,
       });
     }
@@ -111,7 +126,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
     // Normalize and validate color
     const normalizedColor = normalizeColor(editForm.color);
     if (!isValidColor(normalizedColor)) {
-      logger.error('Invalid color value:', editForm.color);
+      logger.error("Invalid color value:", editForm.color);
       return;
     }
 
@@ -126,7 +141,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
       });
       setIsEditing(false);
     } catch (error) {
-      logger.error('Failed to update item:', error);
+      logger.error("Failed to update item:", error);
     }
   };
 
@@ -135,41 +150,41 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
 
     try {
       await deleteItemMutation.mutateAsync(item.id);
-      router.push('/wardrobe');
+      router.push("/wardrobe");
     } catch (error) {
-      logger.error('Failed to delete item:', error);
+      logger.error("Failed to delete item:", error);
     }
   };
 
   const handleImageUpload = (imageUrl: string) => {
-    setEditForm(prev => ({ ...prev, image_url: imageUrl }));
+    setEditForm((prev) => ({ ...prev, image_url: imageUrl }));
   };
 
   const handleTagToggle = (tag: string) => {
-    setEditForm(prev => {
+    setEditForm((prev) => {
       const currentTags = prev.capsule_tags || [];
       const newTags = currentTags.includes(tag)
-        ? currentTags.filter(t => t !== tag)
+        ? currentTags.filter((t) => t !== tag)
         : [...currentTags, tag];
       return { ...prev, capsule_tags: newTags };
     });
   };
 
   const handleSeasonToggle = (season: string) => {
-    setEditForm(prev => {
-      const currentSeasons = prev.season || ['All'];
-      if (season === 'All') {
-        return { ...prev, season: ['All'] };
+    setEditForm((prev) => {
+      const currentSeasons = prev.season || ["All"];
+      if (season === "All") {
+        return { ...prev, season: ["All"] };
       }
-      
+
       let newSeasons = currentSeasons.includes(season)
-        ? currentSeasons.filter(s => s !== season)
-        : [...currentSeasons.filter(s => s !== 'All'), season];
-      
+        ? currentSeasons.filter((s) => s !== season)
+        : [...currentSeasons.filter((s) => s !== "All"), season];
+
       if (newSeasons.length === 0) {
-        newSeasons = ['All'];
+        newSeasons = ["All"];
       }
-      
+
       return { ...prev, season: newSeasons };
     });
   };
@@ -193,50 +208,54 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            {itemError?.message || 'Item not found'}
+            {itemError?.message || "Item not found"}
           </AlertDescription>
         </Alert>
-        <NavigationButtons 
-          backTo={{ href: '/wardrobe', label: 'Back to Wardrobe' }}
+        <NavigationButtons
+          backTo={{ href: "/wardrobe", label: "Back to Wardrobe" }}
           className="mt-4"
         />
       </div>
     );
   }
 
-  const availableTags = ['Refined', 'Adventurer', 'Crossover', 'Shorts'];
-  const availableSeasons = ['All', 'Spring', 'Summer', 'Fall', 'Winter'];
+  const availableTags = ["Refined", "Adventurer", "Crossover", "Shorts"];
+  const availableSeasons = ["All", "Spring", "Summer", "Fall", "Winter"];
   const editFormalityScore = Number(editForm.formality_score ?? 5);
   const savedFormalityScore = Number(item.formality_score ?? 0);
   const normalizedEditColor = normalizeColor(editForm.color);
-  const selectedEditColorOption = COLOR_OPTIONS.find(opt => opt.value === normalizedEditColor);
+  const selectedEditColorOption = COLOR_OPTIONS.find(
+    (opt) => opt.value === normalizedEditColor,
+  );
   const normalizedItemColor = normalizeColor(item.color);
-  const savedItemColorOption = COLOR_OPTIONS.find(opt => opt.value === normalizedItemColor);
+  const savedItemColorOption = COLOR_OPTIONS.find(
+    (opt) => opt.value === normalizedItemColor,
+  );
 
   return (
     <div className="flex-1 w-full max-w-4xl mx-auto p-6">
-      <div className={`flex flex-col gap-6 ${isEditing ? 'pb-28' : ''}`}>
+      <div className={`flex flex-col gap-6 ${isEditing ? "pb-28" : ""}`}>
         {/* Navigation */}
-        <NavigationButtons 
-          backTo={{ href: '/wardrobe', label: 'Back to Wardrobe' }}
+        <NavigationButtons
+          backTo={{ href: "/wardrobe", label: "Back to Wardrobe" }}
         />
 
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
-              {isEditing ? 'Edit Item' : item.name}
+              {isEditing ? "Edit Item" : item.name}
             </h1>
             {category && (
-              <p className="text-muted-foreground mt-1">
-                {category.name}
-              </p>
+              <p className="text-muted-foreground mt-1">{category.name}</p>
             )}
           </div>
 
           <div className="flex gap-2">
             {isEditing ? (
-              <Badge variant="secondary" className="text-xs">Editing</Badge>
+              <Badge variant="secondary" className="text-xs">
+                Editing
+              </Badge>
             ) : (
               <>
                 <Button variant="outline" onClick={handleEdit}>
@@ -255,16 +274,23 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
           </div>
         </div>
 
+        {!isEditing && <WardrobePieceTools item={item} />}
         {/* Success/Error Messages */}
         {updateItemMutation.isSuccess && (
-          <Alert variant="success" className={isEditing ? 'hidden lg:flex' : undefined}>
+          <Alert
+            variant="success"
+            className={isEditing ? "hidden lg:flex" : undefined}
+          >
             <CheckCircle className="h-4 w-4" />
             <AlertDescription>Item updated successfully!</AlertDescription>
           </Alert>
         )}
 
         {updateItemMutation.isError && (
-          <Alert variant="destructive" className={isEditing ? 'hidden lg:flex' : undefined}>
+          <Alert
+            variant="destructive"
+            className={isEditing ? "hidden lg:flex" : undefined}
+          >
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               Failed to update item: {updateItemMutation.error?.message}
@@ -282,7 +308,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                   <div className="relative w-full h-96 bg-card">
                     <Image
                       src={editForm.image_url}
-                      alt={`${editForm.name || 'Item'}${editForm.brand ? ` by ${editForm.brand}` : ''}`}
+                      alt={`${editForm.name || "Item"}${editForm.brand ? ` by ${editForm.brand}` : ""}`}
                       fill
                       className="object-contain p-4"
                       sizes="(max-width: 768px) 100vw, 50vw"
@@ -299,7 +325,10 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                   </p>
                   <ImageUpload
                     onUpload={handleImageUpload}
-                    onError={(error) => logger.error('Upload error:', error)}
+                    onMetadata={(metadata) =>
+                      setEditForm((previous) => ({ ...previous, ...metadata }))
+                    }
+                    onError={(error) => logger.error("Upload error:", error)}
                   />
                   <div className="mt-3">
                     <WardrobeItemImageGenerator
@@ -322,7 +351,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                   <div className="relative w-full h-96 bg-card">
                     <Image
                       src={item.image_url}
-                      alt={`${item.name}${item.brand ? ` by ${item.brand}` : ''} - ${category?.name || 'wardrobe item'}`}
+                      alt={`${item.name}${item.brand ? ` by ${item.brand}` : ""} - ${category?.name || "wardrobe item"}`}
                       fill
                       className="object-contain p-4"
                       sizes="(max-width: 768px) 100vw, 50vw"
@@ -340,7 +369,9 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                 )}
                 {/* Item info */}
                 <div className="p-4 border-t border-border">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{category?.name || 'Item'}</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
+                    {category?.name || "Item"}
+                  </p>
                   <p className="text-sm font-medium text-foreground">
                     {item.brand ? `${item.brand} ${item.name}` : item.name}
                   </p>
@@ -374,8 +405,13 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                     </p>
                     <input
                       type="text"
-                      value={editForm.name || ''}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
+                      value={editForm.name || ""}
+                      onChange={(e) =>
+                        setEditForm((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
                       className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                       required
                     />
@@ -387,8 +423,13 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                     </p>
                     <input
                       type="text"
-                      value={editForm.brand || ''}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, brand: e.target.value }))}
+                      value={editForm.brand || ""}
+                      onChange={(e) =>
+                        setEditForm((prev) => ({
+                          ...prev,
+                          brand: e.target.value,
+                        }))
+                      }
                       className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                     />
                   </div>
@@ -401,27 +442,46 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                       <div className="relative">
                         <select
                           value={normalizedEditColor}
-                          onChange={(e) => setEditForm(prev => ({ ...prev, color: e.target.value }))}
+                          onChange={(e) =>
+                            setEditForm((prev) => ({
+                              ...prev,
+                              color: e.target.value,
+                            }))
+                          }
                           className="w-full py-2 pr-10 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground appearance-none"
                           style={{
-                            paddingLeft: selectedEditColorOption?.hex ? '32px' : '12px'
+                            paddingLeft: selectedEditColorOption?.hex
+                              ? "32px"
+                              : "12px",
                           }}
                         >
-                          {COLOR_OPTIONS.map(option => (
+                          {COLOR_OPTIONS.map((option) => (
                             <option key={option.value} value={option.value}>
                               {option.label}
                             </option>
                           ))}
                         </select>
                         {selectedEditColorOption?.hex && (
-                          <div 
+                          <div
                             className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-border pointer-events-none"
-                            style={{ backgroundColor: selectedEditColorOption.hex }}
+                            style={{
+                              backgroundColor: selectedEditColorOption.hex,
+                            }}
                           />
                         )}
                         <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                          <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          <svg
+                            className="w-4 h-4 text-muted-foreground"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
                           </svg>
                         </div>
                       </div>
@@ -433,8 +493,13 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                       </p>
                       <input
                         type="text"
-                        value={editForm.material || ''}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, material: e.target.value }))}
+                        value={editForm.material || ""}
+                        onChange={(e) =>
+                          setEditForm((prev) => ({
+                            ...prev,
+                            material: e.target.value,
+                          }))
+                        }
                         className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                       />
                     </div>
@@ -447,7 +512,9 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">Casual</span>
-                        <span className="font-medium text-foreground">{editFormalityScore}/10</span>
+                        <span className="font-medium text-foreground">
+                          {editFormalityScore}/10
+                        </span>
                         <span className="text-muted-foreground">Formal</span>
                       </div>
                       <input
@@ -456,7 +523,12 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                         max="10"
                         step="1"
                         value={editFormalityScore}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, formality_score: Number(e.target.value) }))}
+                        onChange={(e) =>
+                          setEditForm((prev) => ({
+                            ...prev,
+                            formality_score: Number(e.target.value),
+                          }))
+                        }
                         className="w-full accent-primary"
                         aria-label="Formality score from 1 to 10"
                       />
@@ -471,11 +543,16 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                       Category
                     </p>
                     <select
-                      value={editForm.category_id || ''}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, category_id: e.target.value }))}
+                      value={editForm.category_id || ""}
+                      onChange={(e) =>
+                        setEditForm((prev) => ({
+                          ...prev,
+                          category_id: e.target.value,
+                        }))
+                      }
                       className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-card text-foreground"
                     >
-                      {categories.map(cat => (
+                      {categories.map((cat) => (
                         <option key={cat.id} value={cat.id}>
                           {cat.name}
                         </option>
@@ -487,17 +564,25 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Brand</p>
-                      <p className="text-foreground">{item.brand || 'Not specified'}</p>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Brand
+                      </p>
+                      <p className="text-foreground">
+                        {item.brand || "Not specified"}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Color</p>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Color
+                      </p>
                       {item.color ? (
                         <div className="flex items-center gap-2">
                           {savedItemColorOption?.hex && (
-                            <div 
+                            <div
                               className="w-4 h-4 rounded-full border border-border"
-                              style={{ backgroundColor: savedItemColorOption.hex }}
+                              style={{
+                                backgroundColor: savedItemColorOption.hex,
+                              }}
                             />
                           )}
                           <p className="text-foreground">
@@ -512,15 +597,25 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Material</p>
-                      <p className="text-foreground">{item.material || 'Not specified'}</p>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Material
+                      </p>
+                      <p className="text-foreground">
+                        {item.material || "Not specified"}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Formality Score</p>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Formality Score
+                      </p>
                       {item.formality_score ? (
                         <>
-                          <p className="text-foreground">{savedFormalityScore}/10</p>
-                          <p className="text-xs text-muted-foreground">{getFormalityGuidance(savedFormalityScore)}</p>
+                          <p className="text-foreground">
+                            {savedFormalityScore}/10
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {getFormalityGuidance(savedFormalityScore)}
+                          </p>
                         </>
                       ) : (
                         <p className="text-foreground">Not set</p>
@@ -546,10 +641,14 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
             <CardContent>
               {isEditing ? (
                 <div className="flex flex-wrap gap-2">
-                  {availableTags.map(tag => (
+                  {availableTags.map((tag) => (
                     <Button
                       key={tag}
-                      variant={editForm.capsule_tags?.includes(tag) ? 'default' : 'outline'}
+                      variant={
+                        editForm.capsule_tags?.includes(tag)
+                          ? "default"
+                          : "outline"
+                      }
                       size="sm"
                       onClick={() => handleTagToggle(tag)}
                     >
@@ -584,10 +683,14 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
             <CardContent>
               {isEditing ? (
                 <div className="flex flex-wrap gap-2">
-                  {availableSeasons.map(season => (
+                  {availableSeasons.map((season) => (
                     <Button
                       key={season}
-                      variant={editForm.season?.includes(season) ? 'default' : 'outline'}
+                      variant={
+                        editForm.season?.includes(season)
+                          ? "default"
+                          : "outline"
+                      }
                       size="sm"
                       onClick={() => handleSeasonToggle(season)}
                     >
@@ -619,7 +722,9 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                 {updateItemMutation.isSuccess && (
                   <Alert variant="success" className="lg:hidden">
                     <CheckCircle className="h-4 w-4" />
-                    <AlertDescription>Item updated successfully!</AlertDescription>
+                    <AlertDescription>
+                      Item updated successfully!
+                    </AlertDescription>
                   </Alert>
                 )}
 
@@ -634,23 +739,23 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
               </>
             }
           >
-              <Button
-                variant="outline"
-                onClick={handleCancelEdit}
-                disabled={updateItemMutation.isPending}
-                className="flex-1 sm:flex-none"
-              >
-                <X className="mr-2 h-4 w-4" />
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSave}
-                disabled={updateItemMutation.isPending || !editForm.name?.trim()}
-                className="flex-1 sm:flex-none"
-              >
-                <Save className="mr-2 h-4 w-4" />
-                {updateItemMutation.isPending ? 'Saving...' : 'Save'}
-              </Button>
+            <Button
+              variant="outline"
+              onClick={handleCancelEdit}
+              disabled={updateItemMutation.isPending}
+              className="flex-1 sm:flex-none"
+            >
+              <X className="mr-2 h-4 w-4" />
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={updateItemMutation.isPending || !editForm.name?.trim()}
+              className="flex-1 sm:flex-none"
+            >
+              <Save className="mr-2 h-4 w-4" />
+              {updateItemMutation.isPending ? "Saving..." : "Save"}
+            </Button>
           </StickyActionBar>
         )}
 
@@ -666,7 +771,9 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-4">
-                  Are you sure you want to delete &quot;{item.name}&quot;? This action cannot be undone and will remove the item from any outfits.
+                  Are you sure you want to delete &quot;{item.name}&quot;? This
+                  action cannot be undone and will remove the item from any
+                  outfits.
                 </p>
                 <div className="flex gap-2 justify-end">
                   <Button
@@ -681,7 +788,7 @@ export function ItemDetailPageClient({ itemId }: ItemDetailPageClientProps) {
                     onClick={handleDelete}
                     disabled={deleteItemMutation.isPending}
                   >
-                    {deleteItemMutation.isPending ? 'Deleting...' : 'Delete'}
+                    {deleteItemMutation.isPending ? "Deleting..." : "Delete"}
                   </Button>
                 </div>
               </CardContent>

@@ -1,23 +1,23 @@
-import '@testing-library/jest-dom';
-import { createElement } from 'react';
-import { beforeEach, vi } from 'vitest';
+import "@testing-library/jest-dom";
+import { createElement } from "react";
+import { beforeEach, vi } from "vitest";
 
 const originalConsoleError = console.error.bind(console);
 const originalConsoleWarn = console.warn.bind(console);
 
 const isExpectedTestNoise = (message: string) => {
   const patterns = [
-    'Not implemented: navigation to another Document',
-    'Failed to read offline queue:',
-    'Invalid outfit for score breakdown:',
-    'Invalid item in ',
-    'Failed to preload module for feature weather:',
-    'Failed to load component for feature weather:',
-    'not wrapped in act(...)',
-    'Encountered two children with the same key',
-    'Weather API error:',
-    'No API key found in environment variables',
-    'Invalid API key for OpenWeather API.',
+    "Not implemented: navigation to another Document",
+    "Failed to read offline queue:",
+    "Invalid outfit for score breakdown:",
+    "Invalid item in ",
+    "Failed to preload module for feature weather:",
+    "Failed to load component for feature weather:",
+    "not wrapped in act(...)",
+    "Encountered two children with the same key",
+    "Weather API error:",
+    "No API key found in environment variables",
+    "Invalid API key for OpenWeather API.",
     "Style property values shouldn't contain a semicolon.",
   ];
   return patterns.some((pattern) => message.includes(pattern));
@@ -25,8 +25,8 @@ const isExpectedTestNoise = (message: string) => {
 
 console.error = (...args: unknown[]) => {
   const message = args
-    .map((arg) => (typeof arg === 'string' ? arg : String(arg)))
-    .join(' ');
+    .map((arg) => (typeof arg === "string" ? arg : String(arg)))
+    .join(" ");
   if (isExpectedTestNoise(message)) {
     return;
   }
@@ -35,8 +35,8 @@ console.error = (...args: unknown[]) => {
 
 console.warn = (...args: unknown[]) => {
   const message = args
-    .map((arg) => (typeof arg === 'string' ? arg : String(arg)))
-    .join(' ');
+    .map((arg) => (typeof arg === "string" ? arg : String(arg)))
+    .join(" ");
   if (isExpectedTestNoise(message)) {
     return;
   }
@@ -58,8 +58,11 @@ const createChainableMock = () => {
 
   // Create a promise-like object that can be chained
   const createPromiseMock = (defaultData: unknown[] = []): ChainablePromise => {
-    const promiseMock = Promise.resolve({ data: defaultData, error: null }) as ChainablePromise;
-    
+    const promiseMock = Promise.resolve({
+      data: defaultData,
+      error: null,
+    }) as ChainablePromise;
+
     // Add chainable methods to the promise
     promiseMock.select = vi.fn(() => createPromiseMock(defaultData));
     promiseMock.insert = vi.fn(() => createPromiseMock(defaultData));
@@ -68,11 +71,13 @@ const createChainableMock = () => {
     promiseMock.eq = vi.fn(() => createPromiseMock(defaultData));
     promiseMock.order = vi.fn(() => createPromiseMock(defaultData));
     promiseMock.limit = vi.fn(() => createPromiseMock(defaultData));
-    promiseMock.single = vi.fn(() => Promise.resolve({ data: defaultData[0] || null, error: null }));
-    
+    promiseMock.single = vi.fn(() =>
+      Promise.resolve({ data: defaultData[0] || null, error: null }),
+    );
+
     return promiseMock;
   };
-  
+
   return createPromiseMock();
 };
 
@@ -86,7 +91,7 @@ const mockSupabaseClient = {
     getUser: vi.fn(),
     getSession: vi.fn(),
     onAuthStateChange: vi.fn(() => ({
-      data: { subscription: { unsubscribe: vi.fn() } }
+      data: { subscription: { unsubscribe: vi.fn() } },
     })),
     signOut: vi.fn(),
     signInWithPassword: vi.fn(),
@@ -96,14 +101,14 @@ const mockSupabaseClient = {
 };
 
 // Mock the Supabase client creation
-vi.mock('@/lib/supabase/client', () => ({
+vi.mock("@/lib/supabase/client", () => ({
   createClient: () => mockSupabaseClient,
 }));
 
 // Mock the useAuth hook
-vi.mock('@/lib/hooks/use-auth', () => ({
+vi.mock("@/lib/hooks/use-auth", () => ({
   useAuth: () => ({
-    user: { id: mockUserId, email: 'test@example.com' },
+    user: { id: mockUserId, email: "test@example.com" },
     userId: mockUserId,
     isAuthenticated: true,
     isLoading: false,
@@ -115,27 +120,28 @@ vi.mock('@/lib/hooks/use-auth', () => ({
 
 // Mock next/image globally to avoid Next runtime config warnings in unit tests.
 // We keep key behavior defaults (lazy loading + async decoding) that tests assert.
-vi.mock('next/image', () => ({
+vi.mock("next/image", () => ({
   default: ({
     priority,
     loading,
     ...props
   }: {
     priority?: boolean;
-    loading?: 'eager' | 'lazy';
+    loading?: "eager" | "lazy";
     fill?: boolean;
-    decoding?: 'async' | 'auto' | 'sync';
-    fetchPriority?: 'high' | 'low' | 'auto';
+    decoding?: "async" | "auto" | "sync";
+    fetchPriority?: "high" | "low" | "auto";
     [key: string]: unknown;
   }) => {
     const imageProps = { ...props };
     delete imageProps.fill;
+    delete imageProps.unoptimized;
 
-    return createElement('img', {
+    return createElement("img", {
       ...imageProps,
-      loading: priority ? 'eager' : (loading ?? 'lazy'),
-      decoding: imageProps.decoding ?? 'async',
-      fetchPriority: priority ? 'high' : imageProps.fetchPriority,
+      loading: priority ? "eager" : (loading ?? "lazy"),
+      decoding: imageProps.decoding ?? "async",
+      fetchPriority: priority ? "high" : imageProps.fetchPriority,
     });
   },
 }));
@@ -147,7 +153,7 @@ const mockGeolocation = {
   clearWatch: vi.fn(),
 };
 
-Object.defineProperty(global.navigator, 'geolocation', {
+Object.defineProperty(global.navigator, "geolocation", {
   value: mockGeolocation,
   writable: true,
 });
@@ -163,25 +169,25 @@ global.ResizeObserver = class ResizeObserver {
 };
 
 // Mock getCurrentUserId function in all hook files
-const mockUserId = 'test-user-id';
-vi.mock('@/lib/hooks/use-wardrobe-items', async () => {
-  const actual = await vi.importActual('@/lib/hooks/use-wardrobe-items');
+const mockUserId = "test-user-id";
+vi.mock("@/lib/hooks/use-wardrobe-items", async () => {
+  const actual = await vi.importActual("@/lib/hooks/use-wardrobe-items");
   return {
     ...actual,
     getCurrentUserId: () => mockUserId,
   };
 });
 
-vi.mock('@/lib/hooks/use-outfits', async () => {
-  const actual = await vi.importActual('@/lib/hooks/use-outfits');
+vi.mock("@/lib/hooks/use-outfits", async () => {
+  const actual = await vi.importActual("@/lib/hooks/use-outfits");
   return {
     ...actual,
     getCurrentUserId: () => mockUserId,
   };
 });
 
-vi.mock('@/lib/hooks/use-categories', async () => {
-  const actual = await vi.importActual('@/lib/hooks/use-categories');
+vi.mock("@/lib/hooks/use-categories", async () => {
+  const actual = await vi.importActual("@/lib/hooks/use-categories");
   return {
     ...actual,
     getCurrentUserId: () => mockUserId,
@@ -189,8 +195,8 @@ vi.mock('@/lib/hooks/use-categories', async () => {
 });
 
 // Mock Next.js environment variables
-process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
-process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'test-key';
+process.env.NEXT_PUBLIC_SUPABASE_URL = "https://test.supabase.co";
+process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = "test-key";
 
 // Reset all mocks before each test
 beforeEach(() => {
@@ -199,3 +205,21 @@ beforeEach(() => {
 
 // Export the mock for use in tests
 export { mockSupabaseClient };
+
+// jsdom has the dialog element but does not implement its browser lifecycle.
+Object.defineProperty(HTMLDialogElement.prototype, "showModal", {
+  configurable: true,
+  value() {
+    this.setAttribute("open", "");
+  },
+});
+Object.defineProperty(HTMLDialogElement.prototype, "close", {
+  configurable: true,
+  value() {
+    this.removeAttribute("open");
+    this.dispatchEvent(new Event("close"));
+  },
+});
+
+if (!Element.prototype.scrollIntoView)
+  Element.prototype.scrollIntoView = vi.fn();

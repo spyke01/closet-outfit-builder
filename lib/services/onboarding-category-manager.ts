@@ -1,64 +1,70 @@
-import { createLogger } from '@/lib/utils/logger';
+import { createLogger } from "@/lib/utils/logger";
 
-const logger = createLogger({ component: 'lib-services-onboarding-category-manager' });
-
+const logger = createLogger({
+  component: "lib-services-onboarding-category-manager",
+});
 
 /**
  * Onboarding category manager service
- * 
+ *
  * Ensures categories exist in database before item creation.
  * Maps onboarding category keys to database category names.
  */
 
-import { createClient } from '@/lib/supabase/client';
-import type { CategoryKey } from '@/lib/data/onboarding-categories';
-import type { Category } from '@/lib/types/database';
+import { createClient } from "@/lib/supabase/client";
+import type { CategoryKey } from "@/lib/data/onboarding-categories";
+import type { Category } from "@/lib/types/database";
 
 /**
  * Category name mapping from onboarding keys to database names
- * 
+ *
  * Maps the onboarding category structure to existing database categories
  * or creates new categories with appropriate names.
  */
 const CATEGORY_NAME_MAP: Record<CategoryKey, string> = {
-  'Tops': 'Shirt',
-  'Bottoms': 'Pants',
-  'Shoes': 'Shoes',
-  'Layers': 'Jacket',
-  'Dresses': 'Dress',
-  'Accessories': 'Accessories',
+  Tops: "Shirt",
+  Bottoms: "Pants",
+  Shoes: "Shoes",
+  Layers: "Jacket",
+  Dresses: "Dress",
+  Accessories: "Accessories",
 };
 
 /**
  * Ensure categories exist in database for the given user
- * 
+ *
  * Fetches existing categories and creates missing ones.
  * Returns a map of CategoryKey to database category ID.
- * 
+ *
  * @param userId - User ID
  * @param categoryKeys - Array of category keys to ensure exist
  * @returns Map of CategoryKey to category ID
  */
+export interface OnboardingCategoryMap extends Map<CategoryKey, string> {
+  byName?: Map<string, string>;
+}
+
 export async function ensureCategoriesExist(
   userId: string,
-  categoryKeys: CategoryKey[]
-): Promise<Map<CategoryKey, string>> {
+  categoryKeys: CategoryKey[],
+): Promise<OnboardingCategoryMap> {
   const supabase = createClient();
-  const categoryMap = new Map<CategoryKey, string>();
+  const categoryMap: OnboardingCategoryMap = new Map<CategoryKey, string>();
+  categoryMap.byName = new Map();
 
   try {
     // Fetch existing user categories
     const { data: existingCategories, error: fetchError } = await supabase
-      .from('categories')
-      .select('*')
-      .eq('user_id', userId);
+      .from("categories")
+      .select("*")
+      .eq("user_id", userId);
 
     if (fetchError) {
       throw new Error(`Failed to fetch categories: ${fetchError.message}`);
     }
 
     const existingCategoryMap = new Map<string, Category>(
-      (existingCategories || []).map(cat => [cat.name.toLowerCase(), cat])
+      (existingCategories || []).map((cat) => [cat.name.toLowerCase(), cat]),
     );
 
     // Process each category key
@@ -74,24 +80,36 @@ export async function ensureCategoriesExist(
         categoryMap.set(categoryKey, existingCategory.id);
       } else {
         // Create new category
-        const newCategory = await createCategory(userId, categoryKey, categoryName);
+        const newCategory = await createCategory(
+          userId,
+          categoryKey,
+          categoryName,
+        );
         categoryMap.set(categoryKey, newCategory.id);
-        
+
         // Add to map to avoid duplicate creation
         existingCategoryMap.set(normalizedName, newCategory);
       }
     }
 
+    if (categoryKeys.includes("Accessories")) {
+      for (const name of ["Belt", "Watch"]) {
+        let category = existingCategoryMap.get(name.toLowerCase());
+        if (!category)
+          category = await createCategory(userId, "Accessories", name);
+        categoryMap.byName!.set(name, category.id);
+      }
+    }
     return categoryMap;
   } catch (error) {
-    logger.error('Error ensuring categories exist:', error);
+    logger.error("Error ensuring categories exist:", error);
     throw error;
   }
 }
 
 /**
  * Create a new category in the database
- * 
+ *
  * @param userId - User ID
  * @param categoryKey - Category key from onboarding
  * @param categoryName - Database category name
@@ -100,19 +118,19 @@ export async function ensureCategoriesExist(
 async function createCategory(
   userId: string,
   categoryKey: CategoryKey,
-  categoryName: string
+  categoryName: string,
 ): Promise<Category> {
   const supabase = createClient();
 
   // Determine if this should be an anchor category
-  const isAnchorItem = ['Tops', 'Layers', 'Dresses'].includes(categoryKey);
+  const isAnchorItem = ["Tops", "Layers", "Dresses"].includes(categoryKey);
 
   // Determine display order based on category type
   const displayOrder = getCategoryDisplayOrder(categoryKey);
 
   try {
     const { data, error } = await supabase
-      .from('categories')
+      .from("categories")
       .insert({
         user_id: userId,
         name: categoryName,
@@ -123,7 +141,9 @@ async function createCategory(
       .single();
 
     if (error) {
-      throw new Error(`Failed to create category ${categoryName}: ${error.message}`);
+      throw new Error(
+        `Failed to create category ${categoryName}: ${error.message}`,
+      );
     }
 
     return data;
@@ -135,7 +155,7 @@ async function createCategory(
 
 /**
  * Get display order for a category
- * 
+ *
  * Orders categories in a logical outfit-building sequence:
  * 1. Tops/Layers (anchor items)
  * 2. Bottoms
@@ -145,12 +165,12 @@ async function createCategory(
  */
 function getCategoryDisplayOrder(categoryKey: CategoryKey): number {
   const orderMap: Record<CategoryKey, number> = {
-    'Tops': 1,
-    'Layers': 2,
-    'Bottoms': 3,
-    'Shoes': 4,
-    'Dresses': 5,
-    'Accessories': 6,
+    Tops: 1,
+    Layers: 2,
+    Bottoms: 3,
+    Shoes: 4,
+    Dresses: 5,
+    Accessories: 6,
   };
 
   return orderMap[categoryKey] || 99;
@@ -158,7 +178,7 @@ function getCategoryDisplayOrder(categoryKey: CategoryKey): number {
 
 /**
  * Get category name for database from onboarding key
- * 
+ *
  * @param categoryKey - Onboarding category key
  * @returns Database category name
  */

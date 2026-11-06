@@ -1,93 +1,125 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Mock } from 'vitest';
-
-vi.mock('@/lib/supabase/server', () => ({
+import { beforeEach, describe, expect, it, vi } from "vitest";
+const mocks = vi.hoisted(() => ({
   createClient: vi.fn(),
+  start: vi.fn(),
+  reserve: vi.fn(),
+  context: vi.fn(),
 }));
-
-vi.mock('@/lib/services/billing/entitlements', () => ({
-  resolveUserEntitlements: vi.fn(),
-  getUsageLimitForMetric: vi.fn(() => null),
-  reserveUsageCounterAtomic: vi.fn(),
-  incrementUsageCounter: vi.fn(),
-  getAssistantBurstHourKey: vi.fn(() => 'ai_stylist_requests_hourly:2026-02-16T10'),
+vi.mock("@/lib/supabase/server", () => ({ createClient: mocks.createClient }));
+vi.mock("@/lib/supabase/admin", () => ({
+  createAdminClient: () => ({
+    from: () => ({ upsert: vi.fn().mockResolvedValue({ error: null }) }),
+  }),
 }));
-
-vi.mock('@/lib/services/assistant/providers/replicate', () => ({
-  generateAssistantReply: vi.fn(),
-  resolveReplicateModelConfig: vi.fn(() => ({
-    defaultModel: 'openai/gpt-5-mini',
-    fallbackModel: 'openai/gpt-4o-mini',
-  })),
+vi.mock("@/lib/services/billing/entitlements", () => ({
+  resolveUserEntitlements: vi
+    .fn()
+    .mockResolvedValue({ effectivePlanCode: "plus" }),
 }));
-
-import { createClient } from '@/lib/supabase/server';
-import { reserveUsageCounterAtomic, resolveUserEntitlements } from '@/lib/services/billing/entitlements';
-
-describe('POST /api/assistant/chat usage guardrails', () => {
+vi.mock("@/lib/services/assistant/context-builder", () => ({
+  buildAssistantContextPack: mocks.context,
+  summarizeContextForPrompt: () => "Owned wardrobe context",
+}));
+vi.mock("@/lib/services/assistant/provider", () => ({
+  resolveAssistantConfig: () => ({ defaultModel: "gpt-6-luna" }),
+}));
+vi.mock("@/lib/services/ai/assistant-job", () => ({
+  startAssistantJob: mocks.start,
+  waitForAssistantJob: vi.fn((job) => job),
+  assistantJobOutput: () => null,
+}));
+vi.mock("@/lib/services/ai/jobs", async (original) => ({
+  ...(await original<typeof import("@/lib/services/ai/jobs")>()),
+  aiJobByRequest: vi.fn().mockResolvedValue(null),
+}));
+import { AiJobError } from "@/lib/services/ai/jobs";
+import { POST } from "../route";
+const threadId = "00000000-0000-4000-8000-000000000010";
+function request(body: unknown) {
+  return new Request("https://example.com/api/assistant/chat", {
+    method: "POST",
+    body: JSON.stringify(body),
+    headers: { "content-type": "application/json" },
+  });
+}
+describe("assistant authoritative job guardrails", () => {
   beforeEach(() => {
-    vi.resetModules();
     vi.clearAllMocks();
-  });
-
-  it('returns 429 when monthly assistant quota is exceeded', async () => {
-    (createClient as unknown as Mock).mockResolvedValue({
+    const chain = {
+      select: vi.fn(),
+      insert: vi.fn(),
+      eq: vi.fn(),
+      order: vi.fn(),
+      limit: vi.fn(),
+      single: vi
+        .fn()
+        .mockResolvedValue({ data: { id: threadId }, error: null }),
+      maybeSingle: vi
+        .fn()
+        .mockResolvedValue({ data: { id: threadId }, error: null }),
+      then: (resolve: (value: unknown) => unknown) =>
+        Promise.resolve({ data: [], error: null }).then(resolve),
+    };
+    for (const key of ["select", "insert", "eq", "order", "limit"] as const)
+      chain[key].mockReturnValue(chain);
+    mocks.createClient.mockResolvedValue({
       auth: {
-        getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-1' } }, error: null }),
+        getUser: vi.fn().mockResolvedValue({
+          data: { user: { id: "00000000-0000-4000-8000-000000000001" } },
+        }),
       },
-      from: vi.fn(),
+      from: () => chain,
     });
-
-    (resolveUserEntitlements as unknown as Mock).mockResolvedValue({
-      effectivePlanCode: 'plus',
-      plan: { limits: { ai_burst_per_hour: 5 } },
-      period: { start: '2026-02-01', end: '2026-03-01' },
-    });
-    (reserveUsageCounterAtomic as unknown as Mock)
-      .mockResolvedValueOnce({ allowed: false, count: 0 });
-
-    const { POST } = await import('../route');
-    const request = new Request('https://example.com/api/assistant/chat', {
-      method: 'POST',
-      body: JSON.stringify({ message: 'Give me styling advice' }),
-      headers: { 'content-type': 'application/json' },
-    });
-
-    const response = await POST(request as never);
-    const payload = await response.json();
-
-    expect(response.status).toBe(429);
-    expect(payload.code).toBe('USAGE_LIMIT_EXCEEDED');
+    mocks.context.mockResolvedValue({ pack: {} });
   });
-
-  it('returns 429 when hourly burst limit is exceeded', async () => {
-    (createClient as unknown as Mock).mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-1' } }, error: null }),
-      },
-      from: vi.fn(),
-    });
-
-    (resolveUserEntitlements as unknown as Mock).mockResolvedValue({
-      effectivePlanCode: 'pro',
-      plan: { limits: { ai_burst_per_hour: 5 } },
-      period: { start: '2026-02-01', end: '2026-03-01' },
-    });
-    (reserveUsageCounterAtomic as unknown as Mock)
-      .mockResolvedValueOnce({ allowed: true, count: 1 })
-      .mockResolvedValueOnce({ allowed: false, count: 5 });
-
-    const { POST } = await import('../route');
-    const request = new Request('https://example.com/api/assistant/chat', {
-      method: 'POST',
-      body: JSON.stringify({ message: 'Help me style this jacket' }),
-      headers: { 'content-type': 'application/json' },
-    });
-
-    const response = await POST(request as never);
-    const payload = await response.json();
-
+  it.each([
+    "USAGE_LIMIT_EXCEEDED",
+    "BURST_LIMIT_EXCEEDED",
+    "AI_BUDGET_EXCEEDED",
+  ])("returns a safe 429 when the database guard denies %s", async (code) => {
+    mocks.start.mockRejectedValue(new AiJobError(code));
+    const response = await POST(
+      request({ message: "Help me style a shirt" }) as never,
+    );
     expect(response.status).toBe(429);
-    expect(payload.code).toBe('BURST_LIMIT_EXCEEDED');
+    expect((await response.json()).code).toBe(code);
+    expect(mocks.start).toHaveBeenCalledTimes(1);
+  });
+  it("keeps the request key and owned thread scope when work is pending", async () => {
+    const requestId = "00000000-0000-4000-8000-000000000020";
+    mocks.start.mockResolvedValue({
+      id: "job-1",
+      status: "processing",
+      scope_key: threadId,
+      model: "gpt-6-luna",
+    });
+    const response = await POST(
+      request({
+        threadId,
+        requestId,
+        message: "Help me dress for work",
+      }) as never,
+    );
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      threadId,
+      requestId,
+      pending: true,
+      jobId: "job-1",
+    });
+    expect(mocks.start).toHaveBeenCalledWith(
+      expect.objectContaining({
+        key: requestId,
+        scope: threadId,
+        task: "assistant_text",
+      }),
+    );
+  });
+  it("rejects oversized input before creating a job", async () => {
+    const response = await POST(
+      request({ message: "x".repeat(40000) }) as never,
+    );
+    expect(response.status).toBe(400);
+    expect(mocks.start).not.toHaveBeenCalled();
   });
 });

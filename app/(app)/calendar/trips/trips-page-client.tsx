@@ -1,9 +1,22 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, CalendarDays, Check, CloudSun, Loader2, MapPin, Plus, Trash2, X } from 'lucide-react';
+import Image from "next/image";
+import Link from "next/link";
+import { hasCompleteOutfitItems } from "@/lib/utils/outfit-coverage";
+import { PlannerTabs } from "@/components/planner-tabs";
+import { AskSebastian } from "@/components/ask-sebastian";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  AlertTriangle,
+  CalendarDays,
+  Check,
+  CloudSun,
+  Loader2,
+  MapPin,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
 import {
   useCreateTrip,
   useCreateTripDay,
@@ -17,18 +30,31 @@ import {
   useUpdateTrip,
   useUpdateTripDay,
   useUpdateTripPackItem,
-} from '@/lib/hooks/use-trips';
-import { useCalendarEntriesByMonth, useCreateCalendarEntry, useUpdateCalendarEntry } from '@/lib/hooks/use-calendar-entries';
-import { useCreateOutfit, useOutfits } from '@/lib/hooks/use-outfits';
-import { createClient } from '@/lib/supabase/client';
-import { resolveCalendarWeather } from '@/lib/utils/calendar-weather';
-import { generateOutfit } from '@/lib/services/outfit-generator';
-import type { CalendarEntry, Outfit, TripDay, WardrobeItem } from '@/lib/types/database';
-import type { WeatherResponse } from '@/lib/hooks/use-weather';
-import { AIIcon } from '@/components/ai-icon';
+} from "@/lib/hooks/use-trips";
+import {
+  useCalendarEntriesByMonth,
+  useCreateCalendarEntry,
+  useUpdateCalendarEntry,
+} from "@/lib/hooks/use-calendar-entries";
+import { useOutfits } from "@/lib/hooks/use-outfits";
+import { createClient } from "@/lib/supabase/client";
+import { resolveCalendarWeather } from "@/lib/utils/calendar-weather";
+import { generateOutfit } from "@/lib/services/outfit-generator";
+import type {
+  CalendarEntry,
+  TripDay,
+  WardrobeItem,
+} from "@/lib/types/database";
+import type { WeatherResponse } from "@/lib/hooks/use-weather";
+import { AIIcon } from "@/components/ai-icon";
 
-type ExistingPolicy = 'skip' | 'overwrite';
-type MixStrategy = 'saved-heavy' | 'balanced' | 'ai-heavy';
+type PlannedLook = {
+  id?: string;
+  items?: WardrobeItem[];
+  source?: "curated" | "generated";
+};
+type ExistingPolicy = "skip" | "overwrite";
+type MixStrategy = "saved-heavy" | "balanced" | "ai-heavy";
 
 interface TripsPageClientProps {
   wardrobeItems: WardrobeItem[];
@@ -41,7 +67,7 @@ interface GeocodeCandidate {
 }
 
 function toDateKey(date: Date): string {
-  return date.toISOString().split('T')[0];
+  return date.toISOString().split("T")[0];
 }
 
 function parseDateKey(dateKey: string): Date {
@@ -62,65 +88,90 @@ function getDateKeysInRange(startDate: string, endDate: string): string[] {
 }
 
 function sanitizeTextOnly(value: string): string {
-  return value.replace(/[^A-Za-z0-9\s]/g, '').replace(/\s+/g, ' ').trim();
+  return value
+    .replace(/[^A-Za-z0-9\s]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function toItemSetSignature(itemIds: string[]): string {
-  return [...new Set(itemIds)].sort().join(',');
+  return [...new Set(itemIds)].sort().join(",");
 }
 
-function getRecentEntrySignatures(entries: CalendarEntry[], lookbackDays: number, fromDate: Date): Set<string> {
+function getRecentEntrySignatures(
+  entries: CalendarEntry[],
+  lookbackDays: number,
+  fromDate: Date,
+): Set<string> {
   const signatures = new Set<string>();
   const cutoff = new Date(fromDate);
   cutoff.setDate(cutoff.getDate() - lookbackDays);
 
   for (const entry of entries) {
     const entryTime = new Date(`${entry.entry_date}T12:00:00`).getTime();
-    if (entryTime < cutoff.getTime() || entryTime > fromDate.getTime()) continue;
+    if (entryTime < cutoff.getTime() || entryTime > fromDate.getTime())
+      continue;
 
-    const signature = toItemSetSignature((entry.items || []).map((item) => item.id));
+    const signature = toItemSetSignature(
+      (entry.items || []).map((item) => item.id),
+    );
     if (signature) signatures.add(signature);
   }
 
   return signatures;
 }
 
-function getRecentWornItemIds(entries: CalendarEntry[], lookbackDays: number, fromDate: Date): Set<string> {
+function getRecentWornItemIds(
+  entries: CalendarEntry[],
+  lookbackDays: number,
+  fromDate: Date,
+): Set<string> {
   const ids = new Set<string>();
   const cutoff = new Date(fromDate);
   cutoff.setDate(cutoff.getDate() - lookbackDays);
 
   for (const entry of entries) {
-    if (entry.status !== 'worn') continue;
+    if (entry.status !== "worn") continue;
     const entryTime = new Date(`${entry.entry_date}T12:00:00`).getTime();
-    if (entryTime < cutoff.getTime() || entryTime > fromDate.getTime()) continue;
+    if (entryTime < cutoff.getTime() || entryTime > fromDate.getTime())
+      continue;
     for (const item of entry.items || []) ids.add(item.id);
   }
 
   return ids;
 }
 
-function shouldPreferSavedOutfit(index: number, strategy: MixStrategy): boolean {
-  if (strategy === 'saved-heavy') return true;
-  if (strategy === 'ai-heavy') return index % 3 === 0;
+function shouldPreferSavedOutfit(
+  index: number,
+  strategy: MixStrategy,
+): boolean {
+  if (strategy === "saved-heavy") return true;
+  if (strategy === "ai-heavy") return index % 3 === 0;
   return index % 2 === 0;
 }
 
 const BUTTON_PRIMARY =
-  'inline-flex items-center justify-center gap-2 rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] px-[22px] py-[11px] text-[0.82rem] font-semibold text-[var(--text-on-accent)] shadow-[var(--shadow-accent)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:-translate-y-px hover:shadow-[var(--shadow-accent-hover)] active:translate-y-0 active:opacity-90 disabled:opacity-50';
+  "inline-flex items-center justify-center gap-2 rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] px-[22px] py-[11px] text-[0.82rem] font-semibold text-[var(--text-on-accent)] shadow-[var(--shadow-accent)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:-translate-y-px hover:shadow-[var(--shadow-accent-hover)] active:translate-y-0 active:opacity-90 disabled:opacity-50";
 const BUTTON_SECONDARY =
-  'inline-flex items-center justify-center gap-2 rounded-[var(--radius-pill)] border border-[var(--border-default)] bg-[var(--bg-surface)] px-[16px] py-[9px] text-[0.79rem] font-medium text-[var(--text-2)] backdrop-blur-[var(--blur-glass)] [-webkit-backdrop-filter:blur(var(--blur-glass))] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-1)] active:bg-[var(--bg-surface-active)] disabled:opacity-50';
+  "inline-flex items-center justify-center gap-2 rounded-[var(--radius-pill)] border border-[var(--border-default)] bg-[var(--bg-surface)] px-[16px] py-[9px] text-[0.79rem] font-medium text-[var(--text-2)] backdrop-blur-[var(--blur-glass)] [-webkit-backdrop-filter:blur(var(--blur-glass))] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-1)] active:bg-[var(--bg-surface-active)] disabled:opacity-50";
 const BUTTON_SUBTLE =
-  'inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-pill)] border border-transparent bg-transparent px-[12px] py-[6px] text-[0.72rem] font-medium text-[var(--text-2)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-[var(--border-subtle)] hover:bg-[var(--button-tertiary-hover)] hover:text-[var(--text-1)] active:bg-[var(--button-tertiary-active)] disabled:opacity-50';
+  "inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-pill)] border border-transparent bg-transparent px-[12px] py-[6px] text-[0.72rem] font-medium text-[var(--text-2)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-[var(--border-subtle)] hover:bg-[var(--button-tertiary-hover)] hover:text-[var(--text-1)] active:bg-[var(--button-tertiary-active)] disabled:opacity-50";
 const BUTTON_INLINE_SECONDARY =
-  'inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_78%,transparent)] px-[12px] py-[6px] text-[0.72rem] font-medium text-[var(--text-2)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-[var(--border-default)] hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-1)] active:bg-[var(--bg-surface-active)] disabled:opacity-50';
+  "inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_78%,transparent)] px-[12px] py-[6px] text-[0.72rem] font-medium text-[var(--text-2)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:border-[var(--border-default)] hover:bg-[var(--bg-surface-hover)] hover:text-[var(--text-1)] active:bg-[var(--bg-surface-active)] disabled:opacity-50";
 const BUTTON_INLINE_PRIMARY =
-  'inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] px-[12px] py-[6px] text-[0.72rem] font-semibold text-[var(--text-on-accent)] shadow-[var(--shadow-accent)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:-translate-y-px hover:shadow-[var(--shadow-accent-hover)] active:translate-y-0 active:opacity-90 disabled:opacity-50';
+  "inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] px-[12px] py-[6px] text-[0.72rem] font-semibold text-[var(--text-on-accent)] shadow-[var(--shadow-accent)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:-translate-y-px hover:shadow-[var(--shadow-accent-hover)] active:translate-y-0 active:opacity-90 disabled:opacity-50";
 const BUTTON_DANGER =
-  'px-3 py-2 rounded-lg border border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/20 disabled:opacity-50 inline-flex items-center justify-center gap-2 transition-colors';
+  "px-3 py-2 rounded-lg border border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/20 disabled:opacity-50 inline-flex items-center justify-center gap-2 transition-colors";
 
-function OutfitThumbs({ items, outfitId }: { items: WardrobeItem[]; outfitId?: string }) {
-  if (items.length === 0) return <div className="text-xs text-muted-foreground">No preview</div>;
+function OutfitThumbs({
+  items,
+  outfitId,
+}: {
+  items: WardrobeItem[];
+  outfitId?: string;
+}) {
+  if (items.length === 0)
+    return <div className="text-xs text-muted-foreground">No preview</div>;
 
   return (
     <div className="flex items-center gap-2 overflow-x-auto">
@@ -128,7 +179,13 @@ function OutfitThumbs({ items, outfitId }: { items: WardrobeItem[]; outfitId?: s
         const thumb = (
           <div className="w-12 h-12 rounded bg-card border border-border overflow-hidden flex-shrink-0">
             {item.image_url ? (
-              <Image src={item.image_url} alt={item.name} width={48} height={48} className="w-full h-full object-contain" />
+              <Image
+                src={item.image_url}
+                alt={item.name}
+                width={48}
+                height={48}
+                className="w-full h-full object-contain"
+              />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-[10px] text-muted-foreground px-1 text-center">
                 {(item.category?.name || item.name).slice(0, 7)}
@@ -156,7 +213,9 @@ function OutfitThumbs({ items, outfitId }: { items: WardrobeItem[]; outfitId?: s
   );
 }
 
-function groupDaysByDate(days: TripDay[]): Array<{ date: string; slots: TripDay[] }> {
+function groupDaysByDate(
+  days: TripDay[],
+): Array<{ date: string; slots: TripDay[] }> {
   const byDate = new Map<string, TripDay[]>();
   for (const day of days) {
     const list = byDate.get(day.day_date) || [];
@@ -165,18 +224,27 @@ function groupDaysByDate(days: TripDay[]): Array<{ date: string; slots: TripDay[
   }
 
   return Array.from(byDate.entries())
-    .map(([date, slots]) => ({ date, slots: slots.sort((a, b) => a.slot_number - b.slot_number) }))
+    .map(([date, slots]) => ({
+      date,
+      slots: slots.sort((a, b) => a.slot_number - b.slot_number),
+    }))
     .sort((a, b) => a.date.localeCompare(b.date));
 }
 
-async function fetchLocationForecast(lat: number, lon: number): Promise<WeatherResponse> {
-  const response = await fetch(`/.netlify/functions/weather?lat=${lat}&lon=${lon}`, {
-    method: 'GET',
-    headers: { Accept: 'application/json' },
-  });
+async function fetchLocationForecast(
+  lat: number,
+  lon: number,
+): Promise<WeatherResponse> {
+  const response = await fetch(
+    `/.netlify/functions/weather?lat=${lat}&lon=${lon}`,
+    {
+      method: "GET",
+      headers: { Accept: "application/json" },
+    },
+  );
 
   if (!response.ok) {
-    throw new Error('Failed to load destination weather');
+    throw new Error("Failed to load destination weather");
   }
 
   return response.json() as Promise<WeatherResponse>;
@@ -184,18 +252,20 @@ async function fetchLocationForecast(lat: number, lon: number): Promise<WeatherR
 
 export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
   const supabase = useMemo(() => createClient(), []);
-  const [selectedTripId, setSelectedTripId] = useState<string>('');
-  const [tripName, setTripName] = useState('');
-  const [destinationText, setDestinationText] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [geocodeChoice, setGeocodeChoice] = useState<GeocodeCandidate | null>(null);
+  const [selectedTripId, setSelectedTripId] = useState<string>("");
+  const [tripName, setTripName] = useState("");
+  const [destinationText, setDestinationText] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [geocodeChoice, setGeocodeChoice] = useState<GeocodeCandidate | null>(
+    null,
+  );
   const [geocodeMessage, setGeocodeMessage] = useState<string | null>(null);
   const [formWarning, setFormWarning] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
-  const [existingPolicy, setExistingPolicy] = useState<ExistingPolicy>('skip');
-  const [mixStrategy, setMixStrategy] = useState<MixStrategy>('balanced');
+  const [existingPolicy, setExistingPolicy] = useState<ExistingPolicy>("skip");
+  const [mixStrategy, setMixStrategy] = useState<MixStrategy>("balanced");
   const [lookbackDays, setLookbackDays] = useState(14);
   const [syncCalendar, setSyncCalendar] = useState(true);
   const [planningMessage, setPlanningMessage] = useState<string | null>(null);
@@ -210,19 +280,24 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [weatherError, setWeatherError] = useState<string | null>(null);
 
-  const [manualPackItem, setManualPackItem] = useState('');
+  const [manualPackItem, setManualPackItem] = useState("");
   const [editingDayId, setEditingDayId] = useState<string | null>(null);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [isEditingTripDates, setIsEditingTripDates] = useState(false);
-  const [singleDayGeneratingId, setSingleDayGeneratingId] = useState<string | null>(null);
-  const [editStartDate, setEditStartDate] = useState('');
-  const [editEndDate, setEditEndDate] = useState('');
+  const [singleDayGeneratingId, setSingleDayGeneratingId] = useState<
+    string | null
+  >(null);
+  const [editStartDate, setEditStartDate] = useState("");
+  const [editEndDate, setEditEndDate] = useState("");
   const [dateEditWarning, setDateEditWarning] = useState<string | null>(null);
   const [dateEditError, setDateEditError] = useState<string | null>(null);
 
   const { data: trips = [], isLoading: isTripsLoading } = useTrips();
   const { data: outfits = [] } = useOutfits();
-  const { data: calendarMonthData } = useCalendarEntriesByMonth({ month: new Date(), lookbackDays: 30 });
+  const { data: calendarMonthData } = useCalendarEntriesByMonth({
+    month: new Date(),
+    lookbackDays: 30,
+  });
   const tripDetailQuery = useTripDetail(selectedTripId);
 
   const createTripMutation = useCreateTrip();
@@ -234,7 +309,6 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
   const createTripPackItemMutation = useCreateTripPackItem();
   const updateTripPackItemMutation = useUpdateTripPackItem();
   const deleteTripPackItemMutation = useDeleteTripPackItem();
-  const createOutfitMutation = useCreateOutfit();
   const findTripOverlapsMutation = useFindTripOverlaps();
   const createCalendarEntryMutation = useCreateCalendarEntry();
   const updateCalendarEntryMutation = useUpdateCalendarEntry();
@@ -247,11 +321,15 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
 
   const selectedTrip = useMemo(
     () => trips.find((trip) => trip.id === selectedTripId) || null,
-    [trips, selectedTripId]
+    [trips, selectedTripId],
   );
 
   useEffect(() => {
-    if (!selectedTrip || selectedTrip.destination_lat == null || selectedTrip.destination_lon == null) {
+    if (
+      !selectedTrip ||
+      selectedTrip.destination_lat == null ||
+      selectedTrip.destination_lon == null
+    ) {
       setWeatherData(null);
       setWeatherError(null);
       return;
@@ -261,7 +339,10 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
     setWeatherLoading(true);
     setWeatherError(null);
 
-    fetchLocationForecast(selectedTrip.destination_lat, selectedTrip.destination_lon)
+    fetchLocationForecast(
+      selectedTrip.destination_lat,
+      selectedTrip.destination_lon,
+    )
       .then((data) => {
         if (cancelled) return;
         setWeatherData(data);
@@ -291,26 +372,39 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
   }, [selectedTrip]);
 
   const tripDetail = tripDetailQuery.data;
-  const groupedTripDays = useMemo(() => groupDaysByDate(tripDetail?.days || []), [tripDetail?.days]);
-  const calendarEntries = useMemo(() => calendarMonthData?.entries || [], [calendarMonthData?.entries]);
+  const groupedTripDays = useMemo(
+    () => groupDaysByDate(tripDetail?.days || []),
+    [tripDetail?.days],
+  );
+  const calendarEntries = useMemo(
+    () => calendarMonthData?.entries || [],
+    [calendarMonthData?.entries],
+  );
 
   const geocodeDestination = useCallback(async (queryText: string) => {
     const cleaned = queryText.trim();
     if (!cleaned) {
-      setGeocodeMessage('Enter a destination first.');
+      setGeocodeMessage("Enter a destination first.");
       return null;
     }
 
-    setGeocodeMessage('Looking up destination...');
-    const response = await fetch(`/api/geocode?q=${encodeURIComponent(cleaned)}`, { method: 'GET' });
+    setGeocodeMessage("Looking up destination...");
+    const response = await fetch(
+      `/api/geocode?q=${encodeURIComponent(cleaned)}`,
+      { method: "GET" },
+    );
     if (!response.ok) {
-      setGeocodeMessage('Geocoding failed. Trip will use seasonal fallback weather until location resolves.');
+      setGeocodeMessage(
+        "Geocoding failed. Trip will use seasonal fallback weather until location resolves.",
+      );
       return null;
     }
 
-    const payload = await response.json() as { best: GeocodeCandidate | null };
+    const payload = (await response.json()) as {
+      best: GeocodeCandidate | null;
+    };
     if (!payload.best) {
-      setGeocodeMessage('No location match found. Try adding state/country.');
+      setGeocodeMessage("No location match found. Try adding state/country.");
       return null;
     }
 
@@ -324,16 +418,23 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
     setFormWarning(null);
 
     try {
-      const resolvedGeocode = geocodeChoice || await geocodeDestination(destinationText);
-      const normalizedDestinationText = resolvedGeocode?.label || destinationText;
+      const resolvedGeocode =
+        geocodeChoice || (await geocodeDestination(destinationText));
+      const normalizedDestinationText =
+        resolvedGeocode?.label || destinationText;
 
       const lat = Number(resolvedGeocode?.lat);
       const lon = Number(resolvedGeocode?.lon);
       const hasCoordinates = Number.isFinite(lat) && Number.isFinite(lon);
 
-      const overlaps = await findTripOverlapsMutation.mutateAsync({ startDate, endDate });
+      const overlaps = await findTripOverlapsMutation.mutateAsync({
+        startDate,
+        endDate,
+      });
       if (overlaps.length > 0) {
-        setFormWarning(`Warning: overlaps ${overlaps.length} existing trip(s).`);
+        setFormWarning(
+          `Warning: overlaps ${overlaps.length} existing trip(s).`,
+        );
       }
 
       const trip = await createTripMutation.mutateAsync({
@@ -346,29 +447,43 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
       });
 
       setSelectedTripId(trip.id);
-      setTripName('');
-      setDestinationText('');
-      setStartDate('');
-      setEndDate('');
+      setTripName("");
+      setDestinationText("");
+      setStartDate("");
+      setEndDate("");
       setGeocodeChoice(null);
       setGeocodeMessage(null);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to create trip';
+      const message =
+        error instanceof Error ? error.message : "Failed to create trip";
       setFormError(message);
     }
   };
 
-  const resolveTripDayWeather = useCallback((dayDate: string) => {
-    const date = parseDateKey(dayDate);
-    return resolveCalendarWeather(date, weatherData?.current || null, weatherData?.forecast || []);
-  }, [weatherData]);
+  const resolveTripDayWeather = useCallback(
+    (dayDate: string) => {
+      const date = parseDateKey(dayDate);
+      return resolveCalendarWeather(
+        date,
+        weatherData?.current || null,
+        weatherData?.forecast || [],
+      );
+    },
+    [weatherData],
+  );
 
-  const saveDayPlan = async (day: TripDay, outfit: Outfit | null, weatherContext?: Record<string, unknown>) => {
-    const itemIds = outfit ? (outfit.items || []).map((item) => item.id) : (day.items || []).map((item) => item.id);
+  const saveDayPlan = async (
+    day: TripDay,
+    outfit: PlannedLook | null,
+    weatherContext?: Record<string, unknown>,
+  ) => {
+    const itemIds = outfit
+      ? (outfit.items || []).map((item) => item.id)
+      : (day.items || []).map((item) => item.id);
 
     await updateTripDayMutation.mutateAsync({
       id: day.id,
-      outfit_id: outfit?.id,
+      outfit_id: outfit?.id || null,
       item_ids: itemIds,
       weather_context: weatherContext,
     });
@@ -378,29 +493,45 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
     const activeTripDetail = detailOverride || tripDetail;
     if (!activeTripDetail) return;
 
-    const desiredFromOutfit = new Map<string, { itemId: string; label: string }>();
+    const desiredFromOutfit = new Map<
+      string,
+      { itemId: string; label: string }
+    >();
     for (const day of activeTripDetail.days) {
       for (const item of day.items || []) {
-        desiredFromOutfit.set(item.id, { itemId: item.id, label: sanitizeTextOnly(item.name) || 'Wardrobe Item' });
+        desiredFromOutfit.set(item.id, {
+          itemId: item.id,
+          label: sanitizeTextOnly(item.name) || "Wardrobe Item",
+        });
       }
     }
 
-    const existingFromOutfit = (activeTripDetail.pack_items || []).filter((item) => item.source === 'from_outfit');
+    const existingFromOutfit = (activeTripDetail.pack_items || []).filter(
+      (item) => item.source === "from_outfit",
+    );
 
     for (const existingItem of existingFromOutfit) {
-      if (!existingItem.wardrobe_item_id || !desiredFromOutfit.has(existingItem.wardrobe_item_id)) {
-        await deleteTripPackItemMutation.mutateAsync({ tripPackItemId: existingItem.id, tripId: activeTripDetail.id });
+      if (
+        !existingItem.wardrobe_item_id ||
+        !desiredFromOutfit.has(existingItem.wardrobe_item_id)
+      ) {
+        await deleteTripPackItemMutation.mutateAsync({
+          tripPackItemId: existingItem.id,
+          tripId: activeTripDetail.id,
+        });
       }
     }
 
     for (const [itemId, desired] of desiredFromOutfit) {
-      const existing = existingFromOutfit.find((item) => item.wardrobe_item_id === itemId);
+      const existing = existingFromOutfit.find(
+        (item) => item.wardrobe_item_id === itemId,
+      );
       if (!existing) {
         await createTripPackItemMutation.mutateAsync({
           trip_id: activeTripDetail.id,
           wardrobe_item_id: desired.itemId,
           label: desired.label,
-          source: 'from_outfit',
+          source: "from_outfit",
           packed: false,
         });
       } else if (existing.label !== desired.label) {
@@ -412,27 +543,35 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
     }
   };
 
-  const syncDayToCalendar = async (tripNameValue: string, day: TripDay, policy: ExistingPolicy) => {
+  const syncDayToCalendar = async (
+    tripNameValue: string,
+    day: TripDay,
+    policy: ExistingPolicy,
+  ) => {
     const weather = resolveTripDayWeather(day.day_date);
     const safeTripName = sanitizeTextOnly(tripNameValue);
-    const tripNote = sanitizeTextOnly(`Trip ${safeTripName} slot ${day.slot_number}`) || `Trip slot ${day.slot_number}`;
+    const tripNote =
+      sanitizeTextOnly(`Trip ${safeTripName} slot ${day.slot_number}`) ||
+      `Trip slot ${day.slot_number}`;
 
     const { data: existingTripEntries, error: lookupError } = await supabase
-      .from('calendar_entries')
-      .select('id, weather_context')
-      .eq('entry_date', day.day_date)
-      .eq('status', 'planned')
-      .contains('weather_context', { trip_day_id: day.id })
+      .from("calendar_entries")
+      .select("id, weather_context")
+      .eq("entry_date", day.day_date)
+      .eq("status", "planned")
+      .contains("weather_context", { trip_day_id: day.id })
       .limit(1);
 
     if (lookupError) {
-      throw new Error(`Failed to sync calendar entries: ${lookupError.message}`);
+      throw new Error(
+        `Failed to sync calendar entries: ${lookupError.message}`,
+      );
     }
 
     const itemIds = (day.items || []).map((item) => item.id);
     const payload = {
       entry_date: day.day_date,
-      status: 'planned' as const,
+      status: "planned" as const,
       outfit_id: day.outfit_id || undefined,
       notes: tripNote,
       item_ids: itemIds,
@@ -448,16 +587,19 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
     };
 
     if (existingTripEntries && existingTripEntries.length > 0) {
-      await updateCalendarEntryMutation.mutateAsync({ id: existingTripEntries[0].id, ...payload });
+      await updateCalendarEntryMutation.mutateAsync({
+        id: existingTripEntries[0].id,
+        ...payload,
+      });
       return;
     }
 
-    if (policy === 'skip') {
+    if (policy === "skip") {
       const { data: existingSameDate } = await supabase
-        .from('calendar_entries')
-        .select('id')
-        .eq('entry_date', day.day_date)
-        .eq('status', 'planned')
+        .from("calendar_entries")
+        .select("id")
+        .eq("entry_date", day.day_date)
+        .eq("status", "planned")
         .limit(1);
       if ((existingSameDate || []).length > 0) return;
     }
@@ -473,13 +615,21 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
     setPlanningProgress({
       completed: 0,
       total: tripDetail.days.length || 1,
-      step: 'Preparing trip planner...',
+      step: "Preparing trip planner...",
     });
 
     try {
       const baseDate = new Date();
-      const recentSignatures = getRecentEntrySignatures(calendarEntries, lookbackDays, baseDate);
-      const excludedItemIds = getRecentWornItemIds(calendarEntries, lookbackDays, baseDate);
+      const recentSignatures = getRecentEntrySignatures(
+        calendarEntries,
+        lookbackDays,
+        baseDate,
+      );
+      const excludedItemIds = getRecentWornItemIds(
+        calendarEntries,
+        lookbackDays,
+        baseDate,
+      );
       let savedCount = 0;
       let generatedCount = 0;
       let skippedCount = 0;
@@ -491,8 +641,9 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
           total: tripDetail.days.length || 1,
           step: `Planning ${day.day_date} (slot ${day.slot_number})`,
         });
-        const hasExisting = Boolean(day.outfit_id) || (day.items || []).length > 0;
-        if (hasExisting && existingPolicy === 'skip') {
+        const hasExisting =
+          Boolean(day.outfit_id) || (day.items || []).length > 0;
+        if (hasExisting && existingPolicy === "skip") {
           skippedCount += 1;
           setPlanningProgress({
             completed: index + 1,
@@ -505,13 +656,14 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
         const weather = resolveTripDayWeather(day.day_date);
         const preferSaved = shouldPreferSavedOutfit(index, mixStrategy);
 
-        let pickedOutfit: Outfit | null = null;
+        let pickedOutfit: PlannedLook | null = null;
         if (preferSaved) {
-          pickedOutfit = outfits.find((outfit) => {
-            const ids = (outfit.items || []).map((item) => item.id);
-            const signature = toItemSetSignature(ids);
-            return ids.length > 0 && !recentSignatures.has(signature);
-          }) || null;
+          pickedOutfit =
+            outfits.find((outfit) => {
+              const ids = (outfit.items || []).map((item) => item.id);
+              const signature = toItemSetSignature(ids);
+              return ids.length > 0 && !recentSignatures.has(signature);
+            }) || null;
         }
 
         if (!pickedOutfit) {
@@ -521,22 +673,21 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
             excludeItems: Array.from(excludedItemIds),
           });
 
-          const createdOutfit = await createOutfitMutation.mutateAsync({
-            items: generated.itemIds,
-            source: 'generated',
-            name: `AI Trip Plan ${tripDetail.name} ${day.day_date} #${day.slot_number}`,
-            weight: 1,
-            loved: false,
-          });
-
-          pickedOutfit = createdOutfit;
+          pickedOutfit = {
+            source: "generated",
+            items: wardrobeItems.filter((item) =>
+              generated.itemIds.includes(item.id),
+            ),
+          };
           generatedCount += 1;
           for (const itemId of generated.itemIds) excludedItemIds.add(itemId);
         } else {
           savedCount += 1;
         }
 
-        const signature = toItemSetSignature((pickedOutfit.items || []).map((item) => item.id));
+        const signature = toItemSetSignature(
+          (pickedOutfit.items || []).map((item) => item.id),
+        );
         if (signature) recentSignatures.add(signature);
 
         await saveDayPlan(day, pickedOutfit, {
@@ -545,7 +696,8 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
           highTemp: weather.highTemp,
           lowTemp: weather.lowTemp,
           precipChance: weather.precipChance,
-          generationType: pickedOutfit.source === 'generated' ? 'ai-custom' : 'saved',
+          generationType:
+            pickedOutfit.source === "generated" ? "ai-custom" : "saved",
         });
         setPlanningProgress({
           completed: index + 1,
@@ -555,7 +707,11 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
       }
 
       if (syncCalendar) {
-        setPlanningProgress((prev) => prev ? { ...prev, step: 'Syncing generated plan to calendar...' } : prev);
+        setPlanningProgress((prev) =>
+          prev
+            ? { ...prev, step: "Syncing generated plan to calendar..." }
+            : prev,
+        );
         const refreshedTrip = await tripDetailQuery.refetch();
         const latestTrip = refreshedTrip.data;
         if (latestTrip) {
@@ -567,14 +723,19 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
       }
 
       const finalTrip = (await tripDetailQuery.refetch()).data;
-      setPlanningProgress((prev) => prev ? { ...prev, step: 'Rebuilding packing checklist...' } : prev);
+      setPlanningProgress((prev) =>
+        prev ? { ...prev, step: "Rebuilding packing checklist..." } : prev,
+      );
       await rebuildChecklist(finalTrip);
 
       setPlanningMessage(
-        `Planner updated (${savedCount} saved, ${generatedCount} AI generated, ${skippedCount} skipped).`
+        `Planner updated (${savedCount} saved, ${generatedCount} AI generated, ${skippedCount} skipped).`,
       );
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to generate trip plan.';
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to generate trip plan.";
       setPlanningMessage(message);
     } finally {
       setPlanningInFlight(false);
@@ -593,7 +754,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
       highTemp: weather.highTemp,
       lowTemp: weather.lowTemp,
       precipChance: weather.precipChance,
-      generationType: 'saved',
+      generationType: "saved",
     });
     await tripDetailQuery.refetch();
     setEditingDayId(null);
@@ -613,26 +774,12 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
         excludeItems: currentItemIds,
       });
 
-      let targetOutfit: Outfit | null = null;
-      try {
-        targetOutfit = await createOutfitMutation.mutateAsync({
-          items: generated.itemIds,
-          source: 'generated',
-          name: `AI Trip Plan ${tripDetail?.name || 'Trip'} ${day.day_date} #${day.slot_number}`,
-          weight: 1,
-          loved: false,
-        });
-      } catch (error) {
-        const message = error instanceof Error ? error.message : '';
-        const duplicateDetected = message.toLowerCase().includes('already exists');
-        if (!duplicateDetected) throw error;
-
-        const generatedSignature = toItemSetSignature(generated.itemIds);
-        targetOutfit = outfits.find(
-          (outfit) => toItemSetSignature((outfit.items || []).map((item) => item.id)) === generatedSignature
-        ) || null;
-        if (!targetOutfit) throw error;
-      }
+      const targetOutfit: PlannedLook = {
+        source: "generated",
+        items: wardrobeItems.filter((item) =>
+          generated.itemIds.includes(item.id),
+        ),
+      };
 
       await saveDayPlan(day, targetOutfit, {
         source: weather.source,
@@ -640,13 +787,18 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
         highTemp: weather.highTemp,
         lowTemp: weather.lowTemp,
         precipChance: weather.precipChance,
-        generationType: 'ai-custom',
+        generationType: "ai-custom",
       });
 
       await tripDetailQuery.refetch();
-      setPlanningMessage(`Generated a new outfit for ${day.day_date} slot ${day.slot_number}.`);
+      setPlanningMessage(
+        `Generated a new outfit for ${day.day_date} slot ${day.slot_number}.`,
+      );
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to generate slot outfit.';
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to generate slot outfit.";
       setPlanningMessage(message);
     } finally {
       setSingleDayGeneratingId(null);
@@ -656,13 +808,14 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
   const handleAddSlot = async (date: string) => {
     if (!tripDetail) return;
     const dateSlots = tripDetail.days.filter((day) => day.day_date === date);
-    const nextSlot = Math.max(0, ...dateSlots.map((day) => day.slot_number)) + 1;
+    const nextSlot =
+      Math.max(0, ...dateSlots.map((day) => day.slot_number)) + 1;
 
     await createTripDayMutation.mutateAsync({
       trip_id: tripDetail.id,
       day_date: date,
       slot_number: nextSlot,
-      slot_label: nextSlot === 2 ? 'Evening Event' : `Event ${nextSlot}`,
+      slot_label: nextSlot === 2 ? "Evening Event" : `Event ${nextSlot}`,
     });
 
     await tripDetailQuery.refetch();
@@ -675,7 +828,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
 
     try {
       if (!editStartDate || !editEndDate) {
-        throw new Error('Start and end dates are required.');
+        throw new Error("Start and end dates are required.");
       }
 
       const overlaps = await findTripOverlapsMutation.mutateAsync({
@@ -684,7 +837,9 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
         excludeTripId: selectedTrip.id,
       });
       if (overlaps.length > 0) {
-        setDateEditWarning(`Warning: updated dates overlap ${overlaps.length} other trip(s).`);
+        setDateEditWarning(
+          `Warning: updated dates overlap ${overlaps.length} other trip(s).`,
+        );
       }
 
       await updateTripMutation.mutateAsync({
@@ -693,14 +848,25 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
         end_date: editEndDate,
       });
 
-      const desiredDates = new Set(getDateKeysInRange(editStartDate, editEndDate));
-      const daysToDelete = tripDetail.days.filter((day) => !desiredDates.has(day.day_date));
+      const desiredDates = new Set(
+        getDateKeysInRange(editStartDate, editEndDate),
+      );
+      const daysToDelete = tripDetail.days.filter(
+        (day) => !desiredDates.has(day.day_date),
+      );
 
       for (const day of daysToDelete) {
-        await deleteTripDayMutation.mutateAsync({ tripDayId: day.id, tripId: tripDetail.id });
+        await deleteTripDayMutation.mutateAsync({
+          tripDayId: day.id,
+          tripId: tripDetail.id,
+        });
       }
 
-      const existingDates = new Set(tripDetail.days.filter((day) => desiredDates.has(day.day_date)).map((day) => day.day_date));
+      const existingDates = new Set(
+        tripDetail.days
+          .filter((day) => desiredDates.has(day.day_date))
+          .map((day) => day.day_date),
+      );
       for (const date of desiredDates) {
         if (existingDates.has(date)) continue;
         await createTripDayMutation.mutateAsync({
@@ -713,53 +879,69 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
       await tripDetailQuery.refetch();
       setIsEditingTripDates(false);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to update trip dates.';
+      const message =
+        error instanceof Error ? error.message : "Failed to update trip dates.";
       setDateEditError(message);
     }
   };
 
   const hasRequiredItems = useMemo(() => {
-    const names = new Set(wardrobeItems.map((item) => item.category?.name));
-    return names.has('Shirt') && names.has('Pants') && names.has('Shoes');
+    return hasCompleteOutfitItems(wardrobeItems);
   }, [wardrobeItems]);
 
   return (
     <div className="page-shell-content page-shell-content--wide space-y-5 sm:space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <div className="mb-3 inline-flex items-center rounded-[var(--radius-pill)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_82%,transparent)] p-1">
-            <Link href="/calendar" className="rounded-[var(--radius-pill)] px-3 py-1.5 text-sm text-muted-foreground hover:bg-[var(--bg-surface-hover)] hover:text-foreground">
-              Calendar
-            </Link>
-            <span className="rounded-[var(--radius-pill)] bg-[linear-gradient(135deg,var(--accent),#7eb8ff)] px-3 py-1.5 text-sm text-[var(--text-on-accent)]">Trips</span>
-          </div>
-          <h1 className="text-3xl font-bold text-foreground">Trip Planner</h1>
-          <p className="text-muted-foreground mt-1">Plan trip outfits and packing with destination weather and seasonal fallback.</p>
+          <h1 className="font-display text-4xl font-normal text-foreground">
+            Pack less. Have a plan.
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Choose outfits for each day. Turn the pieces into one packing
+            checklist.
+          </p>
         </div>
       </div>
 
+      <PlannerTabs active="trips" />
+      {selectedTrip && (
+        <div className="flex justify-end">
+          <AskSebastian
+            contextHints={{ tripId: selectedTrip.id }}
+            prompt={`Help me plan versatile outfits and pack for ${selectedTrip.name} in ${selectedTrip.destination_text}.`}
+          />
+        </div>
+      )}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
         <div className="space-y-4">
-          <div className="glass-surface rounded-[var(--radius-xl)] p-4 space-y-3">
-            <h2 className="text-lg font-semibold text-foreground">Create Trip</h2>
+          <details
+            className="rounded-xl border border-border bg-[var(--bg-surface)] p-4 space-y-3"
+            open={trips.length === 0}
+          >
+            <summary className="cursor-pointer text-base font-medium">
+              Create a trip
+            </summary>
 
             <input
               type="text"
               value={tripName}
               onChange={(e) => setTripName(e.target.value)}
               placeholder="Trip name"
+              aria-label="Trip name"
               className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
             <div className="grid grid-cols-2 gap-2">
               <input
                 type="date"
                 value={startDate}
+                aria-label="Trip start date"
                 onChange={(e) => setStartDate(e.target.value)}
                 className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
               <input
                 type="date"
                 value={endDate}
+                aria-label="Trip end date"
                 onChange={(e) => setEndDate(e.target.value)}
                 className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
@@ -770,17 +952,26 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                 value={destinationText}
                 onChange={(e) => setDestinationText(e.target.value)}
                 placeholder="Destination (city, state/country)"
+                aria-label="Trip destination"
                 className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
               <button
                 type="button"
-                onClick={() => geocodeDestination(destinationText).catch(() => setGeocodeMessage('Geocoding failed.'))}
+                onClick={() =>
+                  geocodeDestination(destinationText).catch(() =>
+                    setGeocodeMessage("Geocoding failed."),
+                  )
+                }
                 className={BUTTON_SUBTLE}
               >
                 <MapPin className="w-3 h-3" />
-                Geocode destination
+                Find destination
               </button>
-              {geocodeMessage && <p className="text-xs text-muted-foreground">{geocodeMessage}</p>}
+              {geocodeMessage && (
+                <p className="text-xs text-muted-foreground">
+                  {geocodeMessage}
+                </p>
+              )}
             </div>
 
             {formWarning && (
@@ -789,16 +980,18 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                 {formWarning}
               </div>
             )}
-            {formError && <p className="text-xs text-destructive">{formError}</p>}
+            {formError && (
+              <p className="text-xs text-destructive">{formError}</p>
+            )}
 
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => {
-                  setTripName('');
-                  setDestinationText('');
-                  setStartDate('');
-                  setEndDate('');
+                  setTripName("");
+                  setDestinationText("");
+                  setStartDate("");
+                  setEndDate("");
                   setFormWarning(null);
                   setFormError(null);
                   setGeocodeMessage(null);
@@ -814,15 +1007,17 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                 disabled={createTripMutation.isPending}
                 className={`flex-1 ${BUTTON_PRIMARY}`}
               >
-                {createTripMutation.isPending ? 'Creating...' : 'Create Trip'}
+                {createTripMutation.isPending ? "Creating..." : "Create Trip"}
               </button>
             </div>
-          </div>
+          </details>
 
           <div className="glass-surface rounded-[var(--radius-xl)] p-4 space-y-3">
             <h3 className="text-base font-semibold text-foreground">Trips</h3>
             {isTripsLoading ? (
-              <div className="text-sm text-muted-foreground">Loading trips...</div>
+              <div className="text-sm text-muted-foreground">
+                Loading trips...
+              </div>
             ) : trips.length === 0 ? (
               <div className="text-sm text-muted-foreground">No trips yet.</div>
             ) : (
@@ -832,11 +1027,17 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                     key={trip.id}
                     type="button"
                     onClick={() => setSelectedTripId(trip.id)}
-                    className={`w-full rounded-[var(--radius-lg)] border p-2.5 text-left transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] ${selectedTripId === trip.id ? 'border-primary bg-[var(--accent-muted)]' : 'border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]'}`}
+                    className={`w-full rounded-[var(--radius-lg)] border p-2.5 text-left transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] ${selectedTripId === trip.id ? "border-primary bg-[var(--accent-muted)]" : "border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]"}`}
                   >
-                    <p className="text-sm font-semibold text-foreground truncate">{trip.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{trip.destination_text}</p>
-                    <p className="text-xs text-muted-foreground">{trip.start_date} to {trip.end_date}</p>
+                    <p className="text-sm font-semibold text-foreground truncate">
+                      {trip.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {trip.destination_text}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {trip.start_date} to {trip.end_date}
+                    </p>
                   </button>
                 ))}
               </div>
@@ -846,8 +1047,9 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
               <button
                 type="button"
                 onClick={() => {
-                  deleteTripMutation.mutateAsync(selectedTrip.id)
-                    .then(() => setSelectedTripId(''))
+                  deleteTripMutation
+                    .mutateAsync(selectedTrip.id)
+                    .then(() => setSelectedTripId(""))
                     .catch(() => undefined);
                 }}
                 className={`w-full ${BUTTON_DANGER}`}
@@ -877,8 +1079,13 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
               <section className="space-y-3 border-b border-[var(--border-subtle)] pb-4">
                 <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <h2 className="text-lg font-semibold text-foreground">{tripDetail.name}</h2>
-                    <p className="text-sm text-muted-foreground">{tripDetail.destination_text} | {tripDetail.start_date} to {tripDetail.end_date}</p>
+                    <h2 className="text-lg font-semibold text-foreground">
+                      {tripDetail.name}
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      {tripDetail.destination_text} | {tripDetail.start_date} to{" "}
+                      {tripDetail.end_date}
+                    </p>
                     {isEditingTripDates ? (
                       <div className="mt-2 space-y-2">
                         <div className="grid grid-cols-2 gap-2 max-w-sm">
@@ -898,8 +1105,14 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                         <div className="flex flex-wrap gap-2">
                           <button
                             type="button"
-                            onClick={() => handleUpdateTripDates().catch(() => undefined)}
-                            disabled={updateTripMutation.isPending || deleteTripDayMutation.isPending || createTripDayMutation.isPending}
+                            onClick={() =>
+                              handleUpdateTripDates().catch(() => undefined)
+                            }
+                            disabled={
+                              updateTripMutation.isPending ||
+                              deleteTripDayMutation.isPending ||
+                              createTripDayMutation.isPending
+                            }
                             className={BUTTON_SUBTLE}
                           >
                             Save dates
@@ -924,7 +1137,11 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                             {dateEditWarning}
                           </p>
                         )}
-                        {dateEditError && <p className="text-xs text-destructive">{dateEditError}</p>}
+                        {dateEditError && (
+                          <p className="text-xs text-destructive">
+                            {dateEditError}
+                          </p>
+                        )}
                       </div>
                     ) : (
                       <button
@@ -944,7 +1161,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                       className={BUTTON_PRIMARY}
                     >
                       <AIIcon className="w-4 h-4" />
-                      {planningInFlight ? 'Generating...' : 'Generate Outfits'}
+                      {planningInFlight ? "Generating..." : "Plan outfits"}
                     </button>
                     <button
                       type="button"
@@ -956,9 +1173,14 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                     </button>
                   </div>
                 </div>
-                {!hasRequiredItems && <p className="text-xs text-amber-600 dark:text-amber-400">Add Shirt, Pants, and Shoes to generate outfits.</p>}
+                {!hasRequiredItems && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400">
+                    Add a top, bottoms, and shoes—or a dress and shoes—to make
+                    outfits.
+                  </p>
+                )}
                 {planningInFlight && planningProgress && (
-                <div className="glass-surface space-y-2 border-[color-mix(in_srgb,var(--accent)_22%,transparent)] bg-[var(--accent-muted)] px-3 py-3">
+                  <div className="glass-surface space-y-2 border-[color-mix(in_srgb,var(--accent)_22%,transparent)] bg-[var(--accent-muted)] px-3 py-3">
                     <div className="flex items-center justify-between text-sm">
                       <div className="inline-flex items-center gap-2 text-foreground">
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -972,39 +1194,70 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                       <div
                         className="h-full bg-primary transition-all duration-300"
                         style={{
-                          width: `${planningProgress.total > 0
-                            ? (planningProgress.completed / planningProgress.total) * 100
-                            : 0}%`,
+                          width: `${
+                            planningProgress.total > 0
+                              ? (planningProgress.completed /
+                                  planningProgress.total) *
+                                100
+                              : 0
+                          }%`,
                         }}
                       />
                     </div>
-                    <p className="text-xs text-muted-foreground">{planningProgress.step}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {planningProgress.step}
+                    </p>
                   </div>
                 )}
-                {planningMessage && <p className="text-sm text-foreground">{planningMessage}</p>}
-                {weatherLoading && <p className="text-xs text-muted-foreground">Loading destination forecast...</p>}
-                {weatherError && <p className="text-xs text-amber-600 dark:text-amber-400">{weatherError}. Seasonal fallback will still be used.</p>}
+                {planningMessage && (
+                  <p className="text-sm text-foreground">{planningMessage}</p>
+                )}
+                {weatherLoading && (
+                  <p className="text-xs text-muted-foreground">
+                    Loading destination forecast...
+                  </p>
+                )}
+                {weatherError && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400">
+                    {weatherError}. Seasonal fallback will still be used.
+                  </p>
+                )}
               </section>
 
               <section className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-base font-semibold text-foreground">Planner</h3>
+                  <h3 className="text-base font-semibold text-foreground">
+                    Planner
+                  </h3>
                   <div className="text-xs text-muted-foreground inline-flex items-center gap-1">
                     <CalendarDays className="w-3.5 h-3.5" />
                     {tripDetail.days.length} slot(s)
                   </div>
                 </div>
                 {groupedTripDays.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No trip days yet.</p>
+                  <p className="text-sm text-muted-foreground">
+                    No trip days yet.
+                  </p>
                 ) : (
                   <div className="space-y-3">
                     {groupedTripDays.map(({ date, slots }) => (
-                      <div key={date} className="glass-surface rounded-[var(--radius-xl)] p-3 space-y-3">
+                      <div
+                        key={date}
+                        className="glass-surface rounded-[var(--radius-xl)] p-3 space-y-3"
+                      >
                         <div className="flex items-center justify-between">
-                          <p className="text-sm font-semibold text-foreground">{parseDateKey(date).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}</p>
+                          <p className="text-sm font-semibold text-foreground">
+                            {parseDateKey(date).toLocaleDateString(undefined, {
+                              weekday: "long",
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </p>
                           <button
                             type="button"
-                            onClick={() => handleAddSlot(date).catch(() => undefined)}
+                            onClick={() =>
+                              handleAddSlot(date).catch(() => undefined)
+                            }
                             className={BUTTON_INLINE_SECONDARY}
                           >
                             <Plus className="w-3 h-3" />
@@ -1015,17 +1268,35 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                         {slots.map((day) => {
                           const weather = resolveTripDayWeather(day.day_date);
                           return (
-                            <div key={day.id} className="rounded-[var(--radius-md)] p-2.5 space-y-2">
+                            <div
+                              key={day.id}
+                              className="rounded-[var(--radius-md)] p-2.5 space-y-2"
+                            >
                               <div className="flex items-center justify-between gap-2">
                                 <div className="text-xs text-muted-foreground flex items-center gap-1.5">
                                   <CloudSun className="w-3.5 h-3.5" />
-                                  Slot {day.slot_number}{day.slot_label ? ` - ${day.slot_label}` : ''} | {Math.round(weather.lowTemp)}F/{Math.round(weather.highTemp)}F | {weather.source === 'forecast' ? 'forecast' : 'seasonal fallback'}
+                                  Slot {day.slot_number}
+                                  {day.slot_label
+                                    ? ` - ${day.slot_label}`
+                                    : ""}{" "}
+                                  | {Math.round(weather.lowTemp)}F/
+                                  {Math.round(weather.highTemp)}F |{" "}
+                                  {weather.source === "forecast"
+                                    ? "forecast"
+                                    : "seasonal fallback"}
                                 </div>
                                 <div className="flex items-center gap-1">
                                   <button
                                     type="button"
-                                    onClick={() => handleGenerateSingleDay(day).catch(() => undefined)}
-                                    disabled={planningInFlight || singleDayGeneratingId === day.id}
+                                    onClick={() =>
+                                      handleGenerateSingleDay(day).catch(
+                                        () => undefined,
+                                      )
+                                    }
+                                    disabled={
+                                      planningInFlight ||
+                                      singleDayGeneratingId === day.id
+                                    }
                                     className={BUTTON_INLINE_PRIMARY}
                                   >
                                     {singleDayGeneratingId === day.id ? (
@@ -1033,12 +1304,21 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                                     ) : (
                                       <AIIcon className="w-3 h-3" />
                                     )}
-                                    {singleDayGeneratingId === day.id ? 'Generating...' : 'Generate'}
+                                    {singleDayGeneratingId === day.id
+                                      ? "Generating..."
+                                      : "Generate"}
                                   </button>
                                   {day.slot_number > 1 && (
                                     <button
                                       type="button"
-                                      onClick={() => deleteTripDayMutation.mutateAsync({ tripDayId: day.id, tripId: day.trip_id }).catch(() => undefined)}
+                                      onClick={() =>
+                                        deleteTripDayMutation
+                                          .mutateAsync({
+                                            tripDayId: day.id,
+                                            tripId: day.trip_id,
+                                          })
+                                          .catch(() => undefined)
+                                      }
                                       className="text-xs px-2 py-1 rounded-md border border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/20 inline-flex items-center justify-center transition-colors"
                                     >
                                       Remove
@@ -1047,23 +1327,37 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                                 </div>
                               </div>
 
-                              <p className="text-sm font-medium text-foreground">{day.outfit?.name || 'No outfit selected'}</p>
-                              <OutfitThumbs items={day.items || []} outfitId={day.outfit_id || undefined} />
+                              <p className="text-sm font-medium text-foreground">
+                                {day.outfit?.name || "No outfit selected"}
+                              </p>
+                              <OutfitThumbs
+                                items={day.items || []}
+                                outfitId={day.outfit_id || undefined}
+                              />
 
                               <div className="flex flex-wrap gap-1.5">
                                 {(day.items || []).map((item) => (
-                                  <span key={item.id} className="text-[11px] rounded-full border border-border px-2 py-0.5 text-muted-foreground">
-                                    {(item.category?.name || 'Item')}: {item.name}
+                                  <span
+                                    key={item.id}
+                                    className="text-[11px] rounded-full border border-border px-2 py-0.5 text-muted-foreground"
+                                  >
+                                    {item.category?.name || "Item"}: {item.name}
                                   </span>
                                 ))}
                               </div>
 
                               <button
                                 type="button"
-                                onClick={() => setEditingDayId(editingDayId === day.id ? null : day.id)}
+                                onClick={() =>
+                                  setEditingDayId(
+                                    editingDayId === day.id ? null : day.id,
+                                  )
+                                }
                                 className={BUTTON_SUBTLE}
                               >
-                                {editingDayId === day.id ? 'Close outfit picker' : 'Pick saved outfit'}
+                                {editingDayId === day.id
+                                  ? "Close outfit picker"
+                                  : "Pick saved outfit"}
                               </button>
 
                               {editingDayId === day.id && (
@@ -1072,11 +1366,21 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                                     <button
                                       key={outfit.id}
                                       type="button"
-                                      onClick={() => handleAssignExistingOutfit(day, outfit.id).catch(() => undefined)}
-                                      className={`rounded-[var(--radius-md)] border p-2 text-left ${day.outfit_id === outfit.id ? 'border-primary bg-[var(--accent-muted)]' : 'border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]'}`}
+                                      onClick={() =>
+                                        handleAssignExistingOutfit(
+                                          day,
+                                          outfit.id,
+                                        ).catch(() => undefined)
+                                      }
+                                      className={`rounded-[var(--radius-md)] border p-2 text-left ${day.outfit_id === outfit.id ? "border-primary bg-[var(--accent-muted)]" : "border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_72%,transparent)] hover:bg-[var(--bg-surface-hover)]"}`}
                                     >
-                                      <p className="text-sm font-medium text-foreground truncate">{outfit.name || `Outfit ${outfit.id.slice(0, 6)}`}</p>
-                                      <OutfitThumbs items={outfit.items || []} />
+                                      <p className="text-sm font-medium text-foreground truncate">
+                                        {outfit.name ||
+                                          `Outfit ${outfit.id.slice(0, 6)}`}
+                                      </p>
+                                      <OutfitThumbs
+                                        items={outfit.items || []}
+                                      />
                                     </button>
                                   ))}
                                 </div>
@@ -1091,12 +1395,20 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
               </section>
 
               <section className="space-y-3 border-t border-[var(--border-subtle)] pt-4">
-                <h3 className="text-base font-semibold text-foreground">Packing Checklist</h3>
+                <h3 className="text-base font-semibold text-foreground">
+                  Packing Checklist
+                </h3>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={manualPackItem}
-                    onChange={(e) => setManualPackItem(e.target.value.replace(/[^A-Za-z0-9\s]/g, '').slice(0, 120))}
+                    onChange={(e) =>
+                      setManualPackItem(
+                        e.target.value
+                          .replace(/[^A-Za-z0-9\s]/g, "")
+                          .slice(0, 120),
+                      )
+                    }
                     placeholder="Add manual item (text and numbers only)"
                     className="flex-1 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   />
@@ -1106,12 +1418,15 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                       if (!tripDetail) return;
                       const cleaned = sanitizeTextOnly(manualPackItem);
                       if (!cleaned) return;
-                      createTripPackItemMutation.mutateAsync({
-                        trip_id: tripDetail.id,
-                        label: cleaned,
-                        source: 'manual',
-                        packed: false,
-                      }).then(() => setManualPackItem('')).catch(() => undefined);
+                      createTripPackItemMutation
+                        .mutateAsync({
+                          trip_id: tripDetail.id,
+                          label: cleaned,
+                          source: "manual",
+                          packed: false,
+                        })
+                        .then(() => setManualPackItem(""))
+                        .catch(() => undefined);
                     }}
                     className={BUTTON_SECONDARY}
                   >
@@ -1120,26 +1435,52 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                 </div>
 
                 {tripDetail.pack_items.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No checklist items yet. Generate planner then rebuild checklist.</p>
+                  <p className="text-sm text-muted-foreground">
+                    No checklist items yet. Generate planner then rebuild
+                    checklist.
+                  </p>
                 ) : (
                   <div className="space-y-2">
                     {tripDetail.pack_items.map((item) => (
-                      <div key={item.id} className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_42%,transparent)] p-2 flex items-center justify-between gap-2">
+                      <div
+                        key={item.id}
+                        className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--bg-surface)_42%,transparent)] p-2 flex items-center justify-between gap-2"
+                      >
                         <label className="flex items-center gap-2 min-w-0">
                           <input
                             type="checkbox"
                             checked={item.packed}
-                            onChange={(e) => updateTripPackItemMutation.mutateAsync({ id: item.id, packed: e.target.checked }).catch(() => undefined)}
+                            onChange={(e) =>
+                              updateTripPackItemMutation
+                                .mutateAsync({
+                                  id: item.id,
+                                  packed: e.target.checked,
+                                })
+                                .catch(() => undefined)
+                            }
                           />
-                          <span className={`text-sm truncate ${item.packed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
+                          <span
+                            className={`text-sm truncate ${item.packed ? "line-through text-muted-foreground" : "text-foreground"}`}
+                          >
                             {item.label}
                           </span>
-                          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{item.source === 'manual' ? 'manual' : 'from outfit'}</span>
+                          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                            {item.source === "manual"
+                              ? "manual"
+                              : "from outfit"}
+                          </span>
                         </label>
-                        {item.source === 'manual' && (
+                        {item.source === "manual" && (
                           <button
                             type="button"
-                            onClick={() => deleteTripPackItemMutation.mutateAsync({ tripPackItemId: item.id, tripId: item.trip_id }).catch(() => undefined)}
+                            onClick={() =>
+                              deleteTripPackItemMutation
+                                .mutateAsync({
+                                  tripPackItemId: item.id,
+                                  tripId: item.trip_id,
+                                })
+                                .catch(() => undefined)
+                            }
                             className="inline-flex items-center justify-center rounded-[var(--radius-pill)] border border-destructive/30 bg-transparent p-1.5 text-[var(--text-2)] transition-all duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:bg-destructive/10 hover:text-destructive"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -1160,8 +1501,12 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
           <div className="glass-surface w-full max-w-2xl rounded-[var(--radius-xl)]">
             <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-4 py-3">
               <div>
-                <h3 className="text-lg font-semibold text-foreground">Generate Outfits</h3>
-                <p className="text-sm text-muted-foreground">Configure planning options, then generate trip outfits.</p>
+                <h3 className="text-lg font-semibold text-foreground">
+                  Plan outfits
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Configure planning options, then generate trip outfits.
+                </p>
               </div>
               <button
                 type="button"
@@ -1175,11 +1520,18 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
 
             <div className="grid grid-cols-1 gap-3 p-4 md:grid-cols-2">
               <div>
-                <label htmlFor="trip-existing-policy" className="text-xs text-muted-foreground">Existing slots</label>
+                <label
+                  htmlFor="trip-existing-policy"
+                  className="text-xs text-muted-foreground"
+                >
+                  Existing slots
+                </label>
                 <select
                   id="trip-existing-policy"
                   value={existingPolicy}
-                  onChange={(e) => setExistingPolicy(e.target.value as ExistingPolicy)}
+                  onChange={(e) =>
+                    setExistingPolicy(e.target.value as ExistingPolicy)
+                  }
                   className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-2 py-1.5 text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   <option value="skip">Skip existing</option>
@@ -1187,11 +1539,18 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                 </select>
               </div>
               <div>
-                <label htmlFor="trip-ai-mix" className="text-xs text-muted-foreground">AI mix</label>
+                <label
+                  htmlFor="trip-ai-mix"
+                  className="text-xs text-muted-foreground"
+                >
+                  AI mix
+                </label>
                 <select
                   id="trip-ai-mix"
                   value={mixStrategy}
-                  onChange={(e) => setMixStrategy(e.target.value as MixStrategy)}
+                  onChange={(e) =>
+                    setMixStrategy(e.target.value as MixStrategy)
+                  }
                   className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-input)] px-2 py-1.5 text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   <option value="saved-heavy">Saved heavy</option>
@@ -1200,7 +1559,12 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                 </select>
               </div>
               <div>
-                <label htmlFor="trip-lookback-days" className="text-xs text-muted-foreground">Repeat window</label>
+                <label
+                  htmlFor="trip-lookback-days"
+                  className="text-xs text-muted-foreground"
+                >
+                  Repeat window
+                </label>
                 <select
                   id="trip-lookback-days"
                   value={lookbackDays}
@@ -1213,23 +1577,35 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
                 </select>
               </div>
               <label className="mt-5 inline-flex items-center gap-2 text-sm text-foreground">
-                <input type="checkbox" checked={syncCalendar} onChange={(e) => setSyncCalendar(e.target.checked)} />
+                <input
+                  type="checkbox"
+                  checked={syncCalendar}
+                  onChange={(e) => setSyncCalendar(e.target.checked)}
+                />
                 Sync planned outfits to calendar
               </label>
             </div>
 
             <div className="flex items-center justify-end gap-2 border-t border-[var(--border-subtle)] px-4 py-3">
-              <button type="button" onClick={() => setShowGenerateModal(false)} className={BUTTON_SECONDARY}>
+              <button
+                type="button"
+                onClick={() => setShowGenerateModal(false)}
+                className={BUTTON_SECONDARY}
+              >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={() => handleGenerateTripPlan().catch(() => undefined)}
-                disabled={!hasRequiredItems || planningInFlight || updateTripDayMutation.isPending}
+                disabled={
+                  !hasRequiredItems ||
+                  planningInFlight ||
+                  updateTripDayMutation.isPending
+                }
                 className={BUTTON_PRIMARY}
               >
                 <AIIcon className="w-4 h-4" />
-                {planningInFlight ? 'Generating...' : 'Generate Outfits'}
+                {planningInFlight ? "Generating..." : "Plan outfits"}
               </button>
             </div>
           </div>

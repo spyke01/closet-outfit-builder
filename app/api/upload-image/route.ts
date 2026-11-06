@@ -1,17 +1,24 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { ImageProcessingRequestSchema, ImageProcessingResponseSchema, FileValidationSchema } from '@/lib/schemas';
-import { z } from 'zod';
-import { requireSameOrigin } from '@/lib/utils/request-security';
-import { createLogger } from '@/lib/utils/logger';
-import { validateFileType } from './validators';
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import {
+  ImageProcessingRequestSchema,
+  ImageProcessingResponseSchema,
+  FileValidationSchema,
+} from "@/lib/schemas";
+import { z } from "zod";
+import { requireSameOrigin } from "@/lib/utils/request-security";
+import { createLogger } from "@/lib/utils/logger";
+import { validateFileType } from "./validators";
 
-const logger = createLogger({ component: 'app-api-upload-image-route' });
+const logger = createLogger({ component: "app-api-upload-image-route" });
 
-type UploadType = 'wardrobe' | 'avatar';
+type UploadType = "wardrobe" | "avatar";
 const avatarUploadWindowMs = 60_000;
 const avatarUploadMaxRequests = 10;
-const avatarUploadCounters = new Map<string, { count: number; startedAt: number }>();
+const avatarUploadCounters = new Map<
+  string,
+  { count: number; startedAt: number }
+>();
 
 function getAllowedOrigins(): string[] {
   const platformOrigins = [
@@ -20,13 +27,19 @@ function getAllowedOrigins(): string[] {
     process.env.NETLIFY_URL ? `https://${process.env.NETLIFY_URL}` : undefined,
   ].filter((origin): origin is string => Boolean(origin));
 
-  const envOrigins = (process.env.CORS_ALLOWED_ORIGINS || '')
-    .split(',')
+  const envOrigins = (process.env.CORS_ALLOWED_ORIGINS || "")
+    .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean);
-  const defaults = process.env.NODE_ENV === 'production'
-    ? []
-    : ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:8888', 'http://127.0.0.1:8888'];
+  const defaults =
+    process.env.NODE_ENV === "production"
+      ? []
+      : [
+          "http://localhost:3000",
+          "http://127.0.0.1:3000",
+          "http://localhost:8888",
+          "http://127.0.0.1:8888",
+        ];
 
   return Array.from(new Set([...platformOrigins, ...envOrigins, ...defaults]));
 }
@@ -40,7 +53,7 @@ function resolveAllowedOrigin(requestOrigin: string | null): string | null {
   return allowedOrigins.includes(requestOrigin) ? requestOrigin : null;
 }
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 function throttleAvatarUpload(userId: string): boolean {
   const now = Date.now();
@@ -61,22 +74,24 @@ function throttleAvatarUpload(userId: string): boolean {
 
 async function extractFunctionErrorDetails(
   edgeFunctionError: unknown,
-  edgeFunctionResponse: unknown
+  edgeFunctionResponse: unknown,
 ): Promise<{ status: number; error: string; message?: string }> {
   let status = 500;
-  let error = 'Image processing failed';
+  let error = "Image processing failed";
   let message: string | undefined;
 
-  if (edgeFunctionResponse && typeof edgeFunctionResponse === 'object') {
+  if (edgeFunctionResponse && typeof edgeFunctionResponse === "object") {
     const maybeError = (edgeFunctionResponse as { error?: unknown }).error;
-    const maybeMessage = (edgeFunctionResponse as { message?: unknown }).message;
-    if (typeof maybeError === 'string' && maybeError.trim()) error = maybeError;
-    if (typeof maybeMessage === 'string' && maybeMessage.trim()) message = maybeMessage;
+    const maybeMessage = (edgeFunctionResponse as { message?: unknown })
+      .message;
+    if (typeof maybeError === "string" && maybeError.trim()) error = maybeError;
+    if (typeof maybeMessage === "string" && maybeMessage.trim())
+      message = maybeMessage;
   }
 
-  if (edgeFunctionError && typeof edgeFunctionError === 'object') {
+  if (edgeFunctionError && typeof edgeFunctionError === "object") {
     const maybeMessage = (edgeFunctionError as { message?: unknown }).message;
-    if (typeof maybeMessage === 'string' && maybeMessage.trim()) {
+    if (typeof maybeMessage === "string" && maybeMessage.trim()) {
       message = maybeMessage;
     }
 
@@ -84,9 +99,14 @@ async function extractFunctionErrorDetails(
     if (maybeContext instanceof Response) {
       status = maybeContext.status || status;
       try {
-        const payload = await maybeContext.clone().json() as { error?: unknown; message?: unknown };
-        if (typeof payload.error === 'string' && payload.error.trim()) error = payload.error;
-        if (typeof payload.message === 'string' && payload.message.trim()) message = payload.message;
+        const payload = (await maybeContext.clone().json()) as {
+          error?: unknown;
+          message?: unknown;
+        };
+        if (typeof payload.error === "string" && payload.error.trim())
+          error = payload.error;
+        if (typeof payload.message === "string" && payload.message.trim())
+          message = payload.message;
       } catch {
         // Ignore non-JSON edge function responses
       }
@@ -109,42 +129,54 @@ export async function POST(request: NextRequest) {
 
     // Initialize Supabase client
     const supabase = await supabasePromise;
-    
+
     // Check authentication - early return if not authenticated
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError || !user) {
       return NextResponse.json(
-        { success: false, error: 'Authentication required' },
-        { status: 401 }
+        { success: false, error: "Authentication required" },
+        { status: 401 },
       );
     }
 
     // Parse form data (await the promise we started earlier)
     const formData = await formDataPromise;
-    const imageFile = formData.get('image') as File;
-    const removeBackground = formData.get('removeBackground') === 'true';
-    const quality = parseFloat(formData.get('quality') as string) || 0.9;
-    const uploadTypeRaw = formData.get('uploadType');
-    if (uploadTypeRaw && uploadTypeRaw !== 'avatar' && uploadTypeRaw !== 'wardrobe') {
+    const imageFile = formData.get("image") as File;
+    const removeBackground = formData.get("removeBackground") === "true";
+    const quality = parseFloat(formData.get("quality") as string) || 0.9;
+    const uploadTypeRaw = formData.get("uploadType");
+    if (
+      uploadTypeRaw &&
+      uploadTypeRaw !== "avatar" &&
+      uploadTypeRaw !== "wardrobe"
+    ) {
       return NextResponse.json(
-        { success: false, error: 'Invalid upload type' },
-        { status: 400 }
+        { success: false, error: "Invalid upload type" },
+        { status: 400 },
       );
     }
-    const uploadType: UploadType = uploadTypeRaw === 'avatar' ? 'avatar' : 'wardrobe';
+    const uploadType: UploadType =
+      uploadTypeRaw === "avatar" ? "avatar" : "wardrobe";
 
     if (!imageFile) {
       return NextResponse.json(
-        { success: false, error: 'No image file provided' },
-        { status: 400 }
+        { success: false, error: "No image file provided" },
+        { status: 400 },
       );
     }
 
-    if (uploadType === 'avatar' && throttleAvatarUpload(user.id)) {
+    if (uploadType === "avatar" && throttleAvatarUpload(user.id)) {
       return NextResponse.json(
-        { success: false, error: 'Too many avatar upload attempts. Please try again in a minute.' },
-        { status: 429 }
+        {
+          success: false,
+          error:
+            "Too many avatar upload attempts. Please try again in a minute.",
+        },
+        { status: 429 },
       );
     }
 
@@ -159,12 +191,14 @@ export async function POST(request: NextRequest) {
     } catch (validationError) {
       if (validationError instanceof z.ZodError) {
         return NextResponse.json(
-          { 
-            success: false, 
-            error: 'File validation failed',
-            details: validationError.issues.map(err => err.message).join(', ')
+          {
+            success: false,
+            error: "File validation failed",
+            details: validationError.issues
+              .map((err) => err.message)
+              .join(", "),
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
       throw validationError;
@@ -172,66 +206,78 @@ export async function POST(request: NextRequest) {
 
     // Validate magic bytes - defer arrayBuffer conversion until needed
     const imageBuffer = new Uint8Array(await imageFile.arrayBuffer());
-    const fileTypeFromMime = imageFile.type.split('/')[1];
-    
+    const fileTypeFromMime = imageFile.type.split("/")[1];
+
     if (!validateFileType(imageBuffer, fileTypeFromMime)) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'File content does not match declared MIME type. File may be corrupted or malicious.' 
+        {
+          success: false,
+          error:
+            "File content does not match declared MIME type. File may be corrupted or malicious.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Validate request data
     const requestData = ImageProcessingRequestSchema.parse({
       image: imageFile,
-      removeBackground: uploadType === 'avatar' ? false : removeBackground,
+      removeBackground: uploadType === "avatar" ? false : removeBackground,
       quality,
     });
 
     // Get session for Edge Function call - defer until after validation
-    const { data: { session } } = await supabase.auth.getSession();
-    
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
     if (!session?.access_token) {
       return NextResponse.json(
-        { success: false, error: 'No valid session found' },
-        { status: 401 }
+        { success: false, error: "No valid session found" },
+        { status: 401 },
       );
     }
 
     // Prepare form data for Edge Function
     const edgeFunctionFormData = new FormData();
-    edgeFunctionFormData.append('image', requestData.image);
-    edgeFunctionFormData.append('removeBackground', requestData.removeBackground.toString());
-    edgeFunctionFormData.append('quality', requestData.quality.toString());
-    edgeFunctionFormData.append('uploadType', uploadType);
+    edgeFunctionFormData.append("image", requestData.image);
+    edgeFunctionFormData.append(
+      "removeBackground",
+      requestData.removeBackground.toString(),
+    );
+    edgeFunctionFormData.append("quality", requestData.quality.toString());
+    edgeFunctionFormData.append("uploadType", uploadType);
+    edgeFunctionFormData.append(
+      "requestId",
+      String(formData.get("requestId") || crypto.randomUUID()),
+    );
 
     const invokeProcessImage = async (accessToken: string) => {
-      return supabase.functions.invoke(
-        'process-image',
-        {
-          body: edgeFunctionFormData,
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            apikey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '',
-          },
-        }
-      );
+      return supabase.functions.invoke("process-image", {
+        body: edgeFunctionFormData,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          apikey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || "",
+        },
+      });
     };
 
     // Call Supabase Edge Function
     const startTime = Date.now();
-    let { data: edgeFunctionResponse, error: edgeFunctionError } = await invokeProcessImage(session.access_token);
+    let { data: edgeFunctionResponse, error: edgeFunctionError } =
+      await invokeProcessImage(session.access_token);
 
     if (edgeFunctionError) {
-      const initialDetails = await extractFunctionErrorDetails(edgeFunctionError, edgeFunctionResponse);
+      const initialDetails = await extractFunctionErrorDetails(
+        edgeFunctionError,
+        edgeFunctionResponse,
+      );
       if (initialDetails.status === 401) {
         const { data: refreshData } = await supabase.auth.refreshSession();
         const refreshedToken = refreshData.session?.access_token;
         if (refreshedToken && refreshedToken !== session.access_token) {
-          ({ data: edgeFunctionResponse, error: edgeFunctionError } = await invokeProcessImage(refreshedToken));
+          ({ data: edgeFunctionResponse, error: edgeFunctionError } =
+            await invokeProcessImage(refreshedToken));
         }
       }
     }
@@ -239,15 +285,20 @@ export async function POST(request: NextRequest) {
     const processingTime = Date.now() - startTime;
 
     if (edgeFunctionError) {
-      const details = await extractFunctionErrorDetails(edgeFunctionError, edgeFunctionResponse);
-      logger.error('Edge Function error', { edgeFunctionError, details });
+      const details = await extractFunctionErrorDetails(
+        edgeFunctionError,
+        edgeFunctionResponse,
+      );
+      logger.error("Image processing request failed", {
+        status: details.status,
+      });
       return NextResponse.json(
         {
           success: false,
           error: details.error,
-          message: details.message || 'Image processing failed'
+          message: details.message || "Image processing failed",
         },
-        { status: details.status }
+        { status: details.status },
       );
     }
 
@@ -257,38 +308,39 @@ export async function POST(request: NextRequest) {
       processingTime,
     });
 
-    return NextResponse.json(validatedResponse, { 
-      status: validatedResponse.success ? 200 : 500 
+    return NextResponse.json(validatedResponse, {
+      status: validatedResponse.success ? 200 : 500,
     });
-
   } catch (error) {
-    logger.error('Image upload API error:', error);
-    
+    logger.error("Image upload API error:", error);
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Validation failed',
-          details: error.issues.map(err => `${err.path.join('.')}: ${err.message}`).join(', ')
+        {
+          success: false,
+          error: "Validation failed",
+          details: error.issues
+            .map((err) => `${err.path.join(".")}: ${err.message}`)
+            .join(", "),
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Internal server error',
-        message: 'Failed to process image upload'
+      {
+        success: false,
+        error: "Internal server error",
+        message: "Failed to process image upload",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 // Handle OPTIONS for CORS
 export async function OPTIONS(request: NextRequest) {
-  const allowedOrigin = resolveAllowedOrigin(request.headers.get('origin'));
+  const allowedOrigin = resolveAllowedOrigin(request.headers.get("origin"));
   if (!allowedOrigin) {
     return new NextResponse(null, { status: 403 });
   }
@@ -296,11 +348,11 @@ export async function OPTIONS(request: NextRequest) {
   return new NextResponse(null, {
     status: 200,
     headers: {
-      'Access-Control-Allow-Origin': allowedOrigin,
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      'Access-Control-Allow-Credentials': 'true',
-      Vary: 'Origin',
+      "Access-Control-Allow-Origin": allowedOrigin,
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Credentials": "true",
+      Vary: "Origin",
     },
   });
 }

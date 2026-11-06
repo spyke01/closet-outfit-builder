@@ -1,608 +1,321 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { handleCorsPreflightRequest, createCorsResponse } from '../_shared/cors.ts';
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.95.3";
+import {
+  handleCorsPreflightRequest,
+  createCorsResponse,
+} from "../_shared/cors.ts";
+import {
+  background,
+  boundedDownload,
+  claimWorker,
+  finishJob,
+  GuardError,
+  PendingJob,
+  readJob,
+  reserveJob,
+  runReplicatePhase,
+  sha256,
+  updateJob,
+  type AiDb,
+  type EdgeJob,
+} from "../_shared/ai-guard.ts";
+import { isBoundedClothingImage } from "../_shared/image-metadata.ts";
 
-// Image processing utilities
-interface ImageProcessingResult {
-  success: boolean;
-  imageUrl?: string;
-  fallbackUrl?: string;
-  bgRemovalStatus?: 'completed' | 'failed' | 'pending';
-  error?: string;
-  message?: string;
-  processingTime?: number;
-}
-
-interface ReplicatePrediction {
-  id: string;
-  status: 'starting' | 'processing' | 'succeeded' | 'failed' | 'canceled';
-  output?: string | string[] | null;
-  error?: string | null;
-  logs?: string;
-}
-
-type UploadType = 'wardrobe' | 'avatar';
-
-const STORAGE_BUCKET = Deno.env.get('SUPABASE_WARDROBE_BUCKET') || 'wardrobe-images';
-const REPLICATE_BG_MODEL = Deno.env.get('REPLICATE_BG_MODEL') || '851-labs/background-remover';
-const REPLICATE_BG_VERSION = Deno.env.get('REPLICATE_BG_VERSION') || '';
-const SOURCE_MAX_SIZE_BYTES = 5 * 1024 * 1024;
-const STORAGE_MAX_SIZE_BYTES = 20 * 1024 * 1024;
-
-function debugLog(message: string, metadata?: unknown): void {
-  if (Deno.env.get('SECURITY_DEBUG') !== 'true') {
-    return;
-  }
-  if (metadata === undefined) {
-    console.warn(`[process-image] ${message}`);
-    return;
-  }
-  console.warn(`[process-image] ${message}`, metadata);
-}
-
-function parseReplicateModelAndVersion(rawModel: string, rawVersion: string): { model: string; version: string } {
-  const explicitVersion = rawVersion.trim();
-  if (explicitVersion) {
-    return { model: rawModel.trim(), version: explicitVersion };
-  }
-
-  const trimmedModel = rawModel.trim();
-  const colonIndex = trimmedModel.lastIndexOf(':');
-
-  if (colonIndex > 0 && colonIndex < trimmedModel.length - 1) {
-    return {
-      model: trimmedModel.slice(0, colonIndex).trim(),
-      version: trimmedModel.slice(colonIndex + 1).trim(),
-    };
-  }
-
-  return { model: trimmedModel, version: '' };
-}
-
-// Magic bytes for file type validation
-const MAGIC_BYTES = {
-  jpeg: [0xFF, 0xD8, 0xFF],
-  png: [0x89, 0x50, 0x4E, 0x47],
-  webp: [0x52, 0x49, 0x46, 0x46],
-  gif: [0x47, 0x49, 0x46, 0x38],
-};
-
-function validateFileType(buffer: Uint8Array, expectedType: string): boolean {
-  const magicBytes = MAGIC_BYTES[expectedType as keyof typeof MAGIC_BYTES];
-  if (!magicBytes) return false;
-
-  if (expectedType === 'webp') {
-    const riffCheck = magicBytes.every((byte, index) => buffer[index] === byte);
-    const webpCheck = buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50;
-    return riffCheck && webpCheck;
-  }
-
-  return magicBytes.every((byte, index) => buffer[index] === byte);
-}
-
-function hasAlphaChannel(buffer: Uint8Array): boolean {
-  if (buffer.length < 26) return false;
-  if (!validateFileType(buffer, 'png')) return false;
-  const colorType = buffer[25];
-  return colorType === 4 || colorType === 6;
-}
-
-function getFileExtension(mimeType: string): string {
-  const extensions: Record<string, string> = {
-    'image/jpeg': 'jpg',
-    'image/png': 'png',
-    'image/webp': 'webp',
-    'image/gif': 'gif',
+const bucket = "wardrobe-private-images";
+const imageUrl = (path: string) =>
+  "/api/clothing-images/" + path.split("/").map(encodeURIComponent).join("/");
+function result(job: EdgeJob) {
+  const meta = job.result_json || {};
+  return {
+    success: true,
+    imageUrl:
+      job.status === "succeeded" && meta.preparedImageUrl
+        ? meta.preparedImageUrl
+        : meta.originalImageUrl,
+    originalImageUrl: meta.originalImageUrl,
+    preparedImageUrl: meta.preparedImageUrl || null,
+    bgRemovalStatus: meta.preparationUnavailable
+      ? "failed"
+      : job.status === "succeeded"
+        ? "completed"
+        : job.status === "failed"
+          ? "failed"
+          : "processing",
+    jobId: job.id,
   };
-  return extensions[mimeType] || 'jpg';
 }
-
-async function resizeImageToMaxDimension(
-  imageBuffer: Uint8Array,
-  maxDimension = 1024
-): Promise<Uint8Array> {
-  const inputBlob = new Blob([imageBuffer], { type: 'image/png' });
-  const bitmap = await createImageBitmap(inputBlob);
-
-  try {
-    const originalWidth = bitmap.width;
-    const originalHeight = bitmap.height;
-
-    if (originalWidth <= maxDimension && originalHeight <= maxDimension) {
-      return imageBuffer;
-    }
-
-    const scale = Math.min(maxDimension / originalWidth, maxDimension / originalHeight);
-    const targetWidth = Math.max(1, Math.round(originalWidth * scale));
-    const targetHeight = Math.max(1, Math.round(originalHeight * scale));
-
-    const canvas = new OffscreenCanvas(targetWidth, targetHeight);
-    const context = canvas.getContext('2d');
-    if (!context) {
-      throw new Error('Failed to get 2D canvas context');
-    }
-
-    context.drawImage(bitmap, 0, 0, targetWidth, targetHeight);
-    const resizedBlob = await canvas.convertToBlob({ type: 'image/png' });
-    const resizedArrayBuffer = await resizedBlob.arrayBuffer();
-    return new Uint8Array(resizedArrayBuffer);
-  } finally {
-    bitmap.close();
-  }
-}
-
-async function transformAvatarImage(
-  imageBuffer: Uint8Array,
-  targetSize = 400
-): Promise<{ buffer: Uint8Array; contentType: 'image/webp' | 'image/jpeg' }> {
-  const inputBlob = new Blob([imageBuffer], { type: 'image/png' });
-  const bitmap = await createImageBitmap(inputBlob);
-
-  try {
-    const squareSize = Math.min(bitmap.width, bitmap.height);
-    const sx = Math.max(0, Math.floor((bitmap.width - squareSize) / 2));
-    const sy = Math.max(0, Math.floor((bitmap.height - squareSize) / 2));
-
-    const canvas = new OffscreenCanvas(targetSize, targetSize);
-    const context = canvas.getContext('2d');
-    if (!context) {
-      throw new Error('Failed to get 2D canvas context');
-    }
-
-    context.drawImage(bitmap, sx, sy, squareSize, squareSize, 0, 0, targetSize, targetSize);
-
-    let blob = await canvas.convertToBlob({ type: 'image/webp', quality: 0.9 });
-    let contentType: 'image/webp' | 'image/jpeg' = 'image/webp';
-
-    if (!blob || blob.size === 0) {
-      blob = await canvas.convertToBlob({ type: 'image/jpeg', quality: 0.9 });
-      contentType = 'image/jpeg';
-    }
-
-    if (!blob || blob.size === 0) {
-      throw new Error('Failed to encode avatar image');
-    }
-
-    const outputBitmap = await createImageBitmap(blob);
-    try {
-      if (outputBitmap.width !== targetSize || outputBitmap.height !== targetSize) {
-        throw new Error('Avatar dimensions are invalid');
-      }
-    } finally {
-      outputBitmap.close();
-    }
-
-    const outputBuffer = new Uint8Array(await blob.arrayBuffer());
-    return { buffer: outputBuffer, contentType };
-  } finally {
-    bitmap.close();
-  }
-}
-
-async function callReplicateBackgroundRemoval(imageUrl: string): Promise<string> {
-  const replicateApiToken = Deno.env.get('REPLICATE_API_TOKEN');
-  if (!replicateApiToken) {
-    throw new Error('REPLICATE_API_TOKEN not configured');
-  }
-
-  const startTime = Date.now();
-
-  const headers = {
-    'Authorization': `Bearer ${replicateApiToken}`,
-    'Content-Type': 'application/json',
-    'Prefer': 'wait',
-  };
-
-  const parsed = parseReplicateModelAndVersion(REPLICATE_BG_MODEL, REPLICATE_BG_VERSION);
-  let versionToRun = parsed.version;
-
-  // Resolve a concrete version ID for community models when only owner/name is provided.
-  if (!versionToRun) {
-    const [owner, name] = parsed.model.split('/');
-    if (!owner || !name) {
-      throw new Error(`Invalid REPLICATE_BG_MODEL "${REPLICATE_BG_MODEL}". Expected format owner/name or owner/name:version`);
-    }
-
-    const modelResponse = await fetch(`https://api.replicate.com/v1/models/${owner}/${name}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${replicateApiToken}`,
-        'Content-Type': 'application/json',
+async function prepare(db: AiDb, job: EdgeJob): Promise<void> {
+  const meta = job.result_json || {};
+  const { data: signed, error } = await db.storage
+    .from(bucket)
+    .createSignedUrl(String(meta.originalPath), 300);
+  if (error || !signed?.signedUrl)
+    throw new GuardError("IMAGE_UNAVAILABLE", 503);
+  const rawModel =
+    Deno.env.get("REPLICATE_BG_MODEL") || "851-labs/background-remover";
+  const [model, embeddedVersion] = rawModel.split(":");
+  if (model !== "851-labs/background-remover")
+    throw new GuardError("AI_POLICY_UNAVAILABLE", 503);
+  let version = embeddedVersion || Deno.env.get("REPLICATE_BG_VERSION");
+  if (!version) {
+    const response = await fetch(
+      `https://api.replicate.com/v1/models/${model}`,
+      {
+        headers: {
+          Authorization: `Bearer ${Deno.env.get("REPLICATE_API_TOKEN")}`,
+        },
+        signal: AbortSignal.timeout(15_000),
       },
-      signal: AbortSignal.timeout(20000),
-    });
-
-    if (!modelResponse.ok) {
-      const modelError = await modelResponse.text();
-      throw new Error(`Failed to resolve model version (${modelResponse.status}): ${modelError}`);
-    }
-
-    const model = await modelResponse.json() as { latest_version?: { id?: string } };
-    const latestVersionId = model.latest_version?.id;
-    if (!latestVersionId) {
-      throw new Error(`No latest version found for model "${parsed.model}"`);
-    }
-
-    versionToRun = latestVersionId;
-  }
-
-  const response = await fetch('https://api.replicate.com/v1/predictions', {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({
-      version: versionToRun,
-      input: { image: imageUrl },
-    }),
-    signal: AbortSignal.timeout(60000),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Replicate API error: ${response.status} ${errorText}`);
-  }
-
-  const prediction: ReplicatePrediction = await response.json();
-  const elapsedTime = Date.now() - startTime;
-  debugLog('Replicate processing completed', { elapsedTime, status: prediction.status });
-
-  if (prediction.status === 'succeeded' && prediction.output) {
-    const outputUrl = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
-    if (!outputUrl) throw new Error('Replicate succeeded but output URL is null');
-    return outputUrl;
-  }
-
-  if (prediction.status === 'failed') {
-    throw new Error(`Replicate processing failed: ${prediction.error || 'Unknown error'}`);
-  }
-
-  throw new Error(`Unexpected Replicate status: ${prediction.status}`);
-}
-
-async function ensureStorageBucket(supabase: ReturnType<typeof createClient>): Promise<void> {
-  const { data: existingBucket, error: getBucketError } = await supabase.storage.getBucket(STORAGE_BUCKET);
-
-  if (existingBucket && !getBucketError) {
-    const currentLimit = (existingBucket as { file_size_limit?: number | null }).file_size_limit ?? null;
-    if (currentLimit !== STORAGE_MAX_SIZE_BYTES) {
-      const { error: updateBucketError } = await supabase.storage.updateBucket(STORAGE_BUCKET, {
-        public: true,
-        fileSizeLimit: STORAGE_MAX_SIZE_BYTES,
-        allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
-      });
-
-      if (updateBucketError) {
-        throw new Error(`Failed to update storage bucket "${STORAGE_BUCKET}": ${updateBucketError.message}`);
-      }
-    }
-    return;
-  }
-
-  const message = getBucketError?.message?.toLowerCase() || '';
-  const shouldCreate =
-    !existingBucket &&
-    (!getBucketError || message.includes('not found') || message.includes('bucket not found'));
-
-  if (!shouldCreate) {
-    throw new Error(`Failed to access storage bucket "${STORAGE_BUCKET}": ${getBucketError?.message || 'Unknown error'}`);
-  }
-
-  const { error: createBucketError } = await supabase.storage.createBucket(STORAGE_BUCKET, {
-    public: true,
-    fileSizeLimit: STORAGE_MAX_SIZE_BYTES,
-    allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
-  });
-
-  if (createBucketError && !createBucketError.message?.toLowerCase().includes('already exists')) {
-    throw new Error(`Failed to create storage bucket "${STORAGE_BUCKET}": ${createBucketError.message}`);
-  }
-}
-
-serve(async (req: Request): Promise<Response> => {
-  const origin = req.headers.get('Origin');
-
-  if (req.method === 'OPTIONS') {
-    return handleCorsPreflightRequest(req);
-  }
-
-  if (req.method !== 'POST') {
-    return createCorsResponse(
-      JSON.stringify({ success: false, error: 'Method not allowed' }),
-      { status: 405, headers: { 'Content-Type': 'application/json' } },
-      origin
     );
+    if (!response.ok) throw new GuardError("UPSTREAM_UNAVAILABLE", 502);
+    version = (await response.json()).latest_version?.id;
+    if (!version) throw new GuardError("UPSTREAM_UNAVAILABLE", 502);
   }
-
-  const processingStartTime = Date.now();
-
+  const output = await runReplicatePhase(
+    db,
+    job,
+    "cleanup",
+    model,
+    { image: signed.signedUrl, format: "png", background_type: "rgba" },
+    version,
+  );
+  const bytes = await boundedDownload(output);
+  if (!isBoundedClothingImage(bytes))
+    throw new GuardError("INVALID_PROVIDER_OUTPUT", 502);
+  const path = `${job.user_id}/prepared/${job.id}.png`;
+  const { error: uploadError } = await db.storage
+    .from(bucket)
+    .upload(path, bytes, { contentType: "image/png", upsert: true });
+  if (uploadError) throw new GuardError("STORAGE_UNAVAILABLE", 503);
+  const preparedImageUrl = imageUrl(path);
+  const latest = await readJob(db, job.user_id, job.id);
+  await finishJob(db, latest, { ...latest.result_json, preparedImageUrl });
+  // A saved item can keep its original while a prepared candidate is reviewed.
+  await db
+    .from("wardrobe_items")
+    .update({
+      prepared_image_url: preparedImageUrl,
+      bg_removal_status: "completed",
+      bg_removal_completed_at: new Date().toISOString(),
+    })
+    .eq("user_id", job.user_id)
+    .eq("image_processing_job_id", job.id);
+}
+serve(async (req: Request) => {
+  const origin = req.headers.get("origin") || undefined;
+  const preflight = handleCorsPreflightRequest(req);
+  if (preflight) return preflight;
+  const reply = (body: unknown, status = 200) =>
+    createCorsResponse(
+      JSON.stringify(body),
+      { status, headers: { "Content-Type": "application/json" } },
+      origin,
+    );
+  let db: AiDb | undefined, job: EdgeJob | undefined;
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      return createCorsResponse(
-        JSON.stringify({ success: false, error: 'Authorization header required' }),
-        { status: 401, headers: { 'Content-Type': 'application/json' } },
-        origin
-      );
-    }
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''));
-    if (authError || !user) {
-      return createCorsResponse(
-        JSON.stringify({ success: false, error: 'Invalid authentication' }),
-        { status: 401, headers: { 'Content-Type': 'application/json' } },
-        origin
-      );
-    }
-
-    await ensureStorageBucket(supabase);
-
-    const formData = await req.formData();
-    const imageFile = formData.get('image') as File;
-    const removeBackgroundParam = formData.get('removeBackground') as string;
-    const itemId = formData.get('itemId') as string | null;
-    const uploadTypeParam = formData.get('uploadType');
-    if (uploadTypeParam && uploadTypeParam !== 'wardrobe' && uploadTypeParam !== 'avatar') {
-      return createCorsResponse(
-        JSON.stringify({ success: false, error: 'Invalid upload type' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } },
-        origin
-      );
-    }
-    const uploadType: UploadType = uploadTypeParam === 'avatar' ? 'avatar' : 'wardrobe';
-    const removeBackground = uploadType === 'avatar' ? false : removeBackgroundParam !== 'false';
-
-    if (itemId) {
-      const { data: ownedItem, error: ownershipError } = await supabase
-        .from('wardrobe_items')
-        .select('id')
-        .eq('id', itemId)
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (ownershipError || !ownedItem) {
-        return createCorsResponse(
-          JSON.stringify({ success: false, error: 'Wardrobe item not found for user' }),
-          { status: 404, headers: { 'Content-Type': 'application/json' } },
-          origin
-        );
-      }
-    }
-
-    if (!imageFile) {
-      return createCorsResponse(
-        JSON.stringify({ success: false, error: 'No image file provided' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } },
-        origin
-      );
-    }
-
-    if (imageFile.size > SOURCE_MAX_SIZE_BYTES) {
-      return createCorsResponse(
-        JSON.stringify({ success: false, error: 'File size exceeds maximum allowed size (5MB)' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } },
-        origin
-      );
-    }
-
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    if (!allowedTypes.includes(imageFile.type)) {
-      return createCorsResponse(
-        JSON.stringify({ success: false, error: 'File type not supported. Allowed types: JPEG, PNG, WebP' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } },
-        origin
-      );
-    }
-
-    const imageBuffer = new Uint8Array(await imageFile.arrayBuffer());
-    const fileTypeFromMime = imageFile.type.split('/')[1];
-    if (!validateFileType(imageBuffer, fileTypeFromMime)) {
-      return createCorsResponse(
-        JSON.stringify({ success: false, error: 'File content does not match declared MIME type' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } },
-        origin
-      );
-    }
-
-    if (uploadType === 'avatar') {
-      const transformed = await transformAvatarImage(imageBuffer, 400);
-      if (transformed.buffer.byteLength > STORAGE_MAX_SIZE_BYTES) {
-        throw new Error(`Avatar image too large (${(transformed.buffer.byteLength / 1024 / 1024).toFixed(2)}MB)`);
-      }
-
-      const timestamp = Date.now();
-      const avatarExtension = transformed.contentType === 'image/webp' ? 'webp' : 'jpg';
-      const avatarFileName = `avatars/${user.id}/avatar-${timestamp}.${avatarExtension}`;
-      const { data: avatarData, error: avatarUploadError } = await supabase.storage
-        .from(STORAGE_BUCKET)
-        .upload(avatarFileName, transformed.buffer, { contentType: transformed.contentType, upsert: false });
-
-      if (avatarUploadError) {
-        throw new Error(`Failed to upload avatar image: ${avatarUploadError.message}`);
-      }
-
-      const { data: { publicUrl: avatarPublicUrl } } =
-        supabase.storage.from(STORAGE_BUCKET).getPublicUrl(avatarData.path);
-
-      const result: ImageProcessingResult = {
-        success: true,
-        imageUrl: avatarPublicUrl,
-        bgRemovalStatus: 'completed',
-        message: 'Avatar uploaded successfully',
-        processingTime: Date.now() - processingStartTime,
-      };
-
-      return createCorsResponse(
-        JSON.stringify(result),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-        origin
-      );
-    }
-
-    const timestamp = Date.now();
-    const extension = getFileExtension(imageFile.type);
-    const originalFileName = `original/${user.id}/${timestamp}.${extension}`;
-    const processedFileName = `processed/${user.id}/${timestamp}.png`;
-
-    if (removeBackground && imageFile.type === 'image/png' && hasAlphaChannel(imageBuffer)) {
-      debugLog('PNG already has alpha channel, skipping background removal');
-
-      const { data: processedData, error: uploadError } = await supabase.storage
-        .from(STORAGE_BUCKET)
-        .upload(processedFileName, imageBuffer, { contentType: 'image/png', upsert: false });
-
-      if (uploadError) throw new Error(`Failed to upload image: ${uploadError.message}`);
-
-      const { data: { publicUrl } } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(processedData.path);
-
-      if (itemId) {
-        await supabase.from('wardrobe_items').update({
-          bg_removal_status: 'completed',
-          bg_removal_completed_at: new Date().toISOString(),
-          image_url: publicUrl,
-        }).eq('id', itemId).eq('user_id', user.id);
-      }
-
-      const result: ImageProcessingResult = {
-        success: true,
-        imageUrl: publicUrl,
-        bgRemovalStatus: 'completed',
-        message: 'Image already has transparent background',
-        processingTime: Date.now() - processingStartTime,
-      };
-
-      return createCorsResponse(JSON.stringify(result), { status: 200, headers: { 'Content-Type': 'application/json' } }, origin);
-    }
-
-    const { data: originalData, error: originalUploadError } = await supabase.storage
-      .from(STORAGE_BUCKET)
-      .upload(originalFileName, imageBuffer, { contentType: imageFile.type, upsert: false });
-
-    if (originalUploadError) throw new Error(`Failed to upload original image: ${originalUploadError.message}`);
-
-    const { data: { publicUrl: originalPublicUrl } } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(originalData.path);
-
-    if (itemId && removeBackground) {
-      await supabase.from('wardrobe_items').update({
-        bg_removal_status: 'processing',
-        bg_removal_started_at: new Date().toISOString(),
-      }).eq('id', itemId).eq('user_id', user.id);
-    }
-
-    if (removeBackground) {
-      try {
-        const processedImageUrl = await callReplicateBackgroundRemoval(originalPublicUrl);
-        const processedResponse = await fetch(processedImageUrl);
-        if (!processedResponse.ok) throw new Error(`Failed to download processed image from Replicate`);
-
-        const processedBufferRaw = new Uint8Array(await processedResponse.arrayBuffer());
-        let processedBuffer = processedBufferRaw;
-        try {
-          processedBuffer = await resizeImageToMaxDimension(processedBufferRaw, 1024);
-        } catch (resizeError) {
-          console.warn('Processed image resize failed; continuing with original processed output', resizeError);
-        }
-        if (processedBuffer.byteLength > STORAGE_MAX_SIZE_BYTES) {
-          throw new Error(`Processed image too large (${(processedBuffer.byteLength / 1024 / 1024).toFixed(2)}MB)`);
-        }
-
-        const { data: finalData, error: finalUploadError } = await supabase.storage
-          .from(STORAGE_BUCKET)
-          .upload(processedFileName, processedBuffer, { contentType: 'image/png', upsert: false });
-
-        if (finalUploadError) throw new Error(`Failed to upload processed image: ${finalUploadError.message}`);
-
-        const { data: { publicUrl: finalPublicUrl } } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(finalData.path);
-
-        await supabase.storage.from(STORAGE_BUCKET).remove([originalData.path]);
-
-        if (itemId) {
-          const { data: existingItem } = await supabase
-            .from('wardrobe_items')
-            .select('id')
-            .eq('id', itemId)
-            .eq('user_id', user.id)
-            .single();
-
-          if (existingItem) {
-            await supabase.from('wardrobe_items').update({
-              bg_removal_status: 'completed',
-              bg_removal_completed_at: new Date().toISOString(),
-              image_url: finalPublicUrl,
-            }).eq('id', itemId).eq('user_id', user.id);
-          } else {
-            debugLog('Item deleted during processing, cleaning up processed image');
-            await supabase.storage.from(STORAGE_BUCKET).remove([finalData.path]);
-          }
-        }
-
-        const result: ImageProcessingResult = {
-          success: true,
-          imageUrl: finalPublicUrl,
-          bgRemovalStatus: 'completed',
-          message: 'Background removed successfully',
-          processingTime: Date.now() - processingStartTime,
-        };
-
-        return createCorsResponse(JSON.stringify(result), { status: 200, headers: { 'Content-Type': 'application/json' } }, origin);
-
-      } catch (bgRemovalError) {
-        console.error('Background removal failed:', bgRemovalError);
-        const bgRemovalErrorMessage = bgRemovalError instanceof Error
-          ? bgRemovalError.message
-          : 'Unknown background removal error';
-
-        if (itemId) {
-          const { data: existingItem } = await supabase
-            .from('wardrobe_items')
-            .select('id')
-            .eq('id', itemId)
-            .eq('user_id', user.id)
-            .single();
-          if (existingItem) {
-            await supabase.from('wardrobe_items').update({
-              bg_removal_status: 'failed',
-              bg_removal_completed_at: new Date().toISOString(),
-              image_url: originalPublicUrl,
-            }).eq('id', itemId).eq('user_id', user.id);
-          }
-        }
-
-        const result: ImageProcessingResult = {
-          success: true,
-          imageUrl: originalPublicUrl,
-          bgRemovalStatus: 'failed',
-          error: bgRemovalErrorMessage,
-          message: `Image uploaded, background removal failed (${bgRemovalErrorMessage})`,
-          processingTime: Date.now() - processingStartTime,
-        };
-
-        return createCorsResponse(JSON.stringify(result), { status: 200, headers: { 'Content-Type': 'application/json' } }, origin);
-      }
+    if (req.method !== "POST")
+      return reply({ success: false, error: "Method not allowed" }, 405);
+    const url = Deno.env.get("SUPABASE_URL"),
+      key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!url || !key) throw new GuardError("AI_POLICY_UNAVAILABLE", 503);
+    db = createClient(url, key);
+    const bearer = req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "");
+    if (!bearer)
+      return reply({ success: false, error: "Authentication required" }, 401);
+    const {
+      data: { user },
+      error: authError,
+    } = await db.auth.getUser(bearer);
+    if (authError || !user)
+      return reply({ success: false, error: "Authentication required" }, 401);
+    if (req.headers.get("content-type")?.includes("application/json")) {
+      const input = await req.json();
+      if (typeof input.jobId !== "string")
+        throw new GuardError("VALIDATION_ERROR", 400);
+      job = await readJob(db, user.id, input.jobId);
+      if (job.task !== "background_removal")
+        throw new GuardError("NOT_FOUND", 404);
+      if (["succeeded", "failed"].includes(job.status))
+        return reply(result(job));
     } else {
-      const result: ImageProcessingResult = {
-        success: true,
-        imageUrl: originalPublicUrl,
-        bgRemovalStatus: 'completed',
-        message: 'Image uploaded successfully',
-        processingTime: Date.now() - processingStartTime,
-      };
-
-      return createCorsResponse(JSON.stringify(result), { status: 200, headers: { 'Content-Type': 'application/json' } }, origin);
+      const form = await req.formData(),
+        file = form.get("image");
+      if (!(file instanceof File))
+        throw new GuardError("VALIDATION_ERROR", 400);
+      if (
+        !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
+        file.size > 5 * 1024 * 1024
+      )
+        throw new GuardError("INVALID_IMAGE", 400);
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      if (!isBoundedClothingImage(bytes))
+        throw new GuardError("INVALID_IMAGE", 400);
+      const itemId = form.get("itemId");
+      if (itemId) {
+        const { data: owned, error } = await db
+          .from("wardrobe_items")
+          .select("id")
+          .eq("id", String(itemId))
+          .eq("user_id", user.id)
+          .maybeSingle();
+        if (error || !owned) throw new GuardError("NOT_FOUND", 404);
+      }
+      const avatar = form.get("uploadType") === "avatar";
+      let removeBackground =
+        !avatar && form.get("removeBackground") !== "false";
+      let preparationUnavailable = false;
+      const hash = await sha256(bytes.buffer as ArrayBuffer),
+        requestKey = String(
+          form.get("requestId") ||
+            req.headers.get("Idempotency-Key") ||
+            crypto.randomUUID(),
+        );
+      if (removeBackground && !Deno.env.get("REPLICATE_API_TOKEN")) {
+        removeBackground = false;
+        preparationUnavailable = true;
+      }
+      let reserved;
+      try {
+        reserved = await reserveJob(db, {
+          userId: user.id,
+          task: removeBackground ? "background_removal" : "media_upload",
+          key: requestKey,
+          payload: { hash, removeBackground, avatar },
+          scope: hash,
+          model: removeBackground ? "851-labs/background-remover" : "none",
+        });
+      } catch (error) {
+        if (
+          !removeBackground ||
+          !(error instanceof GuardError) ||
+          ![
+            "AI_DISABLED",
+            "AI_BUDGET_EXCEEDED",
+            "AI_USER_BUDGET_EXCEEDED",
+            "USAGE_LIMIT_EXCEEDED",
+            "BURST_LIMIT_EXCEEDED",
+            "AI_BUSY",
+          ].includes(error.code)
+        )
+          throw error;
+        removeBackground = false;
+        preparationUnavailable = true;
+        reserved = await reserveJob(db, {
+          userId: user.id,
+          task: "media_upload",
+          key: requestKey,
+          payload: { hash, removeBackground: false, avatar },
+          scope: hash,
+          model: "none",
+        });
+      }
+      job = reserved.job;
+      if (!reserved.created && ["succeeded", "failed"].includes(job.status))
+        return reply(result(job));
+      if (!reserved.created) {
+        if (!job.prediction_id) return reply(result(job), 202);
+      } else {
+        const extension =
+          file.type === "image/jpeg"
+            ? "jpg"
+            : file.type === "image/png"
+              ? "png"
+              : "webp";
+        const path = `${user.id}/original/${hash}.${extension}`;
+        if (avatar) {
+          // Avatars retain the established public URL behavior; clothing does not.
+          const avatarPath = `avatars/${user.id}/${hash}.${extension}`;
+          const { error } = await db.storage
+            .from("wardrobe-images")
+            .upload(avatarPath, bytes, {
+              contentType: file.type,
+              upsert: true,
+            });
+          if (error) throw new GuardError("STORAGE_UNAVAILABLE", 503);
+          const avatarUrl = db.storage
+            .from("wardrobe-images")
+            .getPublicUrl(avatarPath).data.publicUrl;
+          await finishJob(db, job, { originalImageUrl: avatarUrl });
+          return reply({
+            ...result({
+              ...job,
+              status: "succeeded",
+              result_json: { originalImageUrl: avatarUrl },
+            }),
+            bgRemovalStatus: "completed",
+          });
+        }
+        const { error } = await db.storage
+          .from(bucket)
+          .upload(path, bytes, { contentType: file.type, upsert: true });
+        if (error) throw new GuardError("STORAGE_UNAVAILABLE", 503);
+        job = {
+          ...job,
+          result_json: {
+            originalPath: path,
+            originalImageUrl: imageUrl(path),
+            preparationUnavailable,
+          },
+        };
+        await updateJob(db, job, { result_json: job.result_json });
+        if (!removeBackground) {
+          await finishJob(db, job, job.result_json!);
+          return reply(result({ ...job, status: "succeeded" }));
+        }
+      }
     }
-
+    const current = job!;
+    const admin = db!;
+    if (!(await claimWorker(admin, current)))
+      return reply(result(current), 202);
+    const work = prepare(admin, current).catch(async (error: unknown) => {
+      if (
+        error instanceof PendingJob ||
+        error instanceof TypeError ||
+        (error instanceof DOMException &&
+          ["TimeoutError", "AbortError"].includes(error.name))
+      )
+        return;
+      const latest = await readJob(admin, current.user_id, current.id);
+      await finishJob(
+        admin,
+        latest,
+        latest.result_json || {},
+        error instanceof GuardError ? error.code : "PREPARATION_FAILED",
+      );
+      await admin
+        .from("wardrobe_items")
+        .update({
+          bg_removal_status: "failed",
+          bg_removal_completed_at: new Date().toISOString(),
+        })
+        .eq("user_id", current.user_id)
+        .eq("image_processing_job_id", current.id);
+    });
+    const running = await background(work);
+    const latest = running
+      ? current
+      : await readJob(admin, current.user_id, current.id);
+    return reply(
+      result(latest),
+      ["succeeded", "failed"].includes(latest.status) ? 200 : 202,
+    );
   } catch (error) {
-    console.error('Image processing error:', error);
-
-    const result: ImageProcessingResult = {
-      success: false,
-      error: error instanceof Error ? error.message : 'Internal server error',
-      message: 'Failed to process image',
-      processingTime: Date.now() - processingStartTime,
-    };
-
-    return createCorsResponse(JSON.stringify(result), { status: 500, headers: { 'Content-Type': 'application/json' } }, origin);
+    if (db && job)
+      await finishJob(
+        db,
+        job,
+        job.result_json || {},
+        error instanceof GuardError ? error.code : "UPLOAD_FAILED",
+      ).catch(() => undefined);
+    return reply(
+      {
+        success: false,
+        error:
+          "The image could not be prepared. Your existing clothing is unchanged.",
+        error_code: error instanceof GuardError ? error.code : "UPLOAD_FAILED",
+      },
+      error instanceof GuardError ? error.status : 500,
+    );
   }
 });

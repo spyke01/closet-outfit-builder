@@ -1,30 +1,45 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const AssistantChatRequestSchema = z.object({
   threadId: z.string().uuid().optional(),
+  requestId: z.string().uuid().optional(),
   message: z.string().trim().min(1).max(2000),
-  imageUrl: z.string().url().optional(),
-  contextHints: z.object({
-    focusItemId: z.string().uuid().optional(),
-    eventDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-    tripId: z.string().uuid().optional(),
-    weather: z.object({
-      source: z.string().max(30).optional(),
-      condition: z.string().max(80).optional(),
-      temperatureF: z.number().finite().optional(),
-      highTempF: z.number().finite().optional(),
-      lowTempF: z.number().finite().optional(),
-      precipChance: z.number().min(0).max(100).optional(),
-      windSpeedMph: z.number().min(0).max(300).optional(),
-      humidityPct: z.number().min(0).max(100).optional(),
-    }).optional(),
-  }).optional(),
+  imageUrl: z
+    .string()
+    .max(2048)
+    .refine(
+      (value) =>
+        value.startsWith("/api/clothing-images/") || URL.canParse(value),
+    )
+    .optional(),
+  contextHints: z
+    .object({
+      focusItemId: z.string().uuid().optional(),
+      eventDate: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/)
+        .optional(),
+      tripId: z.string().uuid().optional(),
+      weather: z
+        .object({
+          source: z.string().max(30).optional(),
+          condition: z.string().max(80).optional(),
+          temperatureF: z.number().finite().optional(),
+          highTempF: z.number().finite().optional(),
+          lowTempF: z.number().finite().optional(),
+          precipChance: z.number().min(0).max(100).optional(),
+          windSpeedMph: z.number().min(0).max(300).optional(),
+          humidityPct: z.number().min(0).max(100).optional(),
+        })
+        .optional(),
+    })
+    .optional(),
 });
 
 export type AssistantChatRequest = z.infer<typeof AssistantChatRequestSchema>;
 
 export interface AssistantCitation {
-  type: 'wardrobe_item' | 'outfit' | 'calendar_entry' | 'trip';
+  type: "wardrobe_item" | "outfit" | "calendar_entry" | "trip";
   id: string;
 }
 
@@ -34,19 +49,19 @@ export interface AssistantChatResponse {
 }
 
 export type AssistantErrorCode =
-  | 'AUTH_REQUIRED'
-  | 'PLAN_REQUIRED'
-  | 'SAFETY_BLOCKED'
-  | 'THREAD_NOT_FOUND'
-  | 'USAGE_LIMIT_EXCEEDED'
-  | 'BURST_LIMIT_EXCEEDED'
-  | 'UPSTREAM_ERROR'
-  | 'UPSTREAM_INVALID_REQUEST'
-  | 'UPSTREAM_RATE_LIMIT'
-  | 'UPSTREAM_UNAVAILABLE'
-  | 'UPSTREAM_TIMEOUT'
-  | 'VALIDATION_ERROR'
-  | 'CONFIG_ERROR';
+  | "AUTH_REQUIRED"
+  | "PLAN_REQUIRED"
+  | "SAFETY_BLOCKED"
+  | "THREAD_NOT_FOUND"
+  | "USAGE_LIMIT_EXCEEDED"
+  | "BURST_LIMIT_EXCEEDED"
+  | "UPSTREAM_ERROR"
+  | "UPSTREAM_INVALID_REQUEST"
+  | "UPSTREAM_RATE_LIMIT"
+  | "UPSTREAM_UNAVAILABLE"
+  | "UPSTREAM_TIMEOUT"
+  | "VALIDATION_ERROR"
+  | "CONFIG_ERROR";
 
 export interface AssistantContextPack {
   userId: string;
@@ -67,7 +82,7 @@ export interface AssistantContextPack {
   calendarWindow: Array<{
     id: string;
     date: string;
-    status: 'planned' | 'worn';
+    status: "planned" | "worn";
     notes?: string | null;
     outfitId?: string | null;
     weatherContext?: {
@@ -123,12 +138,13 @@ export interface AssistantModerationResult {
 }
 
 export interface AssistantProviderInput {
+  onPredictionCreated?: (id: string, model: string) => Promise<void>;
   model: string;
   systemPrompt: string;
   userPrompt: string;
   imageUrl?: string;
   context: AssistantContextPack;
-  history: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>;
+  history: Array<{ role: "user" | "assistant" | "system"; content: string }>;
 }
 
 export interface AssistantProviderOutput {

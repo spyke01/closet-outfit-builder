@@ -1,34 +1,49 @@
-import type { AssistantModerationResult } from './types';
-import { SEBASTIAN_REFUSAL_TEMPLATES } from './persona';
+import type { AssistantModerationResult } from "./types";
+import { SEBASTIAN_REFUSAL_TEMPLATES } from "./persona";
 
 const BLOCKED_PROMPT_PATTERNS: Array<{ pattern: RegExp; flag: string }> = [
-  { pattern: /\b(suicide|self-harm|kill myself)\b/i, flag: 'self_harm' },
-  { pattern: /\b(diagnose|prescription|medical advice)\b/i, flag: 'medical' },
-  { pattern: /\b(legal advice|lawsuit|tax evasion)\b/i, flag: 'legal' },
-  { pattern: /\b(ugly|rate attractiveness|hot or not|body shame)\b/i, flag: 'body_shaming' },
-  { pattern: /\b(ignore previous|reveal system prompt|override safety)\b/i, flag: 'prompt_injection' },
-  { pattern: /\b(hate|racial slur|ethnic cleansing)\b/i, flag: 'hate' },
-  { pattern: /<\s*script\b/i, flag: 'script_tag' },
-  { pattern: /<\s*\/\s*script\s*>/i, flag: 'script_tag' },
-  { pattern: /on\w+\s*=/i, flag: 'inline_event_handler' },
-  { pattern: /javascript\s*:/i, flag: 'javascript_uri' },
-  { pattern: /<!--#\s*(include|exec|echo|config|fsize|flastmod)\b/i, flag: 'ssi_directive' },
-  { pattern: /\$\{[^}]+\}/, flag: 'template_injection' },
-  { pattern: /<\|im_start\|>|<\|im_end\|>|<\|system\|>/i, flag: 'prompt_escape_token' },
-  { pattern: /(^|\s)(system|assistant|developer)\s*:/i, flag: 'role_injection' },
+  { pattern: /\b(suicide|self-harm|kill myself)\b/i, flag: "self_harm" },
+  { pattern: /\b(diagnose|prescription|medical advice)\b/i, flag: "medical" },
+  { pattern: /\b(legal advice|lawsuit|tax evasion)\b/i, flag: "legal" },
+  {
+    pattern: /\b(ugly|rate attractiveness|hot or not|body shame)\b/i,
+    flag: "body_shaming",
+  },
+  {
+    pattern: /\b(ignore previous|reveal system prompt|override safety)\b/i,
+    flag: "prompt_injection",
+  },
+  { pattern: /\b(hate|racial slur|ethnic cleansing)\b/i, flag: "hate" },
+  { pattern: /<\s*script\b/i, flag: "script_tag" },
+  { pattern: /<\s*\/\s*script\s*>/i, flag: "script_tag" },
+  { pattern: /on\w+\s*=/i, flag: "inline_event_handler" },
+  { pattern: /javascript\s*:/i, flag: "javascript_uri" },
+  {
+    pattern: /<!--#\s*(include|exec|echo|config|fsize|flastmod)\b/i,
+    flag: "ssi_directive",
+  },
+  { pattern: /\$\{[^}]+\}/, flag: "template_injection" },
+  {
+    pattern: /<\|im_start\|>|<\|im_end\|>|<\|system\|>/i,
+    flag: "prompt_escape_token",
+  },
+  {
+    pattern: /(^|\s)(system|assistant|developer)\s*:/i,
+    flag: "role_injection",
+  },
 ];
 
 const BLOCKED_IMAGE_PATTERNS: Array<{ pattern: RegExp; flag: string }> = [
-  { pattern: /\b(nude|nudity|porn|sexual)\b/i, flag: 'sexual_content' },
-  { pattern: /\b(gore|graphic violence)\b/i, flag: 'graphic_violence' },
+  { pattern: /\b(nude|nudity|porn|sexual)\b/i, flag: "sexual_content" },
+  { pattern: /\b(gore|graphic violence)\b/i, flag: "graphic_violence" },
 ];
 
 const DISALLOWED_OUTPUT_PATTERNS: Array<{ pattern: RegExp; flag: string }> = [
-  { pattern: /\b(you are ugly|your body is)\b/i, flag: 'body_shaming_output' },
+  { pattern: /\b(you are ugly|your body is)\b/i, flag: "body_shaming_output" },
 ];
 
 function stripControlCharacters(input: string): string {
-  let result = '';
+  let result = "";
   for (const character of input) {
     const code = character.charCodeAt(0);
     const isControl =
@@ -38,19 +53,22 @@ function stripControlCharacters(input: string): string {
       (code >= 0x0e && code <= 0x1f) ||
       code === 0x7f;
 
-    result += isControl ? ' ' : character;
+    result += isControl ? " " : character;
   }
   return result;
 }
 
 export function sanitizeUserTextForPrompt(input: string): string {
   return stripControlCharacters(input)
-    .replace(/\s+/g, ' ')
+    .replace(/\s+/g, " ")
     .trim()
     .slice(0, 4000);
 }
 
-export function moderateInput(prompt: string, imageUrl?: string): AssistantModerationResult {
+export function moderateInput(
+  prompt: string,
+  imageUrl?: string,
+): AssistantModerationResult {
   const normalizedPrompt = sanitizeUserTextForPrompt(prompt);
   const flags: string[] = [];
 
@@ -72,7 +90,7 @@ export function moderateInput(prompt: string, imageUrl?: string): AssistantModer
     return {
       blocked: true,
       flags,
-      reason: 'Input blocked by safety policy',
+      reason: "Input blocked by safety policy",
       safeReply: SEBASTIAN_REFUSAL_TEMPLATES.safetyBlocked,
     };
   }
@@ -94,7 +112,7 @@ export function moderateOutput(outputText: string): AssistantModerationResult {
     return {
       blocked: true,
       flags,
-      reason: 'Output blocked by safety policy',
+      reason: "Output blocked by safety policy",
       safeReply: SEBASTIAN_REFUSAL_TEMPLATES.outOfScope,
     };
   }
@@ -105,19 +123,25 @@ export function moderateOutput(outputText: string): AssistantModerationResult {
 export function isAllowedImageUrl(url: string): boolean {
   try {
     const parsed = new URL(url);
-    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
       return false;
     }
 
-    const allowedHostFragments = ['supabase.co', 'localhost'];
-    return allowedHostFragments.some((fragment) => parsed.hostname.includes(fragment));
+    const configured = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (!configured) return false;
+    const expected = new URL(configured);
+    return (
+      parsed.origin === expected.origin &&
+      /^\/storage\/v1\/object\/(public|sign)\/(wardrobe-images|wardrobe-private-images)\//.test(
+        parsed.pathname,
+      )
+    );
   } catch {
     return false;
   }
 }
 
 export function sanitizeContextValue(value: string | null | undefined): string {
-  if (!value) return '';
-  return sanitizeUserTextForPrompt(value)
-    .replace(/[<>`{}[\]]/g, '');
+  if (!value) return "";
+  return sanitizeUserTextForPrompt(value).replace(/[<>`{}[\]]/g, "");
 }

@@ -1,203 +1,168 @@
-'use client';
+"use client";
+import { useRef, useState } from "react";
+import { Download, Share2, Lock } from "lucide-react";
+import Link from "next/link";
+import type { WardrobeItem } from "@/lib/types/database";
+import { OutfitComposition } from "@/components/outfit-composition";
+import { Button } from "@/components/ui/button";
 
-import { useState, useRef, useCallback } from 'react';
-import { Download, Share2, Lock } from 'lucide-react';
-import Link from 'next/link';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ExportComingSoon } from './export-coming-soon';
-
-interface Outfit {
+interface ExportOutfit {
   id: string;
   name: string;
   score: number | null;
+  items?: WardrobeItem[];
 }
-
-interface Props {
-  tier: 'free' | 'plus' | 'pro';
-  outfits: Outfit[];
-}
-
-function UpgradeGate() {
-  return (
-    <div className="relative rounded-lg overflow-hidden border border-border">
-      <div className="blur-sm pointer-events-none select-none p-8 flex flex-col gap-4 bg-card">
-        <div className="h-8 bg-muted rounded w-40" />
-        <div className="h-32 bg-muted rounded" />
-        <div className="flex gap-2">
-          <div className="h-9 bg-muted rounded w-32" />
-          <div className="h-9 bg-muted rounded w-32" />
-        </div>
-      </div>
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-card/80 backdrop-blur-sm gap-3">
-        <Lock className="w-5 h-5 text-muted-foreground" />
-        <p className="text-sm text-muted-foreground text-center px-4">
-          Export and Share are available on the Pro plan
-        </p>
-        <Link
-          href="/settings/billing"
-          className="inline-flex h-8 items-center justify-center rounded-md bg-primary px-4 text-xs font-medium text-primary-foreground hover:bg-primary/90"
-        >
-          Upgrade to Pro
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-export function ExportShareClient({ tier, outfits }: Props) {
-  const isPro = tier === 'pro';
-  const [selectedId, setSelectedId] = useState<string>(outfits[0]?.id ?? '');
-  const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-  const [exporting, setExporting] = useState(false);
-  const [sharing, setSharing] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  const selectedOutfit = outfits.find((o) => o.id === selectedId);
-  const shareUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/outfits/${selectedId}`
-    : `/outfits/${selectedId}`;
-
-  const handleExport = useCallback(async () => {
-    if (!isPro || !cardRef.current || !selectedOutfit) return;
-    setExporting(true);
-    setStatus(null);
+export function ExportShareClient({
+  tier,
+  outfits,
+}: {
+  tier: "free" | "plus" | "pro";
+  outfits: ExportOutfit[];
+}) {
+  const [selectedId, setSelectedId] = useState(outfits[0]?.id || ""),
+    [busy, setBusy] = useState(false),
+    [status, setStatus] = useState("");
+  const card = useRef<HTMLDivElement>(null);
+  const selected = outfits.find((outfit) => outfit.id === selectedId);
+  const download = (file: File) => {
+    const url = URL.createObjectURL(file),
+      link = document.createElement("a");
+    link.href = url;
+    link.download = file.name;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+  const exportImage = async (share = false) => {
+    if (tier !== "pro" || !card.current || !selected || busy) return;
+    setBusy(true);
+    setStatus("");
     try {
-      const { default: htmlToImage } = await import('html-to-image');
-      const dataUrl = await htmlToImage.toPng(cardRef.current);
-      const link = document.createElement('a');
-      link.download = `${selectedOutfit.name.replace(/\s+/g, '-').toLowerCase()}.png`;
-      link.href = dataUrl;
-      link.click();
-    } catch {
-      // Fallback: use window.print() or canvas
-      try {
-        const canvas = document.createElement('canvas');
-        const rect = cardRef.current.getBoundingClientRect();
-        canvas.width = rect.width;
-        canvas.height = rect.height;
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.font = '16px sans-serif';
-          ctx.fillStyle = '#000000';
-          ctx.fillText(selectedOutfit.name, 16, 32);
-        }
-        canvas.toBlob((blob) => {
-          if (!blob) return;
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.download = `${selectedOutfit.name.replace(/\s+/g, '-').toLowerCase()}.png`;
-          link.href = url;
-          link.click();
-          URL.revokeObjectURL(url);
-        });
-      } catch {
-        setStatus({ type: 'error', message: 'Export failed. Try again.' });
-      }
-    } finally {
-      setExporting(false);
-    }
-  }, [isPro, selectedOutfit]);
-
-  const handleShare = useCallback(async () => {
-    if (!isPro || !selectedOutfit) return;
-    setSharing(true);
-    setStatus(null);
-    try {
-      if (navigator.canShare?.({ url: shareUrl })) {
-        await navigator.share({ title: selectedOutfit.name, url: shareUrl });
+      const { toBlob } = await import("html-to-image");
+      // Resolve the theme before SVG/canvas rendering; root CSS variables are
+      // outside the exported subtree and can otherwise leave white text transparent.
+      const computed = getComputedStyle(card.current);
+      const backgroundColor =
+        getComputedStyle(document.documentElement)
+          .getPropertyValue("--bg-base")
+          .trim() || "#0b1020";
+      const blob = await toBlob(card.current, {
+        pixelRatio: 2,
+        backgroundColor,
+        style: { backgroundColor, color: computed.color },
+      });
+      if (!blob) throw new Error("Empty export");
+      const filename =
+        selected.name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .slice(0, 80) || "outfit";
+      const file = new File([blob], filename + ".png", { type: "image/png" });
+      if (share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ title: selected.name, files: [file] });
+        setStatus("Outfit image shared.");
       } else {
-        await navigator.clipboard.writeText(shareUrl);
-        setStatus({ type: 'success', message: 'Link copied to clipboard!' });
+        download(file);
+        setStatus(
+          share
+            ? "Image downloaded. Share the PNG file from your device."
+            : "Outfit image downloaded.",
+        );
       }
-    } catch {
-      setStatus({ type: 'error', message: 'Could not share. Try copying the link manually.' });
+    } catch (cause) {
+      if (!(cause instanceof DOMException && cause.name === "AbortError"))
+        setStatus("Could not create the outfit image. Please try again.");
     } finally {
-      setSharing(false);
+      setBusy(false);
     }
-  }, [isPro, selectedOutfit, shareUrl]);
-
+  };
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8 flex flex-col gap-8">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Export & Share</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Download your outfit as an image or share a link with others
+    <div className="page-shell-content">
+      <div className="mx-auto max-w-3xl">
+        <p className="mb-3 text-xs uppercase tracking-widest text-primary">
+          Your saved outfits
         </p>
-      </div>
-
-      {!isPro ? (
-        <UpgradeGate />
-      ) : (
-        <div className="flex flex-col gap-6">
-          {outfits.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No outfits yet.{' '}
-              <Link href="/outfits" className="underline">Create one first.</Link>
+        <h1 className="font-display text-4xl">Take a look with you</h1>
+        <p className="mb-7 mt-3 text-sm text-muted-foreground">
+          Download an outfit image with all its pieces, or share the image from
+          your device.
+        </p>
+        {tier !== "pro" ? (
+          <section className="rounded-xl border border-border p-6">
+            <Lock size={22} className="mb-3 text-primary" />
+            <h2 className="text-lg font-medium">Export outfits with Pro</h2>
+            <p className="my-3 text-sm text-muted-foreground">
+              Keep a visual copy or send an outfit image to someone else.
             </p>
-          ) : (
-            <>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="outfit-select" className="text-sm font-medium text-foreground">
-                  Select an outfit
-                </label>
-                <select
-                  id="outfit-select"
-                  value={selectedId}
-                  onChange={(e) => { setSelectedId(e.target.value); setStatus(null); }}
-                  className="rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
-                >
-                  {outfits.map((o) => (
-                    <option key={o.id} value={o.id}>{o.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Outfit card preview — captured for PNG export */}
-              <div
-                ref={cardRef}
-                className="bg-card border border-border rounded-lg p-6 flex flex-col gap-3"
+            <Button asChild>
+              <Link href="/settings/billing">Explore Pro</Link>
+            </Button>
+          </section>
+        ) : !selected ? (
+          <p className="text-sm text-muted-foreground">
+            Save an outfit first.{" "}
+            <Link href="/outfits" className="text-primary underline">
+              Open outfits
+            </Link>
+          </p>
+        ) : (
+          <div className="space-y-5">
+            <label className="block text-sm">
+              Choose an outfit
+              <select
+                className="mt-2 block w-full rounded-lg border border-border bg-background p-3"
+                value={selectedId}
+                onChange={(event) => setSelectedId(event.target.value)}
+                disabled={busy}
               >
-                <h2 className="text-lg font-semibold text-foreground">{selectedOutfit?.name}</h2>
-                {selectedOutfit?.score != null && (
-                  <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full w-fit">
-                    Score: {selectedOutfit.score}%
-                  </span>
-                )}
-                <p className="text-sm text-muted-foreground">My AI Outfit — myaioutfit.com</p>
-              </div>
-
-              {status && (
-                <Alert variant={status.type === 'success' ? 'default' : 'destructive'}>
-                  <AlertDescription>{status.message}</AlertDescription>
-                </Alert>
+                {outfits.map((outfit) => (
+                  <option key={outfit.id} value={outfit.id}>
+                    {outfit.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div
+              ref={card}
+              className="rounded-xl border border-border bg-card p-6"
+            >
+              <h2 className="mb-4 font-display text-2xl">{selected.name}</h2>
+              {selected.items?.length ? (
+                <OutfitComposition items={selected.items} />
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  No clothing pieces are attached to this outfit.
+                </p>
               )}
-
-              <div className="flex gap-3">
-                <button
-                  onClick={handleExport}
-                  disabled={exporting}
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-                >
-                  <Download className="h-4 w-4" />
-                  {exporting ? 'Exporting…' : 'Export as image'}
-                </button>
-                <button
-                  onClick={handleShare}
-                  disabled={sharing}
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-border bg-background px-5 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-50"
-                >
-                  <Share2 className="h-4 w-4" />
-                  {sharing ? 'Sharing…' : 'Share'}
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      )}
-
-      <ExportComingSoon />
+              <p className="mt-5 text-xs text-muted-foreground">
+                {selected.items?.length || 0} pieces · My AI Outfit ·
+                myaioutfit.com
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Button
+                disabled={busy || !selected.items?.length}
+                onClick={() => void exportImage()}
+              >
+                <Download size={16} />
+                {busy ? "Preparing image…" : "Export as image"}
+              </Button>
+              <Button
+                variant="outline"
+                disabled={busy || !selected.items?.length}
+                onClick={() => void exportImage(true)}
+              >
+                <Share2 size={16} />
+                Share image
+              </Button>
+            </div>
+            {status && (
+              <p role="status" className="text-sm text-muted-foreground">
+                {status}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

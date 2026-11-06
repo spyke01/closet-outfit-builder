@@ -1,0 +1,46 @@
+-- Additional isolated fixtures for additive experience migrations. These are not
+-- a production baseline or a substitute for the hosted database's prior schema.
+ALTER TABLE public.user_subscriptions ADD COLUMN current_period_end timestamptz;
+ALTER TABLE public.user_subscriptions ADD COLUMN cancel_at_period_end boolean DEFAULT false;
+CREATE TABLE public.categories(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,name text NOT NULL);
+ALTER TABLE public.wardrobe_items ADD PRIMARY KEY(id);
+ALTER TABLE public.wardrobe_items ADD COLUMN category_id uuid REFERENCES public.categories(id);
+ALTER TABLE public.wardrobe_items ADD COLUMN name text;
+ALTER TABLE public.wardrobe_items ADD COLUMN color text;
+ALTER TABLE public.wardrobe_items ADD COLUMN formality_score integer;
+ALTER TABLE public.wardrobe_items ADD COLUMN season text[];
+ALTER TABLE public.wardrobe_items ADD COLUMN image_url text;
+ALTER TABLE public.wardrobe_items ADD COLUMN active boolean DEFAULT true;
+ALTER TABLE public.wardrobe_items ADD COLUMN capsule_tags text[];
+ALTER TABLE public.wardrobe_items ADD COLUMN bg_removal_status text;
+CREATE TABLE public.outfits(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,source text,name text,score integer,weight integer,loved boolean);
+CREATE TABLE public.outfit_items(outfit_id uuid REFERENCES public.outfits(id) ON DELETE CASCADE,item_id uuid REFERENCES public.wardrobe_items(id),category_id uuid REFERENCES public.categories(id));
+CREATE TABLE public.today_ai_outfits(user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,entry_date date,outfit_id uuid REFERENCES public.outfits(id) ON DELETE CASCADE,event_type text,style_preset text,style_custom text,formality_level text,sebastian_explanation text,weather_context_json jsonb,expires_at timestamptz,user_saved boolean DEFAULT false,UNIQUE(user_id,entry_date));
+CREATE SCHEMA storage;
+CREATE TABLE storage.buckets(id text PRIMARY KEY,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
+CREATE TABLE storage.objects(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),bucket_id text,name text);
+CREATE FUNCTION storage.foldername(name text) RETURNS text[] LANGUAGE sql AS $$ SELECT (string_to_array(name,'/'))[1:array_length(string_to_array(name,'/'),1)-1] $$;
+ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+GRANT USAGE ON SCHEMA storage TO authenticated,service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA public,storage TO service_role;
+GRANT SELECT,INSERT,UPDATE ON storage.objects TO authenticated;
+CREATE POLICY legacy_upload ON storage.objects FOR INSERT TO authenticated WITH CHECK(bucket_id='wardrobe-images' AND split_part(name,'/',2)=auth.uid()::text);
+INSERT INTO storage.buckets VALUES('wardrobe-images','wardrobe-images',true,20971520,ARRAY['image/png']);
+CREATE TABLE public.calendar_entries(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,entry_date date NOT NULL,status text CHECK(status IN ('planned','worn')),outfit_id uuid REFERENCES public.outfits(id) ON DELETE SET NULL,notes text,weather_context jsonb,created_at timestamptz DEFAULT now(),updated_at timestamptz DEFAULT now());
+CREATE TABLE public.calendar_entry_items(calendar_entry_id uuid REFERENCES public.calendar_entries(id) ON DELETE CASCADE,wardrobe_item_id uuid REFERENCES public.wardrobe_items(id),UNIQUE(calendar_entry_id,wardrobe_item_id));
+ALTER TABLE public.calendar_entries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.calendar_entry_items ENABLE ROW LEVEL SECURITY;
+CREATE POLICY owner_entries ON public.calendar_entries FOR ALL TO authenticated USING(user_id=auth.uid()) WITH CHECK(user_id=auth.uid());
+CREATE POLICY owner_entry_items ON public.calendar_entry_items FOR ALL TO authenticated USING(EXISTS(SELECT 1 FROM public.calendar_entries WHERE id=calendar_entry_id AND user_id=auth.uid())) WITH CHECK(EXISTS(SELECT 1 FROM public.calendar_entries WHERE id=calendar_entry_id AND user_id=auth.uid()));
+ALTER TABLE public.wardrobe_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.outfits ENABLE ROW LEVEL SECURITY;
+CREATE POLICY owner_wardrobe ON public.wardrobe_items FOR SELECT TO authenticated USING(user_id=auth.uid());
+CREATE POLICY owner_outfits ON public.outfits FOR SELECT TO authenticated USING(user_id=auth.uid());
+GRANT SELECT ON public.wardrobe_items,public.outfits TO authenticated;
+GRANT ALL ON public.calendar_entries,public.calendar_entry_items TO authenticated,service_role;
+
+ALTER TABLE public.wardrobe_items ADD COLUMN brand text;
+ALTER TABLE public.wardrobe_items ADD COLUMN material text;
+ALTER TABLE public.wardrobe_items ADD COLUMN updated_at timestamptz DEFAULT now();
+GRANT UPDATE ON public.wardrobe_items TO authenticated;
+CREATE POLICY owner_wardrobe_updates ON public.wardrobe_items FOR UPDATE TO authenticated USING(user_id=auth.uid()) WITH CHECK(user_id=auth.uid());

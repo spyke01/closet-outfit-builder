@@ -4,18 +4,25 @@ import { SWRProvider } from "@/lib/providers/swr-config";
 import { PreloadInitializer } from "@/components/preload-initializer";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
 
-export default function AuthenticatedAppLayout({
+import { AppShell } from "@/components/app-shell";
+import { createClient } from "@/lib/supabase/server";
+
+export default async function AuthenticatedAppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   return (
     <MonitoringProvider>
       <QueryProvider>
         <SWRProvider>
           <PreloadInitializer />
           <ServiceWorkerRegistration />
-          {children}
+          <AppShell user={user}>{children}</AppShell>
         </SWRProvider>
       </QueryProvider>
     </MonitoringProvider>

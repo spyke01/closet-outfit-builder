@@ -1,0 +1,90 @@
+{
+  "checkedAt": "2026-11-06T16:02:20.263Z",
+  "engine": "PostgreSQL 16, isolated local container",
+  "checks": [
+    {
+      "name": "Authenticated users cannot call the metering RPC or write counters",
+      "passed": true
+    },
+    {
+      "name": "Twenty concurrent first-row reservations admit exactly one at a limit of one",
+      "passed": true
+    },
+    {
+      "name": "Concurrent duplicate requests create one job and consume one operation",
+      "passed": true
+    },
+    {
+      "name": "An idempotency key cannot be reused for a different request",
+      "passed": true
+    },
+    {
+      "name": "Concurrent global-budget reservations include all pending work",
+      "passed": true
+    },
+    {
+      "name": "Direct billable generation is plan-gated; free cleanup remains available within limits",
+      "passed": true
+    },
+    {
+      "name": "Only one courtesy retry is allowed, with shared budget and burst limits intact",
+      "passed": true
+    },
+    {
+      "name": "Client sessions cannot forge assistant metadata or access the job ledger",
+      "passed": true
+    },
+    {
+      "name": "Deleting an account does not erase global spending reservations",
+      "passed": true
+    },
+    {
+      "name": "Both clothing buckets reject direct client uploads and new photos are private",
+      "passed": true
+    },
+    {
+      "name": "Twelve concurrent onboarding retries save one complete batch",
+      "passed": true
+    },
+    {
+      "name": "Onboarding rejects a changed retry, foreign category, and direct client RPC calls",
+      "passed": true
+    },
+    {
+      "name": "Database paid access matches scheduled cancellation and expiry",
+      "passed": true
+    },
+    {
+      "name": "Account deletion clears inference content and identifiers while retaining spend",
+      "passed": true
+    },
+    {
+      "name": "Twelve concurrent Today result saves create one outfit with every piece and one selection",
+      "passed": true
+    },
+    {
+      "name": "An AI result cannot be applied by another account",
+      "passed": true
+    },
+    {
+      "name": "Concurrent calendar retries create one entry and preserve all selected pieces",
+      "passed": true
+    },
+    {
+      "name": "Invalid or foreign calendar edits leave the previous entry and every piece intact",
+      "passed": true
+    },
+    {
+      "name": "A failure after replacing calendar pieces rolls back the entry and all item changes",
+      "passed": true
+    },
+    {
+      "name": "A newer user photo choice detaches an older image worker",
+      "passed": true
+    },
+    {
+      "name": "Photo uploads remain available when the AI spending budget is exhausted",
+      "passed": true
+    }
+  ]
+}

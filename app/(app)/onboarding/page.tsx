@@ -1,29 +1,34 @@
-import type { Metadata } from 'next';
-import { Suspense } from 'react';
-import { AuthBoundary } from '@/components/auth-boundary';
-import { OnboardingWizard } from '@/components/onboarding/onboarding-wizard';
-import { TopBarWrapper } from '@/components/top-bar-wrapper';
-import { createClient } from '@/lib/supabase/server';
-import { hasBillingAdminRole } from '@/lib/services/billing/roles';
+import type { Metadata } from "next";
+import { Suspense } from "react";
+import { AuthBoundary } from "@/components/auth-boundary";
+import { OnboardingExperience } from "@/components/onboarding/onboarding-experience";
+import { TopBarWrapper } from "@/components/top-bar-wrapper";
+import { createClient } from "@/lib/supabase/server";
+import { hasBillingAdminRole } from "@/lib/services/billing/roles";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const metadata: Metadata = {
-  title: 'Wardrobe Setup – My AI Outfit',
-  description: 'Set up your wardrobe by selecting categories, items, colors, and quantities to get started with personalized outfit recommendations.',
+  title: "Wardrobe Setup – My AI Outfit",
+  description:
+    "Set up your wardrobe by selecting categories, items, colors, and quantities to get started with personalized outfit recommendations.",
 };
 
 interface OnboardingPageProps {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function OnboardingPage({ searchParams }: OnboardingPageProps) {
+export default async function OnboardingPage({
+  searchParams,
+}: OnboardingPageProps) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const params = searchParams ? await searchParams : {};
   const forceParam = params.force;
   const forceValue = Array.isArray(forceParam) ? forceParam[0] : forceParam;
-  const isForceRequested = forceValue === '1' || forceValue === 'true';
+  const isForceRequested = forceValue === "1" || forceValue === "true";
 
   let canUseForceMode = false;
   if (isForceRequested && user) {
@@ -33,7 +38,7 @@ export default async function OnboardingPage({ searchParams }: OnboardingPagePro
   return (
     <div className="page-shell min-h-screen flex flex-col">
       <TopBarWrapper user={user} />
-      
+
       <main className="flex-1">
         <Suspense
           fallback={
@@ -46,7 +51,7 @@ export default async function OnboardingPage({ searchParams }: OnboardingPagePro
           }
         >
           <AuthBoundary>
-            <OnboardingWizard
+            <OnboardingExperience
               forceMode={canUseForceMode}
               forceFreshStart={canUseForceMode}
             />

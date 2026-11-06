@@ -48,6 +48,7 @@ export type AnalyticsDashboardResponse =
   | {
       wardrobe: WardrobeStats;
       engagement: EngagementStats;
+      insights?: import("@/lib/services/analytics/wear-insights").WearInsights;
     }
   | {
       wardrobe: {
@@ -57,5 +58,5 @@ export type AnalyticsDashboardResponse =
         mostWorn: null;
       };
       engagement: null;
-      tier: 'free';
+      tier: "free";
     };

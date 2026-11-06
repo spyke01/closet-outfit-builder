@@ -1,6 +1,9 @@
-import { describe, expect, it, vi } from 'vitest';
-import { buildAssistantContextPack, summarizeContextForPrompt } from '@/lib/services/assistant/context-builder';
-import type { AssistantChatRequest } from '@/lib/services/assistant/types';
+import { describe, expect, it, vi } from "vitest";
+import {
+  buildAssistantContextPack,
+  summarizeContextForPrompt,
+} from "@/lib/services/assistant/context-builder";
+import type { AssistantChatRequest } from "@/lib/services/assistant/types";
 
 function isoDatePlusDays(days: number): string {
   const date = new Date();
@@ -8,7 +11,10 @@ function isoDatePlusDays(days: number): string {
   return date.toISOString().slice(0, 10);
 }
 
-function createThenableQuery(data: Array<Record<string, unknown>>) {
+function createThenableQuery(
+  data: Array<Record<string, unknown>>,
+  error: unknown = null,
+) {
   const query = {
     select: vi.fn(() => query),
     eq: vi.fn(() => query),
@@ -19,8 +25,7 @@ function createThenableQuery(data: Array<Record<string, unknown>>) {
     then: (
       onFulfilled: (value: { data: Array<Record<string, unknown>> }) => unknown,
       onRejected?: (reason: unknown) => unknown,
-    ) =>
-      Promise.resolve({ data }).then(onFulfilled, onRejected),
+    ) => Promise.resolve({ data, error }).then(onFulfilled, onRejected),
     catch: (onRejected: (reason: unknown) => unknown) =>
       Promise.resolve({ data }).catch(onRejected),
     finally: (onFinally: () => void) =>
@@ -30,15 +35,65 @@ function createThenableQuery(data: Array<Record<string, unknown>>) {
   return query;
 }
 
-describe('assistant context builder', () => {
-  it('applies user scoping and hard limits', async () => {
+describe("assistant context builder", () => {
+  it("loads the owned focus item independently of the bounded candidate query", async () => {
+    const candidates = createThenableQuery(
+      Array.from({ length: 1000 }, (_, index) => ({
+        id: `item-${index}`,
+        name: `Shirt ${index}`,
+        category: { name: "Shirt" },
+      })),
+    );
+    const focus = createThenableQuery([
+      { id: "older-piece", name: "My boots", category: { name: "Shoes" } },
+    ]);
+    const empty = createThenableQuery([]);
+    let wardrobeQueries = 0;
+    const db = {
+      from: vi.fn((table: string) =>
+        table === "wardrobe_items"
+          ? ++wardrobeQueries === 1
+            ? candidates
+            : focus
+          : empty,
+      ),
+    };
+    const { pack } = await buildAssistantContextPack(db as never, "owner", {
+      message: "Build around this",
+      contextHints: { focusItemId: "older-piece" },
+    });
+    expect(pack.wardrobe).toHaveLength(50);
+    expect(pack.wardrobe[0].id).toBe("older-piece");
+    expect(focus.eq).toHaveBeenCalledWith("user_id", "owner");
+    expect(focus.eq).toHaveBeenCalledWith("active", true);
+    expect(focus.eq).toHaveBeenCalledWith("id", "older-piece");
+    expect(summarizeContextForPrompt(pack)).toContain("My boots");
+  });
+
+  it("rejects missing owned focus items and database errors before inference", async () => {
+    const empty = createThenableQuery([]);
+    await expect(
+      buildAssistantContextPack({ from: () => empty } as never, "owner", {
+        message: "Help",
+        contextHints: { focusItemId: "foreign-item" },
+      }),
+    ).rejects.toThrow("Selected clothing item is unavailable");
+    const failed = createThenableQuery([], { message: "database unavailable" });
+    await expect(
+      buildAssistantContextPack({ from: () => failed } as never, "owner", {
+        message: "Help",
+      }),
+    ).rejects.toThrow("Unable to load assistant context");
+  });
+
+  it("applies user scoping and hard limits", async () => {
     const wardrobeRows = Array.from({ length: 60 }).map((_, index) => ({
       id: `item-${index + 1}`,
       name: `Item ${index + 1}`,
-      color: 'navy',
-      season: ['all'],
+      color: "navy",
+      season: ["all"],
       formality_score: 3,
-      category: { name: 'Blazer' },
+      category: { name: "Blazer" },
     }));
 
     const tableQueries = {
@@ -53,100 +108,122 @@ describe('assistant context builder', () => {
     };
 
     const request: AssistantChatRequest = {
-      message: 'Pair this with my blazer',
-      contextHints: { focusItemId: 'item-30' },
+      message: "Pair this with my blazer",
+      contextHints: { focusItemId: "item-30" },
     };
 
-    const { pack } = await buildAssistantContextPack(supabase as never, 'user-1', request);
+    const { pack } = await buildAssistantContextPack(
+      supabase as never,
+      "user-1",
+      request,
+    );
 
-    expect(tableQueries.wardrobe_items.eq).toHaveBeenCalledWith('user_id', 'user-1');
-    expect(tableQueries.outfits.eq).toHaveBeenCalledWith('user_id', 'user-1');
-    expect(tableQueries.calendar_entries.eq).toHaveBeenCalledWith('user_id', 'user-1');
-    expect(tableQueries.trips.eq).toHaveBeenCalledWith('user_id', 'user-1');
+    expect(tableQueries.wardrobe_items.eq).toHaveBeenCalledWith(
+      "user_id",
+      "user-1",
+    );
+    expect(tableQueries.outfits.eq).toHaveBeenCalledWith("user_id", "user-1");
+    expect(tableQueries.calendar_entries.eq).toHaveBeenCalledWith(
+      "user_id",
+      "user-1",
+    );
+    expect(tableQueries.trips.eq).toHaveBeenCalledWith("user_id", "user-1");
 
     expect(pack.wardrobe).toHaveLength(50);
-    expect(pack.wardrobe[0]?.id).toBe('item-30');
+    expect(pack.wardrobe[0]?.id).toBe("item-30");
   });
 
-  it('sanitizes context text fields', async () => {
+  it("sanitizes context text fields", async () => {
     const tomorrow = isoDatePlusDays(1);
     const tripStart = isoDatePlusDays(3);
     const tripEnd = isoDatePlusDays(6);
 
     const tableQueries = {
-      wardrobe_items: createThenableQuery([{
-        id: 'item-1',
-        name: 'Navy `Blazer`',
-        color: '{blue}',
-        season: ['all'],
-        formality_score: 4,
-        category: { name: '[Outerwear]' },
-      }]),
-      outfits: createThenableQuery([]),
-      calendar_entries: createThenableQuery([{
-        id: 'cal-1',
-        entry_date: tomorrow,
-        status: 'planned',
-        notes: 'Dinner <script>alert(1)</script>',
-        outfit_id: null,
-        weather_context: {
-          condition: 'Rainy <b>windy</b>',
-          highTemp: '58',
-          lowTemp: 46,
-          precipChance: 67,
-          humidity: 72,
+      wardrobe_items: createThenableQuery([
+        {
+          id: "item-1",
+          name: "Navy `Blazer`",
+          color: "{blue}",
+          season: ["all"],
+          formality_score: 4,
+          category: { name: "[Outerwear]" },
         },
-      }]),
-      trips: createThenableQuery([{
-        id: 'trip-1',
-        name: 'NYC ${trip}',
-        destination_text: 'New York',
-        start_date: tripStart,
-        end_date: tripEnd,
-      }]),
+      ]),
+      outfits: createThenableQuery([]),
+      calendar_entries: createThenableQuery([
+        {
+          id: "cal-1",
+          entry_date: tomorrow,
+          status: "planned",
+          notes: "Dinner <script>alert(1)</script>",
+          outfit_id: null,
+          weather_context: {
+            condition: "Rainy <b>windy</b>",
+            highTemp: "58",
+            lowTemp: 46,
+            precipChance: 67,
+            humidity: 72,
+          },
+        },
+      ]),
+      trips: createThenableQuery([
+        {
+          id: "trip-1",
+          name: "NYC ${trip}",
+          destination_text: "New York",
+          start_date: tripStart,
+          end_date: tripEnd,
+        },
+      ]),
     } as const;
 
     const supabase = {
       from: vi.fn((table: keyof typeof tableQueries) => tableQueries[table]),
     };
 
-    const request: AssistantChatRequest = { message: 'help' };
-    const { pack } = await buildAssistantContextPack(supabase as never, 'user-2', request);
+    const request: AssistantChatRequest = { message: "help" };
+    const { pack } = await buildAssistantContextPack(
+      supabase as never,
+      "user-2",
+      request,
+    );
 
-    expect(pack.wardrobe[0]?.name).not.toContain('`');
-    expect(pack.wardrobe[0]?.category).not.toContain('[');
-    expect(pack.wardrobe[0]?.color).not.toContain('{');
-    expect(pack.calendarWindow[0]?.notes).not.toContain('<script>');
-    expect(pack.trips[0]?.name).not.toContain('{');
-    expect(pack.currentWeather?.condition).not.toContain('<');
+    expect(pack.wardrobe[0]?.name).not.toContain("`");
+    expect(pack.wardrobe[0]?.category).not.toContain("[");
+    expect(pack.wardrobe[0]?.color).not.toContain("{");
+    expect(pack.calendarWindow[0]?.notes).not.toContain("<script>");
+    expect(pack.trips[0]?.name).not.toContain("{");
+    expect(pack.currentWeather?.condition).not.toContain("<");
     expect(pack.currentWeather?.highTempF).toBe(58);
     expect(pack.currentWeather?.lowTempF).toBe(46);
     expect(pack.currentWeather?.precipChance).toBe(67);
 
     const summary = summarizeContextForPrompt(pack);
-    expect(summary).toContain('Current weather:');
-    expect(summary).toContain('precip 67%');
+    expect(summary).toContain("Current weather:");
+    expect(summary).toContain("precip 67%");
   });
 
-  it('prefers live weather hint context over calendar weather when provided', async () => {
+  it("prefers live weather hint context over calendar weather when provided", async () => {
     const tomorrow = isoDatePlusDays(1);
 
     const tableQueries = {
       wardrobe_items: createThenableQuery([]),
       outfits: createThenableQuery([]),
-      calendar_entries: createThenableQuery([{
-        id: 'cal-1',
-        entry_date: tomorrow,
-        status: 'planned',
-        notes: null,
-        outfit_id: null,
-        weather_context: {
-          condition: 'Cloudy',
-          highTemp: 55,
-          lowTemp: 44,
-          precipChance: 20,
+      calendar_entries: createThenableQuery([
+        {
+          id: "cal-1",
+          entry_date: tomorrow,
+          status: "planned",
+          notes: null,
+          outfit_id: null,
+          weather_context: {
+            condition: "Cloudy",
+            highTemp: 55,
+            lowTemp: 44,
+            precipChance: 20,
+          },
         },
-      }]),
+      ]),
       trips: createThenableQuery([]),
     } as const;
 
@@ -155,11 +232,11 @@ describe('assistant context builder', () => {
     };
 
     const request: AssistantChatRequest = {
-      message: 'help',
+      message: "help",
       contextHints: {
         weather: {
-          source: 'live-weather',
-          condition: 'Sunny',
+          source: "live-weather",
+          condition: "Sunny",
           temperatureF: 62,
           highTempF: 66,
           lowTempF: 51,
@@ -168,9 +245,13 @@ describe('assistant context builder', () => {
       },
     };
 
-    const { pack } = await buildAssistantContextPack(supabase as never, 'user-3', request);
-    expect(pack.currentWeather?.condition).toBe('Sunny');
+    const { pack } = await buildAssistantContextPack(
+      supabase as never,
+      "user-3",
+      request,
+    );
+    expect(pack.currentWeather?.condition).toBe("Sunny");
     expect(pack.currentWeather?.temperatureF).toBe(62);
-    expect(pack.currentWeather?.source).toBe('live-weather');
+    expect(pack.currentWeather?.source).toBe("live-weather");
   });
 });

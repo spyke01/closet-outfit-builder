@@ -1,0 +1,132 @@
+{
+  "checkedAt": "2026-11-06T16:38:01.084Z",
+  "scope": "Real React components with synthetic I/O; database and provider checks are separate",
+  "checks": [
+    {
+      "name": "One compact Today introduction and one shared weather header",
+      "passed": true
+    },
+    {
+      "name": "Weather details open with full conditions and close with Escape",
+      "passed": true
+    },
+    {
+      "name": "Occasion changes the visible outfit and another look retains that occasion",
+      "passed": true
+    },
+    {
+      "name": "Today save and wear actions persist separate fixture records",
+      "passed": true
+    },
+    {
+      "name": "One Sebastian conversation survives navigation",
+      "passed": true
+    },
+    {
+      "name": "Camera, library, and default image are explicit choices; the camera input uploads",
+      "passed": true
+    },
+    {
+      "name": "Photo cleanup stays optional and both original and cleaned versions can be selected",
+      "passed": true
+    },
+    {
+      "name": "Photo-derived name, category, and color stay in review until explicitly applied",
+      "passed": true
+    },
+    {
+      "name": "Default image and details save, add-another resets, and the fixture item survives reload",
+      "passed": true
+    },
+    {
+      "name": "Clothing details open Sebastian with an editable draft about that piece",
+      "passed": true
+    },
+    {
+      "name": "Optional purchase prices save and survive reload for lifetime cost per wear",
+      "passed": true
+    },
+    {
+      "name": "Calendar deletion requires confirmation and can be canceled",
+      "passed": true
+    },
+    {
+      "name": "Calendar previews overflow and exposes all layers/accessories with explicit editing",
+      "passed": true
+    },
+    {
+      "name": "A calendar entry can change one accessory and retain its other pieces after reload",
+      "passed": true
+    },
+    {
+      "name": "Analytics tabs, clothing search, lifetime cost per wear, and overview render",
+      "passed": true
+    },
+    {
+      "name": "Export downloads a PNG containing all seven pieces of an outfit",
+      "passed": true
+    },
+    {
+      "name": "/today fits a 390px viewport with all five mobile destinations",
+      "passed": true
+    },
+    {
+      "name": "/wardrobe fits a 390px viewport with all five mobile destinations",
+      "passed": true
+    },
+    {
+      "name": "/outfits fits a 390px viewport with all five mobile destinations",
+      "passed": true
+    },
+    {
+      "name": "/calendar fits a 390px viewport with all five mobile destinations",
+      "passed": true
+    },
+    {
+      "name": "/calendar/upcoming fits a 390px viewport with all five mobile destinations",
+      "passed": true
+    },
+    {
+      "name": "/calendar/trips fits a 390px viewport with all five mobile destinations",
+      "passed": true
+    },
+    {
+      "name": "/analytics fits a 390px viewport with all five mobile destinations",
+      "passed": true
+    },
+    {
+      "name": "/export fits a 390px viewport with all five mobile destinations",
+      "passed": true
+    },
+    {
+      "name": "/wardrobe/items fits a 390px viewport with all five mobile destinations",
+      "passed": true
+    },
+    {
+      "name": "/onboarding fits a 390px viewport with all five mobile destinations",
+      "passed": true
+    },
+    {
+      "name": "Quick-start choices resume after reload and save exactly the three confirmed essentials",
+      "passed": true
+    },
+    {
+      "name": "Dress and shoes form a complete two-piece quick-start path",
+      "passed": true
+    },
+    {
+      "name": "The persistent chat remains visible on mobile when the desktop sidebar is hidden",
+      "passed": true
+    },
+    {
+      "name": "The existing light palette works through the account theme control",
+      "passed": true
+    },
+    {
+      "name": "No browser runtime errors or external requests during fixture checks",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "externalRequests": []
+}
