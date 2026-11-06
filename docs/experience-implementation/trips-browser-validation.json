@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-11-06T22:10:25.417Z",
+  "scope": "Real trip components, synthetic persisted I/O; no hosted database or paid provider calls",
+  "checks": [
+    {
+      "name": "Trip overview, weather day strip, and one focused seven-piece look replace stacked planners",
+      "passed": true
+    },
+    {
+      "name": "Saved looks update packing automatically; shared pieces, packed state, and manual essentials survive reload",
+      "passed": true
+    },
+    {
+      "name": "Additional daily looks remain available and removal requires confirmation",
+      "passed": true
+    },
+    {
+      "name": "Shortening dates discloses lost looks, Cancel discards the draft, and trip deletion requires confirmation",
+      "passed": true
+    },
+    {
+      "name": "Trip planning keeps existing looks by default and calendar syncing requires an explicit choice",
+      "passed": true
+    },
+    {
+      "name": "Both trip workspaces fit a phone with no browser errors or external calls",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "externalRequests": []
+}

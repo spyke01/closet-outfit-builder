@@ -278,8 +278,8 @@ export interface UpdateCalendarEntryInput
 export interface CreateTripInput {
   name: string;
   destination_text: string;
-  destination_lat?: number;
-  destination_lon?: number;
+  destination_lat?: number | null;
+  destination_lon?: number | null;
   start_date: string; // YYYY-MM-DD
   end_date: string; // YYYY-MM-DD
 }

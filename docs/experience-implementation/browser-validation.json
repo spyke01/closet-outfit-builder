@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-06T16:38:01.084Z",
+  "checkedAt": "2026-11-06T22:10:35.615Z",
   "scope": "Real React components with synthetic I/O; database and provider checks are separate",
   "checks": [
     {
@@ -120,6 +120,18 @@
     },
     {
       "name": "The existing light palette works through the account theme control",
+      "passed": true
+    },
+    {
+      "name": "Weather remains in the phone header while off and can be enabled from its details",
+      "passed": true
+    },
+    {
+      "name": "Weather remains in the header while preferences load",
+      "passed": true
+    },
+    {
+      "name": "Weather preference errors stay visible and actionable without phone overflow",
       "passed": true
     },
     {

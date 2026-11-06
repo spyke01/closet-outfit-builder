@@ -40,7 +40,18 @@ type UseConditionalWeatherReturn = Pick<
       WeatherResult,
       "hourly" | "alerts" | "coordinates" | "locationLabel" | "timezone"
     >
-  > & { weatherEnabled: boolean; preferenceLoading?: boolean };
+  > & {
+    weatherEnabled: boolean;
+    preferenceLoading?: boolean;
+    preferenceError?: boolean;
+    weatherDisabledReason?:
+      | "signed-out"
+      | "preferences-loading"
+      | "preferences-error"
+      | "preference-off"
+      | "feature-off";
+    retryPreferences?: () => void;
+  };
 
 /**
  * Conditionally use weather functionality based on feature flags and user preferences
@@ -51,14 +62,27 @@ type UseConditionalWeatherReturn = Pick<
 export function useConditionalWeather(
   isAuthenticated: boolean,
 ): UseConditionalWeatherReturn {
-  const { data: preferences, isLoading: preferenceLoading } =
-    useUserPreferences();
+  const preferencesQuery = useUserPreferences();
+  const preferences = preferencesQuery.data;
+  const preferenceLoading =
+    preferencesQuery.isLoading || (!preferences && !preferencesQuery.isError);
   const weatherPreferenceEnabled = preferences?.weather_enabled === true;
 
   // Determine if weather should be enabled
   const featureEnabled = isFeatureEnabled("weather");
   const weatherEnabled =
     isAuthenticated && weatherPreferenceEnabled && featureEnabled;
+  const weatherDisabledReason = !isAuthenticated
+    ? "signed-out"
+    : preferencesQuery.isError
+      ? "preferences-error"
+      : preferenceLoading
+        ? "preferences-loading"
+        : !weatherPreferenceEnabled
+          ? "preference-off"
+          : !featureEnabled
+            ? "feature-off"
+            : undefined;
 
   // ✅ CRITICAL: Always call useWeather hook (Rules of Hooks)
   // Pass weatherEnabled so the hook can handle its own conditional logic
@@ -69,6 +93,11 @@ export function useConditionalWeather(
     ...weatherResult,
     weatherEnabled,
     preferenceLoading,
+    preferenceError: preferencesQuery.isError,
+    weatherDisabledReason,
+    retryPreferences: () => {
+      void preferencesQuery.refetch();
+    },
   };
 }
 

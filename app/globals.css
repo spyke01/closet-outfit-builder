@@ -1266,4 +1266,405 @@
   .app-weather-summary {
     max-width: 110px;
   }
+  .app-weather-trigger > span {
+    min-width: 0;
+  }
+  .app-weather-trigger strong {
+    display: block;
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* Trip planning keeps one day and one look in focus. */
+.trip-workspace {
+  min-width: 0;
+}
+.trip-overview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+}
+.trip-overview-actions {
+  flex-shrink: 0;
+  text-align: right;
+}
+.trip-badge {
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 3px 8px;
+  font-size: 10px;
+}
+.trip-view-tabs {
+  display: flex;
+  gap: 26px;
+  margin: 24px 0 20px;
+  border-bottom: 1px solid var(--border);
+}
+.trip-view-tabs > button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 0 13px;
+  border-bottom: 2px solid transparent;
+  color: var(--muted-foreground);
+  font-size: 13px;
+}
+.trip-view-tabs > button[aria-selected="true"] {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+.trip-view-tabs > button > span {
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--accent-muted);
+  font-size: 10px;
+}
+.trip-day-strip {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(122px, 1fr);
+  gap: 9px;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  padding: 2px 2px 12px;
+  margin-bottom: 20px;
+}
+.trip-day-strip > button {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  min-height: 118px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  text-align: left;
+}
+.trip-day-strip > button[aria-selected="true"] {
+  border-color: var(--primary);
+  background: var(--accent-muted);
+}
+.trip-day-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+.trip-day-label strong {
+  font-size: 17px;
+  font-weight: 600;
+}
+.trip-day-weather {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted-foreground);
+  font-size: 11px;
+  white-space: nowrap;
+}
+.trip-day-weather > svg {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+.trip-day-status {
+  font-size: 10px;
+  color: var(--muted-foreground);
+}
+.trip-day-status.is-planned {
+  color: var(--primary);
+}
+.trip-day-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  align-items: start;
+  gap: 24px;
+}
+.trip-day-sidebar {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.trip-weather-panel,
+.trip-packing-summary,
+.trip-outfit-card {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  background: var(--card);
+}
+.trip-weather-panel {
+  background: linear-gradient(145deg, var(--accent-muted), var(--card));
+}
+.trip-look-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.trip-look-choice.is-selected {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--accent-muted);
+}
+.trip-look-empty {
+  display: flex;
+  min-height: 240px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+  color: var(--muted-foreground);
+  font-size: 14px;
+  line-height: 1.7;
+}
+.trip-outfit-card .outfit-composition {
+  background: transparent;
+}
+.trip-outfit-card .outfit-composition-image {
+  height: 195px;
+}
+.trip-outfit-card
+  .outfit-composition-piece:nth-child(n + 4)
+  .outfit-composition-image {
+  height: 106px;
+}
+.trip-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 18px;
+  margin-top: 24px;
+  padding: 30px;
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  text-align: center;
+  color: var(--muted-foreground);
+}
+.trip-empty > p {
+  max-width: 420px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.trip-packing-view {
+  padding-block: 4px;
+}
+.trip-packing-groups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+.trip-packing-group {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  background: var(--card);
+}
+.trip-pack-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 64px;
+  border-top: 1px solid var(--border);
+  padding: 10px 0;
+}
+.trip-pack-row > label {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  cursor: pointer;
+  font-size: 13px;
+}
+.trip-pack-row > label > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.trip-pack-row input {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  accent-color: var(--primary);
+}
+.trip-saved-choice {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: left;
+}
+.trip-saved-choice:hover {
+  background: var(--accent-muted);
+  border-color: var(--primary);
+}
+.trip-saved-choice .outfit-thumbnails {
+  width: 135px;
+  height: 57px;
+  flex-shrink: 0;
+}
+.trip-saved-choice > span {
+  flex: 1;
+}
+@media (max-width: 1050px) {
+  .trip-day-layout {
+    grid-template-columns: minmax(0, 1fr) 245px;
+    gap: 16px;
+  }
+}
+@media (max-width: 760px) {
+  .trip-overview {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 19px;
+    gap: 18px;
+  }
+  .trip-overview-actions {
+    text-align: left;
+  }
+  .trip-day-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .trip-day-sidebar {
+    grid-row: 1;
+  }
+  .trip-packing-summary {
+    display: none;
+  }
+  .trip-weather-panel {
+    padding: 16px;
+  }
+  .trip-day-strip {
+    grid-auto-columns: 126px;
+  }
+  .trip-packing-groups {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .trip-saved-choice {
+    gap: 10px;
+  }
+  .trip-saved-choice .outfit-thumbnails {
+    width: 110px;
+  }
+  .trip-outfit-card {
+    padding: 15px;
+  }
+  .trip-outfit-card .outfit-composition-image {
+    height: 150px;
+  }
+  .trip-outfit-card
+    .outfit-composition-piece:nth-child(n + 4)
+    .outfit-composition-image {
+    height: 90px;
+  }
+}
+.trip-overview {
+  margin-top: 20px;
+  padding: 20px;
+}
+.trip-overview > div:first-child {
+  min-width: 0;
+  flex: 1;
+}
+.trip-select {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  min-width: 0;
+  padding-right: 24px;
+  background: transparent;
+  color: var(--foreground);
+  font-family: var(--font-playfair-display);
+  font-size: 26px;
+  line-height: 1.4;
+}
+.trip-select option {
+  background: var(--background);
+  font-family: var(--font-inter);
+  font-size: 14px;
+}
+.trip-select:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+@media (max-width: 760px) {
+  .trip-overview {
+    padding: 17px;
+    gap: 14px;
+  }
+  .trip-overview > div {
+    width: 100%;
+  }
+  .trip-overview-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .trip-overview-actions > p {
+    margin-bottom: 0;
+    font-size: 11px;
+  }
+  .trip-overview-actions > button {
+    flex-shrink: 0;
+    padding: 9px 12px;
+    font-size: 11px;
+  }
+  .trip-select {
+    font-size: 24px;
+  }
+  .trip-weather-panel > .my-4 {
+    margin-block: 10px;
+  }
+  .trip-weather-panel dl {
+    padding-block: 8px;
+  }
+  .trip-weather-panel > p.mt-4 {
+    font-size: 12px;
+    margin-top: 10px;
+  }
+}
+.trip-workspace progress {
+  appearance: none;
+  border: 0;
+  border-radius: 99px;
+  overflow: hidden;
+  background: var(--muted);
+}
+.trip-workspace progress::-webkit-progress-bar {
+  background: var(--muted);
+  border-radius: 99px;
+}
+.trip-workspace progress::-webkit-progress-value {
+  background: var(--primary);
+  border-radius: 99px;
+}
+.trip-workspace progress::-moz-progress-bar {
+  background: var(--primary);
+  border-radius: 99px;
 }

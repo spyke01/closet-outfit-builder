@@ -159,7 +159,7 @@ async function fetchWeatherData(latitude: number, longitude: number): Promise<We
   const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
   try {
-    const response = await fetch(`/.netlify/functions/weather?lat=${latitude}&lon=${longitude}`, {
+    const response = await fetch(`/api/weather?lat=${latitude}&lon=${longitude}`, {
       signal: controller.signal,
       headers: {
         'Accept': 'application/json',

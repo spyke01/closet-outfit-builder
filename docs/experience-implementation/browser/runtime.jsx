@@ -7,6 +7,9 @@ import {
   user,
   weather,
   trip,
+  tripsList,
+  tripDays,
+  tripPackItems,
 } from "./fixtures";
 export const query = (data) => ({
   data,
@@ -41,8 +44,19 @@ export const changed = () => {
   localStorage.setItem("experience-fixture-items", JSON.stringify(items));
   localStorage.setItem("experience-fixture-outfits", JSON.stringify(outfits));
   localStorage.setItem("experience-fixture-entries", JSON.stringify(entries));
+  localStorage.setItem("experience-fixture-trips", JSON.stringify(tripsList));
+  localStorage.setItem(
+    "experience-fixture-trip-days",
+    JSON.stringify(tripDays),
+  );
+  localStorage.setItem(
+    "experience-fixture-trip-pack",
+    JSON.stringify(tripPackItems),
+  );
   window.dispatchEvent(new Event("fixture-change"));
 };
+const dateKey = (date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 const mutation = (fn = async () => ({})) => ({
   isPending: false,
   isSuccess: false,
@@ -126,7 +140,40 @@ export const special = {
   }),
   useWeather: () => weather,
   useAppWeather: () => weather,
-  useConditionalWeather: () => weather,
+  useConditionalWeather: () => {
+    const mode = new URL(location.href).searchParams.get("weather");
+    if (mode === "loading")
+      return {
+        ...weather,
+        current: null,
+        forecast: [],
+        weatherEnabled: false,
+        preferenceLoading: true,
+      };
+    if (mode === "error")
+      return {
+        ...weather,
+        current: null,
+        forecast: [],
+        weatherEnabled: false,
+        preferenceError: true,
+        weatherDisabledReason: "preferences-error",
+        retryPreferences: changed,
+      };
+    if (
+      mode === "off" &&
+      localStorage.getItem("fixture-weather-enabled") !== "true"
+    )
+      return {
+        ...weather,
+        current: null,
+        forecast: [],
+        weatherEnabled: false,
+        weatherDisabledReason: "preference-off",
+        retryPreferences: changed,
+      };
+    return weather;
+  },
   useWeatherPreference: () => true,
   useBillingEntitlements: () => ({
     entitlements: {
@@ -141,9 +188,19 @@ export const special = {
     query({ theme: "dark", show_brands: true, weather_enabled: true }),
   useUpdateUserPreferences: () =>
     mutation(async (value) => {
-      localStorage.setItem("fixture-theme", value.theme);
-      document.documentElement.dataset.theme = value.theme;
-      document.documentElement.classList.toggle("dark", value.theme === "dark");
+      if (value.theme) {
+        localStorage.setItem("fixture-theme", value.theme);
+        document.documentElement.dataset.theme = value.theme;
+        document.documentElement.classList.toggle(
+          "dark",
+          value.theme === "dark",
+        );
+      }
+      if (value.weather_enabled !== undefined)
+        localStorage.setItem(
+          "fixture-weather-enabled",
+          String(value.weather_enabled),
+        );
       changed();
     }),
   useTheme: () => ({
@@ -244,24 +301,104 @@ export const special = {
     return { success: true };
   },
   markTodayAiOutfitSaved: async () => ({ success: true }),
-  useTrips: () => query([trip]),
-  useTripDetail: () =>
-    query({
-      ...trip,
-      days: [
-        {
-          id: "day-1",
-          trip_id: trip.id,
-          day_date: trip.start_date,
+  useTrips: () => {
+    useVersion();
+    return query(tripsList);
+  },
+  useTripDetail: (id) => {
+    useVersion();
+    const detail = () => {
+      const selected = tripsList.find((item) => item.id === id);
+      return selected
+        ? {
+            ...selected,
+            days: tripDays.filter((day) => day.trip_id === id),
+            pack_items: tripPackItems.filter((item) => item.trip_id === id),
+          }
+        : undefined;
+    };
+    return { ...query(detail()), refetch: async () => ({ data: detail() }) };
+  },
+  useCreateTrip: () =>
+    mutation(async (input) => {
+      const created = { ...input, id: crypto.randomUUID() };
+      tripsList.push(created);
+      for (
+        let cursor = new Date(input.start_date + "T12:00:00");
+        dateKey(cursor) <= input.end_date;
+        cursor.setDate(cursor.getDate() + 1)
+      )
+        tripDays.push({
+          id: crypto.randomUUID(),
+          trip_id: created.id,
+          day_date: dateKey(cursor),
           slot_number: 1,
-          slot_label: "Daytime",
-          outfit_id: outfits[0].id,
-          outfit: outfits[0],
-          items: outfits[0].items,
-          slots: [],
-        },
-      ],
-      pack_items: [],
+          items: [],
+        });
+      changed();
+      return created;
+    }),
+  useUpdateTrip: () =>
+    mutation(async (input) => {
+      const found = tripsList.find((item) => item.id === input.id);
+      Object.assign(found, input);
+      changed();
+      return found;
+    }),
+  useDeleteTrip: () =>
+    mutation(async (id) => {
+      const index = tripsList.findIndex((item) => item.id === id);
+      if (index >= 0) tripsList.splice(index, 1);
+      changed();
+    }),
+  useCreateTripDay: () =>
+    mutation(async (input) => {
+      const created = { ...input, id: crypto.randomUUID(), items: [] };
+      tripDays.push(created);
+      changed();
+      return created;
+    }),
+  useUpdateTripDay: () =>
+    mutation(async (input) => {
+      const found = tripDays.find((day) => day.id === input.id);
+      Object.assign(found, input, {
+        outfit: input.outfit_id
+          ? outfits.find((item) => item.id === input.outfit_id)
+          : null,
+        ...(input.item_ids
+          ? { items: items.filter((item) => input.item_ids.includes(item.id)) }
+          : {}),
+      });
+      changed();
+      return found;
+    }),
+  useDeleteTripDay: () =>
+    mutation(async (input) => {
+      const index = tripDays.findIndex((day) => day.id === input.tripDayId);
+      if (index >= 0) tripDays.splice(index, 1);
+      changed();
+    }),
+  useCreateTripPackItem: () =>
+    mutation(async (input) => {
+      const created = { ...input, id: crypto.randomUUID() };
+      tripPackItems.push(created);
+      changed();
+      return created;
+    }),
+  useUpdateTripPackItem: () =>
+    mutation(async (input) => {
+      const found = tripPackItems.find((item) => item.id === input.id);
+      Object.assign(found, input);
+      changed();
+      return found;
+    }),
+  useDeleteTripPackItem: () =>
+    mutation(async (input) => {
+      const index = tripPackItems.findIndex(
+        (item) => item.id === input.tripPackItemId,
+      );
+      if (index >= 0) tripPackItems.splice(index, 1);
+      changed();
     }),
   useFindTripOverlaps: () => mutation(async () => []),
   createClient,

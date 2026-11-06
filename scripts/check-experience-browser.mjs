@@ -453,6 +453,47 @@ try {
     fullPage: true,
   });
   check("The existing light palette works through the account theme control");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.evaluate(() => localStorage.removeItem("fixture-weather-enabled"));
+  await page.goto(base + "?screen=%2Ftoday&weather=off");
+  await page.getByText("Weather off", { exact: true }).waitFor();
+  assert.equal(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth > innerWidth + 1,
+    ),
+    false,
+  );
+  await page.getByRole("button", { name: "Open weather details" }).click();
+  await page
+    .getByRole("button", { name: "Enable weather", exact: true })
+    .click();
+  await page
+    .locator(".app-weather-trigger")
+    .getByText("58°F", { exact: true })
+    .waitFor();
+  await page.keyboard.press("Escape");
+  check(
+    "Weather remains in the phone header while off and can be enabled from its details",
+  );
+  await page.goto(base + "?screen=%2Ftoday&weather=loading");
+  await page.getByText("Weather…", { exact: true }).waitFor();
+  check("Weather remains in the header while preferences load");
+  await page.goto(base + "?screen=%2Ftoday&weather=error");
+  await page.getByText("Weather unavailable", { exact: true }).waitFor();
+  assert.equal(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth > innerWidth + 1,
+    ),
+    false,
+  );
+  await page.getByRole("button", { name: "Open weather details" }).click();
+  await page
+    .getByText("Your weather preferences could not be loaded.", { exact: true })
+    .waitFor();
+  await page.keyboard.press("Escape");
+  check(
+    "Weather preference errors stay visible and actionable without phone overflow",
+  );
   assert.deepEqual(errors, []);
   assert.deepEqual(external, []);
   check("No browser runtime errors or external requests during fixture checks");

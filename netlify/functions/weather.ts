@@ -1,4 +1,4 @@
-import { Handler, HandlerEvent } from '@netlify/functions';
+import type { Handler, HandlerEvent } from '@netlify/functions';
 
 interface OpenWeatherOneCallResponse {
   timezone?: string;
@@ -174,7 +174,7 @@ function checkRateLimit(clientIP: string): boolean {
   return true;
 }
 
-export const handler: Handler = async (event: HandlerEvent) => {
+export async function handleWeatherRequest(event: Pick<HandlerEvent, 'httpMethod' | 'headers' | 'queryStringParameters'>) {
   const requestOrigin = event.headers.origin;
   const headers = buildCorsHeaders(requestOrigin);
   const allowedOrigin = resolveAllowedOrigin(requestOrigin);
@@ -266,11 +266,11 @@ export const handler: Handler = async (event: HandlerEvent) => {
     // One Call API 3.0 provides current + hourly + daily + alerts in a single request
     const weatherUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial&exclude=minutely`;
     
-    const response = await fetch(weatherUrl);
+    const response = await fetch(weatherUrl, { signal: AbortSignal.timeout(10000) });
     
     if (!response.ok) {
       if (response.status === 401 || response.status === 403) {
-        console.error('Invalid API key or One Call API 3.0 not enabled. Key:', apiKey ? `${apiKey.substring(0, 8)}...` : 'undefined');
+        console.error('Weather provider authentication failed. Check the server API key and One Call subscription.');
         return {
           statusCode: 500,
           headers,
@@ -363,4 +363,6 @@ export const handler: Handler = async (event: HandlerEvent) => {
       }),
     };
   }
-};
+}
+
+export const handler: Handler = handleWeatherRequest;

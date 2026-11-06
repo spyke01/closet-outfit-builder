@@ -13,7 +13,7 @@ import { AnalyticsDashboard } from "@/components/analytics/analytics-dashboard";
 import { OnboardingExperience } from "@/components/onboarding/onboarding-experience";
 import { PlannerUpcoming } from "@/components/planner-upcoming";
 import { ExportShareClient } from "@/components/export/export-share-client";
-import { items, categories, user, analytics, outfits } from "./fixtures";
+import { items, categories, user, analytics, outfits, weather } from "./fixtures";
 import { useVersion, changed } from "./runtime";
 const originalFetch = window.fetch.bind(window);
 let lastReply = "";
@@ -86,6 +86,11 @@ window.fetch = async (input, options) => {
           .id,
         color: "blue",
       },
+    };
+  if (url.startsWith("/api/weather")) data = weather;
+  if (url.startsWith("/api/geocode"))
+    data = {
+      best: { label: "Chicago, IL", name: "Chicago", lat: 41.8, lon: -87.6 },
     };
   if (url.startsWith("/.netlify/"))
     data = { current: { temperature: 58 }, forecast: [] };

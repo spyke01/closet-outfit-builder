@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-06T16:41:29.452Z",
+  "checkedAt": "2026-11-06T22:12:38.799Z",
   "branch": "codex/signed-in-experience-and-ai-protections",
   "deployment": "Local source only; no hosted migrations or application/function deployment",
   "paidInferenceCalls": 0,
@@ -22,9 +22,9 @@
     {
       "command": "npm run test:run",
       "passed": true,
-      "testFilesPassed": 214,
+      "testFilesPassed": 218,
       "testFilesSkipped": 1,
-      "testsPassed": 2360,
+      "testsPassed": 2373,
       "testsSkipped": 4,
       "detail": "Existing integration skips retained"
     },
@@ -36,23 +36,27 @@
     {
       "command": "deno check --no-lock (three modified Edge entry points)",
       "passed": true,
-      "entryPoints": 3
+      "entryPoints": 3,
+      "checkedAt": "2026-11-06T16:41:29.452Z",
+      "followUp": "Unchanged Edge/database implementation; retained baseline evidence"
     },
     {
       "command": "node scripts/test-ai-database.mjs",
       "passed": true,
       "checks": 21,
-      "detail": "Real PostgreSQL 16 with minimal synthetic prerequisite schema; not a full hosted-schema migration rehearsal"
+      "detail": "Real PostgreSQL 16 with minimal synthetic prerequisite schema; not a full hosted-schema migration rehearsal",
+      "checkedAt": "2026-11-06T16:41:29.452Z",
+      "followUp": "Unchanged Edge/database implementation; retained baseline evidence"
     },
     {
       "command": "node scripts/check-experience-browser.mjs",
       "passed": true,
-      "checks": 31,
-      "detail": "Real components, synthetic I/O; desktop and ten 390px screens, keyboard dialogs, saved-state reloads, real PNG export with pixel check"
+      "checks": 34,
+      "detail": "Real components, synthetic I/O; desktop and ten 390px screens, header weather states, keyboard dialogs, saved-state reloads, real PNG export with pixel check"
     },
     {
       "command": "node scripts/check-client-secrets.mjs",
-      "checkedAt": "2026-11-06T16:40:44.128Z",
+      "checkedAt": "2026-11-06T22:12:13.458Z",
       "scope": "Exact private local values in built browser assets; not a production or historical exposure audit",
       "credentialsCompared": 9,
       "browserAssetsChecked": 131,
@@ -62,6 +66,18 @@
     {
       "command": "git diff --check",
       "passed": true
+    },
+    {
+      "command": "node scripts/check-trips-browser.mjs",
+      "passed": true,
+      "checks": 6,
+      "detail": "Real trip components with synthetic persisted I/O; desktop/phone, seven-piece looks, packing persistence, weather, date/deletion safeguards, and opt-in calendar syncing"
+    },
+    {
+      "command": "GET http://localhost:3000/api/weather?lat=invalid&lon=0",
+      "passed": true,
+      "status": 400,
+      "detail": "Final production build restarted locally on port 3000; invalid coordinates rejected before a provider request"
     }
   ],
   "limits": [

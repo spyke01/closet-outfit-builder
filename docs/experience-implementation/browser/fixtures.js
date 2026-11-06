@@ -131,6 +131,51 @@ export const trip = {
   created_at: "2026-11-01",
   updated_at: "2026-11-01",
 };
+export const tripsList = JSON.parse(
+  localStorage.getItem("experience-fixture-trips") || "null",
+) || [trip];
+const initialTripDays = Array.from({ length: 3 }, (_, index) => ({
+  id: uuid(110 + index),
+  trip_id: trip.id,
+  day_date: dateKey(new Date(now.getTime() + index * 86400000)),
+  slot_number: 1,
+  slot_label: "Daytime",
+  outfit_id: index < 2 ? outfits[index].id : null,
+  outfit: index < 2 ? outfits[index] : null,
+  items: index < 2 ? outfits[index].items : [],
+}));
+initialTripDays.push({
+  ...initialTripDays[0],
+  id: uuid(115),
+  slot_number: 2,
+  slot_label: "Evening",
+  outfit_id: outfits[2].id,
+  outfit: outfits[2],
+  items: outfits[2].items,
+});
+export const tripDays =
+  JSON.parse(localStorage.getItem("experience-fixture-trip-days") || "null") ||
+  initialTripDays;
+export const tripPackItems = JSON.parse(
+  localStorage.getItem("experience-fixture-trip-pack") || "null",
+) || [
+  {
+    id: uuid(120),
+    trip_id: trip.id,
+    wardrobe_item_id: items[0].id,
+    label: items[0].name,
+    source: "from_outfit",
+    packed: true,
+  },
+  {
+    id: uuid(121),
+    trip_id: trip.id,
+    wardrobe_item_id: null,
+    label: "Phone charger",
+    source: "manual",
+    packed: false,
+  },
+];
 export const weather = {
   current: {
     temperature: 58,

@@ -172,7 +172,7 @@ describe("Calendar and trip outfit item links", () => {
       ).toBeInTheDocument();
   });
 
-  it("renders all trip slot outfit items and links them to the outfit page", async () => {
+  it("shows the complete trip look with one saved-outfit link and individual clothing links", async () => {
     const { container } = renderWithQuery(
       <TripsPageClient wardrobeItems={outfitItems} />,
     );
@@ -184,7 +184,16 @@ describe("Calendar and trip outfit item links", () => {
       const links = container.querySelectorAll(
         `a[href^="/outfits/${outfitId}"]`,
       );
-      expect(links.length).toBe(outfitItems.length);
+      expect(links.length).toBe(1);
+      expect(
+        container.querySelectorAll(
+          ".trip-outfit-card .outfit-composition-piece",
+        ),
+      ).toHaveLength(outfitItems.length);
+      for (const item of outfitItems)
+        expect(
+          container.querySelector(`a[href='/wardrobe/items/${item.id}']`),
+        ).toBeInTheDocument();
     });
   });
 });

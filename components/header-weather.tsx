@@ -13,20 +13,32 @@ import {
 import { useAppWeather } from "@/lib/contexts/app-weather";
 import { AppDialog } from "@/components/ui/app-dialog";
 import { Button } from "@/components/ui/button";
+import { useUpdateUserPreferences } from "@/lib/hooks/use-user-preferences";
+import { setFeatureFlags } from "@/lib/utils/feature-flags";
 
 export function HeaderWeather() {
   const weather = useAppWeather();
   const [open, setOpen] = useState(false);
-  if (!weather.weatherEnabled) return null;
-  const {
-    current,
-    forecast,
-    loading,
-    error,
-    retry,
-    usingFallback,
-    locationLabel,
-  } = weather;
+  const updatePreferences = useUpdateUserPreferences();
+  const [enableError, setEnableError] = useState("");
+  const { error, retry, usingFallback } = weather;
+  const current = weather.weatherEnabled ? weather.current : null;
+  const forecast = weather.weatherEnabled ? weather.forecast : [];
+  const locationLabel = weather.weatherEnabled ? weather.locationLabel : null;
+  const loading =
+    weather.loading || weather.preferenceLoading || updatePreferences.isPending;
+  const disabled =
+    !weather.weatherEnabled && !loading && !weather.preferenceError;
+  const enableWeather = async () => {
+    setEnableError("");
+    try {
+      await updatePreferences.mutateAsync({ weather_enabled: true });
+      setFeatureFlags({ weather: true });
+      weather.retryPreferences?.();
+    } catch {
+      setEnableError("Could not enable weather. Please try again.");
+    }
+  };
   const today = forecast[0];
   const Icon = /rain|drizzle|storm/i.test(current?.condition || "")
     ? CloudRain
@@ -54,11 +66,17 @@ export function HeaderWeather() {
               ? `${Math.round(current.temperature)}°F`
               : loading
                 ? "Weather…"
-                : "Weather unavailable"}
+                : disabled
+                  ? "Weather off"
+                  : "Weather unavailable"}
           </strong>
           <span className="app-weather-summary">
-            {locationLabel?.name ||
-              (usingFallback ? "Estimated weather" : "Local weather")}
+            {disabled
+              ? "Click to enable"
+              : weather.preferenceError
+                ? "Click to retry"
+                : locationLabel?.name ||
+                  (usingFallback ? "Estimated weather" : "Local weather")}
             {today &&
               ` · H ${Math.round(today.temperature.high)}° / L ${Math.round(today.temperature.low)}°`}
             {rain !== undefined && ` · ${percent(rain)}% rain`}
@@ -72,9 +90,29 @@ export function HeaderWeather() {
         title="Your weather"
       >
         <p className="text-sm text-muted-foreground">
-          {locationLabel?.label || "Your current location"}
+          {disabled
+            ? "Turn on local weather to see conditions and plan what to wear."
+            : weather.preferenceError
+              ? "Your weather preferences could not be loaded."
+              : loading && !current
+                ? "Loading your local weather…"
+                : locationLabel?.label || "Your current location"}
           {usingFallback && " · Estimated weather"}
         </p>
+        {disabled && (
+          <Button
+            className="mt-4"
+            onClick={() => void enableWeather()}
+            disabled={updatePreferences.isPending}
+          >
+            Enable weather
+          </Button>
+        )}
+        {enableError && (
+          <p role="alert" className="mt-3 text-sm text-destructive">
+            {enableError}
+          </p>
+        )}
         {current && (
           <div className="my-5 flex items-center gap-4">
             <Icon size={52} className="text-primary" />
@@ -114,7 +152,7 @@ export function HeaderWeather() {
             </div>
           </dl>
         )}
-        {error && (
+        {weather.weatherEnabled && error && (
           <p role="status" className="my-4 text-sm text-muted-foreground">
             {error.error}
           </p>
@@ -145,10 +183,18 @@ export function HeaderWeather() {
           ))}
         </div>
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-          <Button variant="outline" disabled={loading} onClick={retry}>
-            <RefreshCw size={16} />
-            Refresh weather
-          </Button>
+          {!disabled && (
+            <Button
+              variant="outline"
+              disabled={loading}
+              onClick={
+                weather.preferenceError ? weather.retryPreferences : retry
+              }
+            >
+              <RefreshCw size={16} />
+              Refresh weather
+            </Button>
+          )}
           <Link
             className="text-sm text-primary underline"
             href="/settings"

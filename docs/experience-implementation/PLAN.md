@@ -42,3 +42,11 @@ The adversarial checks caught and corrected a mobile header overflow, older AI w
 Validation: 2,360 passing tests with four existing skips; strict lint with zero warnings; type checking; production build; three Deno Edge entry-point checks; 21 PostgreSQL concurrency/ownership/rollback checks; and 31 browser checks across desktop and ten mobile screens. The exact local private credential scan found no matches in the built browser assets.
 
 Use [HANDOFF.md](./HANDOFF.md) for the implementation summary, deployment order, seven migrations, configuration, staging acceptance steps, operational limits, and rollback instructions. Machine-readable results and screenshots are in this directory. Production, paid-provider quality/latency, and a full hosted-schema migration rehearsal remain deployment acceptance checks, not claimed local results.
+
+## Follow-up: local weather and Trips simplification
+
+The local testing feedback adds two connected changes: keep weather visible and actionable in the shared header, and replace Trips' stacked planner with an overview, weather/date strip, one selected day's looks, and a separate packing workspace.
+
+The follow-up adversarial pass requires preserving multiple looks per date, every clothing piece, packed/manual items, existing saved outfits, and calendar-sync options. It also requires confirmation before deleting a trip/look or shortening dates that remove looks, accurate forecast versus unavailable/past-date labeling, no inferred 60°/70° weather presented as a forecast, and no AI requests or database writes merely to render the packing list. Generation remains the existing local outfit algorithm; calendar syncing becomes an explicit option. Test both workspaces on phones and verify saves/reloads with synthetic I/O before rebuilding the user's local production preview.
+
+The follow-up is complete locally. The shared browser suite passes 34 checks; the dedicated Trips suite passes six checks for selection, saved outfits, packed-state persistence, multi-look days, destructive-action safeguards, and mobile layouts. All 2,373 tests pass with four existing skips. Strict lint, types, and the production build pass. Screenshots were reviewed for desktop and phone layouts. The local weather route was checked without calling its provider. No additional migrations or hosted changes were needed.
