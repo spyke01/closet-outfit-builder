@@ -9,5 +9,21 @@
   "supabaseMigration": "20261107050000_complimentary_membership_access.sql applied to the linked project",
   "permissionChecks": "Authenticated self-grant denied; other-account reads hidden; web and SQL access agree for active Plus/Pro, revoked, and expired grants. Temporary accounts removed.",
   "browser": "Free and complimentary Pro flows passed at 320, 390, 768, and 1440 px. Weather uses a deterministic layout fixture; membership, analytics, clothing, saved outfits, and history use real isolated records. No AI inference, email, or Stripe writes. Account removed.",
-  "deployment": "Ready for hosted build and verification"
+  "deployment": {
+    "state": "ready",
+    "site": "https://www.myaioutfit.com",
+    "functionalCommit": "d6c5929bacf9853588440b9961332bb7335ad6b9",
+    "deployId": "6aeeb937f9012b875f0295bf",
+    "publishedAt": "2026-11-07T05:39:06.858Z",
+    "hostedBrowserPassed": true,
+    "secretScanMatches": 0,
+    "enhancedSecretScanMatches": 0
+  },
+  "ownerRestoration": {
+    "effectivePlan": "pro",
+    "accessSource": "complimentary",
+    "billingRecordUnchanged": true,
+    "databaseAndWebAccessMatch": true
+  },
+  "supabaseUpToDate": true
 }

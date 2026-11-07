@@ -33,6 +33,8 @@ try{
  await page.getByLabel('Email',{exact:true}).fill(email);await page.getByLabel('Password',{exact:true}).fill(password);
  await page.getByRole('button',{name:/^Login$|^Log in$|^Sign in$/i}).click();await page.waitForURL(u=>!u.pathname.includes('/auth/login'),{waitUntil:'domcontentloaded'});
  await page.goto(base+'/onboarding',{waitUntil:'domcontentloaded'});
+ await page.getByRole('heading',{name:'Your first outfit starts with a few pieces'}).waitFor();
+ await page.waitForTimeout(600);
  for(const name of ['I own this top','I own this bottom','I own this pair of shoes'])await page.getByRole('checkbox',{name,exact:true}).check();
  await page.getByRole('button',{name:'Add these pieces & see my outfit'}).click();await page.waitForURL(u=>/^\/today\/?$/.test(u.pathname),{waitUntil:'domcontentloaded'});
  const items=ensure(await admin.from('wardrobe_items').select('*').eq('user_id',userId).order('created_at'),'read test pieces');assert.equal(items.length,3);

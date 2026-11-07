@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-11-07T05:44:13.781Z",
+  "account": "Designated owner/admin",
+  "previousEffectivePlan": "free",
+  "effectivePlan": "pro",
+  "accessSource": "complimentary",
+  "renewalAt": null,
+  "billingRecordUnchanged": true,
+  "stripeWritesPerformed": false,
+  "databaseAndWebAccessMatch": true,
+  "passed": true
+}

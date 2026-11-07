@@ -10,10 +10,12 @@ The weather popup uses aligned daily rows, rain chances, and temperature ranges.
 
 An explicit service-managed grant supplies membership access separately from Stripe subscription records. It does not create a Stripe subscription or billing charge. Grants can expire or be revoked. Ordinary members cannot write grants, and an admin role alone does not confer a paid tier. Node entitlements and the database plan resolver use the same highest-valid-plan rule. Existing monetary AI limits remain in force.
 
-The additive migration was applied before deploying code that reads the table. The rollout restores the designated owner/admin account only after hosted verification. No customer subscription, payment, invoice, or Stripe status needs alteration.
+The additive migration was applied before deploying code that reads the table. The designated owner/admin account was restored to complimentary Pro after hosted verification. Node and SQL both resolve Pro, and its existing billing record is unchanged. No customer subscription, payment, invoice, or Stripe status needs alteration.
 
 ## Verification
 
 2,432 automated tests passed, with four existing skips. Production build, TypeScript, strict lint, and private-value scans passed. Real hosted database tests verified self-upgrade denial, account isolation, expiry, revocation, and matching Node/SQL plans. Browser checks verified Free previews, benefit prompts, close-button centering, responsive forecasts, outfit editing, and complimentary Pro access surviving routine Stripe synchronization. They also verified that the test created no AI jobs. All temporary accounts were removed.
 
 Weather responses are deterministic fixtures for layout validation. Other browser data and membership checks use the real application in an isolated account. Screenshots show the final light/dark presentation. Run `node scripts/check-mobile-access-browser.mjs` against a local production build; set `PLAYWRIGHT_MODULE` if needed. `MOBILE_TEST_BASE=https://www.myaioutfit.com` selects the verified production domain. The runner never submits an AI request or starts checkout.
+
+The functional release is deployed and passed the same Free/Pro acceptance checks on the production site. The Supabase migration is fully applied with no pending migrations. See production-release.json, hosted-browser-validation.json, and owner-access-restoration.json.
