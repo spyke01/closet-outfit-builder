@@ -1,0 +1,96 @@
+{
+  "checkedAt": "2026-11-07T01:03:25.177Z",
+  "base": "https://www.myaioutfit.com",
+  "scope": "Real hosted app and Supabase using isolated temporary confirmed accounts, owned synthetic data, and no email or Stripe calls. One completed image generation/cleanup and one completed chat inference; initial chat attempt explicitly rejected by upstream rate limit.",
+  "passed": true,
+  "checks": [
+    {
+      "name": "Real login and quick start save exactly three confirmed pieces",
+      "passed": true
+    },
+    {
+      "name": "Onboarding replay creates no duplicate pieces",
+      "passed": true
+    },
+    {
+      "name": "First-use preferences and shared weather header work against hosted schema",
+      "passed": true
+    },
+    {
+      "name": "Cross-origin writes are rejected",
+      "passed": true
+    },
+    {
+      "name": "Authenticated clients cannot call privileged AI reservation directly",
+      "passed": true
+    },
+    {
+      "name": "Authenticated clients cannot forge usage counters",
+      "passed": true
+    },
+    {
+      "name": "Free-account direct image-generation bypass is denied",
+      "passed": true
+    },
+    {
+      "name": "Original upload works; private photo reads require the owner session",
+      "passed": true
+    },
+    {
+      "name": "Hosted calendar RPC preserves all pieces when editing notes",
+      "passed": true
+    },
+    {
+      "name": "Hosted /today renders with shared weather access",
+      "passed": true
+    },
+    {
+      "name": "Hosted /wardrobe renders with shared weather access",
+      "passed": true
+    },
+    {
+      "name": "Hosted /outfits renders with shared weather access",
+      "passed": true
+    },
+    {
+      "name": "Hosted /calendar renders with shared weather access",
+      "passed": true
+    },
+    {
+      "name": "Hosted /calendar/trips renders with shared weather access",
+      "passed": true
+    },
+    {
+      "name": "Hosted /analytics renders with shared weather access",
+      "passed": true
+    },
+    {
+      "name": "Hosted trip workspace fits a phone",
+      "passed": true
+    },
+    {
+      "name": "Deployed Edge worker generates, cleans, persists, and resumes a bounded Klein image job",
+      "passed": true
+    },
+    {
+      "name": "Temporary account and owned test data removed",
+      "passed": true
+    },
+    {
+      "name": "Hosted Sebastian completes through the funded provider; replay creates no second inference",
+      "passed": true
+    },
+    {
+      "name": "No browser runtime errors during hosted chat login",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "resolvedAttempts": [
+    {
+      "code": "UPSTREAM_RATE_LIMIT",
+      "result": "Initial chat POST rejected before a provider handle; separate chat-only follow-up completed and its replay created no additional job."
+    }
+  ],
+  "cleanup": "Temporary users and owned storage files removed. Anonymous spending reservations retained by design."
+}

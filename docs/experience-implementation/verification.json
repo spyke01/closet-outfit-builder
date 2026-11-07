@@ -1,8 +1,8 @@
 {
-  "checkedAt": "2026-11-06T22:12:38.799Z",
+  "checkedAt": "2026-11-07T01:05:57.635Z",
   "branch": "codex/signed-in-experience-and-ai-protections",
-  "deployment": "Local source only; no hosted migrations or application/function deployment",
-  "paidInferenceCalls": 0,
+  "deployment": "Production Netlify site published; all eight Supabase migrations and three protected Edge functions deployed. Twenty hosted acceptance checks passed.",
+  "paidInferenceCalls": null,
   "checks": [
     {
       "command": "npm run verify:env",
@@ -11,22 +11,25 @@
     },
     {
       "command": "npm run typecheck",
-      "passed": true
+      "passed": true,
+      "checkedAt": "2026-11-07T01:05:57.635Z"
     },
     {
       "command": "npm run lint:strict",
       "passed": true,
       "errors": 0,
-      "warnings": 0
+      "warnings": 0,
+      "checkedAt": "2026-11-07T01:05:57.635Z"
     },
     {
       "command": "npm run test:run",
       "passed": true,
-      "testFilesPassed": 218,
+      "testFilesPassed": 221,
       "testFilesSkipped": 1,
-      "testsPassed": 2373,
+      "testsPassed": 2380,
       "testsSkipped": 4,
-      "detail": "Existing integration skips retained"
+      "detail": "Existing integration skips retained",
+      "checkedAt": "2026-11-07T01:05:57.635Z"
     },
     {
       "command": "npm run build",
@@ -37,16 +40,16 @@
       "command": "deno check --no-lock (three modified Edge entry points)",
       "passed": true,
       "entryPoints": 3,
-      "checkedAt": "2026-11-06T16:41:29.452Z",
-      "followUp": "Unchanged Edge/database implementation; retained baseline evidence"
+      "checkedAt": "2026-11-07T01:05:57.635Z",
+      "followUp": "All three entry points rechecked after correcting OPTIONS dispatch."
     },
     {
       "command": "node scripts/test-ai-database.mjs",
       "passed": true,
-      "checks": 21,
-      "detail": "Real PostgreSQL 16 with minimal synthetic prerequisite schema; not a full hosted-schema migration rehearsal",
-      "checkedAt": "2026-11-06T16:41:29.452Z",
-      "followUp": "Unchanged Edge/database implementation; retained baseline evidence"
+      "checks": 22,
+      "detail": "PostgreSQL 16 fixture with hosted auth permissions, eight release migrations, concurrency/rollback checks, and service-only onboarding row lock.",
+      "checkedAt": "2026-11-07T00:54:52.620Z",
+      "followUp": "Hosted migration history matches all eight release migrations."
     },
     {
       "command": "node scripts/check-experience-browser.mjs",
@@ -56,16 +59,17 @@
     },
     {
       "command": "node scripts/check-client-secrets.mjs",
-      "checkedAt": "2026-11-06T22:12:13.458Z",
+      "checkedAt": "2026-11-07T01:05:05.010Z",
       "scope": "Exact private local values in built browser assets; not a production or historical exposure audit",
       "credentialsCompared": 9,
-      "browserAssetsChecked": 131,
+      "browserAssetsChecked": 136,
       "matchingFiles": [],
       "passed": true
     },
     {
       "command": "git diff --check",
-      "passed": true
+      "passed": true,
+      "checkedAt": "2026-11-07T01:05:57.635Z"
     },
     {
       "command": "node scripts/check-trips-browser.mjs",
@@ -78,12 +82,37 @@
       "passed": true,
       "status": 400,
       "detail": "Final production build restarted locally on port 3000; invalid coordinates rejected before a provider request"
+    },
+    {
+      "command": "npm audit --omit=dev",
+      "passed": true,
+      "productionVulnerabilities": 0,
+      "detail": "Compatible lockfile fixes; Next.js 16.4.5, Zod 4.6.7, sharp 0.35.5. Development-only toolchain alerts remain."
+    },
+    {
+      "command": "Hosted Supabase migration rehearsal",
+      "passed": true,
+      "migrations": 7,
+      "detail": "Initial seven release migrations rehearsed against the real schema in a transaction ending in ROLLBACK before actual push; eighth permission fix verified with PostgreSQL checks and hosted acceptance. Schema/data backups retained locally."
+    },
+    {
+      "command": "Hosted production acceptance",
+      "passed": true,
+      "checks": 20,
+      "evidence": "production-validation-2026-11-06.json"
+    },
+    {
+      "command": "Image Edge entry-point regressions",
+      "passed": true,
+      "checks": 3,
+      "detail": "Real entry points: OPTIONS responds; POST authenticates; retired handler returns 410."
     }
   ],
   "limits": [
-    "No real-account login or native-phone camera acceptance test",
-    "No paid model quality, latency, or invoice benchmark",
-    "No production function/policy inspection or provider-account settings changes",
+    "Native phone camera/sharing and actual-garment photo accuracy remain user acceptance",
+    "Synthetic comparison has one sample per model per prompt; costs are estimates, not invoice reconciliation",
+    "Provider account spending settings and Pro-specific billing flows were not inspected or changed",
     "Existing public clothing image URLs have not been migrated to private storage"
-  ]
+  ],
+  "paidInferenceDetail": "Live comparison: 32 image generations and 32 cleanup calls. Separate tiny chat readiness probe. Hosted acceptance: one completed image generation/cleanup and one completed chat inference; initial chat rate-limit rejection verified through separate chat-only follow-up."
 }

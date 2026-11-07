@@ -27,9 +27,9 @@ Subscription prices, paid monthly allowances, existing main URLs, ownership chec
 All active billable entry points reserve an operation before calling a provider. The shared PostgreSQL job ledger owns metering, idempotency, budgets, and trusted handles. Authenticated clients cannot reset counters, call the reservation RPC, or forge trusted assistant/job records. Direct Edge calls enforce the same ownership and paid-plan rules.
 
 - The source default for text/vision is direct OpenAI `gpt-6-luna`. The explicit allowlist also permits `gpt-6.1-terra`. There is no automatic escalation to a more expensive model.
-- Responses use no tools, reasoning effort `none`, bounded prompts/history, and 1,024 output tokens by default, with a configuration maximum of 2,048. Background responses provide a resumable handle; the application attempts deletion after persisting a terminal result.
-- Replicate text routing remains an explicit rollback option. A polling failure reuses the known prediction; it does not restart a paid POST. Capacity/account-limit failures do not trigger uncontrolled provider switching.
-- Wardrobe illustration uses one Imagen 4 output followed by background removal. Photo cleanup uses `851-labs/background-remover`. The example configuration pins its version. Each image phase records its model, version, handle, and completion state. Replicate predictions have a provider-side 60-second cancellation deadline.
+- The optional direct OpenAI route uses Responses with no tools, reasoning effort `none`, bounded prompts/history, and 1,024 output tokens by default, with a configuration maximum of 2,048. Background responses provide a resumable handle; the application attempts deletion after persisting a terminal result.
+- Production text uses the existing funded Replicate `openai/gpt-5-mini` route. Its configured fallback is the same model. A polling failure reuses the known prediction; it does not restart a paid POST. Capacity/account-limit failures do not trigger uncontrolled provider switching.
+- Wardrobe illustration uses one FLUX.2 Klein 4B output followed by background removal. Imagen 4 inference is discontinued; successful catalog reads did not establish availability. Photo cleanup uses `851-labs/background-remover`. The example configuration pins its version. Each image phase records its model, version, handle, and completion state. Replicate predictions have a provider-side 60-second cancellation deadline.
 - Courtesy regeneration is limited to one eligible retry of an original successful wardrobe-image job within five minutes. It still consumes a spending reservation and burst allowance. Pending work resumes its original prediction.
 - New AI reservations stop at the configured daily/monthly application and per-user budgets. Failed or uncertain provider attempts keep their reservation. A browser timeout does not prove that a charge was avoided.
 - Vision accepts validated, owned storage images and short-lived URLs. It rejects unrelated hosts, another user's files, invalid formats, oversized files, and excessive dimensions. Provider outputs must come from the approved delivery host and pass bounded download checks.
@@ -45,17 +45,19 @@ These controls cover calls made through this application. Existing provider char
 
 The new job ledger retains server-side result data to support retry/recovery. Account deletion scrubs user-associated result text, image references, handles, and fingerprints while retaining anonymous spending totals. The existing `cleanup_assistant_data` helper does not schedule itself or prune the new ledger. This release does not add a new timed retention policy; review administrative retention together with provider/account retention before promising a specific expiry period.
 
-Model compatibility was checked through official documentation and a read-only model metadata request. Provider failure/retry behavior is covered with mocks. Real wardrobe-photo accuracy, first-response latency, and billed cost still need a small staging evaluation. No benchmark or percentage savings claim is made.
+The live synthetic comparison evaluated 32 images across four models, with the same prompt builder and background remover. The hosted acceptance also completed one image job and one chat job. The comparison records observed timings and estimated charges; it is not a statistical latency study or an invoice reconciliation. Real wardrobe-photo accuracy and native phone capture still need user acceptance.
 
-Sources: [OpenAI Luna model](https://developers.openai.com/api/docs/models/gpt-6-luna), [OpenAI background responses](https://developers.openai.com/api/docs/guides/background), [OpenAI spending controls](https://developers.openai.com/api/docs/guides/spend-limits), [Replicate prediction deadlines](https://replicate.com/docs/topics/predictions/create-a-prediction), [Imagen 4](https://replicate.com/google/imagen-4), [background remover](https://replicate.com/851-labs/background-remover).
+Sources: [OpenAI Luna model](https://developers.openai.com/api/docs/models/gpt-6-luna), [OpenAI background responses](https://developers.openai.com/api/docs/guides/background), [OpenAI spending controls](https://developers.openai.com/api/docs/guides/spend-limits), [Replicate prediction deadlines](https://replicate.com/docs/topics/predictions/create-a-prediction), [FLUX.2 Klein 4B](https://replicate.com/black-forest-labs/flux-2-klein-4b), [background remover](https://replicate.com/851-labs/background-remover).
 
 ## Local verification and preview
 
 The implementation plan and initial adversarial pass are in [PLAN.md](./PLAN.md). Machine-readable evidence is beside this file:
 
 - `verification.json`: final build, type, lint, test, and Edge-check results.
-- `database-validation.json`: 21 real PostgreSQL checks, including first-row races, duplicate requests, budget caps, grants, storage restrictions, account deletion, atomic onboarding, atomic calendar saves, injected rollback failures, and stale image workers.
+- `database-validation.json`: 22 real PostgreSQL checks, including first-row races, duplicate requests, budget caps, grants, storage restrictions, account deletion, atomic onboarding, atomic calendar saves, injected rollback failures, and stale image workers.
 - `browser-validation.json`: browser workflow checks and responsive coverage using real components with explicit synthetic I/O.
+- `production-validation-2026-11-06.json`: 20 hosted checks covering login, quick start, privacy, plan gates, calendar, page rendering, phone trips, completed image/chat jobs, request replay, and test-data removal. An initial upstream chat rate limit passed on a separate chat-only follow-up.
+- `dependency-validation-2026-11-06.json`: compatible security patches and zero production dependency audit findings; development-tool alerts remain.
 - `client-secret-validation.json`: exact local private credential values compared with built browser assets; counts and matching file names only.
 - `browser-evidence/`: desktop/mobile screenshots and the actual PNG produced by the export component.
 
@@ -90,7 +92,7 @@ node scripts/test-ai-database.mjs
 docker stop closet-experience-20261106-ada4
 ```
 
-Wait for PostgreSQL to report ready before running the tests. The runner recreates only `closet_ai_tests` inside that labeled container. This repository lacks a complete baseline Supabase schema/configuration, so the test harness supplies minimal prerequisite tables and roles. It validates the seven new migrations and their invariants; it is not a rehearsal against a full production database clone.
+Wait for PostgreSQL to report ready before running the tests. The runner recreates only `closet_ai_tests` inside that labeled container. This repository lacks a complete baseline Supabase schema/configuration, so the test harness supplies minimal prerequisite tables and roles. It validates the eight new migrations and their invariants. It reproduces hosted auth permissions: `service_role` cannot select `auth.users` directly. The service-only atomic onboarding function locks the auth row through its owner, with a fixed search path and no execution grant for client roles. Separately, the first seven migrations were rehearsed against the hosted schema in a transaction ending in ROLLBACK before deployment.
 
 ## Deployment order
 
@@ -99,7 +101,7 @@ Use a staging Supabase project and a matching application deployment first. The 
 1. **Back up and inventory the target.** Record its migration history, plan catalog, function deployments, storage policies, and provider configuration. Check for existing custom tables/policies before applying the new migrations. Keep the current build available.
 2. **Prepare runtime configuration.** Put server credentials in the application runtime and Supabase function secrets, never in `NEXT_PUBLIC_` variables. Set `AI_ENABLED=false` in both application and Edge environments for the cutover. Confirm provider-side spending controls before enabling inference.
 3. **Replace the Edge entry points during a short, coordinated intake/AI maintenance window.** Deploy `process-image`, `generate-wardrobe-item-image`, and the retired `generate-outfit-image` stub from this branch. Before the database update, new handlers fail closed if the reservation schema is absent. Uploads and AI may be unavailable until the application cutover finishes. This also removes the older direct-function bypass. Preserve required gateway JWT verification and the handlers' own `getUser` checks.
-4. **Apply these seven migrations in timestamp order:**
+4. **Apply these eight migrations in timestamp order:**
 
    ```text
    20261106090000_authoritative_ai_jobs.sql
@@ -109,6 +111,7 @@ Use a staging Supabase project and a matching application deployment first. The 
    20261106094000_ai_audit_and_policy_alignment.sql
    20261106095000_atomic_calendar_entries.sql
    20261106100000_preserve_newer_clothing_choices.sql
+   20261106101000_onboarding_auth_lock_access.sql
    ```
 
    Use the project's established migration process and the verified target project. Do not run the fixture setup SQL against staging or production.
@@ -123,7 +126,7 @@ Use a staging Supabase project and a matching application deployment first. The 
 | -------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------- |
 | Supabase URL and publishable key | Existing `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase runtime values                                               |
 | Privileged database access       | `SUPABASE_SERVICE_ROLE_KEY`                                                 | `SUPABASE_SERVICE_ROLE_KEY` supplied by Supabase                      |
-| Direct text/vision               | `AI_TEXT_PROVIDER=openai`, `OPENAI_TEXT_MODEL=gpt-6-luna`, `OPENAI_API_KEY` | Not used by image workers                                             |
+| Production text/vision           | `AI_TEXT_PROVIDER=replicate`, `REPLICATE_DEFAULT_MODEL=openai/gpt-5-mini`, same fallback, `REPLICATE_API_TOKEN` | Not used by image workers                                             |
 | Replicate image work             | `REPLICATE_API_TOKEN` for compatible server routing/configuration           | `REPLICATE_API_TOKEN`, `REPLICATE_BG_MODEL`, `REPLICATE_BG_VERSION`   |
 | Spending and kill switch         | All `AI_*` policy values from `.env.example`                                | `AI_ENABLED`, daily/monthly/user budgets, max in-flight policy values |
 | Browser origins                  | Existing application URL/origin configuration                               | `PRODUCTION_URL` and any applicable preview origin                    |
@@ -162,7 +165,7 @@ Forecast cards show the selected destination/date, high/low, rain, and a clothin
 
 Trip creation and details use dialogs. Deletion requires confirmation. Shortening dates identifies planned looks that would be removed and requires a checkbox before saving. Cancel discards detail edits. Existing looks are kept by default when planning; calendar syncing is an explicit option. New combinations still use the existing local algorithm and consume no AI credits. This follow-up needs no additional database migration.
 
-The follow-up browser suite is `scripts/check-trips-browser.mjs`; its six checks and four screenshots are recorded in `trips-browser-validation.json` and `browser-evidence/`. The shared suite now has 34 checks, including phone header off/loading/error states. The full test suite has 2,373 passing tests and four existing skips. Types, strict lint, and the production build pass. These workflow checks use real components with synthetic persisted I/O; actual-account acceptance remains the user's local/staging test.
+The follow-up browser suite is `scripts/check-trips-browser.mjs`; its six checks and four screenshots are recorded in `trips-browser-validation.json` and `browser-evidence/`. The shared suite now has 34 checks, including phone header off/loading/error states. The final full test suite has 2,380 passing tests and four existing skips. Types, strict lint, and the production build pass. These repeatable workflow checks use real components with synthetic persisted I/O. The subsequent hosted acceptance used isolated temporary confirmed accounts; personal wardrobe and native-phone testing remain user acceptance.
 
 ## November 6 model evaluation and release
 
@@ -174,4 +177,12 @@ The production release preserves the existing Replicate text provider using `ope
 
 Release preparation saved schema/data and deployed-function backups in the ignored, restricted `tmp/` directory, recorded the prior Netlify deployment, and rehearsed all seven migrations against the hosted schema in a transaction ending in ROLLBACK. A first-use preferences fix removes an obsolete `account_tier` column from database writes; the schema parser still supplies its legacy UI default. The calendar link test now uses a local date to match the page after UTC midnight.
 
-Deployment completion and hosted acceptance evidence will be recorded separately when the release checks finish. No provider billing balance was changed.
+The production site is live at [My AI Outfit](https://www.myaioutfit.com). Application/Edge behavior was published from commit `8202cac`; the final release-record commit changes only documentation and test cleanup. Netlify deployment `6aee78823d869c2ebb644c62` reached `ready` on November 6 at 7:02 p.m. Central. Exact-value and enhanced secret scans reported zero matches. All eight migrations match hosted history, and the three updated functions are active with gateway JWT verification retained. AI is enabled with the shared budget policy above.
+
+Hosted acceptance found and corrected two defects before handoff: the atomic onboarding function needed narrowly granted owner access to lock `auth.users`, and the three new Edge entry points needed to dispatch only OPTIONS requests to the existing preflight helper. Real entry-point regression tests verify authenticated POST dispatch and the retired endpoint's HTTP 410 response. Hosted testing then verified original uploads/private reads and a complete generated image/cleanup job.
+
+The 20 hosted checks passed across isolated temporary accounts. The first chat attempt was explicitly rejected by Replicate's rate limit; after waiting, a separate chat-only check succeeded and replay created no second inference. No accepted image generation was repeated for that follow-up. All temporary account records and owned storage objects were removed; anonymous budget reservations remain by design. No email, Stripe transaction, or provider billing-balance change occurred.
+
+The user approved exactly five public configuration names for Netlify's `SECRETS_SCAN_OMIT_KEYS`: `AI_TEXT_PROVIDER`, `AI_MAX_OUTPUT_TOKENS`, `REPLICATE_DEFAULT_MODEL`, `REPLICATE_FALLBACK_MODEL`, and the existing legacy name `REPLICATE_BG_MODELREPLICATE_BG_MODEL`. The plan required Netlify's default build/function/runtime/post-processing scopes for this nonsecret list. API keys, database credentials, webhook secrets, and enhanced secret scanning remain covered. This narrow exception resolved false matches on model IDs, the provider name, and the output-token count.
+
+Native phone capture/sharing, actual garment matching, Pro-specific billing flows, historical public-photo migration, provider invoice reconciliation, and provider account spending settings were not verified by this release. Production dependencies have zero audit findings; development-only toolchain alerts remain documented in the dependency evidence.

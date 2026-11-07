@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const runtime = vi.hoisted(() => ({
   handler: undefined as
@@ -19,6 +19,7 @@ beforeEach(() => {
   vi.resetModules();
   vi.stubGlobal("Deno", { env: { get: () => "synthetic-config" } });
 });
+afterEach(() => vi.unstubAllGlobals());
 
 describe("deployed image entry points", () => {
   for (const endpoint of ["process-image", "generate-wardrobe-item-image"]) {

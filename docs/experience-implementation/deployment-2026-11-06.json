@@ -1,0 +1,71 @@
+{
+  "checkedAt": "2026-11-07T01:05:57.635Z",
+  "netlify": {
+    "id": "6aee78823d869c2ebb644c62",
+    "commit": "8202cacd84a11f62e96b5a9cfb221034b79a7f1d",
+    "publishedAt": "2026-11-07T01:02:48.430Z",
+    "url": "https://www.myaioutfit.com",
+    "siteId": "4055f3b0-4325-4c2d-8698-c73c64e2a3fe",
+    "state": "ready",
+    "scan": {
+      "scannedFilesCount": 2531,
+      "secretsScanMatches": [],
+      "enhancedSecretsScanMatches": []
+    }
+  },
+  "supabase": {
+    "projectRef": "ahjwzpyammiqelloazvn",
+    "releaseMigrations": [
+      "20261106090000",
+      "20261106091000",
+      "20261106092000",
+      "20261106093000",
+      "20261106094000",
+      "20261106095000",
+      "20261106100000",
+      "20261106101000"
+    ],
+    "functions": [
+      {
+        "name": "process-image",
+        "status": "ACTIVE",
+        "version": 29,
+        "verifyJwt": true,
+        "hash": "6844ebf2b644580a483a8b27958ea0086feb78f96c38b2e792683af03b417446"
+      },
+      {
+        "name": "generate-outfit-image",
+        "status": "ACTIVE",
+        "version": 7,
+        "verifyJwt": true,
+        "hash": "7e9479247bb3729dd81142858221c4e3cc294f76a969bdfe0b4b1e15a7a15270"
+      },
+      {
+        "name": "generate-wardrobe-item-image",
+        "status": "ACTIVE",
+        "version": 16,
+        "verifyJwt": true,
+        "hash": "410d5e4604e4707f1523c8ad2a55a01922fc05cb740dcee28ade849ce25340af"
+      }
+    ]
+  },
+  "scanExceptions": {
+    "approved": true,
+    "keys": [
+      "AI_TEXT_PROVIDER",
+      "AI_MAX_OUTPUT_TOKENS",
+      "REPLICATE_DEFAULT_MODEL",
+      "REPLICATE_FALLBACK_MODEL",
+      "REPLICATE_BG_MODELREPLICATE_BG_MODEL"
+    ],
+    "scopes": [
+      "builds",
+      "functions",
+      "runtime",
+      "post_processing"
+    ],
+    "enhancedScanningRetained": true
+  },
+  "billingBalanceChanged": false,
+  "backups": "Restricted, ignored local tmp files; no production data committed."
+}
