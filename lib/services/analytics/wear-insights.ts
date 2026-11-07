@@ -1,6 +1,9 @@
 export interface InsightItem {
   id: string;
   name: string;
+  color?: string | null;
+  brand?: string | null;
+  material?: string | null;
   imageUrl: string | null;
   category: string;
   active: boolean;

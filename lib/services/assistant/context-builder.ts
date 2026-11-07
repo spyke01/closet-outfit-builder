@@ -125,7 +125,7 @@ export async function buildAssistantContextPack(
 
   const hintItemId = request.contextHints?.focusItemId;
   const wardrobeColumns =
-    "id, name, color, season, formality_score, category:categories(name)";
+    "id, name, color, brand, material, season, formality_score, category:categories(name)";
   const [
     wardrobeResult,
     outfitResult,
@@ -194,6 +194,8 @@ export async function buildAssistantContextPack(
           (item.color as string | null | undefined) || null,
         ) || null,
       season: (item.season as string[] | null | undefined) || null,
+      brand: sanitizeContextValue((item.brand as string | null | undefined) || null) || null,
+      material: sanitizeContextValue((item.material as string | null | undefined) || null) || null,
       formalityScore:
         (item.formality_score as number | null | undefined) || null,
     }),
@@ -280,6 +282,8 @@ export async function buildAssistantContextPack(
 }
 
 export function summarizeContextForPrompt(pack: AssistantContextPack): string {
+  const focus = pack.hints?.focusItemId ? pack.wardrobe.find((item) => item.id === pack.hints?.focusItemId) : undefined;
+  const focusSummary = focus ? `Selected piece to build around: ${sanitizeContextValue(focus.name)} (ID: ${focus.id}; ${[focus.category, focus.color, focus.brand, focus.material].filter(Boolean).map((value) => sanitizeContextValue(value).slice(0, 120)).join("; ")}). Keep this exact owned piece as the anchor for the requested outfit.` : null;
   const wardrobeSummary = pack.wardrobe
     .slice(0, 30)
     .map(
@@ -328,6 +332,7 @@ export function summarizeContextForPrompt(pack: AssistantContextPack): string {
     : null;
 
   return [
+    ...(focusSummary ? [focusSummary] : []),
     `Wardrobe: ${wardrobeSummary || "No wardrobe items available."}`,
     `Recent outfits: ${pack.recentOutfits.length}`,
     `Calendar: ${calendarSummary || "No upcoming calendar notes."}`,

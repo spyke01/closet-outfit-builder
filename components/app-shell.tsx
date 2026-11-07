@@ -101,7 +101,7 @@ function SignedInShell({
     destinations.find((d) => pathname.startsWith(d.href)) ||
     (pathname.startsWith("/calendar/trips")
       ? destinations[3]
-      : pathname.startsWith("/sizes") || pathname.startsWith("/anchor")
+      : pathname.startsWith("/sizes") || pathname.startsWith("/anchor") || pathname.startsWith("/onboarding")
         ? destinations[1]
         : null);
   const name = String(

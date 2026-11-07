@@ -2,6 +2,7 @@
 
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "@/components/clothing-image";
 import { MessageCircle, Paperclip, Send, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,7 @@ import { SEBASTIAN_GREETING } from "@/lib/services/assistant/persona";
 import { resizeImageFileForUpload } from "@/lib/utils/image-resize";
 import type { AssistantChatRequest } from "@/lib/services/assistant/types";
 import { cn } from "@/lib/utils";
+import { clothingPieceDescription, type ClothingPieceIdentity } from "@/lib/utils/clothing-piece-label";
 
 type ChatMessage = { id: string; role: "assistant" | "user"; text: string };
 type ChatPayload = {
@@ -53,6 +55,7 @@ export function SebastianChatLauncher({
   );
   const [threadId, setThreadId] = useState<string>();
   const [hints, setHints] = useState<AssistantChatRequest["contextHints"]>();
+  const [focusItem, setFocusItem] = useState<ClothingPieceIdentity>();
   const [messages, setMessages] = useState<ChatMessage[]>([
     { id: "welcome", role: "assistant", text: SEBASTIAN_GREETING },
   ]);
@@ -121,10 +124,16 @@ export function SebastianChatLauncher({
         event as CustomEvent<{
           prompt?: string;
           contextHints?: AssistantChatRequest["contextHints"];
+          focusItem?: ClothingPieceIdentity;
         }>
       ).detail;
       if (detail?.prompt) setInput(detail.prompt);
-      setHints(detail?.contextHints);
+      // A general reopen keeps the conversation's focus. Explicit new context
+      // replaces it so a different piece, trip, or date cannot inherit the old one.
+      if (detail?.prompt || Object.keys(detail?.contextHints || {}).length) {
+        setHints(detail?.contextHints);
+        setFocusItem(detail?.focusItem?.id === detail?.contextHints?.focusItemId ? detail.focusItem : undefined);
+      }
       setOpen(true);
     };
     window.addEventListener(SEBASTIAN_OPEN_EVENT, listener);
@@ -255,7 +264,6 @@ export function SebastianChatLauncher({
     };
     setInput("");
     setImage(null);
-    setHints(undefined);
     void send(request, true);
   };
   const upload = async (file: File) => {
@@ -341,6 +349,19 @@ export function SebastianChatLauncher({
           <UpgradePrompt feature={hints?.tripId ? "assistant-trip" : hints?.focusItemId ? "assistant-item" : hints?.eventDate ? "assistant-planner" : "assistant"} onClose={() => setOpen(false)} />
         ) : (
           <>
+            {focusItem && hints?.focusItemId === focusItem.id && (
+              <section aria-label="Selected clothing piece" className="mb-4 flex items-center gap-3 rounded-lg border border-border bg-[var(--bg-surface)] p-3">
+                {focusItem.imageUrl && <Image width={48} height={48} src={focusItem.imageUrl} alt="" unoptimized className="h-12 w-12 shrink-0 object-contain" />}
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs text-muted-foreground">Building around</p>
+                  <p className="mt-1 text-sm font-medium">{clothingPieceDescription(focusItem)}</p>
+                </div>
+                <button type="button" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg hover:bg-muted" aria-label="Stop building around this piece" disabled={busy} onClick={() => {
+                  setFocusItem(undefined);
+                  setHints((previous) => previous ? { ...previous, focusItemId: undefined } : undefined);
+                }}><X size={16} aria-hidden="true" /></button>
+              </section>
+            )}
             <div
               className="app-chat-messages"
               role="log"

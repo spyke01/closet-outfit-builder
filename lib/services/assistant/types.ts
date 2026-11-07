@@ -70,6 +70,8 @@ export interface AssistantContextPack {
     name: string;
     category: string;
     color?: string | null;
+    brand?: string | null;
+    material?: string | null;
     season?: string[] | null;
     formalityScore?: number | null;
   }>;

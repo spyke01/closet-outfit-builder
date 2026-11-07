@@ -8,8 +8,10 @@ import type { WardrobeItem } from "@/lib/types/database";
 import { useUpdateWardrobeItem } from "@/lib/hooks/use-wardrobe-items";
 import { AskSebastian } from "@/components/ask-sebastian";
 import { Button } from "@/components/ui/button";
+import { clothingPieceDescription } from "@/lib/utils/clothing-piece-label";
 
 export function WardrobePieceTools({ item }: { item: WardrobeItem }) {
+  const focusItem = { ...item, category: item.category?.name, imageUrl: item.image_url };
   const update = useUpdateWardrobeItem();
   const [prepared, setPrepared] = useState(item.prepared_image_url || ""),
     [photoStatus, setPhotoStatus] = useState(""),
@@ -116,7 +118,8 @@ export function WardrobePieceTools({ item }: { item: WardrobeItem }) {
           </Button>
           <AskSebastian
             contextHints={{ focusItemId: item.id }}
-            prompt={`Help me build an outfit around my ${item.name}.`}
+            focusItem={focusItem}
+            prompt={`Help me build an outfit around my ${clothingPieceDescription(focusItem)}.`}
           />
         </div>
       </section>

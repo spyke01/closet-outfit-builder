@@ -36,6 +36,18 @@ function createThenableQuery(
 }
 
 describe("assistant context builder", () => {
+  it("explicitly anchors the owned olive chinos even when another pair has the same name", async () => {
+    const olive = { id: "olive-piece", name: "Chinos", color: "olive", brand: "Test brand", material: "Cotton", category: { name: "Pants" } };
+    const candidates = createThenableQuery([{ ...olive, id: "navy-piece", color: "navy" }, olive]);
+    const focus = createThenableQuery([olive]);
+    const empty = createThenableQuery([]);
+    let reads = 0;
+    const db = { from: (table: string) => table === "wardrobe_items" ? (++reads === 1 ? candidates : focus) : empty };
+    const { pack } = await buildAssistantContextPack(db as never, "owner", { message: "Build around this", contextHints: { focusItemId: olive.id } });
+    expect(summarizeContextForPrompt(pack).split("\n")[0]).toBe("Selected piece to build around: Chinos (ID: olive-piece; Pants; olive; Test brand; Cotton). Keep this exact owned piece as the anchor for the requested outfit.");
+    expect(focus.eq).toHaveBeenCalledWith("user_id", "owner");
+  });
+
   it("loads the owned focus item independently of the bounded candidate query", async () => {
     const candidates = createThenableQuery(
       Array.from({ length: 1000 }, (_, index) => ({

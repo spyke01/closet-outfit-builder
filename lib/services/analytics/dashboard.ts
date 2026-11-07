@@ -73,6 +73,9 @@ export async function loadAnalyticsDashboard(
   type ItemRow = {
     id: string;
     name: string;
+    color: string | null;
+    brand: string | null;
+    material: string | null;
     image_url: string | null;
     active: boolean;
     purchase_price: number | string | null;
@@ -92,7 +95,7 @@ export async function loadAnalyticsDashboard(
       db
         .from("wardrobe_items")
         .select(
-          "id,name,image_url,active,purchase_price,purchase_currency,created_at,category:categories(name)",
+          "id,name,color,brand,material,image_url,active,purchase_price,purchase_currency,created_at,category:categories(name)",
         )
         .eq("user_id", userId)
         .order("id")
@@ -136,6 +139,9 @@ export async function loadAnalyticsDashboard(
   const items: InsightItem[] = itemRows.map((item) => ({
     id: item.id,
     name: item.name,
+    color: item.color,
+    brand: item.brand,
+    material: item.material,
     imageUrl: item.image_url,
     category: item.category?.name || "Other",
     active: item.active,

@@ -5,6 +5,7 @@ import { OnboardingExperience } from "@/components/onboarding/onboarding-experie
 import { TopBarWrapper } from "@/components/top-bar-wrapper";
 import { createClient } from "@/lib/supabase/server";
 import { hasBillingAdminRole } from "@/lib/services/billing/roles";
+import { WardrobeNavigation } from "@/components/wardrobe-navigation";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const metadata: Metadata = {
@@ -40,6 +41,7 @@ export default async function OnboardingPage({
       <TopBarWrapper user={user} />
 
       <main className="flex-1">
+        <div className="page-shell-content" style={{ paddingBottom: 0 }}><WardrobeNavigation /></div>
         <Suspense
           fallback={
             <div className="flex items-center justify-center h-64">

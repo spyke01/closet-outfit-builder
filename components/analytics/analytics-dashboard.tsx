@@ -15,6 +15,8 @@ import { BasicAnalytics } from "@/components/analytics/basic-analytics";
 import { AskSebastian } from "@/components/ask-sebastian";
 import { AppDialog } from "@/components/ui/app-dialog";
 import { Button } from "@/components/ui/button";
+import { NativeSelect } from "@/components/ui/native-select";
+import { clothingPieceDescription, clothingPieceLabel } from "@/lib/utils/clothing-piece-label";
 
 type Tab = "overview" | "clothing" | "history" | "cost";
 const tabs: Array<{ id: Tab; label: string }> = [
@@ -86,7 +88,7 @@ export function AnalyticsDashboard({
     if (!summary) return [];
     return summary.active
       .filter((item) => !categoryFilter || item.category === categoryFilter)
-      .filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
+      .filter((item) => clothingPieceDescription(item).toLowerCase().includes(search.toLowerCase()))
       .filter((item) => sort !== "unworn" || item.periodWears === 0)
       .sort((a, b) =>
         sort === "least" || sort === "unworn"
@@ -114,7 +116,7 @@ export function AnalyticsDashboard({
         <ItemImage item={item} />
         <span className="min-w-0 flex-1 text-left">
           <strong className="block truncate text-sm font-medium">
-            {item.name}
+            {clothingPieceLabel(item)}
           </strong>
           <small className="text-xs text-muted-foreground">
             {item.category}
@@ -143,10 +145,10 @@ export function AnalyticsDashboard({
             place.
           </p>
         </div>
-        {isFree ? null : <label className="text-xs text-muted-foreground">
+        {isFree ? null : <label htmlFor="analytics-time-period" className="flex items-center gap-3 text-xs text-muted-foreground">
           Time period
-          <select
-            className="ml-3 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
+          <NativeSelect
+            id="analytics-time-period"
             value={period}
             onChange={(event) => {
               setPeriod(event.target.value as InsightPeriod);
@@ -158,7 +160,7 @@ export function AnalyticsDashboard({
             <option value="90">Last 90 days</option>
             <option value="365">Last year</option>
             <option value="all">All time</option>
-          </select>
+          </NativeSelect>
         </label>}
       </header>
       <div
@@ -368,9 +370,8 @@ export function AnalyticsDashboard({
                         }}
                       />
                     </label>
-                    <select
+                    <NativeSelect
                       aria-label="Filter clothing category"
-                      className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
                       value={categoryFilter}
                       onChange={(event) => {
                         setCategoryFilter(event.target.value);
@@ -381,10 +382,9 @@ export function AnalyticsDashboard({
                       {summary.categories.map((category) => (
                         <option key={category.name}>{category.name}</option>
                       ))}
-                    </select>
-                    <select
+                    </NativeSelect>
+                    <NativeSelect
                       aria-label="Sort clothing analytics"
-                      className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
                       value={sort}
                       onChange={(event) => {
                         setSort(event.target.value);
@@ -394,7 +394,7 @@ export function AnalyticsDashboard({
                       <option value="most">Most worn</option>
                       <option value="least">Least worn</option>
                       <option value="unworn">Unworn this period</option>
-                    </select>
+                    </NativeSelect>
                   </div>
                 </div>
                 {itemRows(visibleItems.slice(page * 20, page * 20 + 20))}
@@ -568,13 +568,14 @@ export function AnalyticsDashboard({
       <AppDialog
         open={!!selected}
         onClose={() => setSelectedId(null)}
-        title={selected?.name || "Clothing wear history"}
+        title={selected ? clothingPieceLabel(selected) : "Clothing wear history"}
       >
         {selected && (
           <>
             <div className="mb-5 flex items-center gap-4">
               <ItemImage item={selected} />
               <div>
+                <p className="mb-2 text-xs text-muted-foreground">{[selected.category, selected.brand, selected.material].filter(Boolean).join(" · ")}</p>
                 <p className="text-sm">
                   {selected.periodWears} wears in this period ·{" "}
                   {selected.lifetimeWears} lifetime
@@ -591,7 +592,8 @@ export function AnalyticsDashboard({
               </Button>
               <AskSebastian
                 contextHints={{ focusItemId: selected.id }}
-                prompt={`Help me build a fresh look around my ${selected.name}.`}
+                focusItem={selected}
+                prompt={`Help me build a fresh look around my ${clothingPieceDescription(selected)}.`}
               />
             </div>
             <h3 className="mb-2 font-medium">Confirmed wear history</h3>

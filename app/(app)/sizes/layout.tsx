@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { TopBarWrapper } from "@/components/top-bar-wrapper";
 import { AuthBoundaryWithUser } from "@/components/auth-boundary";
 import { TopBarSkeleton } from "@/components/loading-skeleton";
+import { WardrobeNavigation } from "@/components/wardrobe-navigation";
 
 export default function SizesLayout({
   children,
@@ -19,6 +20,7 @@ export default function SizesLayout({
       
       {/* Page content can start rendering independently */}
       <div className="flex-1 w-full">
+        <div className="page-shell-content" style={{ paddingBottom: 0 }}><WardrobeNavigation /></div>
         {children}
       </div>
     </main>

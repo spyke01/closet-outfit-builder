@@ -1,5 +1,7 @@
 "use client";
 
+import { WardrobeNavigation } from "@/components/wardrobe-navigation";
+
 import { CollectionPageSkeleton } from "@/components/page-skeletons";
 
 import React, {
@@ -394,21 +396,9 @@ export function WardrobePageClient({
           totalCount={items.length}
         />
 
-        <nav
-          aria-label="Wardrobe tools"
-          className="flex flex-wrap items-center gap-5 border-b border-border pb-4 text-sm"
-        >
-          <span className="text-primary">Clothing</span>
-          <Link href="/sizes" className="text-muted-foreground">
-            My sizes
-          </Link>
-          <Link href="/onboarding" className="text-muted-foreground">
-            Add from the quick setup
-          </Link>
-          <div className="ml-auto">
+        <WardrobeNavigation>
             <AskSebastian prompt="Help me make better use of the pieces in my wardrobe." />
-          </div>
-        </nav>
+        </WardrobeNavigation>
         <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
           <p>Open a piece to edit it or build an outfit around it.</p>
           <label className="flex shrink-0 items-center gap-2">
