@@ -20,7 +20,7 @@ The 43-output pilot covered every clothing type and compared both models for six
 
 ## Assets and quality
 
-The logical catalog retains all 1,295 PNG names. Every entry has a WebP counterpart. Reviewed new derivatives replace their corresponding defaults; retained entries keep their original appearance. The app requests versioned derivatives to avoid stale browser caches. Legacy PNG requests resolve to the matching WebP. No existing account photos, private wardrobe rows, or branded legacy assets were replaced.
+The logical catalog retains all 1,295 PNG names. Every entry has a WebP counterpart. Reviewed new derivatives replace their corresponding defaults; retained entries keep their original appearance. The app requests versioned derivatives to avoid stale browser caches. Next.js handles the local PNG compatibility rewrite. Netlify uses exact forced CDN rewrites from public/_redirects so its static-file handling also serves the matching WebP. The prebuild hook regenerates all mappings from the catalog and checks each target exists. No existing account photos, private wardrobe rows, or branded legacy assets were replaced.
 
 The approved 1,024px images occupy **173.71 MB as WebP**, compared with **1421.21 MB** for the generated PNG sources. WebP uses quality 95 with full alpha quality. Original catalog PNGs remain unchanged, and full-resolution generated sources and backups remain in ignored workspace staging.
 
@@ -37,8 +37,9 @@ The batch held one exclusive writer, persisted intent before every paid POST, re
 - The full suite passed 2,402 tests, with four existing skips. The final focused checks passed 27 tests, including added routing and approval checks. Strict lint and types pass.
 - The local production build passed through Webpack. Local Turbopack worker-port binding remains an environment limitation. The application source has not changed since that successful build; hosted publication performs a fresh production build.
 - All 1,295 WebPs decode correctly at 1,024px with alpha. All original catalog PNGs remain unchanged. All 1,199 replacements match their approved source and derivative hashes.
-- Local legacy PNG and versioned WebP requests pass for all 37 clothing types. Thirty-seven white pieces were inspected against a dark background; visual review also covered every candidate against its original.
+- Local legacy PNG and versioned WebP requests pass for all 37 clothing types. Netlify’s own parser validates all 1,295 exact forced CDN rules; hosted URL verification follows publication. Thirty-seven white pieces were inspected against a dark background; visual review also covered every candidate against its original.
 - Nine private local credential values were checked against 198 built browser assets: zero matches. This is a scoped bundle check.
+- A real signed-in browser check passed quick setup, refreshed wardrobe images, all six signed-in routes with weather access, and a phone layout. The isolated test account was removed. [Hosted browser evidence](hosted-browser-validation.json) records the check.
 - A real Nano job completed through hosted category routing in an isolated temporary Plus account, including cleanup, private storage, and replay without another reservation. The account and owned storage were removed. [Hosted routing evidence](production-routing-validation.json) records the check.
 - The updated generation and processing functions are deployed to project ahjwzpyammiqelloazvn. Routing uses the owned item and its category, supports the reviewed Klein/Nano models, and preserves each saved job's model. The 34 local and hosted migrations match; this image refresh needs no new SQL.
 

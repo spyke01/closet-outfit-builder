@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "dev:netlify": "netlify dev",
+    "prebuild": "node scripts/generate-wardrobe-redirects.mjs",
     "build": "next build",
     "build:analyze": "ANALYZE=true next build --webpack",
     "analyze": "ANALYZE=true npm run build && npx serve .next/static -l 3001",

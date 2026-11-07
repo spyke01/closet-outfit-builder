@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-11-07T03:53:17.558Z",
+  "base": "https://www.myaioutfit.com",
+  "passed": true,
+  "scope": "Real hosted login, onboarding, signed-in routes, refreshed library images, and phone layout in an isolated temporary account. No AI inference, email, or Stripe calls.",
+  "checks": [
+    "Real login and quick setup save three confirmed pieces",
+    "Hosted /today renders with shared weather access",
+    "Existing default image references render refreshed versioned WebPs in the hosted wardrobe",
+    "Hosted /wardrobe renders with shared weather access",
+    "Hosted /outfits renders with shared weather access",
+    "Hosted /calendar renders with shared weather access",
+    "Hosted /calendar/trips renders with shared weather access",
+    "Hosted /analytics renders with shared weather access",
+    "Hosted refreshed wardrobe fits a phone",
+    "Temporary account and its owned records removed"
+  ],
+  "errors": []
+}

@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-11-07T03:55:37.827Z",
+  "parser": "Netlify CLI bundled @netlify/redirect-parser",
+  "passed": true,
+  "totalRules": 1298,
+  "catalogRules": 1295,
+  "forced": true,
+  "errors": []
+}
