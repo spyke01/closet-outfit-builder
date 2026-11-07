@@ -103,8 +103,7 @@ async function prepare(db: AiDb, job: EdgeJob): Promise<void> {
 }
 serve(async (req: Request) => {
   const origin = req.headers.get("origin") || undefined;
-  const preflight = handleCorsPreflightRequest(req);
-  if (preflight) return preflight;
+  if (req.method === "OPTIONS") return handleCorsPreflightRequest(req);
   const reply = (body: unknown, status = 200) =>
     createCorsResponse(
       JSON.stringify(body),

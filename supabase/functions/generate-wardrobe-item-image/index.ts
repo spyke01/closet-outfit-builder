@@ -97,9 +97,8 @@ async function generate(
     console.warn("Generation audit write failed", { jobId: job.id });
 }
 serve(async (req: Request) => {
-  const origin = req.headers.get("origin") || undefined,
-    preflight = handleCorsPreflightRequest(req);
-  if (preflight) return preflight;
+  const origin = req.headers.get("origin") || undefined;
+  if (req.method === "OPTIONS") return handleCorsPreflightRequest(req);
   const reply = (value: unknown, status = 200) =>
     createCorsResponse(
       JSON.stringify(value),
