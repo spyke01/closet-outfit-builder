@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-11-07T01:13:42.075Z",
+  "passed": true,
+  "cards": 46,
+  "uniqueImages": 41,
+  "newOutputs": 32,
+  "existingLibraryImages": 8,
+  "archivedImagenImages": 1,
+  "checks": [
+    "All image sources load from embedded data with no server",
+    "All six hero cards and forty comparison cards are labeled",
+    "Five review sheets exported as PNGs",
+    "Image zoom and Escape/Close work",
+    "Light/dark backdrop changes work",
+    "Phone page fits 390px; comparisons scroll within the page",
+    "No browser runtime errors"
+  ],
+  "newPaidInferenceCalls": 0
+}

@@ -1,0 +1,234 @@
+{
+  "reviewedAt": "2026-11-07T01:45:17.490Z",
+  "pilotOutputs": 43,
+  "chosenTypes": 37,
+  "choices": [
+    {
+      "category": "Tops",
+      "type": "T-Shirt",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Tops",
+      "type": "Polo",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Tops",
+      "type": "OCBD",
+      "model": "google/nano-banana-2",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Tops",
+      "type": "Dress Shirt",
+      "model": "google/nano-banana-2",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Tops",
+      "type": "Blouse",
+      "model": "google/nano-banana-2",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Tops",
+      "type": "Tank Top",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Tops",
+      "type": "Sweater",
+      "model": "google/nano-banana-2",
+      "reason": "Nano has stronger visible knit texture and natural folds than the Klein sample."
+    },
+    {
+      "category": "Tops",
+      "type": "Cardigan",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Tops",
+      "type": "Hoodie",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Tops",
+      "type": "Quarter Zip",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Bottoms",
+      "type": "Jeans",
+      "model": "google/nano-banana-2",
+      "reason": "Nano preserves richer denim texture and natural construction."
+    },
+    {
+      "category": "Bottoms",
+      "type": "Chinos",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Bottoms",
+      "type": "Trousers",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Bottoms",
+      "type": "Shorts",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Bottoms",
+      "type": "Skirt",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Bottoms",
+      "type": "Leggings",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Shoes",
+      "type": "Sneakers",
+      "model": "google/nano-banana-2",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Shoes",
+      "type": "Loafers",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "reason": "Klein shows a convincing complete pair and a clearer three-quarter leather product view."
+    },
+    {
+      "category": "Shoes",
+      "type": "Boots",
+      "model": "google/nano-banana-2",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Shoes",
+      "type": "Dress Shoes",
+      "model": "google/nano-banana-2",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Shoes",
+      "type": "Heels",
+      "model": "google/nano-banana-2",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Shoes",
+      "type": "Flats",
+      "model": "google/nano-banana-2",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Shoes",
+      "type": "Sandals",
+      "model": "google/nano-banana-2",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Layers",
+      "type": "Blazer",
+      "model": "google/nano-banana-2",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Layers",
+      "type": "Sportcoat",
+      "model": "google/nano-banana-2",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Layers",
+      "type": "Jacket",
+      "model": "google/nano-banana-2",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Layers",
+      "type": "Coat",
+      "model": "google/nano-banana-2",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Layers",
+      "type": "Cardigan",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Dresses",
+      "type": "Mini Dress",
+      "model": "google/nano-banana-2",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Dresses",
+      "type": "Midi Dress",
+      "model": "google/nano-banana-2",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Dresses",
+      "type": "Maxi Dress",
+      "model": "google/nano-banana-2",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Dresses",
+      "type": "Cocktail Dress",
+      "model": "google/nano-banana-2",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Dresses",
+      "type": "Casual Dress",
+      "model": "google/nano-banana-2",
+      "reason": "Selected from category pilot and material/construction review."
+    },
+    {
+      "category": "Accessories",
+      "type": "Belt",
+      "model": "google/nano-banana-2",
+      "reason": "Nano produced a full waist belt with realistic leather grain after the explicit coil instruction."
+    },
+    {
+      "category": "Accessories",
+      "type": "Tie",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "reason": "Klein keeps the whole neck loop in frame; Nano clipped the top and failed structural review."
+    },
+    {
+      "category": "Accessories",
+      "type": "Watch",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "reason": "Klein keeps clean metal construction and dial details without invented branding."
+    },
+    {
+      "category": "Accessories",
+      "type": "Scarf",
+      "model": "google/nano-banana-2",
+      "reason": "Nano preserves realistic wool weave, fringe and full fabric drape."
+    }
+  ],
+  "excludedModels": [
+    "prunaai/p-image",
+    "black-forest-labs/flux-schnell"
+  ],
+  "heldMulticolorAssets": 37
+}

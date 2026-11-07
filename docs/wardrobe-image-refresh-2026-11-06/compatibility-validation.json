@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-11-07T01:48:12.611Z",
+  "passed": true,
+  "scope": "Local production build with Webpack; old PNG URLs resolve to the WebP derivative and new versioned URLs return the same image bytes.",
+  "checks": [
+    {
+      "path": "/images/wardrobe/generated/onboarding/tops-t-shirt-navy.png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 78586
+    },
+    {
+      "path": "/images/wardrobe/generated/onboarding/tops-t-shirt-navy.webp?v=realistic-20261106",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 78586
+    }
+  ]
+}

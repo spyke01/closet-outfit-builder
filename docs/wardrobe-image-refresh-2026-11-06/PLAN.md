@@ -1,0 +1,23 @@
+# Wardrobe default-image refresh
+
+The user approved Klein and Nano Banana by clothing type and a bulk replacement where quality improves. Pruna and Schnell are excluded from new work. This refresh targets bundled default assets only, not account photos or private wardrobe records.
+
+1. Inventory the 1,295 catalog PNGs and retain their hashes and stable paths. Stage replacements for the 1,258 solid-color defaults supported by the current color palette. Retain 37 multicolor assets until their patterns have a separate brief.
+2. Review all 37 clothing types, with both models for six previously untested types (43 outputs). Final choices: Klein for plain tops, cardigans, hoodies, quarter zips, simple bottoms, loafers, ties, and watches; Nano Banana for denim, knit sweaters, blouses/buttoned shirts, tailored outerwear, dresses, other footwear, belts, and scarves. The matrix and reasons are in `category-decisions.json`. The Nano tie clipped its top; the Klein alternative passed and was selected.
+3. Generate 1,024px product photos with real fabric texture, consistent framing, complete products, and no labels or branding. Use the same pinned background remover. Correct category-specific instructions for shoe pairs, full waist belts, watch faces, and dress lengths. Inspect results on light and dark backgrounds.
+4. Keep the operator batch separate from application requests. Estimate about $51 for the selected assets, excluding small pilot alternatives and retries. Enforce a $70 durable admission ceiling, one writer, two workers, bounded output dimensions/downloads, and provider cancellation deadlines. Record each intent before POST and every accepted provider handle. Never repeat an ambiguous submission or change a reserved model silently.
+5. Reject missing transparency, empty output, unexpected dimensions, and possible edge cropping. Inspect every clothing-type contact sheet. Keep originals where a candidate fails review. Keep original PNGs as rollback sources and retain full-resolution generated PNGs in ignored staging. Atomically publish reviewed WebP derivatives at 1,024px, with a matching fallback derivative for every retained asset. Verify the hash of the exact reviewed candidate before publishing; retain an applied/rejected manifest.
+6. Update protected future-generation routing to the same reviewed Klein/Nano rules. Derive category from the owned item. Preserve existing per-user allowances, global spending reservations, and exact stored job models. Test route selection and worker entry points.
+7. Verify catalog coverage, file integrity, application types/lint/build, browser display, and secret boundaries. Publish the selected defaults and route changes through the existing authorized release process after validation.
+
+## Adversarial pass
+
+- A cheap model can regress a belt, neckline, or pair of shoes. Review category pilots before bulk; use complete-product checks and retain good originals on failed review.
+- A transparency request can produce a painted checkerboard. Generate on pure white, then use real segmentation; inspect actual alpha and both backdrops.
+- Background cleanup can remove white garment details. Review light products and each full clothing-type sheet, in addition to pixel checks.
+- A rate-limit retry can become a duplicate paid prediction after an ambiguous network failure. Persist `submitting` before every POST, including a resend after a definite 429. Resume known handles with GET; never reset an unknown attempt automatically.
+- Two workers can exceed a spending cap or race ledger writes. Reserve synchronously before an await and serialize atomic ledger saves. Refuse a second process with an exclusive lock.
+- A bulk script can bypass normal app admission totals. Keep an explicit independent $70 operator ceiling and record estimated costs separately from provider invoices. Do not change billing or auto-reload settings.
+- A category guess supplied by the browser could choose a different paid model. Route only from the server-owned item row; fix output resolution and keep the $0.10 image reservation.
+- New filenames can break saved wardrobe references. Preserve all 1,295 catalog options, retain original PNGs, and rewrite legacy PNG requests to the matching WebP; verify both URLs return identical new bytes. Update render consumers so existing browser caches do not hide the refresh.
+- An output batch can inflate page weight. Keep the generated PNGs for source quality, serve 1,024px WebP at quality 95 with full alpha, measure final byte totals, and retain lazy/responsive rendering behavior. The pilot PNGs averaged over 1 MB each; WebP samples were 44–182 KB.

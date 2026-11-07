@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import Image from 'next/image';
+import Image from '@/components/clothing-image';
 import { Shirt, X, Eye, Star } from 'lucide-react';
 
 

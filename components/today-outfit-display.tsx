@@ -1,7 +1,7 @@
 'use client';
 
 import { GeneratedOutfit } from '@/lib/types/generation';
-import Image from 'next/image';
+import Image from '@/components/clothing-image';
 import { RefreshCw } from 'lucide-react';
 
 interface TodayOutfitDisplayProps {

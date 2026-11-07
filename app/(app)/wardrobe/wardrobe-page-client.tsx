@@ -8,7 +8,7 @@ import React, {
   useEffect,
   useRef,
 } from "react";
-import Image from "next/image";
+import Image from "@/components/clothing-image";
 import Link from "next/link";
 import { AskSebastian } from "@/components/ask-sebastian";
 import { useCategories } from "@/lib/hooks/use-categories";

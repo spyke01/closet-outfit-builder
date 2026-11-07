@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/clothing-image";
 import { useSearchParams } from "next/navigation";
 import { PlannerTabs } from "@/components/planner-tabs";
 import { AskSebastian } from "@/components/ask-sebastian";

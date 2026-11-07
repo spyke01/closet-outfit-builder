@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
-import Image from 'next/image';
+import Image from '@/components/clothing-image';
 import { X } from 'lucide-react/dist/esm/icons';
 import type { GeneratedWardrobeItem } from '@/lib/types/onboarding';
 

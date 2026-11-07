@@ -1,0 +1,5725 @@
+{
+  "checkedAt": "2026-11-07T02:12:07.170Z",
+  "applied": true,
+  "count": 68,
+  "images": [
+    {
+      "file": "tops-t-shirt-black.png",
+      "renderedFile": "tops-t-shirt-black.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "black",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "7d29e19c623d7a84a9f070a5e9978207848618720dd3eb560bb2b21f04095222",
+      "generatedPngHash": "61dd6d76745ac7cc4464bc44a747459a235ca73ce88b01899742d5ff7d326ee2",
+      "renderedHash": "46e6edd897f5d5badfb493a59f8b54c28f2285def920b0de7a20e14cdc345da1",
+      "pngBytes": 806277,
+      "webpBytes": 49536,
+      "review": "Visual review of all ten color variants: complete T-shirt, more photographic cotton folds/texture, correct broad color, and clean cutout. Reviewed on contact sheet reviewed-t-shirts-first-ten.png."
+    },
+    {
+      "file": "tops-t-shirt-white.png",
+      "renderedFile": "tops-t-shirt-white.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "white",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "6f5e3aa649fb97a502b2871e46caa6e19b93af220a586d2f2c83d1047f8094e7",
+      "generatedPngHash": "b00bbc17feeed814b2a482a0a40bbb4f6ba5cc132df2fedfcc1d7e88ac6ae182",
+      "renderedHash": "923ca82e2a3258715da28dce037b77bc92f6ef67d28db4e8ce881935044c147c",
+      "pngBytes": 685851,
+      "webpBytes": 37350,
+      "review": "Visual review of all ten color variants: complete T-shirt, more photographic cotton folds/texture, correct broad color, and clean cutout. Reviewed on contact sheet reviewed-t-shirts-first-ten.png."
+    },
+    {
+      "file": "tops-t-shirt-grey.png",
+      "renderedFile": "tops-t-shirt-grey.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "grey",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "3c67d70be22dd724f57cafd4f77950ca9ccd55307e12b0f222c74639cf8ec82e",
+      "generatedPngHash": "2f958f825abb03cac91f26ea0f1b2dc8956c33c8bf7da6cd6f3289459b8ef396",
+      "renderedHash": "1f689b8fdcaac3456b4df9f3ba298e76aa53586bec8654b8d599dc2a2326c97d",
+      "pngBytes": 1053145,
+      "webpBytes": 150668,
+      "review": "Visual review of all ten color variants: complete T-shirt, more photographic cotton folds/texture, correct broad color, and clean cutout. Reviewed on contact sheet reviewed-t-shirts-first-ten.png."
+    },
+    {
+      "file": "tops-t-shirt-taupe.png",
+      "renderedFile": "tops-t-shirt-taupe.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "taupe",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "efd0bc055ccf7ae093a808a4bc7247b34f48e0648d5ac67aaf437c4e8f3e5d89",
+      "generatedPngHash": "b98ab22175b474cd305ec1d327d664778558e9ef9cd467df8e721d0bc1cfe507",
+      "renderedHash": "a121a0fb113870be90b2702eb1461ed6565d84c29a3a66acd98203c65852fac0",
+      "pngBytes": 1253761,
+      "webpBytes": 124912,
+      "review": "Visual review of all ten color variants: complete T-shirt, more photographic cotton folds/texture, correct broad color, and clean cutout. Reviewed on contact sheet reviewed-t-shirts-first-ten.png."
+    },
+    {
+      "file": "tops-t-shirt-charcoal.png",
+      "renderedFile": "tops-t-shirt-charcoal.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "charcoal",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "731d373d17d4eac17b553f618ad666fd022b3b758b42e909a40e49a1c27f72eb",
+      "generatedPngHash": "d6882d0d062d4e9519e037b85d28c3396791fb6906b9181c19587c63856296fc",
+      "renderedHash": "6ef5c4d8b5d19e2d285792e0ec722d63d94a11656bc986951911bbe8fcf6fe2c",
+      "pngBytes": 1199422,
+      "webpBytes": 155660,
+      "review": "Visual review of all ten color variants: complete T-shirt, more photographic cotton folds/texture, correct broad color, and clean cutout. Reviewed on contact sheet reviewed-t-shirts-first-ten.png."
+    },
+    {
+      "file": "tops-t-shirt-stone.png",
+      "renderedFile": "tops-t-shirt-stone.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "stone",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "335cbbba03cc41b98a2ebce3118dd3c3c7c0e131e4ffb931eb86fff8ec3c556f",
+      "generatedPngHash": "c1d0ee14ba81d804e835f64a338381ecb85fc1b578b21f1bd1d0a6f2db574815",
+      "renderedHash": "c67b59ca75c2882b2d41f77629a1accd403eca7201ac835f6b06f0b109ed0482",
+      "pngBytes": 999089,
+      "webpBytes": 129662,
+      "review": "Visual review of all ten color variants: complete T-shirt, more photographic cotton folds/texture, correct broad color, and clean cutout. Reviewed on contact sheet reviewed-t-shirts-first-ten.png."
+    },
+    {
+      "file": "tops-t-shirt-ivory.png",
+      "renderedFile": "tops-t-shirt-ivory.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "ivory",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "614202a82d93afc0285ca9383e168e3685f451b6676eefb8e60d8f22f11eb754",
+      "generatedPngHash": "7441b7eed9cc0e3e217e1590ff74e5d3beb9b4c9cfabb5def8bb3b8c0b6d23d0",
+      "renderedHash": "9ac36dd0f3d6063b609ded5c02c931390f25617212b763274f3f5028c24ec849",
+      "pngBytes": 1106643,
+      "webpBytes": 66046,
+      "review": "Visual review of all ten color variants: complete T-shirt, more photographic cotton folds/texture, correct broad color, and clean cutout. Reviewed on contact sheet reviewed-t-shirts-first-ten.png."
+    },
+    {
+      "file": "tops-t-shirt-cream.png",
+      "renderedFile": "tops-t-shirt-cream.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "cream",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "2cc5470ae95ddecd19223107939026a3ce7dc886597783a70f9c7ec10673bb75",
+      "generatedPngHash": "0945c03fe1b6d363b3f4a3bcfe1cf4fc0e84ecade51891a5806b9cbee045196e",
+      "renderedHash": "28c77af13c1b57dfe0da2f1b22cdd9aec7b29526986fbb723ac09b15a871bff8",
+      "pngBytes": 1090280,
+      "webpBytes": 62026,
+      "review": "Visual review of all ten color variants: complete T-shirt, more photographic cotton folds/texture, correct broad color, and clean cutout. Reviewed on contact sheet reviewed-t-shirts-first-ten.png."
+    },
+    {
+      "file": "tops-t-shirt-beige.png",
+      "renderedFile": "tops-t-shirt-beige.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "beige",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "7e76b791c336cf460f774173eb21fb8ad754400182899b517a0a02f3d8a46359",
+      "generatedPngHash": "bc5c7238160ebc336a0d485314f4c3e161ccfe7cb16d155a06136de74b8dcb48",
+      "renderedHash": "cd801811a044a231fe7acb70ceb4046d38506bf49abf3697ab7d1595fa59b6dc",
+      "pngBytes": 1106046,
+      "webpBytes": 77866,
+      "review": "Visual review of all ten color variants: complete T-shirt, more photographic cotton folds/texture, correct broad color, and clean cutout. Reviewed on contact sheet reviewed-t-shirts-first-ten.png."
+    },
+    {
+      "file": "tops-t-shirt-navy.png",
+      "renderedFile": "tops-t-shirt-navy.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "navy",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "385b0f890dde7b4a354c164aaae969e82f0fac241b70a80b10a88cbb271b478e",
+      "generatedPngHash": "db9a2afac76631aed5342b3c586465dd125901d14a9b3b49a8c665a224fb0505",
+      "renderedHash": "a1322ff35a1ce839cdaa7a9f7a7464c5b1e8a777c110e69a6dce479fa266e7f5",
+      "pngBytes": 1135063,
+      "webpBytes": 95750,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "tops-t-shirt-blue.png",
+      "renderedFile": "tops-t-shirt-blue.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "blue",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "e8dd73f9f8b7e9bf87dc9b310ad895fce71ca62050a13cc927a2c7b865adfe0d",
+      "generatedPngHash": "a5fc041e7d2eaae1da5d20def6cc8d2e943e3c609f586215ef6910fd1c95ffe1",
+      "renderedHash": "b1e327c53461b4ab684ba6f5764c844d02b53057dc50ab246efc324a0e1c1332",
+      "pngBytes": 1315251,
+      "webpBytes": 130658,
+      "review": "Visual review of all ten color variants: complete T-shirt, more photographic cotton folds/texture, correct broad color, and clean cutout. Reviewed on contact sheet reviewed-t-shirts-first-ten.png."
+    },
+    {
+      "file": "tops-t-shirt-denim.png",
+      "renderedFile": "tops-t-shirt-denim.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "denim",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "5e131b14db172cb937822a17808fc57b433688b7516745b0a71251e060dca278",
+      "generatedPngHash": "a6a38df41c6a896b962f4e8287e34f7604c282e6d86dc7d48502ad5354631a0e",
+      "renderedHash": "de88342db4e34e612feb5a508dd715cf9acc7e1f956fecae710d43273a0983a9",
+      "pngBytes": 1313209,
+      "webpBytes": 180564,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-light-blue.png",
+      "renderedFile": "tops-t-shirt-light-blue.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "light-blue",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "2bf168ef32127754b26be849dfd42c7c172e4e918a2415d85fa53fbc4f2daa4e",
+      "generatedPngHash": "92022731215808e9dfc12b344eb91cbaab3be537fbecf4d1c59d995486645190",
+      "renderedHash": "42047501a9ccb38319ce2aadca04832d93de9629af7ac4c92968220c20a1b3ce",
+      "pngBytes": 1033737,
+      "webpBytes": 68146,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-sky-blue.png",
+      "renderedFile": "tops-t-shirt-sky-blue.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "sky-blue",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "a9c43f0ae321a8111e30477d6ce003af9ccc2077819f30020a8796879e5003f9",
+      "generatedPngHash": "26ebc5c8cd024ab15a574c5ae1cf358f56e93e67e245664fcab3924f0d07d956",
+      "renderedHash": "5ab97e50ff8f7f06add3426ce8d0a0658aa9e14fe196c4c3c4b819d46d29980f",
+      "pngBytes": 1112303,
+      "webpBytes": 90348,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-teal.png",
+      "renderedFile": "tops-t-shirt-teal.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "teal",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "5a6e7ca2085838c3b3d208f5942f304d67d552dbcca5418e709fa3913b305638",
+      "generatedPngHash": "9f0457020adf043acdcc83af89abf71714a4820e91b4bed06e95d66257c3cff5",
+      "renderedHash": "26cc2fa9bac55ad80c4846646a54a256992f27327a1021b36c76a29fdc85b5b2",
+      "pngBytes": 1127525,
+      "webpBytes": 115588,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-brown.png",
+      "renderedFile": "tops-t-shirt-brown.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "brown",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "67faf97c486ea2fcd4e024ad1b7ea995250525e370d2b01001ab84cbbda16a73",
+      "generatedPngHash": "9ba4d487724b3eb1d9de040df83219fcce8f64d36e164b77da326f3c6edbb6a7",
+      "renderedHash": "baa51415608d01c83e087d3f3dc5bca07c5a7d1f243fe05bd1320256b963829e",
+      "pngBytes": 1187503,
+      "webpBytes": 114608,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-tan.png",
+      "renderedFile": "tops-t-shirt-tan.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "tan",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "04a90e03f3bd1fbb144b1dc9d11ca84724999d219b4c77375479e0e05686a27b",
+      "generatedPngHash": "8bc7e120ee59b62d5dbe019db48857207623345d92055f19079e712156c5affe",
+      "renderedHash": "8ae4de7c6ed9bfad015b77da0200bf8f0e4847d94a18cf0489d6cf5cb70dd471",
+      "pngBytes": 1141621,
+      "webpBytes": 102528,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-khaki.png",
+      "renderedFile": "tops-t-shirt-khaki.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "khaki",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "3c0ae3a0aa4c02ba80c07b4d8e9a5ced589cbb366fc98b5001b97622a2896976",
+      "generatedPngHash": "90166b9917f736b198cb3ea6968e86b134a8ec3b9555f9ea90230ae78ed86944",
+      "renderedHash": "69227275d50bc9dc6077089b8b44bb7cb322486dacc60f3d1cfd26c52d57d130",
+      "pngBytes": 1029152,
+      "webpBytes": 101490,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-camel.png",
+      "renderedFile": "tops-t-shirt-camel.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "camel",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "91eac117ba794359c259f19987b81e4d70d3f90428a0254663c16ef756f5214d",
+      "generatedPngHash": "ba3abed42bc770522cfd621263f6cfaa782ffa13785624496ea74a91a57d99ed",
+      "renderedHash": "61b285246911a8ba8c492c34b59f246674e0df935569ab11b3da7edac4b8a833",
+      "pngBytes": 1193799,
+      "webpBytes": 107702,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-chocolate.png",
+      "renderedFile": "tops-t-shirt-chocolate.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "chocolate",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "6eb659437790a44e89710950e751e67676f6c895dad2c647d8d8948792aa55ce",
+      "generatedPngHash": "c28297ddf64f4c6f9dfa75b567c3acc764087a7b55d5188412fd14d4b6d73e25",
+      "renderedHash": "86568d8384a81b4e28dbae96bcea72286b3452be4ced45e667e1748106ccbedf",
+      "pngBytes": 1189098,
+      "webpBytes": 102150,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-green.png",
+      "renderedFile": "tops-t-shirt-green.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "green",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "534fd136c7c4e3efcbc849fdbd30be89775d2c2f7e521b14f72a3d9ceebb2cdc",
+      "generatedPngHash": "6a97e60821d00e5f29c548b8c0bb3530e4cea5fd0e9e5dfc457a69afe1f16214",
+      "renderedHash": "c2c61b9ac18aebd7b8e602fa40d2840e6c4c06a43a7f2ad702791a7df2260054",
+      "pngBytes": 1150331,
+      "webpBytes": 128118,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-olive.png",
+      "renderedFile": "tops-t-shirt-olive.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "olive",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "661cdcbe0a42770a25b1fe1ad67f13ead5a8921e419e17e985aa2041d4c1137b",
+      "generatedPngHash": "9668a540a335a698cdf92703e670f63df67d18fca37a035a60c602ea91857279",
+      "renderedHash": "ee53472df99bb32932d2232dab503190f2bbee825f0bc21804e11f808b0749d0",
+      "pngBytes": 1152747,
+      "webpBytes": 107058,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-forest.png",
+      "renderedFile": "tops-t-shirt-forest.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "forest",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "dac72f56593559f826e22c67f44817845d05bea5f1d0b7a39a2c6d72e00192bb",
+      "generatedPngHash": "87984840c8f479e87e0577a69fb4e2c9dddd93e5e153122a8ab57dfdb398d7fc",
+      "renderedHash": "7adc3ba0e78d031590d0c88cb448a484ab799fe61c9922caceef6cf8ef19d7f2",
+      "pngBytes": 1067374,
+      "webpBytes": 94460,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-sage.png",
+      "renderedFile": "tops-t-shirt-sage.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "sage",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "ea8f3292ba92d37e8a7c3ebcb87eefd9ad70ce475353264d0cac08ab8474bb2b",
+      "generatedPngHash": "b8d88e9c772ee718509e7c37b916348d36d2064993c68c93358bb0568ffdc156",
+      "renderedHash": "943a26bcc98eca428d419bd1a5089a2cdfb0d0bc86288cfc64945147e5024e13",
+      "pngBytes": 1244954,
+      "webpBytes": 112046,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-red.png",
+      "renderedFile": "tops-t-shirt-red.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "red",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "2cb988220129a10141c9c99238cca6a9427ed48fb69ed69fc51d069ff6774cdf",
+      "generatedPngHash": "8e10a5ddbc5e59c7f80577ffe96d73a6d7bda7df0880585938d4662432c85fb5",
+      "renderedHash": "c2e9da1909244efc50c5d964e6ce52d196962458626225603a9bea579148aef4",
+      "pngBytes": 1301468,
+      "webpBytes": 122174,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-burgundy.png",
+      "renderedFile": "tops-t-shirt-burgundy.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "burgundy",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "6bbfa8974a4bf56c68576042be1348cf42543fc7ec633b3da20a6ddf7bef7a27",
+      "generatedPngHash": "95293b32a8effa9311c3dd00fca3d438ec2e6fd1707d117b615bca030cc03903",
+      "renderedHash": "e70cc35a6a9862da2c144efb61a040a1cdb30c246accfd7eab4cbfe12dc58fe1",
+      "pngBytes": 1162741,
+      "webpBytes": 97338,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-maroon.png",
+      "renderedFile": "tops-t-shirt-maroon.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "maroon",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "0f80cdd3edc1b4bf068585a11e9fab347d6589499673ffbd84fe2583a556008b",
+      "generatedPngHash": "58eb6d1e21275a0df6550b5b24d33cddc5f227f7db12101291bf046327f88307",
+      "renderedHash": "5e553aadc58d4783ac7feeda153976deb0e88fe825465c786d3a8a22b51fb0cd",
+      "pngBytes": 1196457,
+      "webpBytes": 114070,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-rust.png",
+      "renderedFile": "tops-t-shirt-rust.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "rust",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "5207be944ecde7e96faf8f5ad3462ec9e2c54cadb8778009ef135206aa548c1a",
+      "generatedPngHash": "400ee47223ad8039a71e85b7a527c80080edc2d7f26a30e06afff240f1aa53a7",
+      "renderedHash": "580193bdb5bcd835092298c28214e43ef843f36cd5e92020cfa04ea2f0b68230",
+      "pngBytes": 1291897,
+      "webpBytes": 131364,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-yellow.png",
+      "renderedFile": "tops-t-shirt-yellow.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "yellow",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "18814563b53951e1fe53a5cc703ecec6153145009fa8d695b31949ade07593ef",
+      "generatedPngHash": "e6728acd0e546edaf7ce4fee3594cdecd5f122a60256b22b93dc1d5c44085b15",
+      "renderedHash": "1b73ad23ef574c9ff0eb9fa7a1fc7575ac27738ce2c214f157648365b69c23c7",
+      "pngBytes": 1270254,
+      "webpBytes": 82648,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-mustard.png",
+      "renderedFile": "tops-t-shirt-mustard.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "mustard",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "ac1500ce34df08377b6574002c80ebc39d997ab637a7841dfa979398992c3f92",
+      "generatedPngHash": "0867c7b4dada0782d1362f6575600db151f8b15345d997f218b91077881b1a19",
+      "renderedHash": "24ba08c182981ca2bfa8defc4f3313902187faa14810d28a8dbae75b25914052",
+      "pngBytes": 1149488,
+      "webpBytes": 108134,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-pink.png",
+      "renderedFile": "tops-t-shirt-pink.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "pink",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "7ba300c1a19cd5f7508bb43e3d4ce5d988f0f2ad139e166d8d5e9f04a2e9b1ed",
+      "generatedPngHash": "017b049ab4b5469a904d3257695f324277a6bc737231c8fa95a9114534930b3d",
+      "renderedHash": "9c1035120beca12c404032b4947e9b586f4d5736ba60699bc01d6ddbf552cb48",
+      "pngBytes": 1191826,
+      "webpBytes": 85958,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-t-shirt-blush.png",
+      "renderedFile": "tops-t-shirt-blush.webp",
+      "category": "Tops",
+      "type": "T-Shirt",
+      "color": "blush",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "1622bcbab574d709c9e4066094ed2ec83146cc1a3f13970388b599d76cee0653",
+      "generatedPngHash": "fac3af4cd9d5c1463b55b362613a4df01493630b3fdd6eeeb49963d0ea58dcc0",
+      "renderedHash": "971b8956c9f486b0cac550cfed392e4b8f33a894989671a8e3c661c7fb910f77",
+      "pngBytes": 1137210,
+      "webpBytes": 77810,
+      "review": "Reviewed complete silhouette, more photographic cotton texture/folds, broad intended color, and clean cutout on reviewed-t-shirts-remaining-colors.png."
+    },
+    {
+      "file": "tops-polo-navy.png",
+      "renderedFile": "tops-polo-navy.webp",
+      "category": "Tops",
+      "type": "Polo",
+      "color": "navy",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "4cfd85395f6f07cb9f0c23da3118105f5bb29fe8a825249273e0687bb82cc683",
+      "generatedPngHash": "8ea1698ac3444a37bc5a1ce2d9688e8b5567e978fa30e734abec33fd74399b26",
+      "renderedHash": "1fc3a7e57e7b8cd7b1d1c270c6efd12c2fbc97448c203a48853f5524cb3d09c4",
+      "pngBytes": 1053855,
+      "webpBytes": 110388,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "tops-ocbd-light-blue.png",
+      "renderedFile": "tops-ocbd-light-blue.webp",
+      "category": "Tops",
+      "type": "OCBD",
+      "color": "light-blue",
+      "model": "google/nano-banana-2",
+      "oldHash": "51b703de00a4f6f8b75cb1478289b90a7f2b4ef276a70b6a4ee678e418a9dc64",
+      "generatedPngHash": "47929014febc21e506d0d6fcba5413e3a788ef9d7ac76a8f2452c93e0c1d1642",
+      "renderedHash": "da62e8686850a8507e53e7942b4285f4272507e12211f67c53c2af13ad1710ac",
+      "pngBytes": 1501447,
+      "webpBytes": 182138,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "tops-dress-shirt-white.png",
+      "renderedFile": "tops-dress-shirt-white.webp",
+      "category": "Tops",
+      "type": "Dress Shirt",
+      "color": "white",
+      "model": "google/nano-banana-2",
+      "oldHash": "6e7c981e4d23407033e2d555ea1e22a81bc9332044151d196ac6b53de88a5729",
+      "generatedPngHash": "580e406e513ae93088f71acee6b35e875e58185febdc4684faf15c461b31edde",
+      "renderedHash": "ca5b75ed95ed7449c222df3590c99f621a38dfe78692c74ec764ba4200e737e8",
+      "pngBytes": 1137969,
+      "webpBytes": 81546,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "tops-blouse-ivory.png",
+      "renderedFile": "tops-blouse-ivory.webp",
+      "category": "Tops",
+      "type": "Blouse",
+      "color": "ivory",
+      "model": "google/nano-banana-2",
+      "oldHash": "8c2a87ed11acc440f9a41f92d5b3e0b1fb4f393286cc43df589e0042bfb87c21",
+      "generatedPngHash": "a552077c545bcb28ad9fdaaae36629ff4bbcdeaaeb3830ed0ac4a9c18b081c32",
+      "renderedHash": "0d10cf25b92ab7f4203b637e7fa13f1433f167cbdc247f0836525a7fe2a79097",
+      "pngBytes": 1207541,
+      "webpBytes": 92954,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "tops-tank-top-white.png",
+      "renderedFile": "tops-tank-top-white.webp",
+      "category": "Tops",
+      "type": "Tank Top",
+      "color": "white",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "ce0100d188d962105efa9883627f98573e172579ffb4bea2a043ccfbafc44ebb",
+      "generatedPngHash": "d2da0b95e4bb4c647c7fc5793365aab7f9441ba3177d5595c035f68c5bbc2347",
+      "renderedHash": "f8b89293bb52d76d42238b5f4b7bec70d6fe9be3de006c15fa710211edea26b4",
+      "pngBytes": 774130,
+      "webpBytes": 44064,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "tops-sweater-grey.png",
+      "renderedFile": "tops-sweater-grey.webp",
+      "category": "Tops",
+      "type": "Sweater",
+      "color": "grey",
+      "model": "google/nano-banana-2",
+      "oldHash": "ecee3dd9f3a4cd4d00459ba43e1184ff0de65739f75037629ca539cc69989a70",
+      "generatedPngHash": "69a253ad87338807d5107dfbeb7de7b87d8b8fae203d6d4cfc57fcf715590eda",
+      "renderedHash": "8dd868a0ca9d3c14a9b13a2ecf409871e9864dc4ec69f0e352a4840b2f6dc6b6",
+      "pngBytes": 1759699,
+      "webpBytes": 369124,
+      "review": "Nano has stronger visible knit texture and natural folds than the Klein sample."
+    },
+    {
+      "file": "tops-cardigan-grey.png",
+      "renderedFile": "tops-cardigan-grey.webp",
+      "category": "Tops",
+      "type": "Cardigan",
+      "color": "grey",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "f8e29902bd07a17d3d7d4b00f12047683dc461ee569ca89a850d6c7626465dfd",
+      "generatedPngHash": "510ce8ae4a09c035faf1530a3d9bec72b6fc8995366071943569aa244f33e8e9",
+      "renderedHash": "765ac820b884a214b48dafba39d7bbc42d974be7e0646d5ea77086b7959d6554",
+      "pngBytes": 1213369,
+      "webpBytes": 188728,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "tops-hoodie-grey.png",
+      "renderedFile": "tops-hoodie-grey.webp",
+      "category": "Tops",
+      "type": "Hoodie",
+      "color": "grey",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "b516a65ba529189dd797f6f3b6a0799f83eb2f2f5813500194e55e27c489125f",
+      "generatedPngHash": "8869ef0ec4bd7cc02c0bd3c6dfc0cbd614909480f563ffc79810ede2eeea97b5",
+      "renderedHash": "10a7d3cfff1dc61bf31b02cf692464912602eba134be9cd863cc2bba9c16a54e",
+      "pngBytes": 1353508,
+      "webpBytes": 192826,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "tops-quarter-zip-navy.png",
+      "renderedFile": "tops-quarter-zip-navy.webp",
+      "category": "Tops",
+      "type": "Quarter Zip",
+      "color": "navy",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "0b7ea35989ea10e2c4be498440c004954c2b02f5408c951d98a5c9f3842be6ec",
+      "generatedPngHash": "0400ecd9e7ba3591992556d0728fb0cef55caf932cee2710a6be4188c729eeae",
+      "renderedHash": "d51eae41a5f3705a6ea448004797456c6dd9e9030a5ad7a713cf34f214718929",
+      "pngBytes": 1280142,
+      "webpBytes": 136020,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "bottoms-jeans-denim.png",
+      "renderedFile": "bottoms-jeans-denim.webp",
+      "category": "Bottoms",
+      "type": "Jeans",
+      "color": "denim",
+      "model": "google/nano-banana-2",
+      "oldHash": "7a3e599acbc5e27492e67927d639ada8b7c883773575ffb51be429512dcc1e22",
+      "generatedPngHash": "5eedadac7f3af807fa35ff92f7efed47ccdd0b45ab38cc5e3587efee98398e93",
+      "renderedHash": "f519d2b07e53a2942678ec2b5214994c0ff32deaf999c59c3e98105845e6407d",
+      "pngBytes": 964910,
+      "webpBytes": 132088,
+      "review": "Nano preserves richer denim texture and natural construction."
+    },
+    {
+      "file": "bottoms-chinos-khaki.png",
+      "renderedFile": "bottoms-chinos-khaki.webp",
+      "category": "Bottoms",
+      "type": "Chinos",
+      "color": "khaki",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "5a3d0522bcf67004d54efed00e59f802d11a4a4af794e19ba3e9374398f43097",
+      "generatedPngHash": "7989db0a04ccc9a97ec185e708d43366164a9b2ff603d9c921fbf509154c47f5",
+      "renderedHash": "6716ef2819f2c9fcb677d54414d7103240f300aa0ad2c405bc1e7450ab2ec050",
+      "pngBytes": 1064182,
+      "webpBytes": 100636,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "bottoms-trousers-charcoal.png",
+      "renderedFile": "bottoms-trousers-charcoal.webp",
+      "category": "Bottoms",
+      "type": "Trousers",
+      "color": "charcoal",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "97591a143c3d35feed294f9a02abd4ca74c9852ed483a7ff58bcb69cf377b950",
+      "generatedPngHash": "7e932dc1a1a233ca1883bf587b67b959b657f7132fc03d724a0d74f02cd9cc5a",
+      "renderedHash": "c140ce17e31453a31abc64aa662bebfd7b48f879393809645ad9f118c0cd29a6",
+      "pngBytes": 858688,
+      "webpBytes": 116276,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "bottoms-shorts-khaki.png",
+      "renderedFile": "bottoms-shorts-khaki.webp",
+      "category": "Bottoms",
+      "type": "Shorts",
+      "color": "khaki",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "fedfbcc8170535cc0c6534c24a5abdfe6403c8e1af45a36fb13f45b52cc03754",
+      "generatedPngHash": "0a6a19cce5d1e5f104349492b7e1aa12b926cc2b75d67de4c70cf6e887f3dbea",
+      "renderedHash": "d3b49efd9ccec4dd17794b9b38b698dbc017a927408cbc23baedaa3a50fe3b2c",
+      "pngBytes": 1034833,
+      "webpBytes": 110786,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "bottoms-skirt-navy.png",
+      "renderedFile": "bottoms-skirt-navy.webp",
+      "category": "Bottoms",
+      "type": "Skirt",
+      "color": "navy",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "819002627042eb0d95fa505b4c1772996c2449fe565b0d2cb950f5197aaafd68",
+      "generatedPngHash": "ccf46fa382fb5ab8f30237c27b8c16b34817751acfea835de960a5f17b3e0f7a",
+      "renderedHash": "386b587bab161797728bfad153002fee9c20cd513585c323ecee8bc4b1b96903",
+      "pngBytes": 933552,
+      "webpBytes": 50966,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "bottoms-leggings-black.png",
+      "renderedFile": "bottoms-leggings-black.webp",
+      "category": "Bottoms",
+      "type": "Leggings",
+      "color": "black",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "27df8aaf3863eeabd6bf405c7a1e7433dfdb27f346b33c7ea0c60ed85a56eda6",
+      "generatedPngHash": "faf3d686f77eb32e08bbcd42f279fe74dc4985fbb1d51ba83fd5ab1cb5c70780",
+      "renderedHash": "410235421ecbabe34f5d6c9cd3a402de65ae594926e80fae68cf5d7e73041533",
+      "pngBytes": 533217,
+      "webpBytes": 41988,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "shoes-sneakers-white.png",
+      "renderedFile": "shoes-sneakers-white.webp",
+      "category": "Shoes",
+      "type": "Sneakers",
+      "color": "white",
+      "model": "google/nano-banana-2",
+      "oldHash": "b4a23d3b69e7bd27aa6338ef1a866f978a5c44bdd5347e3620918ffc827a9931",
+      "generatedPngHash": "1692c538bd5898abf1f682c16e431f07cddcd6c94d3ec1bb4072df86c8166196",
+      "renderedHash": "62e892ecd34cc47582526585add07f7cca4bc575bd0f64fa84fae1934c2447b5",
+      "pngBytes": 1337617,
+      "webpBytes": 140878,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "shoes-loafers-brown.png",
+      "renderedFile": "shoes-loafers-brown.webp",
+      "category": "Shoes",
+      "type": "Loafers",
+      "color": "brown",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "55c32da26ba7421ef3cfcfab9f3a354c25371f18c15ac532b1bafbb6faa65156",
+      "generatedPngHash": "5b5146dd1f5b9a488ed51c7bf6e641a9ea301182706458e9c9e83e445ea073c7",
+      "renderedHash": "b0e87b2fa7adc82d80711084a750335ce086c831fc9d5f6b06bd2dca172da2c1",
+      "pngBytes": 1007039,
+      "webpBytes": 112226,
+      "review": "Klein shows a convincing complete pair and a clearer three-quarter leather product view."
+    },
+    {
+      "file": "shoes-boots-brown.png",
+      "renderedFile": "shoes-boots-brown.webp",
+      "category": "Shoes",
+      "type": "Boots",
+      "color": "brown",
+      "model": "google/nano-banana-2",
+      "oldHash": "ae349c8a94d4ab3c7e015327f46861e4c6869e6c021bae03204d783d98f3f562",
+      "generatedPngHash": "23a448e36c589249ba381068bb588759fa4c320079a5d75468739cb7d2c92a33",
+      "renderedHash": "2ea640e46cbcb14259deb2dd6369ffe6a66cc84e57b842630197519cfb708ad1",
+      "pngBytes": 1282318,
+      "webpBytes": 166972,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "shoes-dress-shoes-black.png",
+      "renderedFile": "shoes-dress-shoes-black.webp",
+      "category": "Shoes",
+      "type": "Dress Shoes",
+      "color": "black",
+      "model": "google/nano-banana-2",
+      "oldHash": "99b3abf58f9b2754f088f239f3df1dbffb15588d58eeb22f016c84df0ecb84b4",
+      "generatedPngHash": "02b320804ef388bcf6b8c356d2484e9e7e801f684989788a283ec77f3fe39fc0",
+      "renderedHash": "539c1816e0d2612ca68460ce125da3f701546f0dc7ab62bc01ec8d5a1ef1f84a",
+      "pngBytes": 1200771,
+      "webpBytes": 135690,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "shoes-heels-black.png",
+      "renderedFile": "shoes-heels-black.webp",
+      "category": "Shoes",
+      "type": "Heels",
+      "color": "black",
+      "model": "google/nano-banana-2",
+      "oldHash": "500f7cdb204d358a43e92270412cb7118d12eb6595677af5e8bccb46b70a0e69",
+      "generatedPngHash": "bbdbd386b2723a1204c0ea6ab0d47b0476c1c8cce7eedf86d824900d7f2c8d08",
+      "renderedHash": "fd9c8f8ca704eed72e8fd91a150df41c8d76c8f468bfb34649c5c2616f264cfe",
+      "pngBytes": 1099300,
+      "webpBytes": 147728,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "shoes-flats-black.png",
+      "renderedFile": "shoes-flats-black.webp",
+      "category": "Shoes",
+      "type": "Flats",
+      "color": "black",
+      "model": "google/nano-banana-2",
+      "oldHash": "41c9065a6a37921ea23fd75faa17dfbb97b129ed385e90463fd46b2320fe738c",
+      "generatedPngHash": "4c10ace774854784f12222901f6d1253c55ac6f242c7b6119a232e26024a206a",
+      "renderedHash": "8cdfe443619652974131fa6d5cfff20177c86579cbe549baa853dcf1008fba44",
+      "pngBytes": 1592525,
+      "webpBytes": 159662,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "shoes-sandals-tan.png",
+      "renderedFile": "shoes-sandals-tan.webp",
+      "category": "Shoes",
+      "type": "Sandals",
+      "color": "tan",
+      "model": "google/nano-banana-2",
+      "oldHash": "e983a3e9d656921654a3021ac2b1f6b0a547f15b0163d959e8d54acda9f7ee40",
+      "generatedPngHash": "e03e367a1293d9d7f3ef5d66d2ab2e1f2a897ed5b592cdb8cee331ba6f56d52b",
+      "renderedHash": "6577225495231c30bb2ee3ba4fc4cb09f0f4f86246e599130ef5b00d2c02dbcf",
+      "pngBytes": 1116630,
+      "webpBytes": 143736,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "layers-blazer-navy.png",
+      "renderedFile": "layers-blazer-navy.webp",
+      "category": "Layers",
+      "type": "Blazer",
+      "color": "navy",
+      "model": "google/nano-banana-2",
+      "oldHash": "47f0e31f7aa127f10e360747f83a1b04387ceb7eb27ec4fa6bfaf05395a70761",
+      "generatedPngHash": "f1587561c0167e468b4f7261045c370ddb20b6adfbef57a4f491b7486cc8504a",
+      "renderedHash": "75e1b7a3c141bdb3bbe66044be70f31da54809c7c55a42d06ec816a3855af490",
+      "pngBytes": 1502059,
+      "webpBytes": 152508,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "layers-sportcoat-grey.png",
+      "renderedFile": "layers-sportcoat-grey.webp",
+      "category": "Layers",
+      "type": "Sportcoat",
+      "color": "grey",
+      "model": "google/nano-banana-2",
+      "oldHash": "0faf4a870eec7cc1ce548b4834f72aec080d40789c95acaff48248ed531a27c0",
+      "generatedPngHash": "98615e34ed4a10558fffd465366f133549f6795c616bbb89eddf331427615a84",
+      "renderedHash": "32f8691eccfd31b9b18a217e2b538e07c5d7433644c41020c74d4f40ee9d5220",
+      "pngBytes": 1644811,
+      "webpBytes": 324938,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "layers-jacket-olive.png",
+      "renderedFile": "layers-jacket-olive.webp",
+      "category": "Layers",
+      "type": "Jacket",
+      "color": "olive",
+      "model": "google/nano-banana-2",
+      "oldHash": "178150bcc7e1ab1e3f89dfd5eb7fa1e2b90241a0abc9b47692ba4674cc0d65ce",
+      "generatedPngHash": "03356bd80adcafd293eeee79cac8943aa7dbedcf48443d6a72636f2f5c4ad6d9",
+      "renderedHash": "c7254bc776234bd19028219a2febdc22464e7b917d20c84fb5921892cf9a25fa",
+      "pngBytes": 1510340,
+      "webpBytes": 221384,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "layers-coat-camel.png",
+      "renderedFile": "layers-coat-camel.webp",
+      "category": "Layers",
+      "type": "Coat",
+      "color": "camel",
+      "model": "google/nano-banana-2",
+      "oldHash": "c42f8006c5f370bf0f2bfacdcd672be933478ed4d5afcf3bd85e6ba3ef35c0dc",
+      "generatedPngHash": "83889ea1a77c389346d204a2f305f25d53db0cbbfa3d433f04a4769a984469a4",
+      "renderedHash": "3e3cf58ffef58aa824cf823ae1437fa7fc643c45498331763860586b1323b96b",
+      "pngBytes": 1371990,
+      "webpBytes": 185832,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "layers-cardigan-grey.png",
+      "renderedFile": "layers-cardigan-grey.webp",
+      "category": "Layers",
+      "type": "Cardigan",
+      "color": "grey",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "9e85e54fd219c3b16bdecdede9f5c550b06e5b0b63331e01dda786f8ea4bdc20",
+      "generatedPngHash": "610a912f453458dcb45c445ff4f3aab30ee1059ba625959431d55e6e6b78e823",
+      "renderedHash": "c8f41ded272598c52d5b5506662fc8a21c343a87c484bdd2d1dea0dca189e84a",
+      "pngBytes": 1274792,
+      "webpBytes": 189372,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "dresses-mini-dress-navy.png",
+      "renderedFile": "dresses-mini-dress-navy.webp",
+      "category": "Dresses",
+      "type": "Mini Dress",
+      "color": "navy",
+      "model": "google/nano-banana-2",
+      "oldHash": "d9e0157f5564bfb1b2f1bb672cdac025d7627673aaa1dcabac32d04e7b4e787f",
+      "generatedPngHash": "6ab0c33c34984d955f3fd2e1ec8bf1d6ff9a10d5c2c8a4a00ec9a42369c32d7d",
+      "renderedHash": "499065cb3a5c27a467ff54c88700ac0e13fb7e475785135f3d3d7a01a3f5e738",
+      "pngBytes": 950073,
+      "webpBytes": 122204,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "dresses-midi-dress-forest.png",
+      "renderedFile": "dresses-midi-dress-forest.webp",
+      "category": "Dresses",
+      "type": "Midi Dress",
+      "color": "forest",
+      "model": "google/nano-banana-2",
+      "oldHash": "f74e3f0c25b74a416e1836847ba20dbc0743559383a75107f304feee1fd305c1",
+      "generatedPngHash": "a999c76f58029aa6e9f0c310adb41f1ec6df6f24ac9aad997196e457227a3896",
+      "renderedHash": "7a096346c3f53b476be23c01aae768c43496552bc97a4b9da557b307f787865b",
+      "pngBytes": 908734,
+      "webpBytes": 86184,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "dresses-maxi-dress-navy.png",
+      "renderedFile": "dresses-maxi-dress-navy.webp",
+      "category": "Dresses",
+      "type": "Maxi Dress",
+      "color": "navy",
+      "model": "google/nano-banana-2",
+      "oldHash": "dde9c297fb0117207028dbcf47c0c309cb7b3d321b874c4d28a8de7bd1eac6fe",
+      "generatedPngHash": "43e955584ae451f47ce217549b3c756371b8e244dc92bc85ff8aca249d915d5f",
+      "renderedHash": "846c863397268fe8f3e03bedc58d461608e3d0940a845443bc9a46cbab15470b",
+      "pngBytes": 832293,
+      "webpBytes": 59706,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "dresses-cocktail-dress-burgundy.png",
+      "renderedFile": "dresses-cocktail-dress-burgundy.webp",
+      "category": "Dresses",
+      "type": "Cocktail Dress",
+      "color": "burgundy",
+      "model": "google/nano-banana-2",
+      "oldHash": "a6254f48b17490895f3b8edf9236bccfb2bdbfaa4b1669dcf27685a5a4ed346c",
+      "generatedPngHash": "47e6a5198cc15ff3a9851e08ece5e992999363ab50c07fdb136fe0c1a8112eb6",
+      "renderedHash": "e325df3935c1c0b12406b47e49731c6c02896cd4c6eddea28c2b9c978f11b3de",
+      "pngBytes": 977328,
+      "webpBytes": 74320,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "dresses-casual-dress-blue.png",
+      "renderedFile": "dresses-casual-dress-blue.webp",
+      "category": "Dresses",
+      "type": "Casual Dress",
+      "color": "blue",
+      "model": "google/nano-banana-2",
+      "oldHash": "140996123995346795bf88e7b70bff101e2c2a6ce671251f9f479adf21ecfc06",
+      "generatedPngHash": "be89e6b625ed5e79568518e5f28a5c307d3e5513d47f0e3d63dc2da44bcd7f2d",
+      "renderedHash": "73ee878341e32d356eabd4b4212d73d7ebd755b2572d2a6a41018ebf355d81bd",
+      "pngBytes": 1075949,
+      "webpBytes": 108134,
+      "review": "Reviewed against the original library: more photographic material detail, complete silhouette and clean framing."
+    },
+    {
+      "file": "accessories-belt-brown.png",
+      "renderedFile": "accessories-belt-brown.webp",
+      "category": "Accessories",
+      "type": "Belt",
+      "color": "brown",
+      "model": "google/nano-banana-2",
+      "oldHash": "25669d6de85f487b8a0b87ffc07bfe2edf3a904d26d6a4ad61a6a8a785e953e6",
+      "generatedPngHash": "52735f197f64cd5cee6bff71b5ded5bc43fb7063be7f6bd5c826e0cfebcb7298",
+      "renderedHash": "90910b329bc08c55c51ea3ec8ad3492fa0e72c15a2c6f8e3dea4bde31c30e6ab",
+      "pngBytes": 824551,
+      "webpBytes": 101478,
+      "review": "Nano produced a full waist belt with realistic leather grain after the explicit coil instruction."
+    },
+    {
+      "file": "accessories-tie-burgundy.png",
+      "renderedFile": "accessories-tie-burgundy.webp",
+      "category": "Accessories",
+      "type": "Tie",
+      "color": "burgundy",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "d2568eb0ddbcfce4a9b7ffc3acffc98cb9c7bc10e8a354914c9b1402539351ca",
+      "generatedPngHash": "fe1f5c73245d4147a7eb69a61e6ddd5b7813b7e497531409d7591c2f445e59fd",
+      "renderedHash": "c9191b375e07bda18257261dc99b94f68c17d697728ed80ff68785a5a90ceff2",
+      "pngBytes": 707413,
+      "webpBytes": 56292,
+      "review": "Klein keeps the whole neck loop in frame; Nano clipped the top and failed structural review."
+    },
+    {
+      "file": "accessories-watch-grey.png",
+      "renderedFile": "accessories-watch-grey.webp",
+      "category": "Accessories",
+      "type": "Watch",
+      "color": "grey",
+      "model": "black-forest-labs/flux-2-klein-4b",
+      "oldHash": "1f8eedb080b725e848f09776236697d73435f65a540ea7bbfeab3c319138ea11",
+      "generatedPngHash": "8c49928403c15b0fc878633b775e9a887796b55c6962617f4d807fc6e1dbfc7d",
+      "renderedHash": "93794b3a8745422142a975f51a068ea7460a4dac65e303deb48207e55fa57f08",
+      "pngBytes": 730176,
+      "webpBytes": 58412,
+      "review": "Klein keeps clean metal construction and dial details without invented branding."
+    },
+    {
+      "file": "accessories-scarf-grey.png",
+      "renderedFile": "accessories-scarf-grey.webp",
+      "category": "Accessories",
+      "type": "Scarf",
+      "color": "grey",
+      "model": "google/nano-banana-2",
+      "oldHash": "e1a8e396f1fb63749cf26fa7982a7ff5589081b84e59dc975b696a4b9770b46f",
+      "generatedPngHash": "7e4f14ef52b5a7951714dc43dc6f3bca818a3a4f6ec6f987ac523181de4d02c2",
+      "renderedHash": "cc5e5afec34f2e1c3b0ad07eecac84b247bed5aad3c73fb927b6a0b7551e98b3",
+      "pngBytes": 1341275,
+      "webpBytes": 253022,
+      "review": "Nano preserves realistic wool weave, fringe and full fabric drape."
+    }
+  ],
+  "held": [
+    {
+      "file": "tops-t-shirt-purple.png",
+      "reason": "Hold: the new purple is too pale and blue for the stock purple color. Retain the original until a color-anchored retry is reviewed."
+    },
+    {
+      "file": "tops-t-shirt-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-polo-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-ocbd-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-dress-shirt-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-blouse-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-tank-top-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-sweater-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-cardigan-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-hoodie-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "tops-quarter-zip-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-jeans-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-chinos-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-trousers-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-shorts-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-skirt-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "bottoms-leggings-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sneakers-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-loafers-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-boots-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-dress-shoes-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-heels-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-flats-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "shoes-sandals-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-blazer-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-sportcoat-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-jacket-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-coat-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "layers-cardigan-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-mini-dress-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-midi-dress-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-maxi-dress-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-cocktail-dress-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "dresses-casual-dress-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-belt-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-grey.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-tie-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-watch-lavender.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-black.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-white.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-taupe.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-charcoal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-stone.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-ivory.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-cream.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-beige.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-navy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-denim.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-light-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-sky-blue.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-teal.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-brown.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-tan.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-khaki.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-camel.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-chocolate.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-green.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-olive.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-forest.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-sage.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-red.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-burgundy.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-maroon.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-rust.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-yellow.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-mustard.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-pink.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-blush.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-purple.png",
+      "reason": "Not yet approved"
+    },
+    {
+      "file": "accessories-scarf-lavender.png",
+      "reason": "Not yet approved"
+    }
+  ],
+  "reservedUsd": 2.2789999999999973,
+  "estimatedProviderUsd": 1.6837784094951254,
+  "costNote": "Provider estimates and admission reservations are not reconciled invoices. Original PNG bytes are archived in ignored staging/originals.",
+  "environment": "Local workspace only; production deployment pending completion and provider credit."
+}

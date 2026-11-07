@@ -11,7 +11,7 @@ import { ProcessingIndicator } from './processing-indicator';
 
 
 
-import Image from 'next/image';
+import Image from '@/components/clothing-image';
 import { useImmerState } from '@/lib/utils/immer-state';
 import { safeValidate } from '@/lib/utils/validation';
 import { 

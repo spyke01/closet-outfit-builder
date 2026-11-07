@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-11-07T01:53:51.360Z",
+  "catalogCount": 1295,
+  "webpCount": 1295,
+  "missing": [],
+  "existingPngBytes": 203243844,
+  "fallbackWebpBytes": 150355598,
+  "note": "Fallback WebPs preserve original appearance until reviewed new candidates overwrite selected derivatives. Original PNG files remain intact."
+}

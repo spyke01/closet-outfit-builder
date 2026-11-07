@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/clothing-image";
 
 import { useEffect, useRef, useState } from "react";
 import { Camera, ImagePlus, Loader2, Check, X } from "lucide-react";

@@ -6,7 +6,7 @@ const logger = createLogger({
   component: "app-wardrobe-items-[id]-item-detail-client",
 });
 import React, { useState, useMemo } from "react";
-import Image from "next/image";
+import Image from "@/components/clothing-image";
 import { WardrobePieceTools } from "@/components/wardrobe-piece-tools";
 import {
   useWardrobeItem,

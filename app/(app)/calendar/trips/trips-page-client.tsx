@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/clothing-image";
 import Link from "next/link";
 import { hasCompleteOutfitItems } from "@/lib/utils/outfit-coverage";
 import { PlannerTabs } from "@/components/planner-tabs";

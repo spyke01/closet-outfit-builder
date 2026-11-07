@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-11-07T02:20:08.650Z",
+  "passed": true,
+  "types": 37,
+  "embeddedImages": 74,
+  "checks": [
+    "Every embedded image loads without a server",
+    "Category filtering works",
+    "Image zoom and Escape close work",
+    "Dark backdrop works",
+    "390px phone view has no page overflow",
+    "No browser runtime errors"
+  ],
+  "newPaidInferenceCalls": 0
+}

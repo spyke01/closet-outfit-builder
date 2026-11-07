@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/clothing-image";
 
 import { useEffect, useState } from "react";
 import {
@@ -69,7 +69,7 @@ export function DefaultClothingImagePicker({
       <div>
         <h3 className="font-medium">Use a default AI image</h3>
         <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-          Choose a ready-made illustration that resembles your piece. It won’t
+          Choose a ready-made image that resembles your piece. It won’t
           capture your exact fit or details. This uses no AI generation
           allowance.
         </p>

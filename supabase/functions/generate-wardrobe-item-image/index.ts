@@ -18,7 +18,7 @@ import {
   type AiDb,
   type EdgeJob,
 } from "../_shared/ai-guard.ts";
-import { buildWardrobeItemPrompt } from "../_shared/wardrobe-item-prompt-builder.ts";
+import { buildWardrobePhotoPrompt } from "../_shared/wardrobe-photo-prompt.ts";
 import { isBoundedClothingImage } from "../_shared/image-metadata.ts";
 import {
   resolveWardrobeImageModel,
@@ -146,7 +146,7 @@ serve(async (req: Request) => {
     if (error || !item) throw new GuardError("NOT_FOUND", 404);
     if (!item.color) throw new GuardError("MISSING_ITEM_DATA", 400);
     // Derive the request from the owned row; do not accept arbitrary paid prompts.
-    const prompt = buildWardrobeItemPrompt({
+    const prompt = buildWardrobePhotoPrompt({
       name: String(item.name).slice(0, 100),
       category: String(
         (item.category as { name?: string })?.name || "Clothing",
@@ -157,6 +157,10 @@ serve(async (req: Request) => {
     });
     const model = resolveWardrobeImageModel(
       Deno.env.get("REPLICATE_WARDROBE_MODEL"),
+      {
+        name: item.name,
+        category: (item.category as { name?: string })?.name,
+      },
     );
     let retryParent: string | undefined;
     if (input.is_retry) {

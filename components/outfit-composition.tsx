@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/clothing-image";
 import { Shirt, ArrowLeftRight } from "lucide-react";
 import type { WardrobeItem } from "@/lib/types/database";
 

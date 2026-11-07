@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
+import Image from '@/components/clothing-image';
 import { WardrobeItem } from '@/lib/types/database';
 import { createLogger } from '@/lib/utils/logger';
 

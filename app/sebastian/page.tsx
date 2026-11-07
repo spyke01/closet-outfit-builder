@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/clothing-image";
 import Link from "next/link";
 import { MessageCircle, Shirt, CalendarDays, Camera } from "lucide-react";
 import { StaticPageNavigation } from "@/components/static-page-navigation";

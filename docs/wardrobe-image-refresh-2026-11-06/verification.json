@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-11-07T02:22:27.858Z",
+  "status": "Waiting for user to add Replicate credit",
+  "productionUpdated": false,
+  "providerAccount": "spyke01",
+  "providerReportedCredit": "Less than $5; confirmed by API throttling response",
+  "catalogImages": 1295,
+  "solidColorTargets": 1258,
+  "retainedMulticolor": 37,
+  "pilotOutputs": 43,
+  "preparedTargets": 69,
+  "approvedAndAppliedLocally": 68,
+  "estimatedTotalRefreshUsd": 51.19171376,
+  "estimatedProviderUsdSoFar": 1.6837784094951254,
+  "reservedUsd": 2.2789999999999973,
+  "admissionCeilingUsd": 70,
+  "billingSettingsChanged": false,
+  "tests": {
+    "filesPassed": 225,
+    "filesSkipped": 1,
+    "passed": 2397,
+    "skipped": 4
+  },
+  "checks": {
+    "strictLint": true,
+    "types": true,
+    "productionBuild": "passed with Webpack; local Turbopack worker-port binding blocked",
+    "denoEntryPoints": 3,
+    "browserWorkflowChecks": 34,
+    "allCatalogWebpsValid": 1295,
+    "legacyUrlsVerifiedForNewImages": 68,
+    "privateCredentialMatchesInBuiltBrowserAssets": 0
+  },
+  "resume": "After explicit credit confirmation: node --import tsx scripts/refresh-wardrobe-library.ts --run --resume-funded --pace-ms=1250",
+  "resumeLedger": "Ignored persistent workspace folder tmp/wardrobe-refresh-2026-11-06; preserve accepted handles and reviewed hashes."
+}

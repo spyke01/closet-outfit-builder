@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/clothing-image";
 import Link from "next/link";
 import type { WardrobeItem } from "@/lib/types/database";
 

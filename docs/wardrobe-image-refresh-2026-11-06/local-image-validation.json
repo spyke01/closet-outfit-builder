@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-11-07T02:19:24.990Z",
+  "passed": true,
+  "environment": "Local production preview; not deployed",
+  "approvedNewImagesServedAtLegacyUrls": 68,
+  "catalogWebpsValid": 1295,
+  "originalPngCount": 1295,
+  "privatePhotoRoutesChanged": false
+}

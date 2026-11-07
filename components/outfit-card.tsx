@@ -7,7 +7,7 @@ import React, { useState, useCallback } from 'react';
 import { RotateCcw, Heart } from 'lucide-react';
 
 
-import Image from 'next/image';
+import Image from '@/components/clothing-image';
 
 import { safeValidate } from '@/lib/utils/validation';
 import { OutfitSelectionSchema, type OutfitSelection } from '@/lib/schemas';

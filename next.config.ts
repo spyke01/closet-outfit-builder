@@ -65,6 +65,17 @@ const nextConfig: NextConfig = {
   // Enable trailing slash for better compatibility
   trailingSlash: true,
 
+  async rewrites() {
+    return {
+      beforeFiles: [{
+        source: "/images/wardrobe/generated/onboarding/:filename.png",
+        destination: "/images/wardrobe/generated/onboarding/:filename.webp",
+      }],
+      afterFiles: [],
+      fallback: [],
+    };
+  },
+
   // Configure images for Netlify deployment
   images: {
     // Disable Next.js image optimization for Netlify

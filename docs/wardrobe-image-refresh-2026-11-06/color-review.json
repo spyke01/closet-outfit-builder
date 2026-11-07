@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-11-07T02:04:42.051Z",
+  "unsubmittedPromptsAnchored": 1188,
+  "pendingPaidWorkHeld": true,
+  "held": [
+    {
+      "file": "tops-t-shirt-purple.png",
+      "reason": "New sample is too pale/blue for the stock purple target; preserve existing until a targeted retry."
+    }
+  ],
+  "note": "Only unsubmitted prompts changed. Completed and accepted provider requests retain their original prompt, model, handle and reservation."
+}
