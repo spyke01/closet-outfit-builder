@@ -1,0 +1,554 @@
+{
+  "base": "https://www.myaioutfit.com",
+  "checkedAt": "2026-11-07T04:44:48.511Z",
+  "scope": "Isolated temporary free account; real mobile navigation, Chrome CPU 4x slowdown, no artificial network delay, service workers blocked for consistent browser throttling, no AI inference",
+  "routes": [
+    {
+      "label": "Planner",
+      "route": "/calendar",
+      "elapsedMs": 898,
+      "feedbackMs": 55.19999998807907,
+      "headingMs": 464.69999998807907,
+      "heading": "See the whole month",
+      "overflow": false
+    },
+    {
+      "label": "Analytics",
+      "route": "/analytics",
+      "elapsedMs": 837,
+      "feedbackMs": 21.69999998807907,
+      "headingMs": 464.39999997615814,
+      "heading": "Make more of what you own",
+      "overflow": false
+    },
+    {
+      "label": "Today",
+      "route": "/today",
+      "elapsedMs": 841,
+      "feedbackMs": 30,
+      "headingMs": 347.19999998807907,
+      "heading": "Good evening, Navigation.",
+      "overflow": false
+    },
+    {
+      "label": "Planner",
+      "route": "/calendar",
+      "elapsedMs": 838,
+      "feedbackMs": 17.30000001192093,
+      "headingMs": 338.59999999403954,
+      "heading": "See the whole month",
+      "overflow": false
+    },
+    {
+      "label": "Today",
+      "route": "/today",
+      "elapsedMs": 841,
+      "feedbackMs": 24.400000005960464,
+      "headingMs": 364.30000001192093,
+      "heading": "Good evening, Navigation.",
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "rscRequests": [
+    {
+      "path": "/today/",
+      "totalMs": 131,
+      "ttfbMs": 118
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 203,
+      "ttfbMs": 127
+    },
+    {
+      "path": "/calendar/trips/",
+      "totalMs": 119,
+      "ttfbMs": 118
+    },
+    {
+      "path": "/calendar/upcoming/",
+      "totalMs": 139,
+      "ttfbMs": 138
+    },
+    {
+      "path": "/calendar/upcoming/",
+      "totalMs": 164,
+      "ttfbMs": 129
+    },
+    {
+      "path": "/calendar/trips/",
+      "totalMs": 187,
+      "ttfbMs": 186
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 433,
+      "ttfbMs": 199
+    },
+    {
+      "path": "/settings/billing/",
+      "totalMs": 129,
+      "ttfbMs": 129
+    },
+    {
+      "path": "/settings/billing/",
+      "totalMs": 162,
+      "ttfbMs": 161
+    },
+    {
+      "path": "/today/",
+      "totalMs": 237,
+      "ttfbMs": 146
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 280,
+      "ttfbMs": 205
+    },
+    {
+      "path": "/today/",
+      "totalMs": 333,
+      "ttfbMs": 189
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 122,
+      "ttfbMs": 118
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 136,
+      "ttfbMs": 133
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 142,
+      "ttfbMs": 139
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 131,
+      "ttfbMs": 128
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 319,
+      "ttfbMs": 213
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 461,
+      "ttfbMs": 165
+    },
+    {
+      "path": "/today/",
+      "totalMs": 1007,
+      "ttfbMs": 1005
+    },
+    {
+      "path": "/settings/billing/",
+      "totalMs": 112,
+      "ttfbMs": 111
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 1608,
+      "ttfbMs": 1558
+    },
+    {
+      "path": "/settings/billing/",
+      "totalMs": 151,
+      "ttfbMs": 150
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 2310,
+      "ttfbMs": 105
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 2335,
+      "ttfbMs": 131
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 2629,
+      "ttfbMs": 156
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 1189,
+      "ttfbMs": 123
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 165,
+      "ttfbMs": 133
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 166,
+      "ttfbMs": 163
+    },
+    {
+      "path": "/today/",
+      "totalMs": 183,
+      "ttfbMs": 181
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 206,
+      "ttfbMs": 203
+    },
+    {
+      "path": "/calendar/trips/",
+      "totalMs": 115,
+      "ttfbMs": 113
+    },
+    {
+      "path": "/calendar/upcoming/",
+      "totalMs": 136,
+      "ttfbMs": 135
+    },
+    {
+      "path": "/today/",
+      "totalMs": 173,
+      "ttfbMs": 171
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 235,
+      "ttfbMs": 197
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 130,
+      "ttfbMs": 128
+    },
+    {
+      "path": "/calendar/trips/",
+      "totalMs": 146,
+      "ttfbMs": 144
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 177,
+      "ttfbMs": 133
+    },
+    {
+      "path": "/calendar/upcoming/",
+      "totalMs": 173,
+      "ttfbMs": 172
+    },
+    {
+      "path": "/wardrobe/items/",
+      "totalMs": 218,
+      "ttfbMs": 214
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 113,
+      "ttfbMs": 113
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 122,
+      "ttfbMs": 122
+    },
+    {
+      "path": "/today/",
+      "totalMs": 143,
+      "ttfbMs": 142
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 114,
+      "ttfbMs": 113
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 137,
+      "ttfbMs": 133
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 125,
+      "ttfbMs": 124
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 121,
+      "ttfbMs": 121
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 104,
+      "ttfbMs": 104
+    },
+    {
+      "path": "/calendar/trips/",
+      "totalMs": 1128,
+      "ttfbMs": 1127
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 1120,
+      "ttfbMs": 1120
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 1247,
+      "ttfbMs": 1247
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 486,
+      "ttfbMs": 485
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 105,
+      "ttfbMs": 105
+    },
+    {
+      "path": "/today/",
+      "totalMs": 127,
+      "ttfbMs": 127
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 128,
+      "ttfbMs": 128
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 133,
+      "ttfbMs": 132
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 139,
+      "ttfbMs": 138
+    },
+    {
+      "path": "/calendar/upcoming/",
+      "totalMs": 138,
+      "ttfbMs": 137
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 173,
+      "ttfbMs": 144
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 170,
+      "ttfbMs": 125
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 108,
+      "ttfbMs": 107
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 153,
+      "ttfbMs": 153
+    },
+    {
+      "path": "/today/",
+      "totalMs": 126,
+      "ttfbMs": 126
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 169,
+      "ttfbMs": 168
+    },
+    {
+      "path": "/today/",
+      "totalMs": 160,
+      "ttfbMs": 157
+    },
+    {
+      "path": "/sizes/",
+      "totalMs": 113,
+      "ttfbMs": 113
+    },
+    {
+      "path": "/wardrobe/items/ff56df78-c169-420e-b645-c2320450f07a/",
+      "totalMs": 113,
+      "ttfbMs": 112
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 503,
+      "ttfbMs": 501
+    },
+    {
+      "path": "/onboarding/",
+      "totalMs": 197,
+      "ttfbMs": 196
+    },
+    {
+      "path": "/wardrobe/items/ff56df78-c169-420e-b645-c2320450f07a/",
+      "totalMs": 159,
+      "ttfbMs": 159
+    },
+    {
+      "path": "/sizes/",
+      "totalMs": 101,
+      "ttfbMs": 101
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 629,
+      "ttfbMs": 618
+    },
+    {
+      "path": "/wardrobe/items/",
+      "totalMs": 116,
+      "ttfbMs": 116
+    },
+    {
+      "path": "/onboarding/",
+      "totalMs": 111,
+      "ttfbMs": 110
+    },
+    {
+      "path": "/wardrobe/items/",
+      "totalMs": 104,
+      "ttfbMs": 103
+    },
+    {
+      "path": "/wardrobe/items/d24ae538-7a5b-4560-bab3-663d769dcdb4/",
+      "totalMs": 119,
+      "ttfbMs": 118
+    },
+    {
+      "path": "/wardrobe/items/30998801-4498-49b0-a0e1-054c948a330e/",
+      "totalMs": 145,
+      "ttfbMs": 145
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 122,
+      "ttfbMs": 122
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 154,
+      "ttfbMs": 153
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 224,
+      "ttfbMs": 149
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 107,
+      "ttfbMs": 106
+    },
+    {
+      "path": "/today/",
+      "totalMs": 143,
+      "ttfbMs": 143
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 172,
+      "ttfbMs": 171
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 218,
+      "ttfbMs": 217
+    },
+    {
+      "path": "/today/",
+      "totalMs": 131,
+      "ttfbMs": 130
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 113,
+      "ttfbMs": 111
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 120,
+      "ttfbMs": 113
+    },
+    {
+      "path": "/outfits/create/",
+      "totalMs": 1033,
+      "ttfbMs": 1033
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 1018,
+      "ttfbMs": 974
+    },
+    {
+      "path": "/outfits/create/",
+      "totalMs": 141,
+      "ttfbMs": 141
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 103,
+      "ttfbMs": 102
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 124,
+      "ttfbMs": 123
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 125,
+      "ttfbMs": 125
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 139,
+      "ttfbMs": 138
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 132,
+      "ttfbMs": 132
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 146,
+      "ttfbMs": 146
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 178,
+      "ttfbMs": 141
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 262,
+      "ttfbMs": 225
+    }
+  ],
+  "billingRequestsDuringNavigation": 0,
+  "checks": [
+    "Main navigation reuses shared membership data without another billing lookup",
+    "Every main navigation click has prompt visible feedback",
+    "A slow Planner navigation can be interrupted; Analytics remains the final destination",
+    "Calendar data has a phone-sized skeleton; reduced motion disables pulsing and unknown counts stay hidden",
+    "Skeletons fit desktop and phone layouts in light and dark themes",
+    "Long requests explain that loading continues and other pages remain available",
+    "The skeleton explains lost connectivity and clears when real data arrives",
+    "All seven primary/planner pages render on a phone and retain header weather access",
+    "Personal routes still send signed-out visitors to login"
+  ],
+  "passed": true,
+  "accountRemoved": true
+}

@@ -1,0 +1,12 @@
+{
+  "id": "6aeeac69e97f6bc36e37c75e",
+  "state": "ready",
+  "commit": "10c1cb9d1ab02d45f86c546152cad40905855c6b",
+  "publishedAt": "2026-11-07T04:44:30.406Z",
+  "error": null,
+  "scan": {
+    "scannedFilesCount": 3895,
+    "secretMatchesCount": 0,
+    "enhancedMatchesCount": 0
+  }
+}

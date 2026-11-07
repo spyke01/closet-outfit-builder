@@ -1,0 +1,46 @@
+{
+  "scope": "Individual synthetic-account samples, 390x844 Chrome viewport, 4x CPU slowdown, simulated 150 ms RTT / 1.6 Mbps download, service workers blocked. Measures first real page heading, not all images, queries, or outfit generation. Not a statistical performance guarantee.",
+  "functionalCommit": "10c1cb9d1ab02d45f86c546152cad40905855c6b",
+  "measurements": [
+    {
+      "route": "/calendar",
+      "visit": 1,
+      "beforeHeadingMs": 699,
+      "afterHeadingMs": 556,
+      "beforeLoadingFeedbackMs": null,
+      "afterLoadingFeedbackMs": 46
+    },
+    {
+      "route": "/analytics",
+      "visit": 2,
+      "beforeHeadingMs": 862,
+      "afterHeadingMs": 350,
+      "beforeLoadingFeedbackMs": null,
+      "afterLoadingFeedbackMs": 30
+    },
+    {
+      "route": "/today",
+      "visit": 3,
+      "beforeHeadingMs": 843,
+      "afterHeadingMs": 353,
+      "beforeLoadingFeedbackMs": null,
+      "afterLoadingFeedbackMs": 33
+    },
+    {
+      "route": "/calendar",
+      "visit": 4,
+      "beforeHeadingMs": 941,
+      "afterHeadingMs": 348,
+      "beforeLoadingFeedbackMs": null,
+      "afterLoadingFeedbackMs": 24
+    },
+    {
+      "route": "/today",
+      "visit": 5,
+      "beforeHeadingMs": 357,
+      "afterHeadingMs": 351,
+      "beforeLoadingFeedbackMs": null,
+      "afterLoadingFeedbackMs": 31
+    }
+  ]
+}

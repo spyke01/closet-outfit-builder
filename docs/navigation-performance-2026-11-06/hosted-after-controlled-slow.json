@@ -1,0 +1,117 @@
+{
+  "base": "https://www.myaioutfit.com",
+  "checkedAt": "2026-11-07T04:46:09.018Z",
+  "scope": "Isolated temporary free account; real mobile navigation, Chrome CPU 4x slowdown, no artificial network delay, service workers blocked for consistent browser throttling, no AI inference; simulated 150ms RTT / 1.6 Mbps download",
+  "routes": [
+    {
+      "label": "Planner",
+      "route": "/calendar",
+      "elapsedMs": 887,
+      "feedbackMs": 45.79999998211861,
+      "headingMs": 556.3999999761581,
+      "heading": "See the whole month",
+      "overflow": false
+    },
+    {
+      "label": "Analytics",
+      "route": "/analytics",
+      "elapsedMs": 845,
+      "feedbackMs": 30.5,
+      "headingMs": 350.30000001192093,
+      "heading": "Make more of what you own",
+      "overflow": false
+    },
+    {
+      "label": "Today",
+      "route": "/today",
+      "elapsedMs": 840,
+      "feedbackMs": 32.69999998807907,
+      "headingMs": 353.39999997615814,
+      "heading": "Good evening, Navigation.",
+      "overflow": false
+    },
+    {
+      "label": "Planner",
+      "route": "/calendar",
+      "elapsedMs": 840,
+      "feedbackMs": 23.69999998807907,
+      "headingMs": 347.5,
+      "heading": "See the whole month",
+      "overflow": false
+    },
+    {
+      "label": "Today",
+      "route": "/today",
+      "elapsedMs": 840,
+      "feedbackMs": 31.400000005960464,
+      "headingMs": 350.69999998807907,
+      "heading": "Good evening, Navigation.",
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "rscRequests": [
+    {
+      "path": "/calendar/",
+      "totalMs": 195,
+      "ttfbMs": 155
+    },
+    {
+      "path": "/today/",
+      "totalMs": 183,
+      "ttfbMs": 165
+    },
+    {
+      "path": "/calendar/trips/",
+      "totalMs": 160,
+      "ttfbMs": 159
+    },
+    {
+      "path": "/calendar/upcoming/",
+      "totalMs": 169,
+      "ttfbMs": 168
+    },
+    {
+      "path": "/calendar/trips/",
+      "totalMs": 163,
+      "ttfbMs": 153
+    },
+    {
+      "path": "/calendar/upcoming/",
+      "totalMs": 179,
+      "ttfbMs": 170
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 299,
+      "ttfbMs": 161
+    },
+    {
+      "path": "/settings/billing/",
+      "totalMs": 155,
+      "ttfbMs": 155
+    },
+    {
+      "path": "/settings/billing/",
+      "totalMs": 161,
+      "ttfbMs": 161
+    },
+    {
+      "path": "/today/",
+      "totalMs": 255,
+      "ttfbMs": 158
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 230,
+      "ttfbMs": 154
+    },
+    {
+      "path": "/today/",
+      "totalMs": 246,
+      "ttfbMs": 163
+    }
+  ],
+  "passed": true,
+  "accountRemoved": true
+}

@@ -14,6 +14,15 @@
     "scope": "Calendar interactions, loading/offline timers, authenticated and empty/error data guards"
   },
   "browser": "Real local production build, isolated Supabase account, Chrome phone viewport and 4x CPU slowdown. Main navigation makes zero additional billing requests. Verified theme save, both themes, reduced motion, delayed data, rapid navigation, offline feedback, and signed-out redirects. Account removed. No AI inference or email sent.",
-  "deployment": "Pending hosted build and verification",
+  "deployment": {
+    "state": "ready",
+    "site": "https://www.myaioutfit.com",
+    "functionalCommit": "10c1cb9d1ab02d45f86c546152cad40905855c6b",
+    "deployId": "6aeeac69e97f6bc36e37c75e",
+    "publishedAt": "2026-11-07T04:44:30.406Z",
+    "hostedBrowserPassed": true,
+    "secretScanMatches": 0,
+    "enhancedSecretScanMatches": 0
+  },
   "database": "No schema or Supabase function changes required"
 }
