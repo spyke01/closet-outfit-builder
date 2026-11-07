@@ -115,7 +115,7 @@ try {
     for (const suggestion of answer.outfitBoards) { assert(suggestion.items.some(item => item.id === pants.id)); assert(suggestion.items.every(item => owned.has(item.id))); }
     await page.evaluate(({ userId, id }) => sessionStorage.setItem(`sebastian-thread:${userId}`, id), { userId, id: answer.threadId });
     await page.reload({ waitUntil: 'domcontentloaded' }); await page.waitForTimeout(600);
-    await page.getByRole('button', { name: 'Ask Sebastian', exact: true }).click();
+    await page.locator('.app-header').getByRole('button', { name: 'Ask Sebastian', exact: true }).click();
     await page.getByRole('dialog', { name: 'Ask Sebastian', exact: true }).getByRole('button', { name: `View ${answer.outfitBoards[0].title}`, exact: true }).click();
     const restored = page.getByRole('dialog', { name: answer.outfitBoards[0].title, exact: true });
     assert.equal(await restored.getByRole('article').count(), answer.outfitBoards[0].items.length);

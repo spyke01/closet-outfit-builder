@@ -1,0 +1,27 @@
+{
+  "checkedAt": "2026-11-07T15:34:31.131Z",
+  "base": "https://www.myaioutfit.com",
+  "passed": true,
+  "checks": [
+    "Conversation boards resolve current owned photos; foreign and archived suggestions are dropped completely, and swap options cannot expose another account",
+    "All seven pieces, layers, accessories, missing-photo placeholders, private photos, responsive layout, and nested Escape behavior work; swaps use no inference",
+    "Saving preserves all swapped IDs in a real outfit; discussing it sends the exact whole combination and starting piece",
+    "A real production text-model reply produces validated photo boards with the exact selected piece; no image model is invoked"
+  ],
+  "errors": [],
+  "accountsRemoved": 2,
+  "privatePhotosRemoved": 1,
+  "liveTextModelTest": true,
+  "functionalCommit": "090755915f2f0dc2fd1102d465ea8b8e0cfcb72c",
+  "unitTests": {
+    "passed": 2449,
+    "skipped": 4
+  },
+  "checksPassed": [
+    "Production build",
+    "Strict lint",
+    "TypeScript",
+    "Phone, tablet, and desktop browser checks"
+  ],
+  "aiScope": "One bounded text-model request in this acceptance run; no image generation. Viewing and swapping created no AI jobs."
+}
