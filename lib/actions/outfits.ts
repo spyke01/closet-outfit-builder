@@ -73,7 +73,8 @@ export async function createOutfit(data: unknown) {
       .from('wardrobe_items')
       .select('id, category_id')
       .in('id', items)
-      .eq('user_id', user.id);
+      .eq('user_id', user.id)
+      .eq('active', true);
 
     if (wardrobeError || !wardrobeItems) {
       await supabase.from('outfits').delete().eq('id', outfit.id);

@@ -2,6 +2,7 @@
 
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import Image from "@/components/clothing-image";
 import { MessageCircle, Paperclip, Send, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,13 +17,17 @@ import { resizeImageFileForUpload } from "@/lib/utils/image-resize";
 import type { AssistantChatRequest } from "@/lib/services/assistant/types";
 import { cn } from "@/lib/utils";
 import { clothingPieceDescription, type ClothingPieceIdentity } from "@/lib/utils/clothing-piece-label";
+import type { AssistantOutfitBoard } from "@/lib/types/assistant-outfit";
 
-type ChatMessage = { id: string; role: "assistant" | "user"; text: string };
+const SebastianOutfitBoards = dynamic(() => import("./sebastian-outfit-boards").then((module) => module.SebastianOutfitBoards), { loading: () => <p role="status" className="mt-3 text-xs text-muted-foreground">Loading outfit boards…</p> });
+
+type ChatMessage = { id: string; role: "assistant" | "user"; text: string; outfitBoards?: AssistantOutfitBoard[] };
 type ChatPayload = {
   threadId?: string;
   assistantMessage?: string;
   pending?: boolean;
   error?: string;
+  outfitBoards?: AssistantOutfitBoard[];
 };
 interface Props {
   className?: string;
@@ -56,6 +61,7 @@ export function SebastianChatLauncher({
   const [threadId, setThreadId] = useState<string>();
   const [hints, setHints] = useState<AssistantChatRequest["contextHints"]>();
   const [focusItem, setFocusItem] = useState<ClothingPieceIdentity>();
+  const [activeLook, setActiveLook] = useState<AssistantOutfitBoard>();
   const [messages, setMessages] = useState<ChatMessage[]>([
     { id: "welcome", role: "assistant", text: SEBASTIAN_GREETING },
   ]);
@@ -107,6 +113,7 @@ export function SebastianChatLauncher({
               ? {
                   ...message,
                   text: payload.assistantMessage || "Your request is complete.",
+                  outfitBoards: payload.outfitBoards,
                 }
               : message,
           ),
@@ -131,6 +138,7 @@ export function SebastianChatLauncher({
       // A general reopen keeps the conversation's focus. Explicit new context
       // replaces it so a different piece, trip, or date cannot inherit the old one.
       if (detail?.prompt || Object.keys(detail?.contextHints || {}).length) {
+        setActiveLook(undefined);
         setHints(detail?.contextHints);
         setFocusItem(detail?.focusItem?.id === detail?.contextHints?.focusItemId ? detail.focusItem : undefined);
       }
@@ -160,6 +168,7 @@ export function SebastianChatLauncher({
             role: "user" | "assistant";
             content: string;
             pending?: boolean;
+            outfitBoards?: AssistantOutfitBoard[];
           }>;
         };
         if (canceled) return;
@@ -170,6 +179,7 @@ export function SebastianChatLauncher({
               id: message.id,
               role: message.role,
               text: message.content,
+              outfitBoards: message.outfitBoards,
             })),
           );
           const pending = payload.messages.findLast(
@@ -234,6 +244,7 @@ export function SebastianChatLauncher({
           id,
           role: "assistant",
           text: payload.assistantMessage || "I’m working on your request.",
+          outfitBoards: payload.outfitBoards,
         },
       ]);
       if (payload.pending && payload.threadId) {
@@ -349,6 +360,7 @@ export function SebastianChatLauncher({
           <UpgradePrompt feature={hints?.tripId ? "assistant-trip" : hints?.focusItemId ? "assistant-item" : hints?.eventDate ? "assistant-planner" : "assistant"} onClose={() => setOpen(false)} />
         ) : (
           <>
+            {activeLook && <section aria-label="Selected outfit" className="mb-3 flex items-center justify-between gap-3 rounded-lg border border-border p-3 text-xs"><span className="min-w-0 break-words">Discussing {activeLook.title} · {activeLook.items.length} pieces</span><button type="button" aria-label="Stop discussing this look" className="flex h-11 w-11 shrink-0 items-center justify-center" disabled={busy} onClick={() => { setActiveLook(undefined); setHints((previous) => previous ? { ...previous, outfitItemIds: undefined } : undefined); }}><X size={16} aria-hidden="true" /></button></section>}
             {focusItem && hints?.focusItemId === focusItem.id && (
               <section aria-label="Selected clothing piece" className="mb-4 flex items-center gap-3 rounded-lg border border-border bg-[var(--bg-surface)] p-3">
                 {focusItem.imageUrl && <Image width={48} height={48} src={focusItem.imageUrl} alt="" unoptimized className="h-12 w-12 shrink-0 object-contain" />}
@@ -358,7 +370,8 @@ export function SebastianChatLauncher({
                 </div>
                 <button type="button" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg hover:bg-muted" aria-label="Stop building around this piece" disabled={busy} onClick={() => {
                   setFocusItem(undefined);
-                  setHints((previous) => previous ? { ...previous, focusItemId: undefined } : undefined);
+                  setActiveLook(undefined);
+                  setHints((previous) => previous ? { ...previous, focusItemId: undefined, outfitItemIds: undefined } : undefined);
                 }}><X size={16} aria-hidden="true" /></button>
               </section>
             )}
@@ -377,6 +390,13 @@ export function SebastianChatLauncher({
                     {message.role === "user" ? "You: " : "Sebastian: "}
                   </span>
                   {message.text}
+                  {!!message.outfitBoards?.length && <SebastianOutfitBoards boards={message.outfitBoards} onDiscuss={(board) => {
+                    const selectedFocus = board.items.find((item) => item.id === board.focusItemId);
+                    setActiveLook(board);
+                    setFocusItem(selectedFocus);
+                    setHints((previous) => ({ ...previous, focusItemId: selectedFocus?.id, outfitItemIds: board.items.map((item) => item.id) }));
+                    setInput(`Help me refine "${board.title}": ${board.items.map(clothingPieceDescription).join(", ").slice(0, 1650)}.`);
+                  }} />}
                 </div>
               ))}
               {busy && (

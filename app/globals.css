@@ -955,6 +955,7 @@
   width: min(460px, calc(100vw - 24px));
   margin: auto 20px 20px auto;
 }
+.sebastian-board-dialog { width: min(900px, calc(100vw - 24px)); }
 .app-chat-messages {
   display: flex;
   flex-direction: column;

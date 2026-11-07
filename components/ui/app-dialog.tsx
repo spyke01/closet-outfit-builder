@@ -34,12 +34,14 @@ export function AppDialog({
     <dialog
       ref={ref}
       onCancel={(event) => {
+        event.stopPropagation();
         event.preventDefault();
         onClose();
       }}
-      onClose={onClose}
+      onClose={(event) => { if (event.target === event.currentTarget) onClose(); }}
       onKeyDown={(event) => {
         if (event.key === "Escape") {
+          event.stopPropagation();
           event.preventDefault();
           onClose();
         }

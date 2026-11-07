@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { hydrateOutfitBoards, readBoardRecords } from "@/lib/services/assistant/outfit-boards";
 
 export const dynamic = "force-dynamic";
 
@@ -51,6 +52,9 @@ export async function GET(
       );
     }
 
+    const records = (messages || []).flatMap((message) => readBoardRecords(message.metadata_json?.outfit_boards));
+    const boards = await hydrateOutfitBoards(supabase, user.id, records);
+    const byId = new Map(boards.map((board) => [board.id, board]));
     return NextResponse.json({
       thread: {
         id: thread.id,
@@ -65,6 +69,7 @@ export async function GET(
         pending: message.metadata_json?.pending === true,
         imageUrl: message.image_url,
         createdAt: message.created_at,
+        outfitBoards: readBoardRecords(message.metadata_json?.outfit_boards).flatMap((record) => byId.has(record.id) ? [byId.get(record.id)!] : []),
       })),
     });
   } catch (error) {

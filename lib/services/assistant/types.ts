@@ -15,6 +15,7 @@ export const AssistantChatRequestSchema = z.object({
   contextHints: z
     .object({
       focusItemId: z.string().uuid().optional(),
+      outfitItemIds: z.array(z.string().uuid()).min(2).max(20).refine((ids) => new Set(ids).size === ids.length).optional(),
       eventDate: z
         .string()
         .regex(/^\d{4}-\d{2}-\d{2}$/)
@@ -46,6 +47,7 @@ export interface AssistantCitation {
 export interface AssistantChatResponse {
   threadId: string;
   assistantMessage: string;
+  outfitBoards?: import("@/lib/types/assistant-outfit").AssistantOutfitBoard[];
 }
 
 export type AssistantErrorCode =
@@ -117,6 +119,7 @@ export interface AssistantContextPack {
   } | null;
   hints?: {
     focusItemId?: string;
+    outfitItemIds?: string[];
     eventDate?: string;
     tripId?: string;
     weather?: {

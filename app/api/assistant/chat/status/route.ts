@@ -11,6 +11,7 @@ import {
 import { moderateOutput } from "@/lib/services/assistant/moderation";
 import { SEBASTIAN_REFUSAL_TEMPLATES } from "@/lib/services/assistant/persona";
 import { requireSameOriginWithOptions } from "@/lib/utils/request-security";
+import { hydrateOutfitBoards, prepareOutfitReply, readBoardRecords } from "@/lib/services/assistant/outfit-boards";
 
 export const dynamic = "force-dynamic";
 const Schema = z.object({ threadId: z.string().uuid() });
@@ -60,7 +61,7 @@ export async function POST(request: NextRequest) {
     if (!message) {
       const { data: latest } = await supabase
         .from("assistant_messages")
-        .select("content")
+        .select("content,metadata_json")
         .eq("thread_id", threadId)
         .eq("user_id", user.id)
         .eq("role", "assistant")
@@ -71,6 +72,7 @@ export async function POST(request: NextRequest) {
         threadId,
         pending: false,
         assistantMessage: latest?.content,
+        outfitBoards: await hydrateOutfitBoards(supabase, user.id, readBoardRecords(latest?.metadata_json?.outfit_boards)),
       });
     }
     const metadata = message.metadata_json || {};
@@ -94,11 +96,15 @@ export async function POST(request: NextRequest) {
     if (!output && job.status !== "failed")
       return NextResponse.json({ threadId, pending: true });
     const safety = output ? moderateOutput(output.text) : null;
-    const reply = output
+    const rawReply = output
       ? safety?.blocked
         ? safety.safeReply || SEBASTIAN_REFUSAL_TEMPLATES.outOfScope
         : output.text
       : "I couldn’t complete that request. Please try again later.";
+    const prepared = output && !safety?.blocked
+      ? await prepareOutfitReply(supabase, user.id, rawReply, job.id, typeof metadata.focus_item_id === "string" ? metadata.focus_item_id : undefined)
+      : { text: rawReply, boards: [], records: [] };
+    const reply = prepared.text;
     const { error: writeError } = await createAdminClient()
       .from("assistant_messages")
       .update({
@@ -107,6 +113,7 @@ export async function POST(request: NextRequest) {
           ...metadata,
           pending: false,
           blocked: safety?.blocked || false,
+          outfit_boards: prepared.records,
         },
       })
       .eq("id", message.id)
@@ -134,6 +141,7 @@ export async function POST(request: NextRequest) {
       threadId,
       pending: false,
       assistantMessage: reply,
+      outfitBoards: prepared.boards,
     });
   } catch (error) {
     if (error instanceof RequestBodyError)

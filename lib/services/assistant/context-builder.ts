@@ -124,6 +124,7 @@ export async function buildAssistantContextPack(
   }
 
   const hintItemId = request.contextHints?.focusItemId;
+  const outfitItemIds = request.contextHints?.outfitItemIds || [];
   const wardrobeColumns =
     "id, name, color, brand, material, season, formality_score, category:categories(name)";
   const [
@@ -132,6 +133,7 @@ export async function buildAssistantContextPack(
     calendarResult,
     tripsResult,
     focusResult,
+    selectedOutfitResult,
   ] = await Promise.all([
     supabase
       .from("wardrobe_items")
@@ -157,6 +159,9 @@ export async function buildAssistantContextPack(
           .eq("id", hintItemId)
           .limit(1)
       : Promise.resolve(null),
+    outfitItemIds.length
+      ? supabase.from("wardrobe_items").select(wardrobeColumns).eq("user_id", userId).eq("active", true).in("id", outfitItemIds).limit(20)
+      : Promise.resolve(null),
   ]);
 
   if (
@@ -166,6 +171,7 @@ export async function buildAssistantContextPack(
       calendarResult,
       tripsResult,
       focusResult,
+      selectedOutfitResult,
     ].some((result) => result?.error)
   ) {
     throw new Error("Unable to load assistant context");
@@ -177,12 +183,16 @@ export async function buildAssistantContextPack(
   const focusItem = focusResult?.data?.find((item) => item.id === hintItemId);
   if (hintItemId && !focusItem)
     throw new Error("Selected clothing item is unavailable");
+  const selectedOutfit = selectedOutfitResult?.data || [];
+  if (outfitItemIds.some((id) => !selectedOutfit.some((item) => item.id === id))) throw new Error("Selected outfit contains unavailable clothing");
+  const pinned = [...new Map([...(focusItem ? [focusItem] : []), ...selectedOutfit].map((item) => [item.id, item])).values()];
+  const pinnedIds = new Set(pinned.map((item) => item.id));
   const shortlist = balancedWardrobeShortlist(
-    candidates.filter((item) => item.id !== hintItemId),
-    MAX_WARDROBE_ITEMS - (focusItem ? 1 : 0),
+    candidates.filter((item) => !pinnedIds.has(item.id)),
+    MAX_WARDROBE_ITEMS - pinned.length,
     (item) => (item.category as { name?: string } | null)?.name || "Unknown",
   );
-  const wardrobe = (focusItem ? [focusItem, ...shortlist] : shortlist).map(
+  const wardrobe = [...pinned, ...shortlist].map(
     (item) => ({
       id: item.id as string,
       name: sanitizeContextValue(item.name as string),
@@ -288,7 +298,7 @@ export function summarizeContextForPrompt(pack: AssistantContextPack): string {
     .slice(0, 30)
     .map(
       (item) =>
-        `${sanitizeContextValue(item.name).slice(0, 120)} (${sanitizeContextValue(item.category).slice(0, 40)}${item.color ? `, ${sanitizeContextValue(item.color).slice(0, 30)}` : ""})`,
+        `${sanitizeContextValue(item.name).slice(0, 120)} (${sanitizeContextValue(item.category).slice(0, 40)}${item.color ? `, ${sanitizeContextValue(item.color).slice(0, 30)}` : ""}; ID: ${item.id})`,
     )
     .join("; ");
 
@@ -333,6 +343,7 @@ export function summarizeContextForPrompt(pack: AssistantContextPack): string {
 
   return [
     ...(focusSummary ? [focusSummary] : []),
+    ...(pack.hints?.outfitItemIds?.length ? [`Outfit the user is discussing (use these exact owned pieces as the current look): ${pack.hints.outfitItemIds.join(", ")}`] : []),
     `Wardrobe: ${wardrobeSummary || "No wardrobe items available."}`,
     `Recent outfits: ${pack.recentOutfits.length}`,
     `Calendar: ${calendarSummary || "No upcoming calendar notes."}`,

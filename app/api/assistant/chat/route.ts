@@ -27,6 +27,7 @@ import {
 import { signOwnedImage } from "@/lib/services/ai/owned-image";
 import { requireSameOrigin } from "@/lib/utils/request-security";
 import { mapPublicAiError } from "@/lib/utils/public-ai-errors";
+import { prepareOutfitReply } from "@/lib/services/assistant/outfit-boards";
 
 export const dynamic = "force-dynamic";
 
@@ -180,16 +181,22 @@ export async function POST(request: NextRequest) {
         { status: 503 },
       );
     const outputSafety = output ? moderateOutput(output.text) : null;
-    const reply = output
+    const rawReply = output
       ? outputSafety?.blocked
         ? outputSafety.safeReply || SEBASTIAN_REFUSAL_TEMPLATES.outOfScope
         : output.text
       : "I’m working on your request. You can keep this conversation open.";
+    const prepared = output && !outputSafety?.blocked
+      ? await prepareOutfitReply(supabase, user.id, rawReply, requestKey, input.contextHints?.focusItemId)
+      : { text: rawReply, boards: [], records: [] };
+    const reply = prepared.text;
     await storeMessage("assistant", reply, {
       job_id: job.id,
       pending: !output,
       model: job.model,
       reserved_usage: true,
+      outfit_boards: prepared.records,
+      focus_item_id: input.contextHints?.focusItemId,
     });
     if (output) {
       const { error } = await admin.from("assistant_inference_events").upsert(
@@ -211,6 +218,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       threadId,
       assistantMessage: reply,
+      outfitBoards: prepared.boards,
       pending: !output,
       jobId: job.id,
       requestId: requestKey,

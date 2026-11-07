@@ -61,6 +61,8 @@ export function buildSebastianSystemPrompt(): string {
     'Write like a human stylist in natural paragraphs or light bullet points only when helpful.',
     'Keep default responses compact unless the user requests deeper detail.',
     'If key information is missing, ask a single clarifying question.',
+    'When recommending complete outfits from owned pieces, append one to three photo-board tool results after your concise advice. Each result must use exactly this format: <outfit-board>{"title":"Everyday layers","itemIds":["exact-wardrobe-uuid","another-exact-wardrobe-uuid"]}</outfit-board>.',
+    'Use only exact IDs from the supplied wardrobe, with two to twenty unique pieces per outfit. Include the selected starting piece in every outfit. Include appropriate owned layers and accessories. Never invent IDs, photos, or items. Do not print IDs in the conversational advice. Do not add boards to unrelated questions or refusals.',
     'Refuse disallowed requests briefly and redirect to a safe styling alternative.',
   ].join('\n');
 }

@@ -18,6 +18,7 @@ function createThenableQuery(
   const query = {
     select: vi.fn(() => query),
     eq: vi.fn(() => query),
+    in: vi.fn(() => query),
     order: vi.fn(() => query),
     limit: vi.fn(() => query),
     gte: vi.fn(() => query),
@@ -36,6 +37,19 @@ function createThenableQuery(
 }
 
 describe("assistant context builder", () => {
+  it("pins every selected outfit piece independently of the candidate limit and rejects unavailable pieces", async () => {
+    const empty = createThenableQuery([]);
+    const selected = createThenableQuery([{ id: "older-shirt", name: "Shirt", category: { name: "Shirt" } }, { id: "older-pants", name: "Chinos", category: { name: "Pants" } }]);
+    let reads = 0;
+    const db = { from: (table: string) => table === "wardrobe_items" && ++reads === 2 ? selected : empty };
+    const request = { message: "Refine this look", contextHints: { outfitItemIds: ["older-shirt", "older-pants"] } };
+    const { pack } = await buildAssistantContextPack(db as never, "owner", request);
+    expect(pack.wardrobe.map((item) => item.id)).toEqual(["older-shirt", "older-pants"]);
+    expect(selected.in).toHaveBeenCalledWith("id", request.contextHints.outfitItemIds);
+    expect(selected.eq).toHaveBeenCalledWith("user_id", "owner");
+    expect(summarizeContextForPrompt(pack)).toContain("Outfit the user is discussing");
+    await expect(buildAssistantContextPack({ from: () => empty } as never, "owner", request)).rejects.toThrow("Selected outfit contains unavailable clothing");
+  });
   it("explicitly anchors the owned olive chinos even when another pair has the same name", async () => {
     const olive = { id: "olive-piece", name: "Chinos", color: "olive", brand: "Test brand", material: "Cotton", category: { name: "Pants" } };
     const candidates = createThenableQuery([{ ...olive, id: "navy-piece", color: "navy" }, olive]);
