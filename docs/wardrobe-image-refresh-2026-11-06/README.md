@@ -1,6 +1,6 @@
 # Wardrobe default-image refresh
 
-**1,199 reviewed replacements are applied and validated.** Publication status and deployment evidence are recorded in [verification.json](verification.json).
+**1,199 reviewed replacements are deployed and verified at [My AI Outfit](https://www.myaioutfit.com/wardrobe).** [Verification evidence](verification.json) records publication and checks.
 
 The refresh covers all 1,258 solid-color defaults across 37 catalog clothing types. All targets produced a structurally valid candidate. Visual review retained 59 originals because their replacements had color drift, extra clothing or shoe fragments, an unclear view, an unsuitable style, or an awkward pair arrangement. The 37 multicolor defaults also remain unchanged until their patterns have a separate brief. Pruna and Schnell are excluded from new work.
 
@@ -35,13 +35,15 @@ The batch held one exclusive writer, persisted intent before every paid POST, re
 ## Verification and deployment
 
 - The full suite passed 2,402 tests, with four existing skips. The final focused checks passed 27 tests, including added routing and approval checks. Strict lint and types pass.
-- The local production build passed through Webpack. Local Turbopack worker-port binding remains an environment limitation. The application source has not changed since that successful build; hosted publication performs a fresh production build.
+- The local production build passed through Webpack. Local Turbopack worker-port binding remains an environment limitation. The application source has not changed since that successful build; the hosted production build also passes.
 - All 1,295 WebPs decode correctly at 1,024px with alpha. All original catalog PNGs remain unchanged. All 1,199 replacements match their approved source and derivative hashes.
-- Local legacy PNG and versioned WebP requests pass for all 37 clothing types. Netlify’s own parser validates all 1,295 exact forced CDN rules; hosted URL verification follows publication. Thirty-seven white pieces were inspected against a dark background; visual review also covered every candidate against its original.
+- Local legacy PNG and versioned WebP requests pass for all 37 clothing types. Netlify’s own parser validates all 1,295 exact forced CDN rules. All 74 hosted legacy and versioned URL checks pass against the approved rendered hashes. Thirty-seven white pieces were inspected against a dark background; visual review also covered every candidate against its original.
 - Nine private local credential values were checked against 198 built browser assets: zero matches. This is a scoped bundle check.
 - A real signed-in browser check passed quick setup, refreshed wardrobe images, all six signed-in routes with weather access, and a phone layout. The isolated test account was removed. [Hosted browser evidence](hosted-browser-validation.json) records the check.
 - A real Nano job completed through hosted category routing in an isolated temporary Plus account, including cleanup, private storage, and replay without another reservation. The account and owned storage were removed. [Hosted routing evidence](production-routing-validation.json) records the check.
 - The updated generation and processing functions are deployed to project ahjwzpyammiqelloazvn. Routing uses the owned item and its category, supports the reviewed Klein/Nano models, and preserves each saved job's model. The 34 local and hosted migrations match; this image refresh needs no new SQL.
+
+The hosted release passes both Netlify secret scans with zero matches. The current production-only npm audit reports zero advisories; that check does not cover development-tooling advisories.
 
 ## Reproducibility
 

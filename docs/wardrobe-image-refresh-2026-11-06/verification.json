@@ -1,7 +1,7 @@
 {
-  "checkedAt": "2026-11-07T03:47:34.556Z",
-  "status": "Reviewed and validated; production publication pending",
-  "productionUpdated": false,
+  "checkedAt": "2026-11-07T03:58:50.720Z",
+  "status": "Deployed and verified",
+  "productionUpdated": true,
   "catalogImages": 1295,
   "solidColorTargets": 1258,
   "preparedTargets": 1258,
@@ -31,7 +31,11 @@
     "originalPngsUnchanged": 1295,
     "localLegacyAndVersionedUrlChecks": 74,
     "whiteCutoutsVisuallyCheckedOnDark": 37,
-    "browserPrivateCredentialMatches": 0
+    "browserPrivateCredentialMatches": 0,
+    "hostedLegacyAndVersionedUrlChecks": 74,
+    "hostedSignedInBrowser": true,
+    "cdnCatalogRules": 1295,
+    "hostedProductionBuild": true
   },
   "supabase": {
     "projectRef": "ahjwzpyammiqelloazvn",
@@ -57,5 +61,29 @@
     "matchingFiles": [],
     "scope": "Tracked text files against exact private local values; ignored and unrelated files excluded",
     "passed": true
+  },
+  "deployment": {
+    "id": "6aeea16b4bc56ca01ef09f90",
+    "state": "ready",
+    "commit": "bb691b15ca0568183893f56d9e578c9ae585383b",
+    "publishedAt": "2026-11-07T03:57:28.841Z",
+    "error": null,
+    "scan": {
+      "scannedFilesCount": 3868,
+      "secretMatchesCount": 0,
+      "enhancedMatchesCount": 0
+    }
+  },
+  "productionDependencyAudit": {
+    "checkedAt": "2026-11-07T03:58:50.720Z",
+    "scope": "npm audit --omit=dev; does not cover development-tooling advisories",
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
   }
 }
