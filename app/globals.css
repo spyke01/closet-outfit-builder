@@ -844,6 +844,49 @@
   background: #080e1bb3;
   backdrop-filter: blur(5px);
 }
+.app-dialog[open] { display: flex; flex-direction: column; overflow: hidden; }
+.app-dialog > header { flex-shrink: 0; }
+.app-dialog > div { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.app-dialog-close { background: transparent; color: var(--foreground); line-height: 1; touch-action: manipulation; }
+.app-dialog-close:hover { background: var(--accent-muted); }
+.weather-outlook-row { display: grid; grid-template-columns: 42px 24px 40px 28px minmax(24px,1fr) 28px; align-items: center; gap: 8px; min-height: 54px; font-variant-numeric: tabular-nums; }
+.weather-day-condition { display: flex; justify-content: center; color: var(--primary); }
+.weather-rain { display: flex; align-items: center; justify-content: center; gap: 2px; color: var(--primary); font-size: 11px; }
+.weather-low { color: var(--muted-foreground); text-align: right; font-size: 14px; }
+.weather-high { text-align: right; font-size: 14px; font-weight: 600; }
+.weather-range { position: relative; display: block; height: 5px; overflow: hidden; border-radius: 4px; background: var(--accent-muted); }
+.weather-range > span { position: absolute; height: 100%; min-width: 3px; border-radius: inherit; background: linear-gradient(90deg, #78b6ff, var(--primary)); }
+.upgrade-prompt { display: grid; gap: 16px; padding: 4px 0; }
+.upgrade-prompt--compact { padding: 20px; gap: 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--accent-muted); }
+.upgrade-banner { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px; background: var(--accent-muted); }
+.upgrade-banner > button { padding: 8px 10px; border-radius: 8px; font-size: 12px; }
+.upgrade-eyebrow { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--primary); font-weight: 600; }
+.upgrade-prompt a, .upgrade-prompt button { border-radius: 10px; }
+.occasion-lock { display: grid; flex-shrink: 0; gap: 6px; text-align: right; }
+.occasion-lock > span, .occasion-lock > small { display: flex; align-items: center; justify-content: flex-end; gap: 4px; font-size: 10px; color: var(--primary); }
+.occasion-lock > small { color: var(--muted-foreground); }
+.today-occasion[data-locked="true"] { opacity: 1; cursor: pointer; }
+.today-occasion[data-locked="true"]:hover { border-color: var(--primary); }
+.basic-analytics-totals { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin-top: 20px; }
+.basic-analytics-totals dt { color: var(--muted-foreground); font-size: 12px; }
+.basic-analytics-totals dd { margin-top: 6px; font-size: 28px; font-variant-numeric: tabular-nums; }
+.basic-clothing-row { display: flex; align-items: center; gap: 12px; min-height: 68px; padding-block: 10px; border-bottom: 1px solid var(--border); }
+.basic-clothing-row > span { min-width: 0; overflow-wrap: anywhere; }
+.basic-clothing-row:hover { color: var(--primary); }
+.cost-calculation-example { padding-block: 16px; border-block: 1px solid var(--border); }
+.outfit-metadata > div:first-child { padding: 16px 20px 8px; }
+.outfit-metadata > div:last-child { padding: 0 20px 12px; }
+.outfit-meta-summary { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); column-gap: 24px; }
+.outfit-meta-summary > div { padding-block: 12px; border-bottom: 1px solid var(--border); }
+.outfit-meta-summary dt { margin-bottom: 5px; color: var(--muted-foreground); font-size: 11px; }
+.outfit-meta-summary dd { font-size: 14px; }
+@media (min-width: 768px) { .outfit-meta-summary { grid-template-columns: repeat(4,minmax(0,1fr)); } }
+@media (max-width: 639px) {
+  .analytics-tabs { display: grid !important; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 4px; }
+  .analytics-tabs button { padding: 10px 8px !important; border-radius: 8px; font-size: 13px; }
+  .analytics-tabs button[aria-selected="true"] { background: var(--accent-muted); }
+  .basic-analytics .upgrade-prompt :is(h2,h3) { font-size: 22px; }
+}
 @media (max-width: 1023px) {
   .app-sidebar {
     display: none;

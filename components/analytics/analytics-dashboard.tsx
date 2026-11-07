@@ -4,13 +4,14 @@ import Image from "@/components/clothing-image";
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Search, Lock, CalendarDays, Shirt } from "lucide-react";
+import { ArrowUpRight, Search, CalendarDays, Shirt } from "lucide-react";
 import type { AnalyticsDashboardResponse } from "@/lib/types/analytics";
 import {
   summarizeWearInsights,
   type InsightPeriod,
   type InsightItem,
 } from "@/lib/services/analytics/wear-insights";
+import { BasicAnalytics } from "@/components/analytics/basic-analytics";
 import { AskSebastian } from "@/components/ask-sebastian";
 import { AppDialog } from "@/components/ui/app-dialog";
 import { Button } from "@/components/ui/button";
@@ -142,7 +143,7 @@ export function AnalyticsDashboard({
             place.
           </p>
         </div>
-        <label className="text-xs text-muted-foreground">
+        {isFree ? null : <label className="text-xs text-muted-foreground">
           Time period
           <select
             className="ml-3 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
@@ -158,7 +159,7 @@ export function AnalyticsDashboard({
             <option value="365">Last year</option>
             <option value="all">All time</option>
           </select>
-        </label>
+        </label>}
       </header>
       <div
         className="analytics-tabs"
@@ -206,41 +207,9 @@ export function AnalyticsDashboard({
         aria-labelledby={`analytics-tab-${tab}`}
         className="pt-6"
       >
-        {isFree || !summary ? (
-          <>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Stat
-                label="Pieces in your wardrobe"
-                value={data.wardrobe.totalItems}
-                hint="Active clothing and accessories"
-              />
-              <Stat
-                label="Saved outfits"
-                value={data.wardrobe.totalOutfits}
-                hint="Combinations you can return to"
-              />
-            </div>
-            <section className="mt-6 rounded-xl border border-border p-7">
-              <Lock size={23} className="mb-4 text-primary" />
-              <h2 className="font-display text-2xl">
-                Get to know your wardrobe better
-              </h2>
-              <p className="my-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-                Plus and Pro include wear trends, clothing history, and cost per
-                wear. Mark outfits as worn in your planner to start building
-                your history.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <Button asChild>
-                  <Link href="/settings/billing">Explore Plus & Pro</Link>
-                </Button>
-                <Button asChild variant="outline">
-                  <Link href="/calendar">Open planner</Link>
-                </Button>
-              </div>
-            </section>
-          </>
-        ) : (
+        {isFree ? (
+          <BasicAnalytics tab={tab} totalItems={data.wardrobe.totalItems} totalOutfits={data.wardrobe.totalOutfits} preview={data.preview} />
+        ) : !summary ? <p role="status">Your analytics are unavailable. Refresh this page to try again.</p> : (
           <>
             <p className="mb-5 text-xs text-muted-foreground">
               {summary.start === "0000-01-01"

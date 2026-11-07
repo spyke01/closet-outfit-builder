@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { resolveUserEntitlements } from "@/lib/services/billing/entitlements";
-import type { AnalyticsDashboardResponse } from "@/lib/types/analytics";
+import type { AnalyticsDashboardResponse, BasicAnalyticsPreview } from "@/lib/types/analytics";
 import type { InsightItem, WearEvent, WearInsights } from "./wear-insights";
 import { summarizeWearInsights } from "./wear-insights";
 
@@ -42,12 +42,34 @@ export async function loadAnalyticsDashboard(
     totalItems: itemsCount.count || 0,
     totalOutfits: outfitsCount.count || 0,
   };
-  if (!entitlement.isPaid)
+  if (!entitlement.isPaid) {
+    const asOf = new Date().toISOString().slice(0, 10);
+    const start = new Date(`${asOf}T12:00:00Z`);
+    start.setUTCDate(start.getUTCDate() - 29);
+    const [items, history] = await Promise.all([
+      allRows<{ id: string; name: string; image_url: string | null; purchase_price: number | null; created_at: string; category: {name: string} | null }>((start, end) => db.from('wardrobe_items').select('id,name,image_url,purchase_price,created_at,category:categories(name)').eq('user_id', userId).eq('active', true).order('id').range(start, end)),
+      db.from('calendar_entries').select('id,entry_date,outfit:outfits(name)', {count:'exact'}).eq('user_id', userId).eq('status', 'worn').gte('entry_date', start.toISOString().slice(0,10)).lte('entry_date', asOf).order('entry_date', {ascending:false}).limit(3),
+    ]);
+    if (history.error) throw new Error('Could not load your recent wear history.');
+    const categories = new Map<string, number>();
+    for (const item of items) {
+      const name = item.category?.name || 'Other';
+      categories.set(name, (categories.get(name) || 0) + 1);
+    }
+    const preview: BasicAnalyticsPreview = {
+      items: [...items].sort((a,b) => b.created_at.localeCompare(a.created_at)).slice(0,3).map(item => ({id:item.id,name:item.name,imageUrl:item.image_url,category:item.category?.name || 'Other'})),
+      categories: [...categories].map(([name,count]) => ({name,count})).sort((a,b) => b.count-a.count || a.name.localeCompare(b.name)),
+      recentWears: (history.data || []).map(entry => ({id:entry.id,date:entry.entry_date,name:(entry.outfit as unknown as {name:string} | null)?.name || 'Recorded outfit'})),
+      wearCount: history.count || 0,
+      pricedCount: items.filter(item => item.purchase_price !== null).length,
+    };
     return {
       wardrobe: { ...basics, recentlyAdded: null, mostWorn: null },
       engagement: null,
       tier: "free",
+      preview,
     };
+  }
   type ItemRow = {
     id: string;
     name: string;

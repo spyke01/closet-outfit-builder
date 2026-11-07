@@ -63,11 +63,11 @@ export function AppDialog({
         <h2 className="text-xl font-semibold">{title}</h2>
         <button
           type="button"
-          className="icon-button h-10 w-10 justify-center"
+          className="app-dialog-close inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border p-0"
           aria-label={`Close ${title}`}
           onClick={onClose}
         >
-          <X size={20} />
+          <X size={20} className="block shrink-0" aria-hidden="true" />
         </button>
       </header>
       <div className="p-5">{children}</div>

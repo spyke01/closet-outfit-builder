@@ -15,6 +15,7 @@ interface EntitlementsResponse {
     billingState: 'active' | 'past_due' | 'unpaid' | 'canceled' | 'trialing' | 'scheduled_cancel';
     isPaid: boolean;
     hasBillingAccount: boolean;
+    accessSource?: 'subscription' | 'complimentary';
     plan: {
       name: string;
       limits: Record<string, number | null>;
@@ -160,7 +161,7 @@ export function BillingPageClient() {
     }
   };
 
-  const showCurrentMembership = Boolean(entitlements?.hasBillingAccount);
+  const showCurrentMembership = Boolean(entitlements?.hasBillingAccount || entitlements?.accessSource === 'complimentary');
 
   if (authLoading || loading) {
     return (
@@ -199,10 +200,10 @@ export function BillingPageClient() {
             <CardContent className="p-6 space-y-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <h2 className="text-2xl font-semibold text-foreground">Current Membership</h2>
-                  <p className="text-sm text-muted-foreground">Plan details and usage against your current cycle.</p>
+                  <h2 className="text-2xl font-semibold text-foreground">{entitlements?.accessSource === 'complimentary' ? `Complimentary ${entitlements.effectivePlanCode === 'pro' ? 'Pro' : 'Plus'} access` : 'Current Membership'}</h2>
+                  <p className="text-sm text-muted-foreground">{entitlements?.accessSource === 'complimentary' ? 'Your membership access is included. It does not create a subscription or renewal charge.' : 'Plan details and usage against your current cycle.'}</p>
                 </div>
-                <Button
+                {entitlements?.hasBillingAccount && <Button
                   variant="outline"
                   onClick={openPortal}
                   disabled={busyAction === 'portal'}
@@ -210,17 +211,17 @@ export function BillingPageClient() {
                 >
                   <CreditCard className="w-4 h-4 mr-1" />
                   {busyAction === 'portal' ? 'Opening...' : 'Manage Payment Info'}
-                </Button>
+                </Button>}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div className="rounded-md border border-border bg-card px-3 py-2">
                   <p className="text-xs text-muted-foreground flex items-center gap-1">
                     <CalendarClock className="w-3.5 h-3.5" />
-                    <span>Renewal date</span>
+                    <span>{entitlements?.accessSource === 'complimentary' ? 'Access type' : 'Renewal date'}</span>
                   </p>
                   <p className="text-sm font-medium text-foreground">
-                    {formatRenewalDate(entitlements?.renewalAt || null)}
+                    {entitlements?.accessSource === 'complimentary' ? 'Included · no renewal charge' : formatRenewalDate(entitlements?.renewalAt || null)}
                   </p>
                 </div>
                 <div className="rounded-md border border-border bg-card px-3 py-2">
@@ -247,6 +248,9 @@ export function BillingPageClient() {
         </div>
       )}
 
+      {entitlements?.accessSource === 'complimentary' && entitlements.effectivePlanCode === 'pro' ? (
+        <p className="text-sm text-muted-foreground">Your included Pro access unlocks all current membership features. You don’t need to purchase another plan.</p>
+      ) : <>
       <div className="rounded-xl border border-border bg-card p-6 space-y-4">
         <div className="space-y-1">
           <h2 className="text-lg font-semibold text-foreground">Have a promo code?</h2>
@@ -267,6 +271,8 @@ export function BillingPageClient() {
         onCheckout={startCheckout}
         onSwitchToFree={switchToFree}
       />
+
+      </>}
 
       <Card>
         <CardContent className="p-6 space-y-4">

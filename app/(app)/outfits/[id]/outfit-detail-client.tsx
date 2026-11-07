@@ -7,7 +7,8 @@ import React, { useState, useMemo, useRef } from 'react';
 import { useOutfit, useUpdateOutfit, useDeleteOutfit, useScoreOutfit, useCheckOutfitDuplicate } from '@/lib/hooks/use-outfits';
 import { useCategories } from '@/lib/hooks/use-categories';
 import { useWardrobeItems } from '@/lib/hooks/use-wardrobe-items';
-import { OutfitFlatLayout } from '@/components/outfit-flat-layout';
+import { OutfitComposition } from '@/components/outfit-composition';
+import { OutfitPieceList } from '@/components/outfit-piece-list';
 import { ItemsGridWithErrorBoundary as ItemsGrid } from '@/components/dynamic/items-grid-dynamic';
 import { OutfitDisplayWithErrorBoundary as OutfitDisplay } from '@/components/dynamic/outfit-display-dynamic';
 import { convertOutfitToSelection } from '@/lib/utils/outfit-conversion';
@@ -26,7 +27,6 @@ import {
   CheckCircle,
   Heart,
   Star,
-  Calendar,
   Shirt
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -353,7 +353,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
 
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 sm:px-6">
-      <div className={`flex flex-col gap-6 ${isEditing ? 'pb-28' : ''}`}>
+      <div className={`outfit-detail-layout flex flex-col gap-6 ${isEditing ? 'pb-28' : ''}`}>
         {/* Navigation */}
         <NavigationButtons 
           backTo={{ href: '/outfits', label: 'Back to Outfits' }}
@@ -362,7 +362,7 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
         {/* Header */}
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-1">
-            <h1 className="font-display text-4xl font-normal tracking-[-0.03em] text-foreground">
+            <h1 className="font-display text-[clamp(1.8rem,5vw,2.5rem)] font-normal leading-tight tracking-[-0.03em] text-foreground break-words">
               {isEditing ? 'Edit Outfit' : (outfit.name || 'Untitled Outfit')}
             </h1>
           </div>
@@ -433,8 +433,22 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
           </Alert>
         )}
 
+        {!isEditing && (
+<Card className="outfit-view-preview">
+            <CardHeader className="pb-2">
+              <CardTitle>Items in this Outfit ({outfitItemCount})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <OutfitComposition
+                items={outfit.items || []}
+              />
+              <OutfitPieceList items={outfit.items || []} />
+            </CardContent>
+          </Card>
+        )}
+
         {/* Outfit Details */}
-        <Card>
+        <Card className={isEditing ? undefined : 'outfit-metadata'}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Shirt className="h-5 w-5" />
@@ -512,48 +526,19 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
                 )}
               </>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-                <div className="rounded-lg border border-border bg-card/60 p-4 space-y-2">
-                  <p className="text-xs font-medium tracking-wide uppercase text-muted-foreground">Created</p>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <p className="text-foreground">
-                      {createdDateLabel}
-                    </p>
-                  </div>
-                </div>
-                <div className="rounded-lg border border-border bg-card/60 p-4 space-y-2">
-                  <p className="text-xs font-medium tracking-wide uppercase text-muted-foreground">Tuck Style</p>
-                  <p className="text-foreground">{outfit.tuck_style || 'Untucked'}</p>
-                </div>
-                <div className="rounded-lg border border-border bg-card/60 p-4 space-y-2">
-                  <p className="text-xs font-medium tracking-wide uppercase text-muted-foreground">Outfit Score</p>
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <Star className="h-4 w-4 text-yellow-500" />
-                      <p className="text-foreground">{scoreData?.score ?? outfit.score ?? 0}/100</p>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowScoreBreakdownModal(true)}
-                      disabled={!scoreBreakdown}
-                    >
-                      Explain
-                    </Button>
-                  </div>
-                </div>
-                <div className="rounded-lg border border-border bg-card/60 p-4 space-y-2">
-                  <p className="text-xs font-medium tracking-wide uppercase text-muted-foreground">Source</p>
-                  <p className="text-foreground">{outfit.source === 'curated' ? 'Curated' : 'Generated'}</p>
-                </div>
-              </div>
+              <dl className="outfit-meta-summary">
+                <div><dt>Created</dt><dd>{createdDateLabel}</dd></div>
+                <div><dt>Tuck style</dt><dd>{outfit.tuck_style || 'Untucked'}</dd></div>
+                <div><dt>Outfit score</dt><dd className="flex flex-wrap items-center gap-2"><Star className="h-4 w-4 text-yellow-500" aria-hidden="true" />{scoreData?.score ?? outfit.score ?? 0}/100
+                  {scoreBreakdown ? <button className="text-xs text-primary underline" onClick={() => setShowScoreBreakdownModal(true)}>Explain score</button> : <span className="text-xs text-muted-foreground">Saved score</span>}
+                </dd></div>
+                <div><dt>Source</dt><dd>{outfit.source === 'curated' ? 'Curated' : 'Generated'}</dd></div>
+              </dl>
             )}
           </CardContent>
         </Card>
 
-        {isEditing ? (
+        {isEditing && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Outfit Preview */}
             <div ref={outfitPreviewRef} className="lg:col-span-1">
@@ -630,23 +615,6 @@ export function OutfitDetailPageClient({ outfitId }: OutfitDetailPageClientProps
               )}
             </div>
           </div>
-        ) : (
-          /* Items List - Flat Layout for View Mode */
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle>Items in this Outfit ({outfitItemCount})</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <OutfitFlatLayout
-                items={outfit.items || []}
-                outfitScore={outfit.score || 0}
-                onRemoveItem={undefined} // No removal in view mode
-                isEditable={false}
-                showHeader={false}
-                showSummary={false}
-              />
-            </CardContent>
-          </Card>
         )}
 
         {isEditing && (

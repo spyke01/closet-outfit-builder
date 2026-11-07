@@ -67,7 +67,7 @@ describe("shared membership query", () => {
   it("keeps disabled and signed-out consumers from requesting membership data", () => {
     const { wrapper } = setup();
     const { result, rerender } = renderHook(() => useBillingEntitlements(false), { wrapper });
-    expect(result.current).toEqual({ entitlements: null, loading: false });
+    expect(result.current).toMatchObject({ entitlements: null, loading: false });
     auth.userId = null;
     rerender();
     expect(result.current.entitlements).toBeNull();
@@ -81,5 +81,6 @@ describe("shared membership query", () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.entitlements).toBeNull();
     expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(result.current.error).toBe(true);
   });
 });

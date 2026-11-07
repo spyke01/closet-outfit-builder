@@ -89,7 +89,7 @@ function SignedInShell({
   const queryClient = useQueryClient();
   const { theme, setTheme } = useTheme();
   const updatePreferences = useUpdateUserPreferences();
-  const { entitlements } = useBillingEntitlements(true);
+  const { entitlements, loading: membershipPending, error: membershipError, retry: retryMembership } = useBillingEntitlements(true);
   const { isAdminPortalUser } = useAdminPortalAccess(user.id);
   const [session, setSession] = useState<{
     target_user_id: string;
@@ -357,7 +357,10 @@ function SignedInShell({
       <SebastianChatLauncher
         userId={user.id}
         variant="headless"
-        requiresUpgrade={!entitlements?.isPaid}
+        requiresUpgrade={entitlements?.isPaid === false}
+        membershipPending={membershipPending}
+        membershipError={membershipError && !entitlements}
+        retryMembership={() => void retryMembership()}
       />
     </div>
   );

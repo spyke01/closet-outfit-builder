@@ -116,6 +116,7 @@ describe("shared header weather", () => {
       screen.getByRole("dialog", { name: "Your weather" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Feels like")).toBeInTheDocument();
-    expect(screen.getByText("20% chance of rain")).toBeInTheDocument();
+    expect(screen.getByRole('region', {name:'Daily forecast'})).toHaveTextContent('20%');
+    expect(screen.getByText('1-day outlook')).toBeInTheDocument();
   });
 });

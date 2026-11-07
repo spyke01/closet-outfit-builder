@@ -33,6 +33,7 @@ export interface Entitlements {
   billingState: BillingState;
   isPaid: boolean;
   hasBillingAccount: boolean;
+  accessSource?: 'subscription' | 'complimentary';
   plan: BillingPlan;
   period: {
     start: Date;
@@ -176,14 +177,22 @@ export async function resolveUserEntitlements(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<Entitlements> {
-  const subscription = await getSubscription(supabase, userId);
-  const resolved = resolveEffectiveState(subscription);
+  const [subscription, grantResult] = await Promise.all([
+    getSubscription(supabase, userId),
+    supabase.from('membership_access_grants').select('plan_code,expires_at,revoked_at').eq('user_id', userId).maybeSingle(),
+  ]);
+  if (grantResult.error) throw new Error('Could not load account access.');
+  const grant = grantResult.data as { plan_code: 'plus' | 'pro'; expires_at: string | null; revoked_at: string | null } | null;
+  let resolved = resolveEffectiveState(subscription);
+  const rank = { free: 0, plus: 1, pro: 2 };
+  const complimentary = Boolean(grant && !grant.revoked_at && (!grant.expires_at || new Date(grant.expires_at).getTime() > Date.now()) && rank[grant.plan_code] > rank[resolved.planCode]);
+  if (complimentary && grant) resolved = { planCode: grant.plan_code, interval: 'none', billingState: 'active', isPaid: true };
 
   let plan = getDefaultFreePlan();
   if (resolved.planCode === "free") {
     plan = getDefaultFreePlan();
   } else {
-    plan = getPlanByCodeAndInterval(resolved.planCode, resolved.interval);
+    plan = getPlanByCodeAndInterval(resolved.planCode, complimentary ? 'month' : resolved.interval);
   }
 
   const anchor = subscription?.plan_anchor_date
@@ -198,9 +207,10 @@ export async function resolveUserEntitlements(
     billingState: resolved.billingState,
     isPaid: resolved.isPaid,
     hasBillingAccount: Boolean(subscription?.stripe_subscription_id),
+    accessSource: complimentary ? 'complimentary' : 'subscription',
     plan,
     period,
-    renewalAt:
+    renewalAt: complimentary ? null :
       subscription?.current_period_end ||
       (resolved.isPaid ? period.end.toISOString() : null),
     usage,

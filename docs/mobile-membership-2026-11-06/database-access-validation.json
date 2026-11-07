@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-11-07T05:18:36.729Z",
+  "passed": true,
+  "checks": [
+    "An authenticated Free user cannot grant membership to themselves",
+    "Web entitlements and database limits agree for Plus, Pro, expired, and revoked grants",
+    "Users cannot read another account’s grant or infer it through the plan function"
+  ],
+  "testAccountsRemoved": 2,
+  "scope": "Real hosted RLS and effective-plan checks with temporary accounts only. No AI jobs, Stripe writes, or email."
+}

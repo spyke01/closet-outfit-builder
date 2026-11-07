@@ -6,6 +6,8 @@ import { MessageCircle, Paperclip, Send, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AppDialog } from "@/components/ui/app-dialog";
+import { UpgradePrompt } from "@/components/upgrade-prompt";
+import { LoadingStatus } from "@/components/loading-status";
 import { SebastianAvatar } from "@/components/sebastian-avatar";
 import { SEBASTIAN_OPEN_EVENT } from "@/lib/utils/sebastian-events";
 import { SEBASTIAN_GREETING } from "@/lib/services/assistant/persona";
@@ -26,6 +28,9 @@ interface Props {
   floatingOffsetClassName?: string;
   requiresUpgrade?: boolean;
   userId?: string;
+  membershipPending?: boolean;
+  membershipError?: boolean;
+  retryMembership?: () => void;
 }
 
 export function SebastianChatLauncher({
@@ -34,6 +39,9 @@ export function SebastianChatLauncher({
   floatingOffsetClassName,
   requiresUpgrade = false,
   userId,
+  membershipPending = false,
+  membershipError = false,
+  retryMembership,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
@@ -329,20 +337,8 @@ export function SebastianChatLauncher({
         title="Ask Sebastian"
         className="app-chat-dialog"
       >
-        {requiresUpgrade ? (
-          <div className="py-8 text-center">
-            <SebastianAvatar className="mx-auto mb-4 h-16 w-16" />
-            <h3 className="text-xl">Style advice, wherever you are</h3>
-            <p className="my-4 text-sm text-muted-foreground">
-              Talk through your wardrobe, outfits, and plans with Sebastian on
-              Plus and Pro.
-            </p>
-            <Button asChild>
-              <Link href="/settings/billing" onClick={() => setOpen(false)}>
-                Explore membership
-              </Link>
-            </Button>
-          </div>
+        {membershipPending ? <LoadingStatus label="your membership" /> : membershipError ? <div className="space-y-4"><p role="alert">Your membership could not be checked. Try again to see the features included in your plan.</p><Button onClick={retryMembership}>Check membership again</Button></div> : requiresUpgrade ? (
+          <UpgradePrompt feature={hints?.tripId ? "assistant-trip" : hints?.focusItemId ? "assistant-item" : hints?.eventDate ? "assistant-planner" : "assistant"} onClose={() => setOpen(false)} />
         ) : (
           <>
             <div

@@ -44,6 +44,14 @@ export interface EngagementStats {
   todayStats: TodayStats;
 }
 
+export interface BasicAnalyticsPreview {
+  items: Array<{ id: string; name: string; imageUrl: string | null; category: string }>;
+  categories: Array<{ name: string; count: number }>;
+  recentWears: Array<{ id: string; date: string; name: string }>;
+  wearCount: number;
+  pricedCount: number;
+}
+
 export type AnalyticsDashboardResponse =
   | {
       wardrobe: WardrobeStats;
@@ -59,4 +67,5 @@ export type AnalyticsDashboardResponse =
       };
       engagement: null;
       tier: "free";
+      preview?: BasicAnalyticsPreview;
     };

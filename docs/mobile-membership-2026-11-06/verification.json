@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-11-07T05:36:15.829671+00:00",
+  "unitTestsPassed": 2432,
+  "unitTestsSkipped": 4,
+  "testFilesPassed": 230,
+  "build": "Next.js production Webpack build passed",
+  "typecheck": "passed",
+  "strictLint": "passed",
+  "supabaseMigration": "20261107050000_complimentary_membership_access.sql applied to the linked project",
+  "permissionChecks": "Authenticated self-grant denied; other-account reads hidden; web and SQL access agree for active Plus/Pro, revoked, and expired grants. Temporary accounts removed.",
+  "browser": "Free and complimentary Pro flows passed at 320, 390, 768, and 1440 px. Weather uses a deterministic layout fixture; membership, analytics, clothing, saved outfits, and history use real isolated records. No AI inference, email, or Stripe writes. Account removed.",
+  "deployment": "Ready for hosted build and verification"
+}

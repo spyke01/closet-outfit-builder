@@ -4,6 +4,8 @@ import { useRef, useState } from "react";
 import { Lock, Sparkles, RefreshCw, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AppDialog } from "@/components/ui/app-dialog";
+import { UpgradePrompt } from "@/components/upgrade-prompt";
 import {
   useGenerateWardrobeItemImage,
   useImageGenerationQuota,
@@ -101,24 +103,16 @@ export function WardrobeItemImageGenerator({
             type="button"
             variant="outline"
             className="w-full"
-            disabled={!itemHasData}
+            disabled={quotaLoading}
             onClick={handleGenerateClick}
             aria-label="Generate image with AI (requires upgrade)"
           >
             <Lock className="mr-2 h-4 w-4" />
-            Generate with AI
+            Generate with AI · Plus & Pro
           </Button>
-          {showUpgradePrompt && (
-            <Alert variant="info">
-              <AlertDescription>
-                AI image generation is available on Plus and Pro plans.{" "}
-                <a href="/pricing" className="underline font-medium">
-                  Upgrade your plan
-                </a>{" "}
-                to unlock this feature.
-              </AlertDescription>
-            </Alert>
-          )}
+          <AppDialog open={showUpgradePrompt} onClose={() => setShowUpgradePrompt(false)} title="Custom clothing images">
+            <UpgradePrompt feature="wardrobe-image" onClose={() => setShowUpgradePrompt(false)} />
+          </AppDialog>
         </div>
       )}
 

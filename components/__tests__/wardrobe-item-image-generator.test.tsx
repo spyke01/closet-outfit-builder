@@ -102,7 +102,8 @@ describe('WardrobeItemImageGenerator - free tier locked state', () => {
     fireEvent.click(btn);
 
     await waitFor(() => {
-      expect(screen.getByText(/upgrade your plan/i)).toBeInTheDocument();
+      expect(screen.getByRole('link', {name:'Compare Plus & Pro'})).toHaveAttribute('href','/settings/billing');
+      expect(screen.getByRole('heading', {name:'Give this piece a clear wardrobe image'})).toBeInTheDocument();
     });
   });
 });

@@ -3,6 +3,9 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { Skeleton } from "@/components/page-skeletons";
 import { LoadingStatus } from "@/components/loading-status";
+import { AppDialog } from "@/components/ui/app-dialog";
+import { UpgradePrompt, type UpgradeFeature } from "@/components/upgrade-prompt";
+import { LockKeyhole, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { Loader2, RefreshCw, Save, Sparkles, X } from "lucide-react";
 import { WardrobeItem } from "@/lib/types/database";
@@ -185,6 +188,7 @@ export default function TodayPageClient({
   useEffect(() => setHydrated(true), []);
   const [selectedLook, setSelectedLook] =
     useState<LookConfig["id"]>("elevated-daily");
+  const [upgradeFeature, setUpgradeFeature] = useState<UpgradeFeature | null>(null);
   const createCalendarEntry = useCreateCalendarEntry();
   const calendar = useCalendarEntriesByMonth({ month: new Date() });
   const wearLock = useRef(false);
@@ -194,7 +198,7 @@ export default function TodayPageClient({
     method: "POST" | "PATCH";
   } | null>(null);
   const aiLock = useRef(false);
-  const { entitlements, loading: entitlementsLoading } =
+  const { entitlements, loading: entitlementsLoading, error: membershipError, retry: retryMembership } =
     useBillingEntitlements(true);
   const [freeOutfit, setFreeOutfit] = useState<GeneratedOutfit | null>(null);
   const [paidLooks, setPaidLooks] = useState<
@@ -292,10 +296,11 @@ export default function TodayPageClient({
       }),
     [current, weatherContext, weatherError],
   );
-  const planCode = entitlementsLoading
+  const planCode = entitlementsLoading || !entitlements
     ? null
     : (entitlements?.effectivePlanCode ?? "free");
   const isPaidPlan = planCode !== null && !isFreePlan(planCode);
+  const isFreeMember = planCode === 'free';
 
   useEffect(() => {
     try {
@@ -1065,9 +1070,12 @@ export default function TodayPageClient({
                     if (isPaidPlan || config.id === FREE_TODAY_LOOK.id) {
                       setSelectedLook(config.id);
                       setWearFeedback("");
+                    } else {
+                      setUpgradeFeature(config.id === "easy-day" ? "everyday-look" : "evening-look");
                     }
                   }}
-                  disabled={!isPaidPlan && config.id !== FREE_TODAY_LOOK.id}
+                  data-locked={isFreeMember && config.id !== FREE_TODAY_LOOK.id}
+                  disabled={entitlementsLoading || !entitlements}
                 >
                   <div className="flex-1">
                     <strong className="block text-sm">
@@ -1081,11 +1089,9 @@ export default function TodayPageClient({
                     </strong>
                     <span className="mt-1 block text-xs text-muted-foreground">
                       {descriptions[config.id][1]}
-                      {!isPaidPlan && config.id !== FREE_TODAY_LOOK.id
-                        ? " · Plus / Pro"
-                        : ""}
                     </span>
                   </div>
+                  {isFreeMember && config.id !== FREE_TODAY_LOOK.id && <span className="occasion-lock"><span><LockKeyhole size={12} aria-hidden="true" /> Plus & Pro</span><small>View benefits <ArrowUpRight size={12} aria-hidden="true" /></small></span>}
                   {previewItems.length > 0 && (
                     <OutfitThumbnails
                       items={previewItems}
@@ -1096,7 +1102,8 @@ export default function TodayPageClient({
               );
             })}
           </div>
-          {!isPaidPlan && (
+          {membershipError && !entitlements && <div className="mt-3 space-y-2 text-sm"><p role="alert">Your membership could not be checked. Try again to see your available looks.</p><button className="text-primary underline" onClick={() => void retryMembership()}>Check membership again</button></div>}
+          {isFreeMember && (
             <Link
               href="/settings/billing"
               className="mt-3 inline-block text-xs text-primary"
@@ -1104,6 +1111,9 @@ export default function TodayPageClient({
               Explore more daily looks with Plus and Pro ↗
             </Link>
           )}
+          <AppDialog open={upgradeFeature !== null} onClose={() => setUpgradeFeature(null)} title="More looks for your plans">
+            {upgradeFeature && <UpgradePrompt feature={upgradeFeature} onClose={() => setUpgradeFeature(null)} />}
+          </AppDialog>
           <p className="my-5 border-y border-border py-4 text-sm text-muted-foreground">
             {current && weatherEnabled
               ? stylingTip
@@ -1301,8 +1311,11 @@ export default function TodayPageClient({
               <div className="flex w-full flex-col items-center gap-2">
                 <button
                   className={`${primaryButtonClass} w-full`}
-                  disabled={aiGenerating || (!isPaidPlan && !canUseFreeTrial)}
-                  onClick={() => generateAiLook(todayAi ? "PATCH" : "POST")}
+                  disabled={aiGenerating || entitlementsLoading || !entitlements}
+                  onClick={() => {
+                    if (!isPaidPlan && !canUseFreeTrial) setUpgradeFeature('today-ai');
+                    else void generateAiLook(todayAi ? "PATCH" : "POST");
+                  }}
                 >
                   {isPaidPlan || canUseFreeTrial
                     ? todayAi

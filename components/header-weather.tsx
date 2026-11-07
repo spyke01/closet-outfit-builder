@@ -9,6 +9,7 @@ import {
   Cloud,
   ChevronDown,
   RefreshCw,
+  Droplets,
 } from "lucide-react";
 import { useAppWeather } from "@/lib/contexts/app-weather";
 import { AppDialog } from "@/components/ui/app-dialog";
@@ -50,6 +51,10 @@ export function HeaderWeather() {
   const percent = (value: number) =>
     Math.round(value <= 1 ? value * 100 : value);
   const rain = today?.precipitationProbability;
+  const outlook = forecast.slice(0, 7);
+  const lowest = Math.min(...outlook.map(day => day.temperature.low));
+  const highest = Math.max(...outlook.map(day => day.temperature.high));
+  const span = Math.max(1, highest - lowest);
   return (
     <>
       <button
@@ -157,31 +162,28 @@ export function HeaderWeather() {
             {error.error}
           </p>
         )}
-        <div className="grid gap-3 sm:grid-cols-3">
-          {forecast.slice(0, 3).map((day) => (
-            <div className="rounded-xl border border-border p-3" key={day.date}>
-              <p className="font-medium">
-                {new Date(
+        {outlook.length > 0 && <section className="weather-outlook" aria-label="Daily forecast">
+          <h3 className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">{outlook.length}-day outlook</h3>
+          <div className="divide-y divide-border">
+          {outlook.map((day, index) => {
+            const DayIcon = /rain|drizzle|storm/i.test(day.condition) ? CloudRain : /clear|sunny/i.test(day.condition) ? Sun : /overcast/i.test(day.condition) ? Cloud : CloudSun;
+            return <div className="weather-outlook-row" key={day.date}>
+              <p className="text-sm font-medium">
+                {index === 0 ? "Today" : new Date(
                   `${day.date.slice(0, 10)}T12:00:00`,
                 ).toLocaleDateString(undefined, {
                   weekday: "short",
-                  month: "short",
-                  day: "numeric",
                 })}
               </p>
-              <p className="my-2 text-lg">
-                {Math.round(day.temperature.high)}° /{" "}
-                {Math.round(day.temperature.low)}°
-              </p>
-              <p className="text-sm text-muted-foreground">{day.condition}</p>
-              {day.precipitationProbability !== undefined && (
-                <p className="text-sm text-muted-foreground">
-                  {percent(day.precipitationProbability)}% chance of rain
-                </p>
-              )}
-            </div>
-          ))}
-        </div>
+              <span className="weather-day-condition" title={day.condition}><DayIcon size={24} aria-hidden="true" /><span className="sr-only">{day.condition}</span></span>
+              <span className="weather-rain"><Droplets size={12} aria-hidden="true" />{day.precipitationProbability === undefined ? "—" : `${percent(day.precipitationProbability)}%`}<span className="sr-only"> chance of rain</span></span>
+              <span className="weather-low"><span className="sr-only">Low </span>{Math.round(day.temperature.low)}°</span>
+              <span className="weather-range" aria-hidden="true"><span style={{left:`${(day.temperature.low-lowest)/span*100}%`,width:`${Math.max(6,(day.temperature.high-day.temperature.low)/span*100)}%`}} /></span>
+              <span className="weather-high"><span className="sr-only">High </span>{Math.round(day.temperature.high)}°</span>
+            </div>;
+          })}
+          </div>
+        </section>}
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
           {!disabled && (
             <Button

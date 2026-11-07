@@ -41,10 +41,26 @@ describe("SebastianChatLauncher", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Ask Sebastian" }));
     expect(
-      screen.getByText("Style advice, wherever you are"),
+      screen.getByText("Talk through what to wear"),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "Explore membership" }),
+      screen.getByRole("link", { name: "Compare Plus & Pro" }),
     ).toHaveAttribute("href", "/settings/billing");
+  });
+
+  it("waits for membership verification before showing an upgrade prompt", () => {
+    render(<SebastianChatLauncher requiresUpgrade membershipPending />);
+    fireEvent.click(screen.getByRole('button', {name:'Ask Sebastian'}));
+    expect(screen.getByRole('status')).toHaveTextContent('Loading your membership');
+    expect(screen.queryByRole('link', {name:'Compare Plus & Pro'})).not.toBeInTheDocument();
+  });
+
+  it("offers a membership retry instead of an upsell when verification fails", () => {
+    const retry = vi.fn();
+    render(<SebastianChatLauncher requiresUpgrade membershipError retryMembership={retry} />);
+    fireEvent.click(screen.getByRole('button', {name:'Ask Sebastian'}));
+    fireEvent.click(screen.getByRole('button', {name:'Check membership again'}));
+    expect(retry).toHaveBeenCalledOnce();
+    expect(screen.queryByRole('link', {name:'Compare Plus & Pro'})).not.toBeInTheDocument();
   });
 });

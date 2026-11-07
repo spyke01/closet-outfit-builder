@@ -25,7 +25,8 @@ export function useBillingEntitlements(enabled: boolean) {
       const response = await fetch('/api/billing/entitlements', { signal });
       if (!response.ok) throw new Error('Could not load membership');
       const payload = await response.json() as { entitlements?: BillingEntitlements };
-      return payload.entitlements || null;
+      if (!payload.entitlements) throw new Error('Could not load membership');
+      return payload.entitlements;
     },
     // The shell and each page share one request. Returning to a page can reuse
     // recent data; the server still authorizes every paid operation separately.
@@ -50,5 +51,7 @@ export function useBillingEntitlements(enabled: boolean) {
   return {
     entitlements: enabled && userId ? query.data ?? null : null,
     loading: enabled && query.isPending,
+    error: query.isError,
+    retry: query.refetch,
   };
 }

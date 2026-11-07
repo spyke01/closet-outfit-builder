@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-11-07T05:34:45.580Z",
+  "base": "http://localhost:3000",
+  "passed": true,
+  "scope": "Real isolated account data and membership grant; deterministic weather fixture for layout checks. No AI inference, email, or Stripe writes.",
+  "checks": [
+    "Real Free account, confirmed clothing, wear history, price, and saved outfit are ready",
+    "Locked occasion is clearly labelled and opens benefits, plan CTA, and a centered close control",
+    "An exhausted free AI trial opens a benefit explanation without starting inference",
+    "Seven-day forecast rows, rain, temperature ranges, and modal scrolling fit phone, tablet, and desktop",
+    "Every Free analytics tab has distinct real basics or an explicitly labelled example and a relevant plan CTA",
+    "Outfit preview precedes a compact summary in visual and reading order, and edit mode still opens",
+    "Free Sebastian access explains the conversation benefit and available plans",
+    "Complimentary Pro survives normal billing synchronization and unlocks occasions, chat UI, full analytics, and a billing view without purchase prompts"
+  ],
+  "errors": [],
+  "accountRemoved": true
+}
