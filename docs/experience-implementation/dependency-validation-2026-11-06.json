@@ -1,0 +1,37 @@
+{
+  "checkedAt": "2026-11-07T00:44:43.363572+00:00",
+  "scope": "Production dependencies only; no forced major upgrades",
+  "before": {
+    "info": 0,
+    "low": 0,
+    "moderate": 1,
+    "high": 5,
+    "critical": 1,
+    "total": 7
+  },
+  "after": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "versions": {
+    "next": "16.4.5",
+    "zod": "4.6.7",
+    "sharp": "0.35.5",
+    "vite": "6.4.5",
+    "vitest": "3.2.7"
+  },
+  "validation": {
+    "testsPassed": 2377,
+    "testsSkipped": 4,
+    "lintPassed": true,
+    "typesPassed": true,
+    "productionBuildPassed": true
+  },
+  "limits": [
+    "The full development dependency audit retains alerts requiring major toolchain changes. They are outside the deployed production dependency tree."
+  ]
+}

@@ -58,6 +58,10 @@
   NEXT_TELEMETRY_DISABLED = "1"
   # CORS allowlist override for API endpoints (runtime URL/DEPLOY_PRIME_URL are auto-allowed)
   CORS_ALLOWED_ORIGINS = "https://www.myaioutfit.com"
+  # Model names and numeric policy settings are public configuration, even when
+  # the account's Secrets Controller requires storing every variable as a secret.
+  # Keep credential and enhanced secret scanning enabled.
+  SECRETS_SCAN_OMIT_KEYS = "AI_TEXT_PROVIDER,AI_MAX_OUTPUT_TOKENS,REPLICATE_DEFAULT_MODEL,REPLICATE_FALLBACK_MODEL,REPLICATE_BG_MODELREPLICATE_BG_MODEL"
 
 # Headers for security and performance
 [[headers]]
