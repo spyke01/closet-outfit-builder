@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-11-07T00:30:00.294Z",
+  "passed": true,
+  "piecesChecked": 8,
+  "finishedImages": 32,
+  "checks": [
+    "Every finished cutout loads",
+    "Original generation toggle",
+    "Model-label toggle",
+    "Phone width",
+    "No JavaScript errors"
+  ]
+}

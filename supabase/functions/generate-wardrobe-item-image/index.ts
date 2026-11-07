@@ -20,6 +20,10 @@ import {
 } from "../_shared/ai-guard.ts";
 import { buildWardrobeItemPrompt } from "../_shared/wardrobe-item-prompt-builder.ts";
 import { isBoundedClothingImage } from "../_shared/image-metadata.ts";
+import {
+  resolveWardrobeImageModel,
+  wardrobeImageInput,
+} from "../_shared/wardrobe-image-model.ts";
 async function generate(
   db: AiDb,
   job: EdgeJob,
@@ -30,8 +34,8 @@ async function generate(
     db,
     job,
     "generate",
-    "google/imagen-4",
-    { prompt, aspect_ratio: "1:1", image_size: "1K", output_format: "png" },
+    job.model,
+    wardrobeImageInput(job.model, prompt),
   );
   let version = Deno.env.get("REPLICATE_BG_VERSION");
   if (!version) {
@@ -84,7 +88,7 @@ async function generate(
   const { error: logError } = await db.from("generation_log").insert({
     user_id: job.user_id,
     wardrobe_item_id: itemId,
-    model_used: "google/imagen-4",
+    model_used: job.model,
     status: "success",
     is_retry: false,
     prompt_text: prompt,
@@ -152,6 +156,9 @@ serve(async (req: Request) => {
       brand: String(item.brand || "").slice(0, 80),
       material: String(item.material || "").slice(0, 80),
     });
+    const model = resolveWardrobeImageModel(
+      Deno.env.get("REPLICATE_WARDROBE_MODEL"),
+    );
     let retryParent: string | undefined;
     if (input.is_retry) {
       const { data: parent } = await db
@@ -181,7 +188,7 @@ serve(async (req: Request) => {
             isRetry: Boolean(input.is_retry),
           },
           scope: item.id,
-          model: "google/imagen-4",
+          model,
           retryParent,
         });
     const { job } = reservation;

@@ -1,18 +1,20 @@
-import { useQuery } from '@tanstack/react-query';
-import { useMutation } from '@tanstack/react-query';
-import { useQueryClient } from '@tanstack/react-query';
-import { createClient } from '@/lib/supabase/client';
-import { UserPreferences, UserPreferencesSchema } from '@/lib/schemas';
-import { useAuth } from './use-auth';
+import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { createClient } from "@/lib/supabase/client";
+import { UserPreferences, UserPreferencesSchema } from "@/lib/schemas";
+import { useAuth } from "./use-auth";
 
 // Default preferences for profile UX settings.
 // Billing entitlements are enforced separately via effectivePlanCode ('free' | 'plus' | 'pro').
-const defaultPreferences: Omit<UserPreferences, 'id' | 'user_id' | 'created_at' | 'updated_at'> = {
-  theme: 'system',
+const defaultPreferences: Omit<
+  UserPreferences,
+  "id" | "user_id" | "created_at" | "updated_at" | "account_tier"
+> = {
+  theme: "system",
   show_brands: true,
   weather_enabled: true,
-  default_tuck_style: 'Untucked',
-  account_tier: 'starter',
+  default_tuck_style: "Untucked",
 };
 
 // Hook to fetch user preferences
@@ -20,19 +22,19 @@ export function useUserPreferences() {
   const { userId } = useAuth();
 
   return useQuery({
-    queryKey: ['user-preferences', userId],
+    queryKey: ["user-preferences", userId],
     queryFn: async () => {
-      if (!userId) throw new Error('No user ID');
-      
+      if (!userId) throw new Error("No user ID");
+
       const supabase = createClient();
       const { data, error } = await supabase
-        .from('user_preferences')
-        .select('*')
-        .eq('user_id', userId)
+        .from("user_preferences")
+        .select("*")
+        .eq("user_id", userId)
         .single();
 
       if (error) {
-        if (error.code === 'PGRST116') {
+        if (error.code === "PGRST116") {
           // No preferences found, create default ones
           const newPreferences = {
             user_id: userId,
@@ -40,7 +42,7 @@ export function useUserPreferences() {
           };
 
           const { data: created, error: createError } = await supabase
-            .from('user_preferences')
+            .from("user_preferences")
             .insert(newPreferences)
             .select()
             .single();
@@ -63,14 +65,18 @@ export function useUpdateUserPreferences() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (updates: Partial<Omit<UserPreferences, 'id' | 'user_id' | 'created_at' | 'updated_at'>>) => {
-      if (!userId) throw new Error('No user ID');
-      
+    mutationFn: async (
+      updates: Partial<
+        Omit<UserPreferences, "id" | "user_id" | "created_at" | "updated_at">
+      >,
+    ) => {
+      if (!userId) throw new Error("No user ID");
+
       const supabase = createClient();
       const { data, error } = await supabase
-        .from('user_preferences')
+        .from("user_preferences")
         .update(updates)
-        .eq('user_id', userId)
+        .eq("user_id", userId)
         .select()
         .single();
 
@@ -79,7 +85,7 @@ export function useUpdateUserPreferences() {
     },
     onSuccess: () => {
       // Simple invalidation - let TanStack Query handle the rest
-      queryClient.invalidateQueries({ queryKey: ['user-preferences', userId] });
+      queryClient.invalidateQueries({ queryKey: ["user-preferences", userId] });
     },
   });
 }
@@ -91,13 +97,13 @@ export function useResetUserPreferences() {
 
   return useMutation({
     mutationFn: async () => {
-      if (!userId) throw new Error('No user ID');
-      
+      if (!userId) throw new Error("No user ID");
+
       const supabase = createClient();
       const { data, error } = await supabase
-        .from('user_preferences')
+        .from("user_preferences")
         .update(defaultPreferences)
-        .eq('user_id', userId)
+        .eq("user_id", userId)
         .select()
         .single();
 
@@ -105,13 +111,15 @@ export function useResetUserPreferences() {
       return UserPreferencesSchema.parse(data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user-preferences', userId] });
+      queryClient.invalidateQueries({ queryKey: ["user-preferences", userId] });
     },
   });
 }
 
 // Hook to get a specific preference value
-export function usePreference<K extends keyof UserPreferences>(key: K): UserPreferences[K] | undefined {
+export function usePreference<K extends keyof UserPreferences>(
+  key: K,
+): UserPreferences[K] | undefined {
   const { data: preferences } = useUserPreferences();
   return preferences?.[key];
 }

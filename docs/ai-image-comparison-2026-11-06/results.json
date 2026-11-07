@@ -1,0 +1,1418 @@
+{
+  "startedAt": "2026-11-07T00:04:23.055Z",
+  "updatedAt": "2026-11-07T00:20:06.561Z",
+  "budgetUsd": 5,
+  "rows": [
+    {
+      "caseId": "navy-tee",
+      "modelId": "imagen4",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 422: This model has been discontinued by its provider."
+      }
+    },
+    {
+      "caseId": "navy-tee",
+      "modelId": "imagen4fast",
+      "generate": {
+        "state": "rejected",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 422: This deployment is currently disabled:\n- This model has been discontinued by its provider. Choose another supported model explicitly. No replacement is selected automatically."
+      }
+    },
+    {
+      "caseId": "navy-tee",
+      "modelId": "pimage",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.01,
+        "id": "vvqbnqsy71rmw0d1pdat39tstc",
+        "wallSeconds": 13.706,
+        "providerSeconds": 1.27,
+        "predictSeconds": 1.231120164,
+        "estimatedUsd": 0.005
+      },
+      "rawPath": "images/navy-tee-pimage-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "h25kj7kfrnrgc0d1pdar85c374",
+        "wallSeconds": 14.823,
+        "providerSeconds": 3.817,
+        "predictSeconds": 1.135643008,
+        "estimatedUsd": 0.0002555196768
+      },
+      "cleanedPath": "images/navy-tee-pimage-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.5901050567626953,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "navy-tee",
+      "modelId": "klein",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.005,
+        "id": "sxab8w2h49rp00d1pd9970gnc0",
+        "wallSeconds": 3.599,
+        "providerSeconds": 0.823,
+        "predictSeconds": 0.692025209,
+        "estimatedUsd": 0.001048576
+      },
+      "rawPath": "images/navy-tee-klein-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "470eq64w5drg80d1pdatxjwt3m",
+        "wallSeconds": 13.284,
+        "providerSeconds": 5.748,
+        "predictSeconds": 1.465571687,
+        "estimatedUsd": 0.000329753629575
+      },
+      "cleanedPath": "images/navy-tee-klein-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.5447893142700195,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "navy-tee",
+      "modelId": "flare",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 429: credit_balance_exhausted"
+      }
+    },
+    {
+      "caseId": "white-blouse",
+      "modelId": "imagen4fast",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 422: This deployment is currently disabled:\n- This model has been discontinued by its provider. Choose another supported model explicitly. No replacement is selected automatically."
+      }
+    },
+    {
+      "caseId": "white-blouse",
+      "modelId": "pimage",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.01,
+        "id": "mar60am705rmy0d1pdbae6v7xc",
+        "wallSeconds": 10.36,
+        "providerSeconds": 1.377,
+        "predictSeconds": 1.362519024,
+        "estimatedUsd": 0.005
+      },
+      "rawPath": "images/white-blouse-pimage-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "7xj68v5p7nrgc0d1pdb99ygavg",
+        "wallSeconds": 22.755,
+        "providerSeconds": 11.652,
+        "predictSeconds": 1.036211158,
+        "estimatedUsd": 0.00023314751055
+      },
+      "cleanedPath": "images/white-blouse-pimage-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.4833831787109375,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "white-blouse",
+      "modelId": "klein",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.005,
+        "id": "rb1pdj7db5rp40d1pdb95mktkc",
+        "wallSeconds": 3.836,
+        "providerSeconds": 0.81,
+        "predictSeconds": 0.798818854,
+        "estimatedUsd": 0.001048576
+      },
+      "rawPath": "images/white-blouse-klein-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "hktz97gvkhrgc0d1pdbtrbdm20",
+        "wallSeconds": 14.99,
+        "providerSeconds": 5.615,
+        "predictSeconds": 1.5055045150000002,
+        "estimatedUsd": 0.00033873851587500005
+      },
+      "cleanedPath": "images/white-blouse-klein-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.49890708923339844,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "white-blouse",
+      "modelId": "flare",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 429: credit_balance_exhausted"
+      }
+    },
+    {
+      "caseId": "white-blouse",
+      "modelId": "imagen4",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 422: This model has been discontinued by its provider."
+      }
+    },
+    {
+      "caseId": "striped-shirt",
+      "modelId": "pimage",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.01,
+        "id": "5tzxcx83c1rmt0d1pdc8pmc3r8",
+        "wallSeconds": 11.907,
+        "providerSeconds": 2.165,
+        "predictSeconds": 2.15249095,
+        "estimatedUsd": 0.005
+      },
+      "rawPath": "images/striped-shirt-pimage-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "pxn4swsn21rga0d1pdca2awvj0",
+        "wallSeconds": 12.18,
+        "providerSeconds": 1.95,
+        "predictSeconds": 1.071472988,
+        "estimatedUsd": 0.0002410814223
+      },
+      "cleanedPath": "images/striped-shirt-pimage-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.44963836669921875,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "striped-shirt",
+      "modelId": "klein",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.005,
+        "id": "de97z4v2fxrp60d1pdc99rxjqw",
+        "wallSeconds": 11.032,
+        "providerSeconds": 0.684,
+        "predictSeconds": 0.675393969,
+        "estimatedUsd": 0.001048576
+      },
+      "rawPath": "images/striped-shirt-klein-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "n3fdr1wgvsrga0d1pdcaqg0d7m",
+        "wallSeconds": 11.258,
+        "providerSeconds": 1.517,
+        "predictSeconds": 1.354862256,
+        "estimatedUsd": 0.0003048440076
+      },
+      "cleanedPath": "images/striped-shirt-klein-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.46356678009033203,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "striped-shirt",
+      "modelId": "flare",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 429: credit_balance_exhausted"
+      }
+    },
+    {
+      "caseId": "striped-shirt",
+      "modelId": "imagen4",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 422: This model has been discontinued by its provider."
+      }
+    },
+    {
+      "caseId": "striped-shirt",
+      "modelId": "imagen4fast",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 422: This deployment is currently disabled:\n- This model has been discontinued by its provider. Choose another supported model explicitly. No replacement is selected automatically."
+      }
+    },
+    {
+      "caseId": "checked-blazer",
+      "modelId": "klein",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.005,
+        "id": "y0957svw31rp00d1pdcsbv7zdc",
+        "wallSeconds": 10.7,
+        "providerSeconds": 0.748,
+        "predictSeconds": 0.73104901,
+        "estimatedUsd": 0.001048576
+      },
+      "rawPath": "images/checked-blazer-klein-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "5ywd8snbznrgc0d1pdcvvvpdx4",
+        "wallSeconds": 12.291,
+        "providerSeconds": 2.032,
+        "predictSeconds": 1.374352228,
+        "estimatedUsd": 0.0003092292513
+      },
+      "cleanedPath": "images/checked-blazer-klein-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.49556922912597656,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "checked-blazer",
+      "modelId": "flare",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 429: credit_balance_exhausted"
+      }
+    },
+    {
+      "caseId": "checked-blazer",
+      "modelId": "imagen4",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 422: This model has been discontinued by its provider."
+      }
+    },
+    {
+      "caseId": "checked-blazer",
+      "modelId": "imagen4fast",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 422: This deployment is currently disabled:\n- This model has been discontinued by its provider. Choose another supported model explicitly. No replacement is selected automatically."
+      }
+    },
+    {
+      "caseId": "checked-blazer",
+      "modelId": "pimage",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.01,
+        "id": "cdqk0ackp1rmy0d1pddax7dr3m",
+        "wallSeconds": 11.414,
+        "providerSeconds": 1.884,
+        "predictSeconds": 1.872013703,
+        "estimatedUsd": 0.005
+      },
+      "rawPath": "images/checked-blazer-pimage-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "7vpq9we46srg80d1pdd9fa3xaw",
+        "wallSeconds": 11.883,
+        "providerSeconds": 1.399,
+        "predictSeconds": 1.235012881,
+        "estimatedUsd": 0.000277877898225
+      },
+      "cleanedPath": "images/checked-blazer-pimage-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.4825115203857422,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "white-sneakers",
+      "modelId": "flare",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 429: credit_balance_exhausted"
+      }
+    },
+    {
+      "caseId": "white-sneakers",
+      "modelId": "imagen4",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 422: This model has been discontinued by its provider."
+      }
+    },
+    {
+      "caseId": "white-sneakers",
+      "modelId": "imagen4fast",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 422: This deployment is currently disabled:\n- This model has been discontinued by its provider. Choose another supported model explicitly. No replacement is selected automatically."
+      }
+    },
+    {
+      "caseId": "white-sneakers",
+      "modelId": "pimage",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.01,
+        "id": "5zqqs6nd65rmt0d1pdds7sr0fg",
+        "wallSeconds": 11.463,
+        "providerSeconds": 1.95,
+        "predictSeconds": 1.937556802,
+        "estimatedUsd": 0.005
+      },
+      "rawPath": "images/white-sneakers-pimage-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "f6whdkpwj5rga0d1pddt7mkpa0",
+        "wallSeconds": 10.189,
+        "providerSeconds": 1.171,
+        "predictSeconds": 1.096832314,
+        "estimatedUsd": 0.00024678727065
+      },
+      "cleanedPath": "images/white-sneakers-pimage-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.7360706329345703,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "white-sneakers",
+      "modelId": "klein",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.005,
+        "id": "d3mjafrc55rp40d1pde89r1fa8",
+        "wallSeconds": 12.302,
+        "providerSeconds": 0.658,
+        "predictSeconds": 0.650326301,
+        "estimatedUsd": 0.001048576
+      },
+      "rawPath": "images/white-sneakers-klein-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "a3v8gb9tw9rg80d1pdead9pjf4",
+        "wallSeconds": 12.488,
+        "providerSeconds": 1.388,
+        "predictSeconds": 1.2866956649999999,
+        "estimatedUsd": 0.00028950652462499994
+      },
+      "cleanedPath": "images/white-sneakers-klein-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.6586322784423828,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "brown-belt",
+      "modelId": "imagen4",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 422: This model has been discontinued by its provider."
+      }
+    },
+    {
+      "caseId": "brown-belt",
+      "modelId": "imagen4fast",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 422: This deployment is currently disabled:\n- This model has been discontinued by its provider. Choose another supported model explicitly. No replacement is selected automatically."
+      }
+    },
+    {
+      "caseId": "brown-belt",
+      "modelId": "pimage",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.01,
+        "id": "vnn0rnh47hrmw0d1pdevzk5820",
+        "wallSeconds": 12.77,
+        "providerSeconds": 2.568,
+        "predictSeconds": 2.554351589,
+        "estimatedUsd": 0.005
+      },
+      "rawPath": "images/brown-belt-pimage-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "aph1b92ma9rge0d1pdevfw2rjr",
+        "wallSeconds": 11.702,
+        "providerSeconds": 1.346,
+        "predictSeconds": 1.223398966,
+        "estimatedUsd": 0.00027526476735
+      },
+      "cleanedPath": "images/brown-belt-pimage-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.8917770385742188,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "brown-belt",
+      "modelId": "klein",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.005,
+        "id": "3851s9c4thrp40d1pdetr0n07r",
+        "wallSeconds": 11.117,
+        "providerSeconds": 0.803,
+        "predictSeconds": 0.79544048,
+        "estimatedUsd": 0.001048576
+      },
+      "rawPath": "images/brown-belt-klein-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "k5046v5hnsrg80d1pdesjqbts0",
+        "wallSeconds": 10.526,
+        "providerSeconds": 1.208,
+        "predictSeconds": 1.12001217,
+        "estimatedUsd": 0.00025200273825
+      },
+      "cleanedPath": "images/brown-belt-klein-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.8289794921875,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "brown-belt",
+      "modelId": "flare",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 429: credit_balance_exhausted"
+      }
+    },
+    {
+      "caseId": "green-dress",
+      "modelId": "imagen4fast",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 422: This deployment is currently disabled:\n- This model has been discontinued by its provider. Choose another supported model explicitly. No replacement is selected automatically."
+      }
+    },
+    {
+      "caseId": "green-dress",
+      "modelId": "pimage",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.01,
+        "id": "6xt07nhxmnrmr0d1pdfbqdy0vg",
+        "wallSeconds": 13.236,
+        "providerSeconds": 1.7,
+        "predictSeconds": 1.685825659,
+        "estimatedUsd": 0.005
+      },
+      "rawPath": "images/green-dress-pimage-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "aas9ab3eexrgc0d1pdfbhg2bc4",
+        "wallSeconds": 10.73,
+        "providerSeconds": 1.136,
+        "predictSeconds": 1.046200552,
+        "estimatedUsd": 0.00023539512419999998
+      },
+      "cleanedPath": "images/green-dress-pimage-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.7438802719116211,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "green-dress",
+      "modelId": "klein",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.005,
+        "id": "x196rwcvq9rp00d1pdf9zvhtm0",
+        "wallSeconds": 12.842,
+        "providerSeconds": 0.586,
+        "predictSeconds": 0.575416268,
+        "estimatedUsd": 0.001048576
+      },
+      "rawPath": "images/green-dress-klein-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "6hx2wced55rga0d1pdfargv6h0",
+        "wallSeconds": 11.799,
+        "providerSeconds": 1.304,
+        "predictSeconds": 1.193863862,
+        "estimatedUsd": 0.00026861936895
+      },
+      "cleanedPath": "images/green-dress-klein-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.734288215637207,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "green-dress",
+      "modelId": "flare",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 429: credit_balance_exhausted"
+      }
+    },
+    {
+      "caseId": "green-dress",
+      "modelId": "imagen4",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 422: This model has been discontinued by its provider."
+      }
+    },
+    {
+      "caseId": "silver-watch",
+      "modelId": "pimage",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.01,
+        "id": "fdj07nape5rmr0d1pdftap5ssw",
+        "wallSeconds": 11.797,
+        "providerSeconds": 1.029,
+        "predictSeconds": 1.013010893,
+        "estimatedUsd": 0.005
+      },
+      "rawPath": "images/silver-watch-pimage-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "0yg98a47bxrg80d1pdfve2q8vr",
+        "wallSeconds": 12.278,
+        "providerSeconds": 1.113,
+        "predictSeconds": 1.038704722,
+        "estimatedUsd": 0.00023370856245000002
+      },
+      "cleanedPath": "images/silver-watch-pimage-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.8018932342529297,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "silver-watch",
+      "modelId": "klein",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.005,
+        "id": "nw5cfj3rcdrp00d1pd9atnc76r",
+        "wallSeconds": 1.661,
+        "providerSeconds": 0.588,
+        "predictSeconds": 0.580692988,
+        "estimatedUsd": 0.001048576
+      },
+      "rawPath": "images/silver-watch-klein-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "520e4axp75rge0d1pdftbrxt34",
+        "wallSeconds": 11.591,
+        "providerSeconds": 1.189,
+        "predictSeconds": 1.080464198,
+        "estimatedUsd": 0.00024310444455
+      },
+      "cleanedPath": "images/silver-watch-klein-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.7528791427612305,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "silver-watch",
+      "modelId": "flare",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 429: credit_balance_exhausted"
+      }
+    },
+    {
+      "caseId": "silver-watch",
+      "modelId": "imagen4",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 422: This model has been discontinued by its provider."
+      }
+    },
+    {
+      "caseId": "silver-watch",
+      "modelId": "imagen4fast",
+      "generate": {
+        "state": "unavailable",
+        "reservedUsd": 0,
+        "error": "Provider HTTP 422: This deployment is currently disabled:\n- This model has been discontinued by its provider. Choose another supported model explicitly. No replacement is selected automatically."
+      }
+    },
+    {
+      "caseId": "navy-tee",
+      "modelId": "schnell",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.01,
+        "id": "qw4wyfychhrp60d1pdav43ft94",
+        "wallSeconds": 10.924,
+        "providerSeconds": 4.443,
+        "predictSeconds": 0.639870097,
+        "estimatedUsd": 0.003
+      },
+      "rawPath": "images/navy-tee-schnell-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "8chz237sssrg80d1pdarmdj2xc",
+        "wallSeconds": 16.858,
+        "providerSeconds": 9.999,
+        "predictSeconds": 1.008047954,
+        "estimatedUsd": 0.00022681078965
+      },
+      "cleanedPath": "images/navy-tee-schnell-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.5950651168823242,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "navy-tee",
+      "modelId": "banana2",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.12,
+        "id": "nsfvbc18vdrmt0d1pdba25qr0m",
+        "wallSeconds": 9.352,
+        "providerSeconds": 8.613,
+        "predictSeconds": 8.597565572,
+        "estimatedUsd": 0.067
+      },
+      "rawPath": "images/navy-tee-banana2-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "tc0fkkas31rg80d1pdbaw0z2qr",
+        "wallSeconds": 4.965,
+        "providerSeconds": 2.061,
+        "predictSeconds": 1.356217314,
+        "estimatedUsd": 0.00030514889565
+      },
+      "cleanedPath": "images/navy-tee-banana2-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.45224475860595703,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "white-blouse",
+      "modelId": "schnell",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.01,
+        "id": "qyd75cj9xsrp00d1pdbrg68n70",
+        "wallSeconds": 10.456,
+        "providerSeconds": 4.109,
+        "predictSeconds": 0.748045217,
+        "estimatedUsd": 0.003
+      },
+      "rawPath": "images/white-blouse-schnell-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "z1srvjkqjxrge0d1pdbstqvhvg",
+        "wallSeconds": 6.407,
+        "providerSeconds": 1.135,
+        "predictSeconds": 1.077592107,
+        "estimatedUsd": 0.000242458224075
+      },
+      "cleanedPath": "images/white-blouse-schnell-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.6397199630737305,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "white-blouse",
+      "modelId": "banana2",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.12,
+        "id": "6ykjdex5bhrmw0d1pdbv8b1c3w",
+        "wallSeconds": 18.092,
+        "providerSeconds": 7.43,
+        "predictSeconds": 7.412177389,
+        "estimatedUsd": 0.067
+      },
+      "rawPath": "images/white-blouse-banana2-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "xq5344ymtdrg80d1pdbrzr1dtg",
+        "wallSeconds": 5.649,
+        "providerSeconds": 1.465,
+        "predictSeconds": 1.3291757610000001,
+        "estimatedUsd": 0.000299064546225
+      },
+      "cleanedPath": "images/white-blouse-banana2-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.5309181213378906,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "striped-shirt",
+      "modelId": "schnell",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.01,
+        "id": "e9kz6ae005rp40d1pdc8dhcbx4",
+        "wallSeconds": 11.795,
+        "providerSeconds": 0.661,
+        "predictSeconds": 0.652581691,
+        "estimatedUsd": 0.003
+      },
+      "rawPath": "images/striped-shirt-schnell-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "jvyd7pzgn1rgc0d1pdca8a0dc0",
+        "wallSeconds": 11.881,
+        "providerSeconds": 1.24,
+        "predictSeconds": 1.099677906,
+        "estimatedUsd": 0.00024742752884999997
+      },
+      "cleanedPath": "images/striped-shirt-schnell-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.5583944320678711,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "striped-shirt",
+      "modelId": "banana2",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.12,
+        "id": "4btyh60wd1rmt0d1pdcrtt19sg",
+        "wallSeconds": 18.348,
+        "providerSeconds": 10.049,
+        "predictSeconds": 10.034701238,
+        "estimatedUsd": 0.067
+      },
+      "rawPath": "images/striped-shirt-banana2-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "2qbrgj2cv5rgc0d1pdcsafzd38",
+        "wallSeconds": 3.989,
+        "providerSeconds": 1.616,
+        "predictSeconds": 1.410185506,
+        "estimatedUsd": 0.00031729173885
+      },
+      "cleanedPath": "images/striped-shirt-banana2-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.44264888763427734,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "checked-blazer",
+      "modelId": "schnell",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.01,
+        "id": "y2rke1yrb9rp60d1pdcs81j380",
+        "wallSeconds": 9.704,
+        "providerSeconds": 0.629,
+        "predictSeconds": 0.620980124,
+        "estimatedUsd": 0.003
+      },
+      "rawPath": "images/checked-blazer-schnell-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "wxn6s8874xrgc0d1pdd8t4jt7m",
+        "wallSeconds": 11.38,
+        "providerSeconds": 1.143,
+        "predictSeconds": 1.068451273,
+        "estimatedUsd": 0.000240401536425
+      },
+      "cleanedPath": "images/checked-blazer-schnell-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.7185564041137695,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "checked-blazer",
+      "modelId": "banana2",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.12,
+        "id": "m6p7wvhp59rmr0d1pdd95vvzdw",
+        "wallSeconds": 18.735,
+        "providerSeconds": 7.827,
+        "predictSeconds": 7.813887714,
+        "estimatedUsd": 0.067
+      },
+      "rawPath": "images/checked-blazer-banana2-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "bmp5gyk5q1rga0d1pddbcksnh4",
+        "wallSeconds": 5.934,
+        "providerSeconds": 1.492,
+        "predictSeconds": 1.293926845,
+        "estimatedUsd": 0.000291133540125
+      },
+      "cleanedPath": "images/checked-blazer-banana2-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.5041580200195312,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "white-sneakers",
+      "modelId": "schnell",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.01,
+        "id": "k7j7g5qjsnrp20d1pddb1ycjzr",
+        "wallSeconds": 10.422,
+        "providerSeconds": 0.582,
+        "predictSeconds": 0.573792116,
+        "estimatedUsd": 0.003
+      },
+      "rawPath": "images/white-sneakers-schnell-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "ttbfksh1w5rgc0d1pddvgsphtg",
+        "wallSeconds": 11.623,
+        "providerSeconds": 1.113,
+        "predictSeconds": 1.056218324,
+        "estimatedUsd": 0.0002376491229
+      },
+      "cleanedPath": "images/white-sneakers-schnell-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.8450021743774414,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "white-sneakers",
+      "modelId": "banana2",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.12,
+        "id": "abx223tfahrmr0d1pddt4zwarc",
+        "wallSeconds": 19.227,
+        "providerSeconds": 9.275,
+        "predictSeconds": 9.248055838,
+        "estimatedUsd": 0.067
+      },
+      "rawPath": "images/white-sneakers-banana2-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "m6zt4qbzwxrg80d1pddtbgypec",
+        "wallSeconds": 5.061,
+        "providerSeconds": 1.943,
+        "predictSeconds": 1.797620449,
+        "estimatedUsd": 0.000404464601025
+      },
+      "cleanedPath": "images/white-sneakers-banana2-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.5756587982177734,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "brown-belt",
+      "modelId": "schnell",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.01,
+        "id": "2534grk9axrp20d1pde95b50e4",
+        "wallSeconds": 11.92,
+        "providerSeconds": 1.369,
+        "predictSeconds": 0.608708766,
+        "estimatedUsd": 0.003
+      },
+      "rawPath": "images/brown-belt-schnell-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "64rpacms99rgc0d1pdean7jnh8",
+        "wallSeconds": 10.14,
+        "providerSeconds": 1.188,
+        "predictSeconds": 1.105958984,
+        "estimatedUsd": 0.0002488407714
+      },
+      "cleanedPath": "images/brown-belt-schnell-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.8065481185913086,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "brown-belt",
+      "modelId": "banana2",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.12,
+        "id": "w9rp5sy5zxrmy0d1pde8raatwr",
+        "wallSeconds": 16.545,
+        "providerSeconds": 6.651,
+        "predictSeconds": 6.619303107,
+        "estimatedUsd": 0.067
+      },
+      "rawPath": "images/brown-belt-banana2-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "adgt0pfnr9rge0d1pde8avsgyr",
+        "wallSeconds": 6.156,
+        "providerSeconds": 1.149,
+        "predictSeconds": 1.072728696,
+        "estimatedUsd": 0.00024136395659999998
+      },
+      "cleanedPath": "images/brown-belt-banana2-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.8764638900756836,
+        "foregroundTouchesEdge": true
+      }
+    },
+    {
+      "caseId": "green-dress",
+      "modelId": "banana2",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.12,
+        "id": "zsg5rdezdnrmt0d1pdermvgds0",
+        "wallSeconds": 17.832,
+        "providerSeconds": 7.707,
+        "predictSeconds": 7.693544094,
+        "estimatedUsd": 0.067
+      },
+      "rawPath": "images/green-dress-banana2-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "cr2dwb8f5hrgc0d1pdfav7700w",
+        "wallSeconds": 5.299,
+        "providerSeconds": 1.235,
+        "predictSeconds": 1.134869351,
+        "estimatedUsd": 0.00025534560397500003
+      },
+      "cleanedPath": "images/green-dress-banana2-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.780451774597168,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "green-dress",
+      "modelId": "schnell",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.01,
+        "id": "0jd52v7trsrp00d1pdfags6jrw",
+        "wallSeconds": 13.107,
+        "providerSeconds": 3.794,
+        "predictSeconds": 0.590052597,
+        "estimatedUsd": 0.003
+      },
+      "rawPath": "images/green-dress-schnell-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "ncqmnms821rga0d1pdfspagqm0",
+        "wallSeconds": 7.728,
+        "providerSeconds": 1.059,
+        "predictSeconds": 0.989247595,
+        "estimatedUsd": 0.00022258070887500001
+      },
+      "cleanedPath": "images/green-dress-schnell-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.7703619003295898,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "silver-watch",
+      "modelId": "schnell",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.01,
+        "id": "n31zstz4nhrp60d1pdftwmwvgc",
+        "wallSeconds": 14.279,
+        "providerSeconds": 3.879,
+        "predictSeconds": 0.593066995,
+        "estimatedUsd": 0.003
+      },
+      "rawPath": "images/silver-watch-schnell-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "kky14hgm7drgc0d1pdg99a5yr4",
+        "wallSeconds": 8.84,
+        "providerSeconds": 1.054,
+        "predictSeconds": 0.986199841,
+        "estimatedUsd": 0.000221894964225
+      },
+      "cleanedPath": "images/silver-watch-schnell-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.7665681838989258,
+        "foregroundTouchesEdge": false
+      }
+    },
+    {
+      "caseId": "silver-watch",
+      "modelId": "banana2",
+      "generate": {
+        "state": "succeeded",
+        "reservedUsd": 0.12,
+        "id": "zx9sgx218srmt0d1pdg99mx06r",
+        "wallSeconds": 19.443,
+        "providerSeconds": 9.062,
+        "predictSeconds": 9.047310582,
+        "estimatedUsd": 0.067
+      },
+      "rawPath": "images/silver-watch-banana2-raw.webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "cleanup": {
+        "state": "succeeded",
+        "reservedUsd": 0.02,
+        "id": "7ps6v0vhw9rg80d1pdgadt29nm",
+        "wallSeconds": 3.72,
+        "providerSeconds": 1.301,
+        "predictSeconds": 1.207674323,
+        "estimatedUsd": 0.000271726722675
+      },
+      "cleanedPath": "images/silver-watch-banana2-cleaned.webp",
+      "alpha": {
+        "transparentFraction": 0.8157014846801758,
+        "foregroundTouchesEdge": false
+      }
+    }
+  ],
+  "methodology": "Eight synthetic clothing prompts, one sample per model per prompt. Identical production prompt builder, square ~1MP output, identical pinned background remover. OpenAI uses explicit low quality/complexity. No account/wardrobe/database writes. Prices are estimates, not reconciled provider invoices.",
+  "models": [
+    {
+      "id": "imagen4",
+      "slug": "google/imagen-4",
+      "label": "Imagen 4 (current)",
+      "ceiling": 0.08,
+      "rate": 0.04,
+      "input": {
+        "aspect_ratio": "1:1",
+        "image_size": "1K",
+        "output_format": "png"
+      }
+    },
+    {
+      "id": "imagen4fast",
+      "slug": "google/imagen-4-fast",
+      "label": "Imagen 4 Fast",
+      "ceiling": 0.04,
+      "rate": 0.02,
+      "input": {
+        "aspect_ratio": "1:1",
+        "output_format": "png"
+      }
+    },
+    {
+      "id": "pimage",
+      "slug": "prunaai/p-image",
+      "label": "Pruna P-Image",
+      "ceiling": 0.01,
+      "rate": 0.005,
+      "input": {
+        "aspect_ratio": "custom",
+        "width": 1024,
+        "height": 1024,
+        "seed": 1106,
+        "prompt_upsampling": false
+      }
+    },
+    {
+      "id": "klein",
+      "slug": "black-forest-labs/flux-2-klein-4b",
+      "label": "FLUX.2 Klein 4B",
+      "ceiling": 0.005,
+      "rate": 0.001,
+      "input": {
+        "aspect_ratio": "1:1",
+        "output_megapixels": "1",
+        "output_format": "png",
+        "seed": 1106,
+        "go_fast": false
+      }
+    },
+    {
+      "id": "flare",
+      "slug": "gpt-image-2.6-flare",
+      "label": "GPT Image 2.6 Flare · low",
+      "ceiling": 0.3,
+      "rate": null,
+      "input": {
+        "size": "1024x1024",
+        "quality": "low",
+        "complexity": "low",
+        "background": "opaque",
+        "output_format": "png",
+        "n": 1
+      }
+    },
+    {
+      "id": "schnell",
+      "slug": "black-forest-labs/flux-schnell",
+      "label": "FLUX.1 Schnell",
+      "ceiling": 0.01,
+      "rate": 0.003,
+      "input": {
+        "aspect_ratio": "1:1",
+        "megapixels": "1",
+        "num_outputs": 1,
+        "num_inference_steps": 4,
+        "output_format": "png",
+        "seed": 1106,
+        "go_fast": true
+      }
+    },
+    {
+      "id": "banana2",
+      "slug": "google/nano-banana-2",
+      "label": "Nano Banana 2",
+      "ceiling": 0.12,
+      "rate": 0.067,
+      "input": {
+        "aspect_ratio": "1:1",
+        "resolution": "1K",
+        "output_format": "png",
+        "google_search": false,
+        "image_search": false
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "navy-tee",
+      "name": "T-Shirt",
+      "category": "Tops",
+      "color": "navy",
+      "material": "cotton jersey",
+      "prompt": "## White Background Garment Image Generator Prompt\n\nCreate a high-resolution product-style PNG image of a **navy cotton jersey T-Shirt** on a pure solid white background (#FFFFFF).\n\n### Garment Requirements\n\n- The garment must be fully visible from top to bottom\n- No cropping of sleeves, hems, collars, cuffs, waistbands, or edges\n- Centered and perfectly straight\n- Realistic proportions and accurate construction\n- Clear fabric texture and material detail\n- Even soft studio lighting\n- Clean, sharp edges suitable for compositing\n- No distortion\n\n### Background Requirements\n\n- Pure solid white background (#FFFFFF) only\n- No transparency or alpha channel\n- No checkerboard, grid, or tiled pattern background\n- No drop shadow or cast shadow of any kind\n- No floor line\n- No gradient\n- No colored backdrop\n- No halo artifacts\n\n### Style Requirements\n\n- Minimal, modern e-commerce aesthetic\n- No model\n- No props\n- No dramatic lighting\n- No excessive wrinkles\n- Clean, crisp presentation\n\n### Brand Handling (Optional)\n\nBrand provided: **None**\n- If brand is provided, include subtle, realistic styling consistent with the brand\n- Do not exaggerate logos\n- No oversized branding unless typical for the garment type\n\n### Output Specifications\n\n- Square image\n- Generous padding around the garment\n- Balanced composition suitable for grid slicing\n- PNG format"
+    },
+    {
+      "id": "white-blouse",
+      "name": "long-sleeve button-front Blouse",
+      "category": "Tops",
+      "color": "ivory white",
+      "material": "silk",
+      "prompt": "## White Background Garment Image Generator Prompt\n\nCreate a high-resolution product-style PNG image of a **ivory white silk long-sleeve button-front Blouse** on a pure solid white background (#FFFFFF).\n\n### Garment Requirements\n\n- The garment must be fully visible from top to bottom\n- No cropping of sleeves, hems, collars, cuffs, waistbands, or edges\n- Centered and perfectly straight\n- Realistic proportions and accurate construction\n- Clear fabric texture and material detail\n- Even soft studio lighting\n- Clean, sharp edges suitable for compositing\n- No distortion\n\n### Background Requirements\n\n- Pure solid white background (#FFFFFF) only\n- No transparency or alpha channel\n- No checkerboard, grid, or tiled pattern background\n- No drop shadow or cast shadow of any kind\n- No floor line\n- No gradient\n- No colored backdrop\n- No halo artifacts\n\n### Style Requirements\n\n- Minimal, modern e-commerce aesthetic\n- No model\n- No props\n- No dramatic lighting\n- No excessive wrinkles\n- Clean, crisp presentation\n\n### Brand Handling (Optional)\n\nBrand provided: **None**\n- If brand is provided, include subtle, realistic styling consistent with the brand\n- Do not exaggerate logos\n- No oversized branding unless typical for the garment type\n\n### Output Specifications\n\n- Square image\n- Generous padding around the garment\n- Balanced composition suitable for grid slicing\n- PNG format"
+    },
+    {
+      "id": "striped-shirt",
+      "name": "button-down Shirt with narrow vertical stripes",
+      "category": "Tops",
+      "color": "red and cream striped",
+      "material": "cotton poplin",
+      "prompt": "## White Background Garment Image Generator Prompt\n\nCreate a high-resolution product-style PNG image of a **red and cream striped cotton poplin button-down Shirt with narrow vertical stripes** on a pure solid white background (#FFFFFF).\n\n### Garment Requirements\n\n- The garment must be fully visible from top to bottom\n- No cropping of sleeves, hems, collars, cuffs, waistbands, or edges\n- Centered and perfectly straight\n- Realistic proportions and accurate construction\n- Clear fabric texture and material detail\n- Even soft studio lighting\n- Clean, sharp edges suitable for compositing\n- No distortion\n\n### Background Requirements\n\n- Pure solid white background (#FFFFFF) only\n- No transparency or alpha channel\n- No checkerboard, grid, or tiled pattern background\n- No drop shadow or cast shadow of any kind\n- No floor line\n- No gradient\n- No colored backdrop\n- No halo artifacts\n\n### Style Requirements\n\n- Minimal, modern e-commerce aesthetic\n- No model\n- No props\n- No dramatic lighting\n- No excessive wrinkles\n- Clean, crisp presentation\n\n### Brand Handling (Optional)\n\nBrand provided: **None**\n- If brand is provided, include subtle, realistic styling consistent with the brand\n- Do not exaggerate logos\n- No oversized branding unless typical for the garment type\n\n### Output Specifications\n\n- Square image\n- Generous padding around the garment\n- Balanced composition suitable for grid slicing\n- PNG format"
+    },
+    {
+      "id": "checked-blazer",
+      "name": "two-button Blazer with a subtle windowpane check",
+      "category": "Outerwear",
+      "color": "navy with light blue checks",
+      "material": "wool",
+      "prompt": "## White Background Garment Image Generator Prompt\n\nCreate a high-resolution product-style PNG image of a **navy with light blue checks wool two-button Blazer with a subtle windowpane check** on a pure solid white background (#FFFFFF).\n\n### Garment Requirements\n\n- The garment must be fully visible from top to bottom\n- No cropping of sleeves, hems, collars, cuffs, waistbands, or edges\n- Centered and perfectly straight\n- Realistic proportions and accurate construction\n- Clear fabric texture and material detail\n- Even soft studio lighting\n- Clean, sharp edges suitable for compositing\n- No distortion\n\n### Background Requirements\n\n- Pure solid white background (#FFFFFF) only\n- No transparency or alpha channel\n- No checkerboard, grid, or tiled pattern background\n- No drop shadow or cast shadow of any kind\n- No floor line\n- No gradient\n- No colored backdrop\n- No halo artifacts\n\n### Style Requirements\n\n- Minimal, modern e-commerce aesthetic\n- No model\n- No props\n- No dramatic lighting\n- No excessive wrinkles\n- Clean, crisp presentation\n\n### Brand Handling (Optional)\n\nBrand provided: **None**\n- If brand is provided, include subtle, realistic styling consistent with the brand\n- Do not exaggerate logos\n- No oversized branding unless typical for the garment type\n\n### Output Specifications\n\n- Square image\n- Generous padding around the garment\n- Balanced composition suitable for grid slicing\n- PNG format"
+    },
+    {
+      "id": "white-sneakers",
+      "name": "matching pair of low-top Sneakers",
+      "category": "Shoes",
+      "color": "white",
+      "material": "leather with white rubber soles",
+      "prompt": "## White Background Garment Image Generator Prompt\n\nCreate a high-resolution product-style PNG image of a **white leather with white rubber soles matching pair of low-top Sneakers** on a pure solid white background (#FFFFFF).\n\n### Garment Requirements\n\n- The garment must be fully visible from top to bottom\n- No cropping of sleeves, hems, collars, cuffs, waistbands, or edges\n- Centered and perfectly straight\n- Realistic proportions and accurate construction\n- Clear fabric texture and material detail\n- Even soft studio lighting\n- Clean, sharp edges suitable for compositing\n- No distortion\n\n### Background Requirements\n\n- Pure solid white background (#FFFFFF) only\n- No transparency or alpha channel\n- No checkerboard, grid, or tiled pattern background\n- No drop shadow or cast shadow of any kind\n- No floor line\n- No gradient\n- No colored backdrop\n- No halo artifacts\n\n### Style Requirements\n\n- Minimal, modern e-commerce aesthetic\n- No model\n- No props\n- No dramatic lighting\n- No excessive wrinkles\n- Clean, crisp presentation\n\n### Brand Handling (Optional)\n\nBrand provided: **None**\n- If brand is provided, include subtle, realistic styling consistent with the brand\n- Do not exaggerate logos\n- No oversized branding unless typical for the garment type\n\n### Output Specifications\n\n- Square image\n- Generous padding around the garment\n- Balanced composition suitable for grid slicing\n- PNG format"
+    },
+    {
+      "id": "brown-belt",
+      "name": "Belt with one silver rectangular buckle",
+      "category": "Accessories",
+      "color": "brown",
+      "material": "leather",
+      "prompt": "## White Background Garment Image Generator Prompt\n\nCreate a high-resolution product-style PNG image of a **brown leather Belt with one silver rectangular buckle** on a pure solid white background (#FFFFFF).\n\n### Garment Requirements\n\n- The garment must be fully visible from top to bottom\n- No cropping of sleeves, hems, collars, cuffs, waistbands, or edges\n- Centered and perfectly straight\n- Realistic proportions and accurate construction\n- Clear fabric texture and material detail\n- Even soft studio lighting\n- Clean, sharp edges suitable for compositing\n- No distortion\n\n### Background Requirements\n\n- Pure solid white background (#FFFFFF) only\n- No transparency or alpha channel\n- No checkerboard, grid, or tiled pattern background\n- No drop shadow or cast shadow of any kind\n- No floor line\n- No gradient\n- No colored backdrop\n- No halo artifacts\n\n### Style Requirements\n\n- Minimal, modern e-commerce aesthetic\n- No model\n- No props\n- No dramatic lighting\n- No excessive wrinkles\n- Clean, crisp presentation\n\n### Brand Handling (Optional)\n\nBrand provided: **None**\n- If brand is provided, include subtle, realistic styling consistent with the brand\n- Do not exaggerate logos\n- No oversized branding unless typical for the garment type\n\n### Output Specifications\n\n- Square image\n- Generous padding around the garment\n- Balanced composition suitable for grid slicing\n- PNG format"
+    },
+    {
+      "id": "green-dress",
+      "name": "sleeveless Midi Dress with a V neckline",
+      "category": "Dresses",
+      "color": "forest green",
+      "material": "satin",
+      "prompt": "## White Background Garment Image Generator Prompt\n\nCreate a high-resolution product-style PNG image of a **forest green satin sleeveless Midi Dress with a V neckline** on a pure solid white background (#FFFFFF).\n\n### Garment Requirements\n\n- The garment must be fully visible from top to bottom\n- No cropping of sleeves, hems, collars, cuffs, waistbands, or edges\n- Centered and perfectly straight\n- Realistic proportions and accurate construction\n- Clear fabric texture and material detail\n- Even soft studio lighting\n- Clean, sharp edges suitable for compositing\n- No distortion\n\n### Background Requirements\n\n- Pure solid white background (#FFFFFF) only\n- No transparency or alpha channel\n- No checkerboard, grid, or tiled pattern background\n- No drop shadow or cast shadow of any kind\n- No floor line\n- No gradient\n- No colored backdrop\n- No halo artifacts\n\n### Style Requirements\n\n- Minimal, modern e-commerce aesthetic\n- No model\n- No props\n- No dramatic lighting\n- No excessive wrinkles\n- Clean, crisp presentation\n\n### Brand Handling (Optional)\n\nBrand provided: **None**\n- If brand is provided, include subtle, realistic styling consistent with the brand\n- Do not exaggerate logos\n- No oversized branding unless typical for the garment type\n\n### Output Specifications\n\n- Square image\n- Generous padding around the garment\n- Balanced composition suitable for grid slicing\n- PNG format"
+    },
+    {
+      "id": "silver-watch",
+      "name": "analog wrist Watch with a round black dial and metal bracelet",
+      "category": "Accessories",
+      "color": "silver and black",
+      "material": "stainless steel",
+      "prompt": "## White Background Garment Image Generator Prompt\n\nCreate a high-resolution product-style PNG image of a **silver and black stainless steel analog wrist Watch with a round black dial and metal bracelet** on a pure solid white background (#FFFFFF).\n\n### Garment Requirements\n\n- The garment must be fully visible from top to bottom\n- No cropping of sleeves, hems, collars, cuffs, waistbands, or edges\n- Centered and perfectly straight\n- Realistic proportions and accurate construction\n- Clear fabric texture and material detail\n- Even soft studio lighting\n- Clean, sharp edges suitable for compositing\n- No distortion\n\n### Background Requirements\n\n- Pure solid white background (#FFFFFF) only\n- No transparency or alpha channel\n- No checkerboard, grid, or tiled pattern background\n- No drop shadow or cast shadow of any kind\n- No floor line\n- No gradient\n- No colored backdrop\n- No halo artifacts\n\n### Style Requirements\n\n- Minimal, modern e-commerce aesthetic\n- No model\n- No props\n- No dramatic lighting\n- No excessive wrinkles\n- Clean, crisp presentation\n\n### Brand Handling (Optional)\n\nBrand provided: **None**\n- If brand is provided, include subtle, realistic styling consistent with the brand\n- Do not exaggerate logos\n- No oversized branding unless typical for the garment type\n\n### Output Specifications\n\n- Square image\n- Generous padding around the garment\n- Balanced composition suitable for grid slicing\n- PNG format"
+    }
+  ],
+  "unavailableModels": {
+    "imagen4": "Provider HTTP 422: This model has been discontinued by its provider.",
+    "flare": "Provider HTTP 429: credit_balance_exhausted",
+    "imagen4fast": "Provider HTTP 422: This deployment is currently disabled:\n- This model has been discontinued by its provider. Choose another supported model explicitly. No replacement is selected automatically."
+  },
+  "lastReplicateCreateAt": 1794010804025
+}

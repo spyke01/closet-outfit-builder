@@ -2,7 +2,7 @@
 
 November 6, 2026 · Branch `codex/signed-in-experience-and-ai-protections`
 
-The implementation is local and ready for acceptance testing and a staged deployment. Production databases, Edge deployments, provider billing settings, and subscriptions have not changed. No paid inference ran during development.
+Initial acceptance testing was local. The November 6 model evaluation and release section below records the subsequent live comparison and hosted rollout. Provider billing balances have not been changed.
 
 ## What changed
 
@@ -26,7 +26,7 @@ Subscription prices, paid monthly allowances, existing main URLs, ownership chec
 
 All active billable entry points reserve an operation before calling a provider. The shared PostgreSQL job ledger owns metering, idempotency, budgets, and trusted handles. Authenticated clients cannot reset counters, call the reservation RPC, or forge trusted assistant/job records. Direct Edge calls enforce the same ownership and paid-plan rules.
 
-- Text/vision defaults to direct OpenAI `gpt-6-luna`. The explicit allowlist also permits `gpt-6.1-terra`. There is no automatic escalation to a more expensive model.
+- The source default for text/vision is direct OpenAI `gpt-6-luna`. The explicit allowlist also permits `gpt-6.1-terra`. There is no automatic escalation to a more expensive model.
 - Responses use no tools, reasoning effort `none`, bounded prompts/history, and 1,024 output tokens by default, with a configuration maximum of 2,048. Background responses provide a resumable handle; the application attempts deletion after persisting a terminal result.
 - Replicate text routing remains an explicit rollback option. A polling failure reuses the known prediction; it does not restart a paid POST. Capacity/account-limit failures do not trigger uncontrolled provider switching.
 - Wardrobe illustration uses one Imagen 4 output followed by background removal. Photo cleanup uses `851-labs/background-remover`. The example configuration pins its version. Each image phase records its model, version, handle, and completion state. Replicate predictions have a provider-side 60-second cancellation deadline.
@@ -163,3 +163,15 @@ Forecast cards show the selected destination/date, high/low, rain, and a clothin
 Trip creation and details use dialogs. Deletion requires confirmation. Shortening dates identifies planned looks that would be removed and requires a checkbox before saving. Cancel discards detail edits. Existing looks are kept by default when planning; calendar syncing is an explicit option. New combinations still use the existing local algorithm and consume no AI credits. This follow-up needs no additional database migration.
 
 The follow-up browser suite is `scripts/check-trips-browser.mjs`; its six checks and four screenshots are recorded in `trips-browser-validation.json` and `browser-evidence/`. The shared suite now has 34 checks, including phone header off/loading/error states. The full test suite has 2,373 passing tests and four existing skips. Types, strict lint, and the production build pass. These workflow checks use real components with synthetic persisted I/O; actual-account acceptance remains the user's local/staging test.
+
+## November 6 model evaluation and release
+
+The live comparison in `../ai-image-comparison-2026-11-06/report.html` produced 32 finished images across four runnable models for an estimated $0.617 including background removal. Imagen 4 and Imagen 4 Fast rejected inference as discontinued despite successful metadata reads. GPT Image 2.6 Flare rejected inference because the direct OpenAI account had no credits. These availability failures supersede the earlier model-catalog-only assessment.
+
+Clothing illustration jobs now reserve an explicit supported model and resume with that stored model. The new default is `black-forest-labs/flux-2-klein-4b`, with `prunaai/p-image` as an explicitly configurable alternative through `REPLICATE_WARDROBE_MODEL`. There is no automatic model substitution. The conservative $0.10 image admission reservation remains in place. Photo cleanup still uses the pinned 851 background-remover version.
+
+The production release preserves the existing Replicate text provider using `openai/gpt-5-mini`, verified with a tiny synthetic readiness request. `REPLICATE_FALLBACK_MODEL` is set to the same model. Direct GPT-6 Luna remains a source-supported option once OpenAI credits are available. Neither the official model catalog nor this account exposes GPT-6.1 Luna.
+
+Release preparation saved schema/data and deployed-function backups in the ignored, restricted `tmp/` directory, recorded the prior Netlify deployment, and rehearsed all seven migrations against the hosted schema in a transaction ending in ROLLBACK. A first-use preferences fix removes an obsolete `account_tier` column from database writes; the schema parser still supplies its legacy UI default. The calendar link test now uses a local date to match the page after UTC midnight.
+
+Deployment completion and hosted acceptance evidence will be recorded separately when the release checks finish. No provider billing balance was changed.

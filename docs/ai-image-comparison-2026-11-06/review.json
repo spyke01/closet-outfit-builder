@@ -1,0 +1,52 @@
+{
+  "recommendation": "Use FLUX.2 Klein 4B as the inexpensive default for representative wardrobe images. It finished all eight cases with a median generation time of 0.72 seconds. Review the preview: it missed the V neckline, made the blazer checks too bold, and rendered the belt like a short strap. Use a real photo plus background removal when matching a specific owned garment matters. Nano Banana 2 followed details most consistently here, but costs about 64 times as much at this size and cropped the belt.",
+  "limits": "One output per model per case; subjective visual screening, not a statistical quality or latency benchmark. Identical prompts and cleanup. Model seeds do not create equivalent samples across providers. No comparison against an owned source photograph. Provider prices and predict-time charges are estimates, not invoice reconciliation.",
+  "models": {
+    "klein": {
+      "summary": "Best price/speed. Check neckline, belt proportions, and subtle patterns."
+    },
+    "pimage": {
+      "summary": "Convincing fabric and good basics. Belt includes props; blazer misses the requested windowpane."
+    },
+    "schnell": {
+      "summary": "Low cost, less reliable detail following. Blazer generated without sleeves; stripes too broad."
+    },
+    "banana2": {
+      "summary": "Most consistent requested details in this set. Belt is cropped; higher cost and latency."
+    }
+  },
+  "rows": {
+    "navy-tee-pimage": "Good silhouette; fabric shows an unintended mottled texture.",
+    "navy-tee-klein": "Clean representative navy tee; slightly lighter blue.",
+    "navy-tee-schnell": "Simple silhouette, less convincing fabric texture.",
+    "navy-tee-banana2": "Good fabric detail, outline, and padding.",
+    "white-blouse-pimage": "Good silk appearance and complete sleeves.",
+    "white-blouse-klein": "Good shape and clean cutout against dark background.",
+    "white-blouse-schnell": "Clean cutout, less fabric detail.",
+    "white-blouse-banana2": "Good cutout and full garment detail.",
+    "striped-shirt-pimage": "Narrow vertical stripes retained.",
+    "striped-shirt-klein": "Narrow vertical stripes retained; stronger red.",
+    "striped-shirt-schnell": "Stripes are broad rather than narrow.",
+    "striped-shirt-banana2": "Narrow stripes and button-down shape retained.",
+    "checked-blazer-pimage": "Looks like a fine texture rather than a windowpane check.",
+    "checked-blazer-klein": "Check pattern is too bold for the requested subtle windowpane.",
+    "checked-blazer-schnell": "Sleeves are absent in the ORIGINAL generation; cleanup did not cause this.",
+    "checked-blazer-banana2": "Best match to subtle windowpane, with full sleeves.",
+    "white-sneakers-pimage": "Matching pair with visible leather texture.",
+    "white-sneakers-klein": "Matching pair, clean cutout; top-down arrangement.",
+    "white-sneakers-schnell": "Matching pair; smaller in the frame.",
+    "white-sneakers-banana2": "Matching pair with detailed construction.",
+    "brown-belt-pimage": "Unwanted white bands/holding props remain.",
+    "brown-belt-klein": "Reads like a short leather strap rather than a complete belt.",
+    "brown-belt-schnell": "Plausible looped belt and single buckle.",
+    "brown-belt-banana2": "Belt extends past both image edges; incomplete item.",
+    "green-dress-pimage": "Good satin texture and V neckline.",
+    "green-dress-klein": "Neckline is rounded rather than the requested V.",
+    "green-dress-schnell": "Dress reads shorter than midi length.",
+    "green-dress-banana2": "V neckline and longer dress shape retained; restrained satin sheen.",
+    "silver-watch-pimage": "Plausible watch and bracelet; generic markings.",
+    "silver-watch-klein": "Plausible clean watch silhouette and black dial.",
+    "silver-watch-schnell": "Plausible watch; less dial detail.",
+    "silver-watch-banana2": "Detailed dial; includes invented decorative text/markings."
+  }
+}

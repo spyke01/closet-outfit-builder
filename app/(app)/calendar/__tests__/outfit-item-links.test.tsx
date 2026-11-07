@@ -5,7 +5,8 @@ import { TripsPageClient } from "../trips/trips-page-client";
 import { renderWithQuery } from "@/lib/test/query-utils";
 import type { Outfit, Trip, TripDay, WardrobeItem } from "@/lib/types/database";
 
-const todayKey = new Date().toISOString().split("T")[0];
+const today = new Date();
+const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
 function makeItem(index: number): WardrobeItem {
   return {

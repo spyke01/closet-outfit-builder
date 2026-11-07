@@ -48,7 +48,7 @@ export function resolveAiPolicy(env: AiEnvironment) {
 export function maxTaskCostMicros(task: AiTask, model: string): number {
   if (task === "media_upload") return 1;
   if (task === "background_removal") return 50_000;
-  if (task === "wardrobe_image") return 100_000; // One Imagen output plus bounded cleanup.
+  if (task === "wardrobe_image") return 100_000; // One bounded clothing image plus cleanup; conservative admission ceiling.
   if (task === "outfit_image") return 80_000;
   if (task === "assistant_vision") return 150_000;
   if (model.includes("terra")) return 50_000;

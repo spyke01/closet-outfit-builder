@@ -11,6 +11,7 @@ export interface EdgeJob {
   created_at: string;
   user_id: string;
   task: AiTask;
+  model: string;
   status: string;
   scope_key: string;
   worker_lease_until?: string | null;
