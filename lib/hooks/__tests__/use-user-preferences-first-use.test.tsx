@@ -26,7 +26,7 @@ vi.mock("@/lib/supabase/client", () => ({
                     message: "Column account_tier does not exist",
                   },
                 }
-              : { data: record, error: null },
+              : { data: { ...record, created_at: "2026-11-07T04:35:35.985782+00:00", updated_at: "2026-11-07T04:35:35.985782+00:00" }, error: null },
         }),
       }),
     }),
@@ -34,7 +34,7 @@ vi.mock("@/lib/supabase/client", () => ({
 }));
 
 describe("first-use preferences against the hosted schema", () => {
-  it("creates weather preferences without sending the obsolete billing field", async () => {
+  it("parses real database timestamps and creates weather preferences without the obsolete billing field", async () => {
     const client = createTestQueryClient();
     const { result } = renderHook(() => useUserPreferences(), {
       wrapper: ({ children }) => (

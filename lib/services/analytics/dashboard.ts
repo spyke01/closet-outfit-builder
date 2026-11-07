@@ -24,8 +24,8 @@ export async function loadAnalyticsDashboard(
   db: SupabaseClient,
   userId: string,
 ): Promise<AnalyticsDashboardResponse> {
-  const entitlement = await resolveUserEntitlements(db, userId);
-  const [itemsCount, outfitsCount] = await Promise.all([
+  const [entitlement, itemsCount, outfitsCount] = await Promise.all([
+    resolveUserEntitlements(db, userId),
     db
       .from("wardrobe_items")
       .select("id", { count: "exact", head: true })

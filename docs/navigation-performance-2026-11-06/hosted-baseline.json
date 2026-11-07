@@ -1,0 +1,102 @@
+{
+  "base": "https://www.myaioutfit.com",
+  "checkedAt": "2026-11-07T04:18:56.983Z",
+  "scope": "Isolated temporary free account; real mobile navigation, Chrome CPU 4x slowdown, no artificial network delay, no AI inference",
+  "routes": [
+    {
+      "label": "Planner",
+      "route": "/calendar",
+      "elapsedMs": 711,
+      "feedbackMs": null,
+      "headingMs": 642.8000000119209,
+      "heading": "See the whole month",
+      "overflow": false
+    },
+    {
+      "label": "Analytics",
+      "route": "/analytics",
+      "elapsedMs": 613,
+      "feedbackMs": null,
+      "headingMs": 592.5,
+      "heading": "Make more of what you own",
+      "overflow": false
+    },
+    {
+      "label": "Today",
+      "route": "/today",
+      "elapsedMs": 359,
+      "feedbackMs": null,
+      "headingMs": 303.40000000596046,
+      "heading": "Good evening, Navigation.",
+      "overflow": false
+    },
+    {
+      "label": "Planner",
+      "route": "/calendar",
+      "elapsedMs": 331,
+      "feedbackMs": null,
+      "headingMs": 302.59999999403954,
+      "heading": "See the whole month",
+      "overflow": false
+    },
+    {
+      "label": "Today",
+      "route": "/today",
+      "elapsedMs": 319,
+      "feedbackMs": null,
+      "headingMs": 289.59999999403954,
+      "heading": "Good evening, Navigation.",
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "rscRequests": [
+    {
+      "path": "/calendar/",
+      "totalMs": 351,
+      "ttfbMs": 196
+    },
+    {
+      "path": "/calendar/upcoming/",
+      "totalMs": 106,
+      "ttfbMs": 105
+    },
+    {
+      "path": "/calendar/trips/",
+      "totalMs": 115,
+      "ttfbMs": 114
+    },
+    {
+      "path": "/calendar/upcoming/",
+      "totalMs": 126,
+      "ttfbMs": 126
+    },
+    {
+      "path": "/calendar/trips/",
+      "totalMs": 154,
+      "ttfbMs": 154
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 313,
+      "ttfbMs": 123
+    },
+    {
+      "path": "/today/",
+      "totalMs": 263,
+      "ttfbMs": 122
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 255,
+      "ttfbMs": 134
+    },
+    {
+      "path": "/today/",
+      "totalMs": 248,
+      "ttfbMs": 138
+    }
+  ],
+  "passed": true,
+  "accountRemoved": true
+}

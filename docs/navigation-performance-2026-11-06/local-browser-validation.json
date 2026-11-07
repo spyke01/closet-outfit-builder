@@ -1,0 +1,534 @@
+{
+  "base": "http://localhost:3000",
+  "checkedAt": "2026-11-07T04:40:28.808Z",
+  "scope": "Isolated temporary free account; real mobile navigation, Chrome CPU 4x slowdown, no artificial network delay, service workers blocked for consistent browser throttling, no AI inference",
+  "routes": [
+    {
+      "label": "Planner",
+      "route": "/calendar",
+      "elapsedMs": 877,
+      "feedbackMs": 41.80000001192093,
+      "headingMs": 360.09999999403954,
+      "heading": "See the whole month",
+      "overflow": false
+    },
+    {
+      "label": "Analytics",
+      "route": "/analytics",
+      "elapsedMs": 834,
+      "feedbackMs": 18.400000005960464,
+      "headingMs": 639.0999999940395,
+      "heading": "Make more of what you own",
+      "overflow": false
+    },
+    {
+      "label": "Today",
+      "route": "/today",
+      "elapsedMs": 854,
+      "feedbackMs": 48.5,
+      "headingMs": 404,
+      "heading": "Good evening, Navigation.",
+      "overflow": false
+    },
+    {
+      "label": "Planner",
+      "route": "/calendar",
+      "elapsedMs": 842,
+      "feedbackMs": 25.5,
+      "headingMs": 343.5,
+      "heading": "See the whole month",
+      "overflow": false
+    },
+    {
+      "label": "Today",
+      "route": "/today",
+      "elapsedMs": 840,
+      "feedbackMs": 30.5,
+      "headingMs": 454.59999999403954,
+      "heading": "Good evening, Navigation.",
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "rscRequests": [
+    {
+      "path": "/today/",
+      "totalMs": 69,
+      "ttfbMs": 65
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 236,
+      "ttfbMs": 67
+    },
+    {
+      "path": "/calendar/upcoming/",
+      "totalMs": 63,
+      "ttfbMs": 62
+    },
+    {
+      "path": "/calendar/trips/",
+      "totalMs": 63,
+      "ttfbMs": 63
+    },
+    {
+      "path": "/calendar/upcoming/",
+      "totalMs": 87,
+      "ttfbMs": 86
+    },
+    {
+      "path": "/calendar/trips/",
+      "totalMs": 86,
+      "ttfbMs": 83
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 372,
+      "ttfbMs": 72
+    },
+    {
+      "path": "/settings/billing/",
+      "totalMs": 68,
+      "ttfbMs": 67
+    },
+    {
+      "path": "/settings/billing/",
+      "totalMs": 79,
+      "ttfbMs": 79
+    },
+    {
+      "path": "/today/",
+      "totalMs": 349,
+      "ttfbMs": 110
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 244,
+      "ttfbMs": 78
+    },
+    {
+      "path": "/today/",
+      "totalMs": 417,
+      "ttfbMs": 124
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 82,
+      "ttfbMs": 82
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 119,
+      "ttfbMs": 118
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 129,
+      "ttfbMs": 128
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 209,
+      "ttfbMs": 209
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 219,
+      "ttfbMs": 135
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 182,
+      "ttfbMs": 180
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 153,
+      "ttfbMs": 84
+    },
+    {
+      "path": "/today/",
+      "totalMs": 89,
+      "ttfbMs": 87
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 352,
+      "ttfbMs": 87
+    },
+    {
+      "path": "/settings/billing/",
+      "totalMs": 71,
+      "ttfbMs": 69
+    },
+    {
+      "path": "/settings/billing/",
+      "totalMs": 64,
+      "ttfbMs": 62
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 2285,
+      "ttfbMs": 82
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 2442,
+      "ttfbMs": 82
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 76,
+      "ttfbMs": 72
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 76,
+      "ttfbMs": 73
+    },
+    {
+      "path": "/today/",
+      "totalMs": 83,
+      "ttfbMs": 80
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 118,
+      "ttfbMs": 106
+    },
+    {
+      "path": "/today/",
+      "totalMs": 81,
+      "ttfbMs": 77
+    },
+    {
+      "path": "/calendar/trips/",
+      "totalMs": 83,
+      "ttfbMs": 82
+    },
+    {
+      "path": "/calendar/upcoming/",
+      "totalMs": 97,
+      "ttfbMs": 95
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 137,
+      "ttfbMs": 67
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 133,
+      "ttfbMs": 73
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 81,
+      "ttfbMs": 77
+    },
+    {
+      "path": "/calendar/upcoming/",
+      "totalMs": 80,
+      "ttfbMs": 78
+    },
+    {
+      "path": "/calendar/trips/",
+      "totalMs": 81,
+      "ttfbMs": 76
+    },
+    {
+      "path": "/wardrobe/items/",
+      "totalMs": 75,
+      "ttfbMs": 73
+    },
+    {
+      "path": "/wardrobe/items/",
+      "totalMs": 96,
+      "ttfbMs": 77
+    },
+    {
+      "path": "/today/",
+      "totalMs": 79,
+      "ttfbMs": 79
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 86,
+      "ttfbMs": 85
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 131,
+      "ttfbMs": 129
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 130,
+      "ttfbMs": 130
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 78,
+      "ttfbMs": 77
+    },
+    {
+      "path": "/calendar/trips/",
+      "totalMs": 101,
+      "ttfbMs": 101
+    },
+    {
+      "path": "/today/",
+      "totalMs": 82,
+      "ttfbMs": 81
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 69,
+      "ttfbMs": 68
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 82,
+      "ttfbMs": 80
+    },
+    {
+      "path": "/today/",
+      "totalMs": 83,
+      "ttfbMs": 82
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 92,
+      "ttfbMs": 92
+    },
+    {
+      "path": "/calendar/upcoming/",
+      "totalMs": 76,
+      "ttfbMs": 74
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 78,
+      "ttfbMs": 76
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 80,
+      "ttfbMs": 79
+    },
+    {
+      "path": "/calendar/upcoming/",
+      "totalMs": 78,
+      "ttfbMs": 74
+    },
+    {
+      "path": "/today/",
+      "totalMs": 130,
+      "ttfbMs": 127
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 60,
+      "ttfbMs": 60
+    },
+    {
+      "path": "/today/",
+      "totalMs": 66,
+      "ttfbMs": 66
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 74,
+      "ttfbMs": 74
+    },
+    {
+      "path": "/today/",
+      "totalMs": 67,
+      "ttfbMs": 66
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 147,
+      "ttfbMs": 146
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 79,
+      "ttfbMs": 78
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 159,
+      "ttfbMs": 81
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 95,
+      "ttfbMs": 94
+    },
+    {
+      "path": "/sizes/",
+      "totalMs": 71,
+      "ttfbMs": 70
+    },
+    {
+      "path": "/onboarding/",
+      "totalMs": 81,
+      "ttfbMs": 81
+    },
+    {
+      "path": "/wardrobe/items/5884a3d8-f59c-4040-9e7a-1bd8b373f9cc/",
+      "totalMs": 65,
+      "ttfbMs": 64
+    },
+    {
+      "path": "/wardrobe/items/347a0a6a-0243-470e-bca4-52435d09a030/",
+      "totalMs": 63,
+      "ttfbMs": 61
+    },
+    {
+      "path": "/sizes/",
+      "totalMs": 63,
+      "ttfbMs": 62
+    },
+    {
+      "path": "/wardrobe/items/ae030750-1487-44b0-86fc-a717e7c1100a/",
+      "totalMs": 110,
+      "ttfbMs": 109
+    },
+    {
+      "path": "/onboarding/",
+      "totalMs": 72,
+      "ttfbMs": 72
+    },
+    {
+      "path": "/wardrobe/items/5884a3d8-f59c-4040-9e7a-1bd8b373f9cc/",
+      "totalMs": 60,
+      "ttfbMs": 59
+    },
+    {
+      "path": "/wardrobe/items/347a0a6a-0243-470e-bca4-52435d09a030/",
+      "totalMs": 66,
+      "ttfbMs": 64
+    },
+    {
+      "path": "/wardrobe/items/ae030750-1487-44b0-86fc-a717e7c1100a/",
+      "totalMs": 76,
+      "ttfbMs": 76
+    },
+    {
+      "path": "/wardrobe/items/",
+      "totalMs": 78,
+      "ttfbMs": 77
+    },
+    {
+      "path": "/wardrobe/items/",
+      "totalMs": 71,
+      "ttfbMs": 71
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 67,
+      "ttfbMs": 67
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 73,
+      "ttfbMs": 71
+    },
+    {
+      "path": "/today/",
+      "totalMs": 78,
+      "ttfbMs": 77
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 84,
+      "ttfbMs": 83
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 59,
+      "ttfbMs": 58
+    },
+    {
+      "path": "/today/",
+      "totalMs": 80,
+      "ttfbMs": 77
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 85,
+      "ttfbMs": 84
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 135,
+      "ttfbMs": 64
+    },
+    {
+      "path": "/outfits/create/",
+      "totalMs": 81,
+      "ttfbMs": 81
+    },
+    {
+      "path": "/outfits/create/",
+      "totalMs": 82,
+      "ttfbMs": 80
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 74,
+      "ttfbMs": 69
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 74,
+      "ttfbMs": 70
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 75,
+      "ttfbMs": 72
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 81,
+      "ttfbMs": 75
+    },
+    {
+      "path": "/analytics/",
+      "totalMs": 62,
+      "ttfbMs": 61
+    },
+    {
+      "path": "/calendar/",
+      "totalMs": 145,
+      "ttfbMs": 76
+    },
+    {
+      "path": "/outfits/",
+      "totalMs": 149,
+      "ttfbMs": 85
+    },
+    {
+      "path": "/wardrobe/",
+      "totalMs": 164,
+      "ttfbMs": 81
+    }
+  ],
+  "billingRequestsDuringNavigation": 0,
+  "checks": [
+    "Main navigation reuses shared membership data without another billing lookup",
+    "Every main navigation click has prompt visible feedback",
+    "A slow Planner navigation can be interrupted; Analytics remains the final destination",
+    "Calendar data has a phone-sized skeleton; reduced motion disables pulsing and unknown counts stay hidden",
+    "Skeletons fit desktop and phone layouts in light and dark themes",
+    "Long requests explain that loading continues and other pages remain available",
+    "The skeleton explains lost connectivity and clears when real data arrives",
+    "All seven primary/planner pages render on a phone and retain header weather access",
+    "Personal routes still send signed-out visitors to login"
+  ],
+  "passed": true,
+  "accountRemoved": true
+}

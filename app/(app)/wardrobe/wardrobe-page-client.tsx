@@ -1,5 +1,7 @@
 "use client";
 
+import { CollectionPageSkeleton } from "@/components/page-skeletons";
+
 import React, {
   useState,
   useMemo,
@@ -64,12 +66,12 @@ export function WardrobePageClient({
   // Fetch data using hooks
   const {
     data: categories = [],
-    isLoading: categoriesLoading,
+    isPending: categoriesLoading,
     error: categoriesError,
   } = useCategories();
   const {
     data: items = [],
-    isLoading: itemsLoading,
+    isPending: itemsLoading,
     error: itemsError,
   } = useWardrobeItems();
   const { generateAsync } = useGenerateWardrobeItemImage();
@@ -370,16 +372,7 @@ export function WardrobePageClient({
   }
 
   if (categoriesLoading || itemsLoading) {
-    return (
-      <div className="page-shell-content">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading wardrobe...</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <CollectionPageSkeleton kind="Wardrobe" />;
   }
 
   return (

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
+import { Skeleton } from "@/components/page-skeletons";
+import { LoadingStatus } from "@/components/loading-status";
 import Link from "next/link";
 import { Loader2, RefreshCw, Save, Sparkles, X } from "lucide-react";
 import { WardrobeItem } from "@/lib/types/database";
@@ -973,11 +975,12 @@ export default function TodayPageClient({
               />
             </div>
           ) : (
-            <div className="flex min-h-80 items-center justify-center gap-2 text-sm text-muted-foreground">
-              <Loader2 size={18} className="animate-spin" />
-              {weatherLoading
-                ? "Checking the weather for your outfit…"
-                : "Finding a look from your wardrobe…"}
+            <div className="min-h-80 space-y-4 p-5">
+              <LoadingStatus label={weatherLoading ? "the weather for your outfit" : "your outfit"} />
+              <div className="grid h-64 grid-cols-2 gap-4" aria-hidden="true">
+                <div className="space-y-4"><Skeleton className="h-40 w-full" /><Skeleton className="h-20 w-full" /></div>
+                <Skeleton className="h-full w-full" />
+              </div>
             </div>
           )}
           <div className="border-t border-border p-5">

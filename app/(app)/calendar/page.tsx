@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
-import { hasActiveWardrobeItems } from '@/lib/server/wardrobe-readiness';
+import { getPageSession } from '@/lib/server/page-session';
 import { TopBarWrapper } from '@/components/top-bar-wrapper';
 import { CalendarPageClient } from './calendar-page-client';
 
@@ -14,16 +13,10 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function CalendarPage() {
-  const supabase = await createClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const { supabase, user, error: authError } = await getPageSession();
 
   if (authError || !user) {
     redirect('/auth/login');
-  }
-
-  const hasItems = await hasActiveWardrobeItems(supabase, user.id);
-  if (!hasItems) {
-    redirect('/onboarding');
   }
 
   const { data: wardrobeItems, error: wardrobeError } = await supabase
@@ -33,16 +26,10 @@ export default async function CalendarPage() {
     .eq('active', true);
 
   if (wardrobeError) {
-    return (
-      <div className="page-shell min-h-screen">
-        <TopBarWrapper user={user} />
-        <div className="page-shell-content page-shell-content--wide px-6 py-8">
-          <h1 className="text-2xl font-bold text-foreground">Outfit Calendar</h1>
-          <p className="text-destructive mt-4">Failed to load wardrobe data. Please try again.</p>
-        </div>
-      </div>
-    );
+    throw new Error("Could not load your wardrobe. Please try again.");
   }
+
+  if (!wardrobeItems?.length) redirect('/onboarding');
 
   return (
     <div className="page-shell min-h-screen">

@@ -1,5 +1,8 @@
 "use client";
 
+import { PlanListSkeleton } from "@/components/page-skeletons";
+import { LoadingStatus } from "@/components/loading-status";
+
 import Image from "@/components/clothing-image";
 import Link from "next/link";
 import { hasCompleteOutfitItems } from "@/lib/utils/outfit-coverage";
@@ -253,7 +256,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
 
   const {
     data: trips = [],
-    isLoading: isTripsLoading,
+    isPending: isTripsLoading,
     error: tripsError,
   } = useTrips();
   const { data: outfits = [] } = useOutfits();
@@ -1095,10 +1098,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
           Trips could not be loaded. Refresh the page to try again.
         </div>
       ) : isTripsLoading ? (
-        <div className="trip-empty" role="status">
-          <Loader2 className="animate-spin" size={22} />
-          Loading your trips…
-        </div>
+        <div className="space-y-4"><LoadingStatus label="your trips" /><PlanListSkeleton /></div>
       ) : trips.length === 0 ? (
         <section className="trip-empty">
           <Luggage size={38} className="text-primary" />
@@ -1112,9 +1112,7 @@ export function TripsPageClient({ wardrobeItems }: TripsPageClientProps) {
       ) : (
         <>
           {tripDetailQuery.isLoading ? (
-            <div role="status" className="trip-empty">
-              Loading your trip…
-            </div>
+            <div className="space-y-4"><LoadingStatus label="your trip" /><PlanListSkeleton /></div>
           ) : tripDetailQuery.error || !tripDetail ? (
             <div role="alert" className="trip-empty">
               {tripSelector}This trip could not be loaded.{" "}

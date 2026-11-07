@@ -1,5 +1,8 @@
 "use client";
 
+import { CalendarGridSkeleton, Skeleton } from "@/components/page-skeletons";
+import { LoadingStatus } from "@/components/loading-status";
+
 import Image from "@/components/clothing-image";
 import { useSearchParams } from "next/navigation";
 import { PlannerTabs } from "@/components/planner-tabs";
@@ -372,8 +375,9 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
   const { data: outfits = [] } = useOutfits();
   const {
     data: calendarMonthData,
-    isLoading,
+    isPending: isLoading,
     error,
+    refetch,
   } = useCalendarEntriesByMonth({ month, lookbackDays: 30 });
 
   const createEntryMutation = useCreateCalendarEntry();
@@ -912,14 +916,14 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
             <p className="text-sm text-muted-foreground">
               Worn Entries This Month
             </p>
-            <p className="text-2xl font-semibold text-foreground">
-              {calendarMonthData?.wornEntriesThisMonth || 0}
-            </p>
+            <div className="text-2xl font-semibold text-foreground">
+              {isLoading ? <Skeleton className="h-8 w-10" /> : error ? "—" : calendarMonthData?.wornEntriesThisMonth || 0}
+            </div>
           </div>
           <button
             type="button"
             onClick={() => setShowGenerateModal(true)}
-            disabled={!hasRequiredItems || isGeneratingWeek}
+            disabled={isLoading || !!error || !hasRequiredItems || isGeneratingWeek}
             className={`col-span-1 w-full sm:col-span-2 ${primaryButtonClass}`}
           >
             <AIIcon className="w-4 h-4" />
@@ -1004,13 +1008,14 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
           </div>
 
           {isLoading ? (
-            <div className="h-60 flex items-center justify-center text-muted-foreground">
-              <Loader2 className="w-5 h-5 animate-spin mr-2" />
-              Loading calendar...
+            <div className="space-y-4">
+              <LoadingStatus label="your calendar" />
+              <CalendarGridSkeleton />
             </div>
           ) : error ? (
-            <div className="h-60 flex items-center justify-center text-destructive">
-              {error.message}
+            <div role="alert" className="flex h-60 flex-col items-center justify-center gap-4 text-destructive">
+              <p>Could not load your calendar.</p>
+              <button className={secondaryButtonClass} onClick={() => void refetch()}>Try again</button>
             </div>
           ) : (
             <div className="grid grid-cols-7 gap-1">
@@ -1095,6 +1100,13 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
         </div>
 
         <div className="calendar-detail-panel">
+          {isLoading ? (
+            <div className="glass-surface space-y-4 rounded-[var(--radius-xl)] p-4" aria-label="Loading day details">
+              <Skeleton className="h-6 w-40" />
+              <Skeleton className="h-60 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          ) : error ? null : (
           <div className="glass-surface rounded-[var(--radius-xl)] p-4 space-y-4">
             <AskSebastian
               contextHints={{ eventDate: selectedDateKey }}
@@ -1589,6 +1601,7 @@ export function CalendarPageClient({ wardrobeItems }: CalendarPageClientProps) {
               </div>
             )}
           </div>
+          )}
         </div>
       </div>
 

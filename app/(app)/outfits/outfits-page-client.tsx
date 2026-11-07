@@ -1,5 +1,7 @@
 "use client";
 
+import { CollectionPageSkeleton } from "@/components/page-skeletons";
+
 import { createLogger } from "@/lib/utils/logger";
 
 const logger = createLogger({ component: "app-outfits-outfits-page-client" });
@@ -108,7 +110,7 @@ export function OutfitsPageClient() {
   const [outfitToDelete, setOutfitToDelete] = useState<Outfit | null>(null);
 
   // Fetch data
-  const { data: outfits = [], isLoading, error } = useOutfits();
+  const { data: outfits = [], isPending: isLoading, error } = useOutfits();
   const deleteOutfitMutation = useDeleteOutfit();
 
   const updateQueryParams = useCallback(
@@ -263,16 +265,7 @@ export function OutfitsPageClient() {
   };
 
   if (isLoading) {
-    return (
-      <div className="page-shell-content mx-auto w-full max-w-[1240px] px-6 py-8">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading outfits...</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <CollectionPageSkeleton kind="Outfits" />;
   }
 
   if (error) {

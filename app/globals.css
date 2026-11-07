@@ -2,6 +2,21 @@
 
 @custom-variant dark (&:where(html:not([data-theme="light"]), html:not([data-theme="light"]) *));
 
+.loading-bone {
+  border-radius: var(--radius-xs, 6px);
+  background: color-mix(in srgb, var(--foreground) 9%, transparent);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .loading-bone { animation: skeleton-pulse 1.8s ease-in-out infinite; }
+}
+@keyframes skeleton-pulse { 50% { opacity: .45; } }
+.app-primary-nav a, .app-mobile-nav a, .planner-tabs a { position: relative; }
+.navigation-feedback { position: absolute; right: 7px; top: 7px; color: var(--primary); }
+.planner-tabs .navigation-feedback { right: -16px; top: 4px; }
+.app-primary-nav a:has([data-navigation-pending="true"]),
+.app-mobile-nav a:has([data-navigation-pending="true"]),
+.planner-tabs a:has([data-navigation-pending="true"]) { background: var(--accent-muted); color: var(--primary); }
+
 @theme inline {
   --font-display: var(--font-playfair-display);
   --color-background: var(--background);

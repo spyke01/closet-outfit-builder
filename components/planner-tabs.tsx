@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { NavigationLink } from "@/components/navigation-link";
 
 export function PlannerTabs({
   active,
@@ -7,24 +7,24 @@ export function PlannerTabs({
 }) {
   return (
     <nav aria-label="Planner views" className="planner-tabs">
-      <Link
+      <NavigationLink label="Upcoming plans"
         href="/calendar/upcoming"
         aria-current={active === "upcoming" ? "page" : undefined}
       >
         Upcoming
-      </Link>
-      <Link
+      </NavigationLink>
+      <NavigationLink label="Calendar"
         href="/calendar"
         aria-current={active === "calendar" ? "page" : undefined}
       >
         Calendar
-      </Link>
-      <Link
+      </NavigationLink>
+      <NavigationLink label="Trips & packing"
         href="/calendar/trips"
         aria-current={active === "trips" ? "page" : undefined}
       >
         Trips & packing
-      </Link>
+      </NavigationLink>
     </nav>
   );
 }

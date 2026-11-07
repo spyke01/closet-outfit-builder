@@ -10,7 +10,7 @@ const UUIDSchema = z
 const TimestampSchema = z
   .string()
   .regex(
-    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?$/,
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,6})?(Z|[+-]\d{2}:\d{2})?$/,
     "Invalid datetime format",
   );
 const CalendarDateSchema = z

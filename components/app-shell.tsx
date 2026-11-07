@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { NavigationLink } from "@/components/navigation-link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   CalendarDays,
@@ -157,14 +158,15 @@ function SignedInShell({
       className={mobile ? "app-mobile-nav" : "app-primary-nav"}
     >
       {destinations.map(({ href, label, icon: Icon }) => (
-        <Link
+        <NavigationLink
           href={href}
+          label={label}
           key={href}
           aria-current={active?.href === href ? "page" : undefined}
         >
           <Icon size={19} aria-hidden="true" />
           <span>{label}</span>
-        </Link>
+        </NavigationLink>
       ))}
     </nav>
   );

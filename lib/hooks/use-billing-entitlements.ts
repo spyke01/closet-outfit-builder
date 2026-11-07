@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from './use-auth';
 
 interface BillingEntitlements {
   effectivePlanCode: 'free' | 'plus' | 'pro';
@@ -14,49 +16,39 @@ interface BillingEntitlements {
 export const BILLING_ENTITLEMENTS_REFRESH_EVENT = 'billing:entitlements-refresh';
 
 export function useBillingEntitlements(enabled: boolean) {
-  const [entitlements, setEntitlements] = useState<BillingEntitlements | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await fetch('/api/billing/entitlements', {
-        method: 'GET',
-      });
-      if (!response.ok) return;
+  const { userId } = useAuth();
+  const queryClient = useQueryClient();
+  const query = useQuery({
+    queryKey: ['billing-entitlements', userId],
+    enabled: enabled && !!userId,
+    queryFn: async ({ signal }): Promise<BillingEntitlements | null> => {
+      const response = await fetch('/api/billing/entitlements', { signal });
+      if (!response.ok) throw new Error('Could not load membership');
       const payload = await response.json() as { entitlements?: BillingEntitlements };
-      if (payload.entitlements) {
-        setEntitlements(payload.entitlements);
-      }
-    } catch {
-      // Silent fallback; nav should remain usable even if billing endpoint fails.
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      return payload.entitlements || null;
+    },
+    // The shell and each page share one request. Returning to a page can reuse
+    // recent data; the server still authorizes every paid operation separately.
+    staleTime: 60_000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    retry: false,
+  });
 
   useEffect(() => {
-    if (!enabled) {
-      setEntitlements(null);
-      setLoading(false);
-      return;
-    }
-
-    load().catch(() => undefined);
-  }, [enabled, load]);
-
-  useEffect(() => {
-    if (!enabled) return;
-
+    if (!enabled || !userId) return;
     const refresh = () => {
-      load().catch(() => undefined);
+      void queryClient.invalidateQueries(
+        { queryKey: ['billing-entitlements', userId], exact: true },
+        { cancelRefetch: false },
+      );
     };
-
     window.addEventListener(BILLING_ENTITLEMENTS_REFRESH_EVENT, refresh);
-    return () => {
-      window.removeEventListener(BILLING_ENTITLEMENTS_REFRESH_EVENT, refresh);
-    };
-  }, [enabled, load]);
+    return () => window.removeEventListener(BILLING_ENTITLEMENTS_REFRESH_EVENT, refresh);
+  }, [enabled, userId, queryClient]);
 
-  return { entitlements, loading };
+  return {
+    entitlements: enabled && userId ? query.data ?? null : null,
+    loading: enabled && query.isPending,
+  };
 }

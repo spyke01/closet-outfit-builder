@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getPageSession } from "@/lib/server/page-session";
 import type { User } from "@supabase/supabase-js";
 
 /**
@@ -30,15 +31,7 @@ export async function AuthBoundaryWithUser({
 }: { 
   children: (user: User | null) => React.ReactNode 
 }) {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-  
-  if (error || !data?.claims) {
-    redirect("/auth/login");
-  }
-
-  // Get user data for components that need it
-  const { data: userData } = await supabase.auth.getUser();
-
-  return <>{children(userData.user)}</>;
+  const { user, error } = await getPageSession();
+  if (error || !user) redirect("/auth/login");
+  return <>{children(user)}</>;
 }

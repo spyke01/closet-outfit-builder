@@ -1,5 +1,7 @@
 "use client";
 
+import { PlanListSkeleton } from "@/components/page-skeletons";
+import { LoadingStatus } from "@/components/loading-status";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { PlannerTabs } from "@/components/planner-tabs";
@@ -14,7 +16,7 @@ export function PlannerUpcoming() {
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => setHydrated(true), []);
   const now = useMemo(() => new Date(), []);
-  const { data, isLoading, error } = useCalendarEntriesByMonth({
+  const { data, isPending: isLoading, error } = useCalendarEntriesByMonth({
     month: now,
     lookbackDays: 14,
   });
@@ -45,10 +47,8 @@ export function PlannerUpcoming() {
         </p>
       )}
       {!hydrated || isLoading ? (
-        <p role="status" className="py-8 text-muted-foreground">
-          Loading your plans…
-        </p>
-      ) : (
+        <div className="space-y-4"><LoadingStatus label="your plans" /><PlanListSkeleton /></div>
+      ) : error ? null : (
         <div className="space-y-4">
           {days.map((date) => {
             const key = localDateKey(date);
