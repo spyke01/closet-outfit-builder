@@ -19,7 +19,7 @@ CREATE POLICY old_counter_writes ON public.usage_counters FOR ALL USING(auth.uid
 CREATE POLICY old_message_writes ON public.assistant_messages FOR ALL USING(auth.uid()=user_id) WITH CHECK(auth.uid()=user_id);
 CREATE POLICY old_event_writes ON public.assistant_inference_events FOR ALL USING(auth.uid()=user_id) WITH CHECK(auth.uid()=user_id);
 GRANT USAGE ON SCHEMA public,auth TO service_role,authenticated,anon;
-GRANT ALL ON ALL TABLES IN SCHEMA public,auth TO service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO service_role;
 GRANT SELECT,INSERT,UPDATE,DELETE ON public.usage_counters,public.assistant_messages,public.assistant_inference_events TO authenticated;
 CREATE FUNCTION public.get_effective_plan_code_for_user(p_user_id uuid) RETURNS text LANGUAGE sql AS $$ SELECT coalesce((SELECT CASE WHEN billing_state IN ('past_due','unpaid','canceled') THEN 'free' ELSE plan_code END FROM public.user_subscriptions WHERE user_id=p_user_id),'free') $$;
 CREATE FUNCTION public.get_plan_limit_int(p_plan_code text,p_key text) RETURNS integer LANGUAGE sql AS $$ SELECT (limits_json->>p_key)::integer FROM public.plans WHERE code=p_plan_code $$;

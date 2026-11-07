@@ -1,7 +1,11 @@
 {
-  "checkedAt": "2026-11-06T16:02:20.263Z",
+  "checkedAt": "2026-11-07T00:54:52.620Z",
   "engine": "PostgreSQL 16, isolated local container",
   "checks": [
+    {
+      "name": "Hosted auth permissions are reproduced: service_role cannot read auth.users directly",
+      "passed": true
+    },
     {
       "name": "Authenticated users cannot call the metering RPC or write counters",
       "passed": true

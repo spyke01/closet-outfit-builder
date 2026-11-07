@@ -60,6 +60,7 @@ for (const name of [
   "20261106094000_ai_audit_and_policy_alignment.sql",
   "20261106095000_atomic_calendar_entries.sql",
   "20261106100000_preserve_newer_clothing_choices.sql",
+  "20261106101000_onboarding_auth_lock_access.sql",
 ])
   await sql(fs.readFileSync("supabase/migrations/" + name, "utf8"));
 const a = "00000000-0000-4000-8000-000000000001",
@@ -69,6 +70,13 @@ const record = (name) => {
   checks.push({ name, passed: true });
   console.log("PASS " + name);
 };
+await assert.rejects(
+  sql("SET ROLE service_role;SELECT id FROM auth.users;"),
+  /permission denied/,
+);
+record(
+  "Hosted auth permissions are reproduced: service_role cannot read auth.users directly",
+);
 async function reset() {
   await sql(
     `TRUNCATE ai_jobs,usage_counters,user_subscriptions,auth.users CASCADE;INSERT INTO auth.users VALUES('${a}'),('${b}');INSERT INTO user_subscriptions(user_id,plan_code,billing_state,plan_anchor_date) VALUES('${a}','plus','active','2020-01-01'),('${b}','plus','active','2020-01-01');`,
