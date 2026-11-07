@@ -104,4 +104,33 @@ describe("clothing image provider selection", () => {
       ).prompt,
     ).toBe("Original reserved prompt");
   });
+  it("uses owned singular categories for names without a clothing noun while preserving reviewed basic overrides", () => {
+    for (
+      const category of [
+        "Belt",
+        "Dress",
+        "Jacket",
+        "Coat",
+        "Scarf",
+        "Scarves",
+        "Shoes",
+        "Dresses",
+      ]
+    ) {
+      expect(resolveWardrobeImageModel("auto", { name: "Navy silk", category }))
+        .toBe(DETAILED_WARDROBE_IMAGE_MODEL);
+    }
+    expect(
+      resolveWardrobeImageModel("auto", {
+        name: "Grey cardigan",
+        category: "Jacket",
+      }),
+    ).toBe(DEFAULT_WARDROBE_IMAGE_MODEL);
+    expect(
+      resolveWardrobeImageModel("auto", {
+        name: "Gold analog",
+        category: "Watch",
+      }),
+    ).toBe(DEFAULT_WARDROBE_IMAGE_MODEL);
+  });
 });

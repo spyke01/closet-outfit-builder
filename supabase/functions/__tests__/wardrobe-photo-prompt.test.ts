@@ -35,6 +35,8 @@ describe("photographic wardrobe prompts", () => {
       color: "black",
     });
     expect(prompt).toContain("matching left-and-right pair");
+    expect(prompt).toContain("soles on the same horizontal surface");
+    expect(prompt).toContain("No opposing vertical soles, floating fragments");
     expect(prompt).toContain("central 78%");
     expect(prompt).toContain("Photorealistic");
   });

@@ -3,11 +3,25 @@ import {
   type AssetPhase,
   assetRetryDelay,
   canSubmitAssetPhase,
+  canWaitForAssetCredit,
   reserveAssetPhase,
   reservedAssetCost,
 } from "../lib/asset-batch-guards";
 
 describe("bulk asset inference protections", () => {
+  it("waits for configured auto reload only after a definite credit rejection", () => {
+    expect(canWaitForAssetCredit(429, "less than $5 credit", true)).toBe(true);
+    expect(canWaitForAssetCredit(402, "Insufficient credit", true)).toBe(true);
+    expect(canWaitForAssetCredit(429, "less than $5 credit", false)).toBe(
+      false,
+    );
+    for (const status of [401, 403, 503]) {
+      expect(canWaitForAssetCredit(status, "Insufficient credit", true)).toBe(
+        false,
+      );
+    }
+    expect(canWaitForAssetCredit(429, "Rate limited", true)).toBe(false);
+  });
   it("honors numeric, dated, and body retry windows without imposing a permanent low rate", () => {
     const now = Date.parse("2026-11-07T02:00:00Z");
     expect(assetRetryDelay("90", "", 0, now)).toBe(90250);
@@ -41,7 +55,7 @@ describe("bulk asset inference protections", () => {
     expect(reservedAssetCost(rows)).toBe(0.075);
   });
   it("allows only known unsubmitted phases or explicit rate-limit rejections to POST", () => {
-    for (const state of ["queued", "rate_limited"]) {
+    for (const state of ["queued", "rate_limited", "awaiting_credit"]) {
       expect(canSubmitAssetPhase({ state, reservedUsd: 0.075 })).toBe(true);
     }
     for (

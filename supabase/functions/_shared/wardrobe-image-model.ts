@@ -32,7 +32,8 @@ export function resolveWardrobeImageModel(
     return DETAILED_WARDROBE_IMAGE_MODEL;
   }
   if (
-    /^(shoes|footwear|layers|outerwear|dresses|accessories)$/.test(category)
+    /^(shoes?|footwear|layers?|outerwear|jackets?|coats?|dress(?:es)?|accessories|belts?|scar(?:f|ves))$/
+      .test(category)
   ) {
     return DETAILED_WARDROBE_IMAGE_MODEL;
   }

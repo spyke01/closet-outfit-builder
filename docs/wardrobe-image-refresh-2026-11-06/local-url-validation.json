@@ -1,0 +1,675 @@
+{
+  "checkedAt": "2026-11-07T03:45:51.670Z",
+  "base": "http://localhost:3000",
+  "passed": true,
+  "typeCount": 37,
+  "checks": [
+    {
+      "type": "Polo",
+      "category": "Tops",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 92678,
+      "hashMatches": true
+    },
+    {
+      "type": "T-Shirt",
+      "category": "Tops",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 53774,
+      "hashMatches": true
+    },
+    {
+      "type": "OCBD",
+      "category": "Tops",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 121914,
+      "hashMatches": true
+    },
+    {
+      "type": "Blouse",
+      "category": "Tops",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 167310,
+      "hashMatches": true
+    },
+    {
+      "type": "Dress Shirt",
+      "category": "Tops",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 79980,
+      "hashMatches": true
+    },
+    {
+      "type": "T-Shirt",
+      "category": "Tops",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 53774,
+      "hashMatches": true
+    },
+    {
+      "type": "Blouse",
+      "category": "Tops",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 167310,
+      "hashMatches": true
+    },
+    {
+      "type": "Dress Shirt",
+      "category": "Tops",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 79980,
+      "hashMatches": true
+    },
+    {
+      "type": "OCBD",
+      "category": "Tops",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 121914,
+      "hashMatches": true
+    },
+    {
+      "type": "Polo",
+      "category": "Tops",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 92678,
+      "hashMatches": true
+    },
+    {
+      "type": "Tank Top",
+      "category": "Tops",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 61138,
+      "hashMatches": true
+    },
+    {
+      "type": "Sweater",
+      "category": "Tops",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 213676,
+      "hashMatches": true
+    },
+    {
+      "type": "Cardigan",
+      "category": "Tops",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 96810,
+      "hashMatches": true
+    },
+    {
+      "type": "Hoodie",
+      "category": "Tops",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 76660,
+      "hashMatches": true
+    },
+    {
+      "type": "Quarter Zip",
+      "category": "Tops",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 128780,
+      "hashMatches": true
+    },
+    {
+      "type": "Tank Top",
+      "category": "Tops",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 61138,
+      "hashMatches": true
+    },
+    {
+      "type": "Sweater",
+      "category": "Tops",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 213676,
+      "hashMatches": true
+    },
+    {
+      "type": "Cardigan",
+      "category": "Tops",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 96810,
+      "hashMatches": true
+    },
+    {
+      "type": "Hoodie",
+      "category": "Tops",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 76660,
+      "hashMatches": true
+    },
+    {
+      "type": "Quarter Zip",
+      "category": "Tops",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 128780,
+      "hashMatches": true
+    },
+    {
+      "type": "Jeans",
+      "category": "Bottoms",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 89726,
+      "hashMatches": true
+    },
+    {
+      "type": "Chinos",
+      "category": "Bottoms",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 45100,
+      "hashMatches": true
+    },
+    {
+      "type": "Trousers",
+      "category": "Bottoms",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 43866,
+      "hashMatches": true
+    },
+    {
+      "type": "Shorts",
+      "category": "Bottoms",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 42338,
+      "hashMatches": true
+    },
+    {
+      "type": "Skirt",
+      "category": "Bottoms",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 67502,
+      "hashMatches": true
+    },
+    {
+      "type": "Jeans",
+      "category": "Bottoms",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 89726,
+      "hashMatches": true
+    },
+    {
+      "type": "Chinos",
+      "category": "Bottoms",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 45100,
+      "hashMatches": true
+    },
+    {
+      "type": "Trousers",
+      "category": "Bottoms",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 43866,
+      "hashMatches": true
+    },
+    {
+      "type": "Shorts",
+      "category": "Bottoms",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 42338,
+      "hashMatches": true
+    },
+    {
+      "type": "Skirt",
+      "category": "Bottoms",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 67502,
+      "hashMatches": true
+    },
+    {
+      "type": "Leggings",
+      "category": "Bottoms",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 45946,
+      "hashMatches": true
+    },
+    {
+      "type": "Sneakers",
+      "category": "Shoes",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 127038,
+      "hashMatches": true
+    },
+    {
+      "type": "Loafers",
+      "category": "Shoes",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 84000,
+      "hashMatches": true
+    },
+    {
+      "type": "Boots",
+      "category": "Shoes",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 169556,
+      "hashMatches": true
+    },
+    {
+      "type": "Dress Shoes",
+      "category": "Shoes",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 139190,
+      "hashMatches": true
+    },
+    {
+      "type": "Leggings",
+      "category": "Bottoms",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 45946,
+      "hashMatches": true
+    },
+    {
+      "type": "Sneakers",
+      "category": "Shoes",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 127038,
+      "hashMatches": true
+    },
+    {
+      "type": "Loafers",
+      "category": "Shoes",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 84000,
+      "hashMatches": true
+    },
+    {
+      "type": "Boots",
+      "category": "Shoes",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 169556,
+      "hashMatches": true
+    },
+    {
+      "type": "Dress Shoes",
+      "category": "Shoes",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 139190,
+      "hashMatches": true
+    },
+    {
+      "type": "Heels",
+      "category": "Shoes",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 152538,
+      "hashMatches": true
+    },
+    {
+      "type": "Flats",
+      "category": "Shoes",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 166802,
+      "hashMatches": true
+    },
+    {
+      "type": "Sandals",
+      "category": "Shoes",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 205262,
+      "hashMatches": true
+    },
+    {
+      "type": "Blazer",
+      "category": "Layers",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 167360,
+      "hashMatches": true
+    },
+    {
+      "type": "Sportcoat",
+      "category": "Layers",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 141518,
+      "hashMatches": true
+    },
+    {
+      "type": "Heels",
+      "category": "Shoes",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 152538,
+      "hashMatches": true
+    },
+    {
+      "type": "Flats",
+      "category": "Shoes",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 166802,
+      "hashMatches": true
+    },
+    {
+      "type": "Sandals",
+      "category": "Shoes",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 205262,
+      "hashMatches": true
+    },
+    {
+      "type": "Blazer",
+      "category": "Layers",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 167360,
+      "hashMatches": true
+    },
+    {
+      "type": "Sportcoat",
+      "category": "Layers",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 141518,
+      "hashMatches": true
+    },
+    {
+      "type": "Coat",
+      "category": "Layers",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 124652,
+      "hashMatches": true
+    },
+    {
+      "type": "Jacket",
+      "category": "Layers",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 141854,
+      "hashMatches": true
+    },
+    {
+      "type": "Cardigan",
+      "category": "Layers",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 122040,
+      "hashMatches": true
+    },
+    {
+      "type": "Mini Dress",
+      "category": "Dresses",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 107738,
+      "hashMatches": true
+    },
+    {
+      "type": "Midi Dress",
+      "category": "Dresses",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 67922,
+      "hashMatches": true
+    },
+    {
+      "type": "Coat",
+      "category": "Layers",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 124652,
+      "hashMatches": true
+    },
+    {
+      "type": "Jacket",
+      "category": "Layers",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 141854,
+      "hashMatches": true
+    },
+    {
+      "type": "Cardigan",
+      "category": "Layers",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 122040,
+      "hashMatches": true
+    },
+    {
+      "type": "Mini Dress",
+      "category": "Dresses",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 107738,
+      "hashMatches": true
+    },
+    {
+      "type": "Midi Dress",
+      "category": "Dresses",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 67922,
+      "hashMatches": true
+    },
+    {
+      "type": "Maxi Dress",
+      "category": "Dresses",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 47358,
+      "hashMatches": true
+    },
+    {
+      "type": "Cocktail Dress",
+      "category": "Dresses",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 56842,
+      "hashMatches": true
+    },
+    {
+      "type": "Casual Dress",
+      "category": "Dresses",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 74326,
+      "hashMatches": true
+    },
+    {
+      "type": "Belt",
+      "category": "Accessories",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 139262,
+      "hashMatches": true
+    },
+    {
+      "type": "Tie",
+      "category": "Accessories",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 77020,
+      "hashMatches": true
+    },
+    {
+      "type": "Maxi Dress",
+      "category": "Dresses",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 47358,
+      "hashMatches": true
+    },
+    {
+      "type": "Cocktail Dress",
+      "category": "Dresses",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 56842,
+      "hashMatches": true
+    },
+    {
+      "type": "Casual Dress",
+      "category": "Dresses",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 74326,
+      "hashMatches": true
+    },
+    {
+      "type": "Belt",
+      "category": "Accessories",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 139262,
+      "hashMatches": true
+    },
+    {
+      "type": "Tie",
+      "category": "Accessories",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 77020,
+      "hashMatches": true
+    },
+    {
+      "type": "Watch",
+      "category": "Accessories",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 59796,
+      "hashMatches": true
+    },
+    {
+      "type": "Scarf",
+      "category": "Accessories",
+      "extension": "png",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 169894,
+      "hashMatches": true
+    },
+    {
+      "type": "Watch",
+      "category": "Accessories",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 59796,
+      "hashMatches": true
+    },
+    {
+      "type": "Scarf",
+      "category": "Accessories",
+      "extension": "webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 169894,
+      "hashMatches": true
+    }
+  ],
+  "errors": []
+}

@@ -6,11 +6,11 @@
   "pilotRows": 43,
   "estimatedGenerationAndCleanupUsd": 51.19171376,
   "budgetUsd": 70,
-  "reservedUsd": 2.2789999999999973,
-  "prepared": 69,
-  "structurallyPassed": 69,
-  "approved": 68,
-  "stopReason": "Awaiting provider credit: Replicate reports less than $5. Holding new batch work to preserve production credit.",
+  "reservedUsd": 60.188000000001885,
+  "prepared": 1258,
+  "structurallyPassed": 1258,
+  "approved": 1199,
+  "stopReason": null,
   "choices": [
     {
       "category": "Tops",

@@ -1,9 +1,14 @@
 {
-  "checkedAt": "2026-11-07T02:19:24.990Z",
+  "checkedAt": "2026-11-07T03:46:22.789Z",
   "passed": true,
-  "environment": "Local production preview; not deployed",
-  "approvedNewImagesServedAtLegacyUrls": 68,
-  "catalogWebpsValid": 1295,
-  "originalPngCount": 1295,
-  "privatePhotoRoutesChanged": false
+  "catalogCount": 1295,
+  "originalPngsUnchanged": 1295,
+  "validWebps": 1295,
+  "approvedAndApplied": 1199,
+  "retained": 96,
+  "approvedWebpBytes": 173708318,
+  "generatedSourcePngBytes": 1421206949,
+  "totalWebpBytes": 185844678,
+  "originalPngBytes": 203243844,
+  "errors": []
 }

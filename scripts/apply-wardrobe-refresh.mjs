@@ -37,6 +37,15 @@ try {
     if (error.code !== "ENOENT") throw error;
   }
   const sha = (b) => createHash("sha256").update(b).digest("hex");
+  if (
+    ledger.rows.some((r) =>
+      !r.alternate && r.appliedHash && !r.review?.accepted
+    )
+  ) {
+    throw Error(
+      "Restore the original derivative before applying a revoked image approval",
+    );
+  }
   const approved = ledger.rows.filter((r) =>
     !r.alternate && r.review?.accepted && r.qa?.passed && r.preparedPath
   );
@@ -62,7 +71,7 @@ try {
         await sharp(path.join(target, file)).webp({
           quality: 95,
           alphaQuality: 100,
-          effort: 6,
+          effort: 5,
         }).toFile(derivative);
       }
     }
@@ -93,7 +102,7 @@ try {
     const webp = await sharp(bytes).webp({
       quality: 95,
       alphaQuality: 100,
-      effort: 6,
+      effort: 5,
     }).toBuffer();
     const renderedFile = row.file.replace(/\.png$/, ".webp"),
       renderedHash = sha(webp);
@@ -123,6 +132,7 @@ try {
       type: row.name,
       color: row.color,
       model: row.model,
+      ...(row.retryOf ? { retryOf: row.retryOf } : {}),
       oldHash: row.originalHash,
       generatedPngHash: newHash,
       renderedHash,

@@ -17,6 +17,7 @@ import {
 import {
   assetRetryDelay,
   canSubmitAssetPhase,
+  canWaitForAssetCredit,
   reserveAssetPhase,
   reservedAssetCost,
 } from "./lib/asset-batch-guards";
@@ -31,6 +32,13 @@ const limit = Number(
   process.argv.find((a) => a.startsWith("--limit="))?.split("=")[1] || Infinity,
 );
 const budgetUsd = 70;
+const autoReload = process.argv.includes("--auto-reload");
+const workers = Number(
+  process.argv.find((a) => a.startsWith("--workers="))?.split("=")[1] || 2,
+);
+if (!Number.isInteger(workers) || workers < 1 || workers > 8) {
+  throw Error("Invalid worker count");
+}
 const cleanupVersion =
   "a029dff38972b5fda4ec5d75d7d1cd25aeff621d2cf4946a41055d7db66b80bc";
 const { combinedEnv: env } = nextEnv.loadEnvConfig(root, false, {
@@ -109,6 +117,7 @@ type Row = {
   originalHash: string;
   pilot: boolean;
   alternate?: boolean;
+  retryOf?: string;
   generate?: Phase;
   cleanup?: Phase;
   rawPath?: string;
@@ -186,7 +195,7 @@ try {
           ];
           if (category.key === "Shoes") {
             details.push(
-              "Show exactly one matching left-and-right pair, fully visible in a realistic three-quarter product view. Keep both shoes on the same scale; no feet, socks or shoe trees.",
+              "Show exactly one matching left-and-right pair, fully visible in a realistic three-quarter product view. Both shoes stand upright with soles on the same horizontal surface and toes pointing the same way. No opposing vertical soles, extra shoes or floating fragments. Keep both shoes on the same scale; no feet, socks or shoe trees.",
             );
           } else if (sub.name === "Belt") {
             details.push(
@@ -266,7 +275,7 @@ try {
         1250,
     );
     if (
-      !Number.isFinite(requestedPace) || requestedPace < 1250 ||
+      !Number.isFinite(requestedPace) || requestedPace < 500 ||
       requestedPace > 30000
     ) throw Error("Invalid batch pacing");
     ledger.rateGapMs = requestedPace;
@@ -411,6 +420,38 @@ try {
               body.error || body.title || "Provider rejected request",
           ),
         );
+        if (canWaitForAssetCredit(response.status, detail, autoReload)) {
+          phase.state = "awaiting_credit";
+          const retryAfterMs = Math.max(
+            30000,
+            assetRetryDelay(
+              response.headers.get("retry-after") || body.retry_after,
+              detail,
+              attempt,
+            ),
+          );
+          ledger.nextCreateAt = Date.now() + retryAfterMs;
+          ledger.lastThrottle = {
+            at: new Date().toISOString(),
+            detail,
+            retryAfterMs,
+          };
+          await save();
+          console.log(
+            JSON.stringify({
+              event: "waiting_for_configured_auto_reload",
+              retryAfterMs,
+            }),
+          );
+          if (attempt === 9) {
+            halted = true;
+            ledger.stopReason =
+              "Awaiting provider credit: configured auto reload did not complete within bounded retries.";
+            await save();
+            throw Error(ledger.stopReason);
+          }
+          continue;
+        }
         if (
           response.status === 429 &&
           !/exhausted|insufficient.credit/i.test(detail)
@@ -500,7 +541,7 @@ try {
       const d = await r.json();
       entry.state = d.status;
       entry.predictSeconds = d.metrics?.predict_time;
-      if (["failed", "canceled"].includes(d.status)) {
+      if (["failed", "canceled", "cancelled", "aborted"].includes(d.status)) {
         entry.error = String(d.error || d.status).slice(0, 400);
         await save();
         throw Error(entry.error);
@@ -513,7 +554,11 @@ try {
           : null;
         if (
           !output || !/^https:\/\/([^/]+\.)?replicate\.delivery\//.test(output)
-        ) throw Error("Unexpected provider output host");
+        ) {
+          entry.error = "Missing or unapproved provider output URL";
+          await save();
+          throw Error(entry.error);
+        }
         entry.output = output;
         entry.estimatedUsd = kind === "cleanup"
           ? (entry.predictSeconds || 0) * 0.000225
@@ -623,9 +668,14 @@ try {
     const queue = ledger.rows.filter((r) =>
       (!pilot || r.pilot) && (!r.alternate || pilot) && !r.preparedPath &&
       !r.generate?.error && !r.cleanup?.error
-    ).sort((a, b) => Number(b.pilot) - Number(a.pilot)).slice(0, limit);
+    ).sort((a, b) =>
+      // Finish already accepted work before admitting another generation.
+      Number(Boolean(b.rawPath || b.generate?.id)) -
+        Number(Boolean(a.rawPath || a.generate?.id)) ||
+      Number(b.pilot) - Number(a.pilot)
+    ).slice(0, limit);
     let index = 0;
-    await Promise.all(Array.from({ length: 2 }, async () => {
+    await Promise.all(Array.from({ length: workers }, async () => {
       while (index < queue.length && !halted) {
         const row = queue[index++];
         await prepare(row);

@@ -1,10 +1,10 @@
 # Wardrobe default-image refresh
 
-The category choices and replacement pipeline are implemented. **68 reviewed replacements are applied locally; the full batch and production deployment are waiting for Replicate credit.**
+**1,199 reviewed replacements are applied and validated.** Publication status and deployment evidence are recorded in [verification.json](verification.json).
 
-The API reports that account `spyke01` has less than $5 credit and is restricted to six prediction starts per minute. The selected 1,258-image refresh is estimated at $51.19 including background removal. Its separate operator admission ceiling is $70. About $1.68 of provider usage is estimated so far; this is not an invoice reconciliation. New paid batch work is held to preserve remaining production credit. The user was asked to add $75 prepaid credit; unused credit remains available to the site. Billing and auto-reload settings were not changed.
+The refresh covers all 1,258 solid-color defaults across 37 catalog clothing types. All targets produced a structurally valid candidate. Visual review retained 59 originals because their replacements had color drift, extra clothing or shoe fragments, an unclear view, an unsuitable style, or an awkward pair arrangement. The 37 multicolor defaults also remain unchanged until their patterns have a separate brief. Pruna and Schnell are excluded from new work.
 
-| Clothing | Selected route |
+| Clothing | Selected model |
 | --- | --- |
 | Plain tops, cardigans, hoodies, quarter zips | Klein 4B |
 | Blouses, buttoned shirts, knit sweaters | Nano Banana 2 |
@@ -16,44 +16,34 @@ The API reports that account `spyke01` has less than $5 credit and is restricted
 | Ties and watches | Klein 4B |
 | Belts and scarves | Nano Banana 2 |
 
-The 43-image pilot covers all 37 clothing types, with both models for six types. Choices reflect the pilot plus the preceding eight-piece comparison. They are a visual screening judgment, not a statistical ranking. Pruna and Schnell are excluded from new work. The Nano tie clipped its top; the complete Klein version was selected. One purple T-shirt variant was held because its color was too pale and blue. Unsubmitted color prompts now include the palette's approximate hex reference. Accepted provider inputs and handles were not changed.
+The 43-output pilot covered every clothing type and compared both models for six types. Final choices reflect that pilot, the preceding eight-piece comparison, and the full color review. These are visual screening judgments. [Category decisions](category-decisions.json) records the choices; [review holds](color-review.json) records each retained candidate and reason.
 
-`selected-preview.html` is a self-contained, zoomable comparison of the original and selected image for all 37 types. It includes every image and needs no local server. `category-decisions.json` records the routes and reasons. `replacement-manifest.json` records the 68 locally applied files and their reviewed source/rendered hashes. `PLAN.md` contains the implementation and adversarial pass.
+## Assets and quality
 
-## Asset behavior
+The logical catalog retains all 1,295 PNG names. Every entry has a WebP counterpart. Reviewed new derivatives replace their corresponding defaults; retained entries keep their original appearance. The app requests versioned derivatives to avoid stale browser caches. Legacy PNG requests resolve to the matching WebP. No existing account photos, private wardrobe rows, or branded legacy assets were replaced.
 
-The logical catalog retains all 1,295 original PNG names. The 37 multicolor assets remain unchanged pending a pattern-specific brief. Original PNGs remain available as rollback sources. Every catalog entry has a WebP counterpart; approved new WebPs replace the corresponding old derivative. The app requests these derivatives with a release version so browser caches do not hide the refresh. A before-files rewrite keeps saved PNG references working. No account photos, private images, user wardrobe rows, or branded legacy assets were changed.
+The approved 1,024px images occupy **173.71 MB as WebP**, compared with **1421.21 MB** for the generated PNG sources. WebP uses quality 95 with full alpha quality. Original catalog PNGs remain unchanged, and full-resolution generated sources and backups remain in ignored workspace staging.
 
-Generated 1,024px PNGs are retained under ignored `tmp/wardrobe-refresh-2026-11-06/`. The site uses WebP at quality 95 with preserved alpha. The 68 approved images occupy about 8.28 MB as WebP compared with 77.35 MB for their generated PNG sources. Their original PNGs are also backed up under the staging directory.
+[The self-contained comparison](selected-preview.html) shows the original and selected image for all 37 types, with category filters, dark backgrounds, model labels, and zoom. It needs no server. [The replacement manifest](replacement-manifest.json) binds each published derivative to its exact reviewed source hash, model, and rendered hash.
 
-## Verification
+## Cost and controls
 
-- 2,397 tests pass, with four existing skips. Strict lint and application types pass.
-- The Next.js production build passes through the repository's Webpack path. Local Turbopack worker-port binding is blocked by the environment; no application workaround was shipped for that environment limitation.
-- All three protected Edge entry points pass Deno checks. The new Nano route has been tested through provider inference and shared routing tests, but is not deployed yet.
-- The 34 real-component browser checks pass with synthetic I/O. Local production requests verify that legacy PNG and new versioned WebP URLs return matching image bytes.
-- Nine local private credential values were compared with 198 built browser assets: no matches. This is a scoped build check, not a historical credential audit.
-- Spending, ambiguous POSTs, definite rate-limit retries, exclusive writer locks, publication locks, and the explicit funding hold have regression coverage. Structural checks inspect output dimensions, transparency, foreground coverage, and edge cropping. Visual decisions bind to the exact reviewed PNG hash.
+Completed prediction usage is estimated at **$51.14**, separate from provider invoices. Accepted failed phases without a returned usage estimate retain another **$0.220** in conservative ceilings. Total admission reservations are **$60.188** against the unchanged **$70 cap**. Failed, canceled, and uncertain attempts remain counted. The user added credit and configured auto reload; the agent made no billing-setting changes.
 
-## Resume after funding
+The batch held one exclusive writer, persisted intent before every paid POST, resumed known prediction IDs with GET, honored provider retry windows, and bounded worker count, outputs, downloads, and cancellation deadlines. Two cleanup retries reused their saved generated images. Three known terminal empty/failed generations received one explicit retry each. Earlier attempts and costs remain in the ledger. Unknown POST outcomes were never repeated. Application requests retain their separate per-user allowances, global spending reservations, and concurrency limits. Ready-made library choices require no new image-generation call.
 
-Confirm credit was added to account `spyke01` before issuing new paid requests. Keep the current ledger; it contains accepted prediction handles, saved originals, reservations, and review decisions.
+## Verification and deployment
 
-```sh
-node --import tsx scripts/refresh-wardrobe-library.ts
-node --import tsx scripts/refresh-wardrobe-library.ts --run --resume-funded --pace-ms=1250
-node scripts/render-wardrobe-refresh-review.mjs --full --pending --screenshots
-```
+- The full suite passed 2,402 tests, with four existing skips. The final focused checks passed 27 tests, including added routing and approval checks. Strict lint and types pass.
+- The local production build passed through Webpack. Local Turbopack worker-port binding remains an environment limitation. The application source has not changed since that successful build; hosted publication performs a fresh production build.
+- All 1,295 WebPs decode correctly at 1,024px with alpha. All original catalog PNGs remain unchanged. All 1,199 replacements match their approved source and derivative hashes.
+- Local legacy PNG and versioned WebP requests pass for all 37 clothing types. Thirty-seven white pieces were inspected against a dark background; visual review also covered every candidate against its original.
+- Nine private local credential values were checked against 198 built browser assets: zero matches. This is a scoped bundle check.
+- A real Nano job completed through hosted category routing in an isolated temporary Plus account, including cleanup, private storage, and replay without another reservation. The account and owned storage were removed. [Hosted routing evidence](production-routing-validation.json) records the check.
+- The updated generation and processing functions are deployed to project ahjwzpyammiqelloazvn. Routing uses the owned item and its category, supports the reviewed Klein/Nano models, and preserves each saved job's model. The 34 local and hosted migrations match; this image refresh needs no new SQL.
 
-The first command is a dry run. The funded resume reuses existing handles and resumes the pending lavender T-shirt cleanup without generating that piece again. New intent is persisted before POST; unknown submissions are not repeated. A definite 429 honors the provider's retry window. If Replicate again reports less than $5, the batch stops rather than consuming the remaining wallet. The $70 ceiling includes failed and uncertain reservations and cannot be raised by a command-line argument. No automatic credit purchase, auto-reload change, paid-model substitution, or unbounded regeneration is supported.
+## Reproducibility
 
-Review the new sheets, store exact candidate-hash decisions in staging `reviews.json`, and apply only approved results after generation finishes:
+[The plan](PLAN.md) includes the adversarial pass. The operator scripts are refresh-wardrobe-library.ts, render-wardrobe-refresh-review.mjs, and apply-wardrobe-refresh.mjs under scripts/. Future application prompts are in supabase/functions/_shared/wardrobe-photo-prompt.ts. Generation and editing used the user-selected Replicate API models and the pinned 851-labs background remover. Exact per-image prompts, accepted handles, raw PNGs, prepared PNGs, review decisions, and prior attempts remain under ignored tmp/wardrobe-refresh-2026-11-06/. Preserve that ledger when resuming; never reset prediction IDs or reservations.
 
-```sh
-node scripts/apply-wardrobe-refresh.mjs --apply
-node scripts/render-selected-wardrobe-preview.mjs
-```
-
-The apply command holds the same exclusive lock as the generation writer. It preserves original PNGs and atomically replaces approved WebP derivatives. Complete the remaining visual review and catalog integrity checks before pushing the production release. Deploy the updated `generate-wardrobe-item-image` function first while its existing explicit Klein override remains valid, then set its `REPLICATE_WARDROBE_MODEL` secret to `auto`. Existing jobs retain their reserved model. No new database migration is required for this refresh.
-
-Pricing/model references: [Klein 4B](https://replicate.com/black-forest-labs/flux-2-klein-4b), [Nano Banana 2](https://replicate.com/google/nano-banana-2), [background removal](https://replicate.com/851-labs/background-remover), and [Replicate rate limits](https://replicate.com/docs/topics/predictions/rate-limits).
+Pricing references: [Klein 4B](https://replicate.com/black-forest-labs/flux-2-klein-4b), [Nano Banana 2](https://replicate.com/google/nano-banana-2), [background removal](https://replicate.com/851-labs/background-remover).

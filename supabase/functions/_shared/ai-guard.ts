@@ -276,7 +276,7 @@ export async function runReplicatePhase(
       });
       return output;
     }
-    if (["failed", "canceled"].includes(prediction.status)) {
+    if (["failed", "canceled", "cancelled", "aborted"].includes(prediction.status)) {
       job = await readJob(db, job.user_id, job.id);
       const phases = (job.result_json?.phases || {}) as Record<
         string,

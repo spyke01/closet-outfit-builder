@@ -8,15 +8,33 @@ const ledger = JSON.parse(
   await fs.readFile(path.join(staging, "ledger.json"), "utf8"),
 );
 try {
-  const decisions = JSON.parse(await fs.readFile(path.join(staging, "reviews.json"), "utf8"));
-  for (const row of ledger.rows) if (decisions[row.key]) row.review = decisions[row.key];
-} catch (error) { if (error.code !== "ENOENT") throw error; }
+  const decisions = JSON.parse(
+    await fs.readFile(path.join(staging, "reviews.json"), "utf8"),
+  );
+  for (const row of ledger.rows) {
+    if (decisions[row.key]) row.review = decisions[row.key];
+  }
+} catch (error) {
+  if (error.code !== "ENOENT") throw error;
+}
 const output = path.join(staging, "review");
 await fs.mkdir(output, { recursive: true });
 const pilot = !process.argv.includes("--full");
 const pending = process.argv.includes("--pending");
+const complete = process.argv.includes("--complete");
+const incompleteTypes = new Set(
+  ledger.rows.filter((r) =>
+    !r.alternate && !r.preparedPath &&
+    !r.generate?.error && !r.cleanup?.error &&
+    ![r.generate?.state, r.cleanup?.state].some((s) =>
+      ["failed", "canceled", "cancelled", "aborted", "rejected"].includes(s)
+    )
+  ).map((r) => r.category + " · " + r.name),
+);
 const rows = ledger.rows.filter((r) =>
-  r.preparedPath && (pilot ? r.pilot : !r.alternate) && (!pending || !r.review)
+  r.preparedPath && (pilot ? r.pilot : !r.alternate) &&
+  (!pending || !r.review) &&
+  (!complete || !incompleteTypes.has(r.category + " · " + r.name))
 );
 const groups = new Map();
 for (const row of rows) {
@@ -110,7 +128,7 @@ if (process.argv.includes("--screenshots")) {
   try {
     for (const result of results) {
       const page = await browser.newPage({
-        viewport: { width: pilot ? 1800 : 2200, height: 1800 },
+        viewport: { width: pilot ? 1800 : 2200, height: 400 },
         deviceScaleFactor: 1,
       });
       await page.goto(pathToFileURL(result.file).href);

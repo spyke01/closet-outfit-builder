@@ -24,10 +24,10 @@ export function buildWardrobePhotoPrompt(item: WardrobeItemPromptInput) {
     );
   } else if (/\b(shoe|sneaker|loafer|boot|heel|flat|sandal)s?\b/.test(kind)) {
     requirements.push(
-      "Show one matching left-and-right pair in a realistic three-quarter product view, with both shoes fully visible at the same scale. No feet or shoe trees.",
+      "Show exactly one matching left-and-right pair in a realistic three-quarter product view, with both shoes fully visible at the same scale. Both shoes must stand upright with soles on the same horizontal surface and toes pointing the same way. No opposing vertical soles, floating fragments, extra shoes, feet or shoe trees.",
     );
   } else {requirements.push(
-      "Show the whole garment with natural volume on an invisible form. No visible person, mannequin, hanger or stand.",
+      "Show the whole garment FROM THE FRONT with natural volume on an invisible form, so its neckline and front details are visible. Never show its back or rear view. No visible person, mannequin, hanger or stand.",
     );}
   return buildWardrobeItemPrompt(item) +
     "\n\n### Photographic finish and full-product framing\n" +

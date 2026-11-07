@@ -1,12 +1,303 @@
 {
-  "checkedAt": "2026-11-07T02:04:42.051Z",
-  "unsubmittedPromptsAnchored": 1188,
-  "pendingPaidWorkHeld": true,
+  "checkedAt": "2026-11-07T03:47:34.556Z",
+  "reviewed": 1258,
+  "approved": 1199,
   "held": [
     {
       "file": "tops-t-shirt-purple.png",
-      "reason": "New sample is too pale/blue for the stock purple target; preserve existing until a targeted retry."
+      "reason": "Hold: the new purple is too pale and blue for the stock purple color. Retain the original until a color-anchored retry is reviewed.",
+      "preparedHash": "9aec9dda78f2bc1f8ddebac6fc4b0bbf1d5de9521730f62052a7a13aff77eceb"
+    },
+    {
+      "file": "tops-polo-stone.png",
+      "reason": "Retain original: generated stone polo is too cool grey for the intended warm neutral.",
+      "preparedHash": "149cfba68481330eb1ba65774e9ca14a6c36f75a9517a89c44757c9553a71c44"
+    },
+    {
+      "file": "tops-polo-purple.png",
+      "reason": "Retain original: generated purple polo is too pale and lavender compared with the intended saturated purple.",
+      "preparedHash": "f7e8c22774ce04639a4162e46ddcb143d3e16c80702a2ed50e598200d2281d5d"
+    },
+    {
+      "file": "tops-dress-shirt-lavender.png",
+      "reason": "Retain original: new candidate changes the default long-sleeved dress shirt to short sleeves.",
+      "preparedHash": "ea39abcc071f504c85de55811b1de735afc11b932f30a0bc899a18b4af82dc9e"
+    },
+    {
+      "file": "tops-tank-top-stone.png",
+      "reason": "Retain original: generated stone is cool grey instead of the intended warm neutral.",
+      "preparedHash": "abfc9bb8840bef83738750b0a7e88e1040fc65b294345dbd3be930991fc6a28b"
+    },
+    {
+      "file": "tops-tank-top-green.png",
+      "reason": "Retain original: green shifts too far toward teal.",
+      "preparedHash": "6ca8e8dca2dd9626cd9f3b2e395c7c08d9122925a742059ed40629512a86f70e"
+    },
+    {
+      "file": "tops-tank-top-forest.png",
+      "reason": "Retain original: forest green loses too much saturation and becomes grey green.",
+      "preparedHash": "cdb381ddec75dc786e17f4863b4d82cf16878b708af9306c5b08b61abe6d859a"
+    },
+    {
+      "file": "tops-cardigan-stone.png",
+      "reason": "Retain original: generated stone cardigan reads as cool grey instead of the intended warm neutral.",
+      "preparedHash": "a23114a257efa5f6971c3e2962332421613f5b9a3ad1337c75ddb17d751975bc"
+    },
+    {
+      "file": "tops-hoodie-stone.png",
+      "reason": "Retain original: stone shifts to cool grey.",
+      "preparedHash": "f9d1f7517412b33fb2d658bc429f681ac112c203cc7d3b527427e56870810f4a"
+    },
+    {
+      "file": "tops-hoodie-green.png",
+      "reason": "Retain original: green loses too much saturation and becomes grey green.",
+      "preparedHash": "fd197340ee583066e9eed709864b8ff5d85ebf7439a839a6d2a27f9cd53ecc5f"
+    },
+    {
+      "file": "tops-hoodie-forest.png",
+      "reason": "Retain original: forest green becomes grey green rather than a distinct deep green.",
+      "preparedHash": "0824a68cfc46da547643072f7711a70fdf12e24cad2aa83806a608337d9a1ac6"
+    },
+    {
+      "file": "tops-hoodie-purple.png",
+      "reason": "Retain original: saturated purple shifts to pale lavender.",
+      "preparedHash": "b74184f1854ca23d66256db6e62b855587602d77af51f10e801c24d96ca648a3"
+    },
+    {
+      "file": "tops-quarter-zip-stone.png",
+      "reason": "Retain original: stone shifts to cool grey.",
+      "preparedHash": "e431e3d2504396fa8e4b8883f1408b31b12d11c5bce86a800300b625967e744a"
+    },
+    {
+      "file": "tops-quarter-zip-forest.png",
+      "reason": "Retain original: deep forest green shifts to a muted grey green.",
+      "preparedHash": "7178381ddfdcab3e4283216915507ea96a81b5aee29d5ecb3d70c6979fe8a6c5"
+    },
+    {
+      "file": "tops-quarter-zip-purple.png",
+      "reason": "Retain original: saturated purple shifts toward pale lavender.",
+      "preparedHash": "bb2a76f425966001021c6e201af7827d05699ded06a4595de4f57f726d4bd0e2"
+    },
+    {
+      "file": "bottoms-chinos-denim.png",
+      "reason": "Retain original: denim-colored candidate reads as jeans rather than chino construction.",
+      "preparedHash": "fc6cb9b617379b0cf382d2ea1796c0e969c232d92634447291e3e846cbac14ec"
+    },
+    {
+      "file": "bottoms-chinos-forest.png",
+      "reason": "Retain original: deep forest green is too muted and close to the green variant.",
+      "preparedHash": "230b552b4e47cdf6f5a82d3bd066e9b19bb879e9b5291287cc719aee1822b7a4"
+    },
+    {
+      "file": "bottoms-chinos-purple.png",
+      "reason": "Retain original: deep purple shifts too far toward lavender.",
+      "preparedHash": "5abf68e3da3e657aec1cded1eb348816af8874eff3ac582626d354251abc325a"
+    },
+    {
+      "file": "bottoms-trousers-stone.png",
+      "reason": "Retain original: stone shifts to cool grey.",
+      "preparedHash": "a0469101b9e378245bf2a45af1033e8edd2a1a4cce0ff0cb7354a5057f3549d8"
+    },
+    {
+      "file": "bottoms-trousers-denim.png",
+      "reason": "Retain original: denim-colored candidate reads as jeans rather than tailored trousers.",
+      "preparedHash": "e30b3eddb46adf279402d2450ae91e9c97a77fa1d1e32a7b35d9446b7ffd9947"
+    },
+    {
+      "file": "bottoms-shorts-stone.png",
+      "reason": "Retain original: stone shifts too far toward cool grey.",
+      "preparedHash": "040700d57f6967bfb058da76460593f596587c3accf4d4891ac9827ba20a2c9a"
+    },
+    {
+      "file": "bottoms-skirt-stone.png",
+      "reason": "Retain original: stone shifts to cool grey.",
+      "preparedHash": "d44a2b66bcebbdb44862c9a6283a6bd31c41a1e1ac1c043f0564ff42872c661c"
+    },
+    {
+      "file": "bottoms-skirt-green.png",
+      "reason": "Retain original: green shifts too far toward teal.",
+      "preparedHash": "ef7aa4b195b571d4320047e1712223e3c19ebd32989f242033f8d34ed3ad5f34"
+    },
+    {
+      "file": "bottoms-skirt-purple.png",
+      "reason": "Retain original: purple shifts toward lavender.",
+      "preparedHash": "6835e9d7caf9f5c20684b665be4c04d3e0c2d7432cf3426fa5e3398349a23881"
+    },
+    {
+      "file": "bottoms-leggings-stone.png",
+      "reason": "Retain original: stone shifts to cool grey.",
+      "preparedHash": "a4c1789db9a596c9166683c8708a63ccb3b61adc84e5fea86778357c26927587"
+    },
+    {
+      "file": "bottoms-leggings-green.png",
+      "reason": "Retain original: green shifts too far toward teal.",
+      "preparedHash": "9a99fc19a4c90b46d477023748d3b2188f195c881ce5d803977bf8f93a19fe83"
+    },
+    {
+      "file": "bottoms-leggings-purple.png",
+      "reason": "Retain original: saturated purple shifts to pale blue violet.",
+      "preparedHash": "3f0bf81b9a3f831fa6b7bc2df31d3f1fab401969a8781b647431d2678669f9c0"
+    },
+    {
+      "file": "shoes-sneakers-purple.png",
+      "reason": "Retain original: the pair is arranged vertically with opposing soles, creating an awkward and unclear product silhouette.",
+      "preparedHash": "1ca4ba65f07a323dbc132eb02d369feccb83f9cc8b47460fb224d57ddba6c9a8"
+    },
+    {
+      "file": "shoes-loafers-charcoal.png",
+      "reason": "Retain original: charcoal becomes light grey and loses its distinction from the grey option.",
+      "preparedHash": "523fd8952138bdccf62fd83602608b41d6d399e73f990a2d251f23ccf001ed3d"
+    },
+    {
+      "file": "shoes-loafers-forest.png",
+      "reason": "Retain original: deep forest green becomes too pale and grey.",
+      "preparedHash": "28122cff920d4f3068a8722e3cd85144b8305ce0dbd9661cb4e99e74e4a21f5a"
+    },
+    {
+      "file": "shoes-loafers-purple.png",
+      "reason": "Retain original: purple shifts toward muted lavender.",
+      "preparedHash": "e7e8783bd47e87c297bda5274f317c23e2dcd4702142bf5c7829bbf9240dd945"
+    },
+    {
+      "file": "shoes-boots-taupe.png",
+      "reason": "Retain original: the generated pair includes an extra floating boot fragment.",
+      "preparedHash": "1a1bf104530eda5888d9442ebae5d5a241bbe22111e0cc84ae5d59bb9c750c5a"
+    },
+    {
+      "file": "shoes-boots-cream.png",
+      "reason": "Retain original: cream shifts too far toward wheat tan.",
+      "preparedHash": "5eefe076844d64323ed51b1e88d1e732fabfe63b86f35d0bd89b9c6b602a716a"
+    },
+    {
+      "file": "shoes-dress-shoes-cream.png",
+      "reason": "Retain original: opposing vertical soles create an awkward, unclear pair arrangement.",
+      "preparedHash": "3b7af128a843a8e5aecea73117fb0b6ddb536c0023a17e80a31fc90a892a3e9e"
+    },
+    {
+      "file": "shoes-dress-shoes-burgundy.png",
+      "reason": "Retain original: opposing vertical soles create an awkward, unclear pair arrangement.",
+      "preparedHash": "6648c41cc349f76feac8ea1f2a04ec8b0a18a6f213270ac0040359390932a578"
+    },
+    {
+      "file": "shoes-dress-shoes-pink.png",
+      "reason": "Retain original: opposing vertical soles create an awkward, unclear pair arrangement.",
+      "preparedHash": "cad01ee2411afc5c7317a5663e54fcc48f0144cc88691b3969189acfb33c1d65"
+    },
+    {
+      "file": "shoes-dress-shoes-lavender.png",
+      "reason": "Retain original: candidate changes the lace-up dress-shoe default into high-heeled pumps.",
+      "preparedHash": "eb5cc150afb14b6cbb77023de6b2cefbd465e9fbb29dd888dfe0f3949e9f297c"
+    },
+    {
+      "file": "shoes-sandals-black.png",
+      "reason": "Retain original: opposing vertical soles make the sandal pair difficult to recognize.",
+      "preparedHash": "68f51a7d3060e7d35b7bb923ab06e43438491268656337e8a654f50a94c0de9e"
+    },
+    {
+      "file": "shoes-sandals-olive.png",
+      "reason": "Retain original: opposing vertical soles create an awkward, unclear sandal arrangement.",
+      "preparedHash": "f256204542d86e8ce3d070ee855e5c00e89d134823a82a202f5dece74b161b69"
+    },
+    {
+      "file": "layers-coat-lavender.png",
+      "reason": "Retain original: candidate shows the back of the coat instead of its useful front details.",
+      "preparedHash": "342ba6c764e9ee43eecb07bea6eb691b793e0aef2af03d19f72d12a42d83354f"
+    },
+    {
+      "file": "layers-cardigan-stone.png",
+      "reason": "Retain original: stone shifts to cool grey.",
+      "preparedHash": "85497a18aa608c2fa8835fea4b42718bfc175ed2cd862e737472f1a0d709c4a8"
+    },
+    {
+      "file": "dresses-mini-dress-black.png",
+      "reason": "Retain original: the new black mini dress obscures the neckline and front details and reads as a rear view.",
+      "preparedHash": "c618360e9f90b0962577650da7ee814e27356cab92df9ce83b8a47baf8407bbe"
+    },
+    {
+      "file": "dresses-midi-dress-lavender.png",
+      "reason": "Retain original: candidate hides the front neckline and reads as a rear view.",
+      "preparedHash": "34349b47ff272fd2cf260b5165ff2e1a244ea386a9c6ef57e12f49f09d912692"
+    },
+    {
+      "file": "dresses-maxi-dress-lavender.png",
+      "reason": "Retain original: candidate obscures the neckline and front styling and reads as a rear view.",
+      "preparedHash": "01bc2f0a20ac12e75f38e76b0bb2f5e20609f30db8fe78d75cb102c0aeab1cf3"
+    },
+    {
+      "file": "dresses-cocktail-dress-black.png",
+      "reason": "Retain original: the new image loses the clear front neckline and styling of the existing black dress.",
+      "preparedHash": "2d2bb6c5064a32e2075eecd01f69e3518b3832cd079e55e16daced4da8807e20"
+    },
+    {
+      "file": "dresses-cocktail-dress-blush.png",
+      "reason": "Retain original: the candidate reads as a casual belted shirt dress rather than a cocktail dress.",
+      "preparedHash": "aefaace78e57348c592eca9f64324938fc6b6732759e28deec35cc73fb670d7e"
+    },
+    {
+      "file": "accessories-tie-black.png",
+      "reason": "Retain original: the candidate adds detached shirt or cuff fragments around the tie.",
+      "preparedHash": "97e31848b67ac571ea9fc8261818e52602c74a580881f7884d1b4c8f0239b989"
+    },
+    {
+      "file": "accessories-tie-white.png",
+      "reason": "Retain original: the dark-background check shows an added shirt collar around the white tie.",
+      "preparedHash": "6bf33bc6343ecc623a5ada088b30e06566cc6ff56e4d7d48534d00db3dc0ec5e"
+    },
+    {
+      "file": "accessories-tie-charcoal.png",
+      "reason": "Retain original: charcoal becomes too light and close to grey.",
+      "preparedHash": "e8f1ee0d6d86a788668f25886339a5d203ad00859501d46922c98b0b26eeb1a6"
+    },
+    {
+      "file": "accessories-tie-stone.png",
+      "reason": "Retain original: stone shifts to cool grey.",
+      "preparedHash": "651fda2cf69252c22a9acefe75e06cae73e895dae323b9cf1a16406a47fedc3b"
+    },
+    {
+      "file": "accessories-tie-ivory.png",
+      "reason": "Retain original: the candidate adds shirt collar and sleeve fragments.",
+      "preparedHash": "fdd096fff5328988a5b6087de47d006413a84923eaa588484dabd823549c227c"
+    },
+    {
+      "file": "accessories-tie-cream.png",
+      "reason": "Retain original: the candidate adds shirt collar fragments.",
+      "preparedHash": "89dca6715ad6d94d7928901e0936a67809ef6f69036498e51766606da4517af6"
+    },
+    {
+      "file": "accessories-tie-maroon.png",
+      "reason": "Retain original: the candidate adds sleeves or shirt fragments around the tie.",
+      "preparedHash": "fff69a37c47b5698ef2d141870c043f18770e7fcf21d8191c8f5d3370736cd99"
+    },
+    {
+      "file": "accessories-tie-pink.png",
+      "reason": "Retain original: the candidate adds a ghost shirt around the tie.",
+      "preparedHash": "081c934735925edc8e0c0dedd2566ce0e12b8df86b6cc3defcc851be92558367"
+    },
+    {
+      "file": "accessories-tie-purple.png",
+      "reason": "Retain original: saturated purple shifts toward lavender.",
+      "preparedHash": "5acc615bde54e9982a6ee2009736b459bc31eac66f88d57ff1050736068dd349"
+    },
+    {
+      "file": "accessories-watch-charcoal.png",
+      "reason": "Retain original: the candidate adds a shirt or jacket behind the watch.",
+      "preparedHash": "1971b90c3dee1f531b4159e2f35f0f6fc433d4dec9b549880b0934168629b147"
+    },
+    {
+      "file": "accessories-watch-stone.png",
+      "reason": "Retain original: stone becomes near-white grey and loses its warm neutral dial color.",
+      "preparedHash": "10f97a38e8fad437e38c15901264976e4d8cec5725e31d01cd20134a2d52fddd"
+    },
+    {
+      "file": "accessories-watch-denim.png",
+      "reason": "Retain original: the candidate adds a denim shirt behind the watch.",
+      "preparedHash": "d9efc99c9293b5bc2f852911a060970767a563deb550bd044ce936dfe5a7e943"
+    },
+    {
+      "file": "accessories-watch-mustard.png",
+      "reason": "Retain original: the candidate adds a cardigan behind the watch.",
+      "preparedHash": "1b4c203a17ec274fb8c4041f40342d07e8d889328b8f422defb6a772566ed3c6"
     }
   ],
-  "note": "Only unsubmitted prompts changed. Completed and accepted provider requests retain their original prompt, model, handle and reservation."
+  "scope": "Visual judgment on exact generated PNGs, including material, complete products, color, clear views, extra clothing, and light/dark cutouts. Not a statistical model ranking."
 }

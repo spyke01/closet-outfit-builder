@@ -37,7 +37,17 @@ export function reserveAssetPhase(
 }
 
 export function canSubmitAssetPhase(phase: AssetPhase) {
-  return !phase.id && ["queued", "rate_limited"].includes(phase.state);
+  return !phase.id &&
+    ["queued", "rate_limited", "awaiting_credit"].includes(phase.state);
+}
+
+export function canWaitForAssetCredit(
+  status: number,
+  detail: string,
+  autoReload: boolean,
+) {
+  return autoReload && ((status === 429 && /less than\s+\$5/i.test(detail)) ||
+    (status === 402 && /credit|balance|billing/i.test(detail)));
 }
 
 export function assetRetryDelay(

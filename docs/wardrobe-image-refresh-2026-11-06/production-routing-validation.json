@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-11-07T03:01:52.394Z",
+  "passed": true,
+  "scope": "One bounded Nano image through deployed category routing using an isolated temporary Plus account. No email, Stripe, or existing account changes.",
+  "checks": [
+    "Server-owned sweater routes to Nano Banana 2 and completes generation, cleanup, and private storage",
+    "Stored output is a 1024px PNG with alpha and is readable by its owner",
+    "Completed-job replay returns the saved result without a second reservation or provider phase",
+    "Temporary account and its owned storage removed"
+  ],
+  "errors": []
+}

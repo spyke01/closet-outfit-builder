@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  runReplicatePhase,
   type AiDb,
   type EdgeJob,
+  runReplicatePhase,
 } from "../_shared/ai-guard";
 
 function database(
@@ -50,6 +50,31 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 describe("durable image provider phases", () => {
+  it.each(["failed", "canceled", "cancelled", "aborted"])(
+    "finishes a %s provider phase without another paid POST",
+    async (status) => {
+      const { db, job } = database({ phase: "cleanup" }, "existing-prediction");
+      vi.mocked(fetch).mockResolvedValue(response({ status }));
+      await expect(
+        runReplicatePhase(
+          db,
+          job,
+          "cleanup",
+          "851-labs/background-remover",
+          {},
+        ),
+      ).rejects.toThrow("GENERATION_FAILED");
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(vi.mocked(fetch).mock.calls[0][1]?.method).toBeUndefined();
+      expect(job.result_json?.phases).toMatchObject({
+        cleanup: {
+          predictionId: "existing-prediction",
+          status,
+          finishedAt: expect.any(String),
+        },
+      });
+    },
+  );
   it("records the model, version, and handle for each paid phase without repeating its POST", async () => {
     const { db, job } = database();
     vi.mocked(fetch)

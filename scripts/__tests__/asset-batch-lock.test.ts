@@ -43,6 +43,39 @@ function run(root: string, args: string[]) {
   });
 }
 describe("exclusive asset batch writer", () => {
+  it("leaves published bytes and the ledger untouched when an applied approval is revoked", () => {
+    const { root, stage } = fixture();
+    fs.rmSync(path.join(stage, "run.lock"));
+    const ledger = JSON.stringify({
+      rows: [{
+        key: "piece",
+        appliedHash: "previous",
+        review: { accepted: true },
+      }],
+    });
+    fs.writeFileSync(path.join(stage, "ledger.json"), ledger);
+    fs.writeFileSync(
+      path.join(stage, "reviews.json"),
+      JSON.stringify({ piece: { accepted: false } }),
+    );
+    const published = path.join(
+      root,
+      "public/images/wardrobe/generated/onboarding/piece.webp",
+    );
+    fs.mkdirSync(path.dirname(published), { recursive: true });
+    fs.writeFileSync(published, "existing published bytes");
+    const result = spawnSync(process.execPath, [
+      path.resolve("scripts/apply-wardrobe-refresh.mjs"),
+      "--apply",
+    ], { cwd: root, encoding: "utf8", timeout: 7000 });
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain("revoked image approval");
+    expect(fs.readFileSync(published, "utf8")).toBe("existing published bytes");
+    expect(fs.readFileSync(path.join(stage, "ledger.json"), "utf8")).toBe(
+      ledger,
+    );
+    expect(fs.existsSync(path.join(stage, "run.lock"))).toBe(false);
+  });
   it("holds paid work until the confirmed credit dependency is explicitly cleared", () => {
     const { root, stage } = fixture();
     fs.rmSync(path.join(stage, "run.lock"));
